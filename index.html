@@ -574,7 +574,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=99;
+const GAME_VERSION=100;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -1104,25 +1104,34 @@ function render(){
  const mates=currentRoommates();
  const matesPlace=(S.home&&S.home.owned)?S.home.name:(S.movedOut?'Your own place':(ORIGINS.find(o=>o.id===S.origin)||{}).name||'Home');
  app.innerHTML=`
- <div class="topPin" id="topPin">
- <button type="button" class="ticker" onclick="openJournal()" aria-label="Headlines — tap to open the full journal"><span class="tickerTag">📣 HEADLINES</span>${(()=>{ const heads=S.journal.slice(0,6).join('     •     ')||'A new life begins...'; const dur=Math.max(16,Math.round(heads.length*0.30)); return '<span class="tickerView"><span class="tickerTrack" style="animation-duration:'+dur+'s"><span>'+heads+'</span><span aria-hidden="true">'+heads+'</span></span></span>' })()}<span class="tickerGo">›</span></button>
- <header class="headline">
-  <div class="headline-top"><div class="logo">AQUALIFE</div><button type="button" id="clockChip" class="chip clockChip${rtPaused?' paused':''}" onclick="toggleRtPause()" aria-label="${rtPaused?'Time is paused — tap to resume':'Clock — tap to pause time'}" title="Tap to ${rtPaused?'resume':'pause'} time">🕐 <span class="jsClock">${clockStr()}</span> ${phaseIcon()}<span id="fastIco"></span> <span id="pauseIco">${rtPaused?'▶ PAUSED':'⏸'}</span></button>${S.hasPhone?`<button id="phoneBtn" class="${unread?'phoneAlert':''}" onclick="openPhone()" style="background:#fff;color:#111;padding:7px 10px;border-radius:999px;font-weight:900">📱 Phone ${unread?'• '+unread+' new':''}</button>`:`<button id="phoneBtn" onclick="noPhoneSheet()" style="background:#574b3f;color:#fff;padding:7px 10px;border-radius:999px;font-weight:900">📵 No phone yet</button>`}<button type="button" id="installBtn67" onclick="installApp67()" aria-label="Install AquaLife as an app" title="Install app" style="background:#ffb703;color:#111;padding:7px 11px;border-radius:999px;font-weight:900;white-space:nowrap">📲 Install</button></div>
-  <div class="idRow"><span class="avatarWrap"><canvas class="avatarCv" width="72" height="92" data-person="${S.name.replace(/"/g,'')}" role="img" aria-label="Portrait of ${S.name}"></canvas></span><div class="idMain"><div class="head-title">${S.name}, ${S.age}${levelTitle()?' • '+levelTitle():''}</div><div class="lvUnit"><span class="lvBadge">⭐ Lv <span data-roll="level">${S.level}</span></span><span class="lvBar"><i style="width:${S.xp}%"></i></span><span class="lvXp"><span data-roll="xp">${S.xp}</span>/100 XP</span><span class="lvNext">${nextPerk(S.level)?'🔜 Lv '+nextPerk(S.level).lv+': '+nextPerk(S.level).icon+' '+nextPerk(S.level).label:'🏆 Ladder complete'}</span></div><div class="idMoney56" aria-label="Your money">💰 $<span data-roll="money">${S.money}</span></div><div class="idLoc">${envName} • <span data-stat="mood" style="display:inline-block;border-radius:6px;padding:0 4px">${mood()}</span> • Wanted: ${'★'.repeat(S.wanted)||'☆ Clean'}</div></div></div>
-  <div class="factRow"><span class="fact">📅 Day ${S.day}</span><span class="fact">📍 ${placeOf().city}, ${placeOf().state}</span><span class="fact">${seasonOf().icon} ${seasonOf().label}</span><span class="fact">${phaseIcon()} ${phaseName()}</span><span class="fact">${wxOf().icon} ${wxOf().label}</span><span class="fact">${(()=>{const d=(8-(S.day%8))%8; return d===0?'🎂 Birthday TODAY!':'🎂 Next birthday in '+d+' day'+(d===1?'':'s')+' (Day '+(S.day+d)+')'})()}</span><span class="fact">${schoolStatusLine()}</span></div>
-  <div class="chips"><span class="chip moneyChip54" data-stat="money">💰 $<span data-roll="money">${S.money}</span></span>${(inSchool()&&stageEnrolled())?`<span class="chip" data-stat="grades">📚 Grades <span data-roll="grades">${S.grades}</span>%</span>`:''}${S.pets.length?`<span class="chip">🐾 ${S.pets.length} pet${S.pets.length>1?'s':''}</span>`:''}<span class="chip">🏠 ${mates.length} roommate${mates.length===1?'':'s'}</span><span class="chip">💬 Social <span data-roll="social">${n.social}</span></span><span class="chip">${S.partner?('💍 '+S.partner):topCrush?('💘 '+topCrush):'💖 Single'}</span>${S.married&&S.spouse?`<span class="chip">💍 ${S.spouse}</span>`:''}${S.kids&&S.kids.length?`<span class="chip">👶 ${S.kids.length} kid${S.kids.length>1?'s':''}</span>`:''}${S.home&&S.home.owned?`<span class="chip">🏠 Owns ${S.home.name}</span>`:''}${S.car&&S.car.owned?`<span class="chip">🚗 ${S.car.name}</span>`:''}${S.healthSys&&S.healthSys.sick?`<span class="chip" style="background:#f59e0b;color:#111">🤒 Sick</span>`:''}${S.healthSys&&S.healthSys.injured?`<span class="chip" style="background:#f59e0b;color:#111">🤕 Injured</span>`:''}${S.jail&&S.jail.in?`<span class="chip" style="background:#ef4444">⛓️ JAIL ${S.jail.days}d • bail $${S.jail.bail}</span>`:''}${S.vac&&S.vac.active?`<span class="chip">✈️ ${S.vac.dest}</span>`:''}${S.wanted?`<span class="chip" data-stat="wanted" style="background:#ef4444">🚔 WANTED <span data-roll="wanted">${S.wanted}</span>★</span>`:''}</div>
- </header>
- <button type="button" class="socStrip" id="socialStrip" onclick="openSocialSheet()" aria-label="Social and Level at a glance — tap for the full detail"><span class="socRow"><span class="socChip" data-stat="followers">📸 <span data-roll="followers">${S.followers}</span></span>${S.profile&&S.profile.created&&dmUnread()?`<span class="socChip" style="background:#7c3aed">✉️ ${dmUnread()} DM${dmUnread()>1?'s':''}</span>`:''}<span class="socTap">📊 Full detail ▸</span></span></button>
- <section class="needs needsPin" aria-label="Needs">${[['hunger','🍔 Hunger','#f97316'],['energy','⚡ Energy','#eab308'],['fun','🎮 Fun','#a855f7'],['hygiene','🚿 Hygiene','#06b6d4'],['social','💬 Social','#ec4899']].map(([k,l,c])=>`<div class="need" data-need="${k}"><label><span>${l}</span><span data-roll="${k}">${n[k]}</span></label><div class="bar"><i style="width:${n[k]}%;background:${n[k]<30?'#ef4444':n[k]<55?'#f59e0b':c}"></i></div></div>`).join('')}</section>
+ <div class="topPin topPin100" id="topPin">
+ <div class="topRow100">
+  <button type="button" class="avatarChip100" onclick="openSocialSheet()" aria-label="Your character — tap for the full detail sheet"><canvas class="avatarCv" width="72" height="92" data-person="${S.name.replace(/"/g,'')}" role="img" aria-label="Portrait of ${S.name}"></canvas><span class="avLv100">Lv ${S.level}</span></button>
+  <div class="infoPill100" role="group" aria-label="You at a glance — swipe the pill sideways for more">
+   <span class="ipSeg100 ipName100">${S.name}, ${S.age}</span>
+   <span class="ipSeg100">⭐ Lv <span data-roll="level">${S.level}</span> · <span data-roll="xp">${S.xp}</span>/100 XP</span>
+   <button type="button" id="clockChip" class="ipClock100 clockChip${rtPaused?' paused':''}" onclick="toggleRtPause()" aria-label="${rtPaused?'Time is paused — tap to resume':'Clock — tap to pause time'}" title="Tap to ${rtPaused?'resume':'pause'} time">🕐 <span class="jsClock">${clockStr()}</span> ${phaseIcon()}<span id="fastIco"></span> <span id="pauseIco">${rtPaused?'▶ PAUSED':'⏸'}</span></button>
+   <span class="ipSeg100 ipMoney100">💰 $<span data-roll="money">${S.money}</span></span>
+   <span class="ipSeg100">📅 Day ${S.day}</span>
+   <span class="ipSeg100">📍 ${placeOf().city}, ${placeOf().state}</span>
+   <span class="ipSeg100">${seasonOf().icon} ${seasonOf().label}</span>
+   <span class="ipSeg100">${wxOf().icon} ${wxOf().label} · ${phaseName()}</span>
+   <span class="ipSeg100">${envName}</span>
+   <span class="ipSeg100">🐾 ${S.pets.length} pet${S.pets.length===1?'':'s'}</span>
+   <span class="ipSeg100">🏠 ${mates.length} roommate${mates.length===1?'':'s'}</span>
+   <span class="ipSeg100">${S.married&&S.spouse?('💍 '+S.spouse):S.partner?('💍 '+S.partner):topCrush?('💘 '+topCrush):'💖 Single'}</span>
+   ${S.hasPhone?`<button type="button" id="phoneBtn" class="${unread?'phoneAlert':''}" onclick="openPhone()" aria-label="Open your phone${unread?' — '+unread+' unread':''}" style="background:#fff;color:#111;padding:4px 10px;border-radius:999px;font-weight:900">📱${unread?' • '+unread+' new':''}</button>`:`<button type="button" id="phoneBtn" onclick="noPhoneSheet()" aria-label="You have no phone yet" style="background:#574b3f;color:#fff;padding:4px 10px;border-radius:999px;font-weight:900">📵 No phone yet</button>`}
+   <button type="button" id="installBtn67" onclick="installApp67()" aria-label="Install AquaLife as an app" title="Install app" style="background:#ffb703;color:#111;padding:4px 10px;border-radius:999px;font-weight:900;white-space:nowrap">📲 Install</button>
+  </div>
  </div>
- <div class="roomWrap"><canvas id="cv" width="900" height="460"></canvas></div>
- <div class="roomBar86" id="roomBar86" role="navigation" aria-label="Rooms in this place"></div>
- <div class="furnRow">
-  ${furnBtns82()}
+ <section class="needsRow100" aria-label="Needs">${[['hunger','🍔','#f97316'],['energy','⚡','#eab308'],['fun','🎮','#a855f7'],['hygiene','🚿','#06b6d4'],['social','💬','#ec4899']].map(([k,ic,c])=>`<div class="needPill100" data-need="${k}"><span class="npIco100" aria-hidden="true">${ic}</span><span class="npBar100"><i style="width:${n[k]}%;background:${n[k]<30?'#ef4444':n[k]<55?'#f59e0b':c}"></i></span><span class="npNum100" data-roll="${k}">${n[k]}</span></div>`).join('')}</section>
  </div>
+ <div class="roomWrap"><canvas id="cv" width="900" height="460"></canvas><button type="button" id="qChip100" class="qChip100 quiet" onclick="openQueue93()" aria-label="Activity queue — tap to view, add or cancel queued actions">📋</button></div>
+ <div class="tabsRow100"><div class="roomBar86" id="roomBar86" role="navigation" aria-label="Rooms in this place"></div><div class="quickBar91" id="quickBar91"></div></div>
  <div class="dockSheet${dockOpen?' open':''}" id="dockSheet"><div class="dsBar"><span class="dsTitle" id="dsTitle">Folder</span><button type="button" class="dsHide" onclick="setDock(false)" aria-label="Hide this folder panel">▾ Hide</button></div><main class="panel" id="panel"></main></div>
- <nav class="menuDock" id="menuDock" aria-label="Menu — all folders, in order"></nav>
- <div style="height:10px"></div>
+ <nav class="menuDock" id="menuDock" aria-label="Menu — the glass tray: actions on top, folders below"><div class="trayActs100 furnRow" id="trayActs100">
+  ${furnBtns82()}
+ </div><div class="dockCore100" id="dockCore100"></div></nav>
  `;
  drawRoom(); renderTabs(curTab); syncSheetH51(); const np39=document.getElementById('panel'); if(np39&&prevPanelScroll)np39.scrollTop=prevPanelScroll; paintPortraits(); applyCameraTransform(); applyStatFx(prevFx); prevStats=snapStats(); if(pendingNotif){showTextNotif(pendingNotif); pendingNotif=null} if(S.milePop54&&!(document.getElementById('modal')&&document.getElementById('modal').classList.contains('open'))){ const mp54=S.milePop54; S.milePop54=null; setTimeout(function(){ openMilestone54(mp54) },400) } processNumAsk(); if(!window._v39tip){ window._v39tip=1; setTimeout(()=>{ if(S&&S.tipsSeen&&!S.tipsSeen['bottom-dock'])showTip('bottom-dock') },2800) }
 }
@@ -1144,7 +1153,7 @@ function renderTabs(active){
  const folders=FOLDERS.filter(f=>f[0]!=='school'||inSchool());
  if(!folders.some(f=>f[0]===active))active='home';
  curTab=active;
- const dockEl=document.getElementById('menuDock'); if(dockEl)dockEl.innerHTML=`<div class="dockMoney56"><span class="dmAmt">💰 $<span data-roll="money">${S.money}</span></span></div><div class="dockBtns56">`+folders.map(f=>{ const tLock55=(f[0]==='trouble'&&S.age<5); return `<button type="button" class="dockTab ${f[0]===active?'on':''}${tLock55?' locked55':''}" onclick="dockGo('${f[0]}')" aria-label="Folder: ${tLock55?'Crime — locked until age 5':f[2]}" aria-pressed="${f[0]===active?'true':'false'}"><span class="dtE">${tLock55?'🔒':f[1]}</span><span class="dtL">${tLock55?'Locked':(DOCK_SHORT[f[0]]||f[2])}</span></button>` }).join('')+'</div>';
+ const dockEl=document.getElementById('dockCore100')||document.getElementById('menuDock'); if(dockEl)dockEl.innerHTML=`<div class="dockMoney56"><span class="dmAmt">💰 $<span data-roll="money">${S.money}</span></span></div><div class="dockBtns56">`+folders.map(f=>{ const tLock55=(f[0]==='trouble'&&S.age<5); return `<button type="button" class="dockTab ${f[0]===active?'on':''}${tLock55?' locked55':''}" onclick="dockGo('${f[0]}')" aria-label="Folder: ${tLock55?'Crime — locked until age 5':f[2]}" aria-pressed="${f[0]===active?'true':'false'}"><span class="dtE">${tLock55?'🔒':f[1]}</span><span class="dtL">${tLock55?'Locked':(DOCK_SHORT[f[0]]||f[2])}</span></button>` }).join('')+'</div>';
  const dsT=document.getElementById('dsTitle'); const cfD=folders.find(f=>f[0]===active); if(dsT&&cfD)dsT.textContent=cfD[1]+' '+cfD[2];
  const p=document.getElementById('panel'); if(!p)return;
  const curFolder=folders.find(f=>f[0]===active);
@@ -5959,6 +5968,100 @@ setInterval(function(){ try{ paintQBtn99() }catch(e){} },1500);
 if(typeof TIPS!=='undefined'){ TIPS['traits99']={t:'🌱 Personality grows',b:'Picked at creation (3 — or the full 12 if you start over 12), +1 every birthday until age 12, and BONUS picks for real life: a first job, a promotion, a wedding, a baby, a home, Level 10, a Lv 7 skill, an honour-roll report card, a best friend, a big casino win — even walking out of jail, one way or another.'}; TIPS['queuebtn99']={t:'📋 One button',b:'The queue lives on its button now, beside the Bag: ×1, ×2, ×3 as you line actions up, and the cooldown shows right on its face. Tap it to see, add or cancel. No extra rows — the screen belongs to the game.'} }
 if(S)ensure99();
 window.__v99={ensure99:ensure99,traitsOf99:traitsOf99,bonusTrait99:bonusTrait99,openTraitSheet99:openTraitSheet99,scrapBurst99:scrapBurst99,paintQBtn99:paintQBtn99,traitsBoxHtml99:traitsBoxHtml99};
+</script>
+<style id="style100">
+/* ===== v100: THE MIX LAYOUT — A5 one-line top bar + A4 tidy rows + GLASS DOCK TRAY with the ACTIONS inside it.
+   Presentation only: every system, value and behaviour from v91–v99 is untouched, saves carry over.
+   The stacked header blocks (character card, chip rows, followers strip) and the HEADLINES row are gone from
+   the main screen; the freed height goes to the room, which flexes to fill it (whole room always in frame). */
+/* ---- TOP: flush stack, no dead bands ---- */
+body.inGame51 .topPin{max-height:26dvh}
+body.inGame51.dockOpen47 .topPin{max-height:22dvh}
+.topPin100{padding:6px 8px 5px;display:flex;flex-direction:column;gap:5px;overflow:visible}
+.topRow100{display:flex;gap:7px;align-items:stretch}
+/* the avatar chip — tap opens the existing Full Detail sheet (openSocialSheet), where everything compressed lives on */
+.avatarChip100{position:relative;flex:none;width:47px;min-height:54px;border-radius:14px;overflow:hidden;padding:0;cursor:pointer;font-family:inherit;border:2.5px solid transparent;background-color:#241a38;background-image:linear-gradient(#241a38,#241a38),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 3.2s linear infinite;-webkit-tap-highlight-color:transparent}
+.avatarChip100:active{transform:scale(.95)}
+.avLv100{position:absolute;left:0;right:0;bottom:0;background:#000000b8;color:#ffd34d;font-size:9.5px;font-weight:900;text-align:center;padding:1.5px 0;letter-spacing:.02em}
+/* ONE long info pill, one line, animated RGB border — swipe it sideways to read the whole line */
+.infoPill100{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:9px;padding:5px 11px;border-radius:999px;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;overflow-x:auto;scrollbar-width:none;border:2.5px solid transparent;background-color:#17102a;background-image:linear-gradient(#17102a,#17102a),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 4s linear infinite}
+.infoPill100::-webkit-scrollbar{display:none}
+.ipSeg100{flex:none}
+.ipName100{font-size:13px;font-weight:900}
+.ipMoney100{color:#ffb703;font-size:13px;font-weight:900}
+.ipClock100{flex:none;border-radius:999px;padding:3px 9px;font-size:12px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.infoPill100 #phoneBtn{flex:none}
+/* ---- NEEDS: one compact row of five pills (icon + mini bar + number), RGB borders ---- */
+.needsRow100{display:flex;gap:5px}
+.needPill100{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;color:var(--ink);border:2px solid transparent;background-color:var(--card);background-image:linear-gradient(var(--card),var(--card)),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 5s linear infinite}
+.npIco100{font-size:12px;line-height:1;flex:none}
+.npBar100{flex:1 1 auto;min-width:12px;height:6px;background:#00000026;border-radius:999px;overflow:hidden}
+.npBar100 i{display:block;height:100%;border-radius:999px}
+.npNum100{font-size:11.5px;font-weight:900;flex:none}
+/* ---- TABS ROW: ONE row — room tabs left (scrollable), Bag + Scrapbook pills at the right end. No Queue button here. ---- */
+.tabsRow100{display:flex;align-items:center;gap:6px;padding:5px 6px 4px;flex:none}
+.tabsRow100 .roomBar86{flex:1 1 auto;min-width:0;flex-wrap:nowrap;overflow-x:auto;padding:0;scrollbar-width:none;align-items:center}
+.tabsRow100 .roomBar86::-webkit-scrollbar{display:none}
+.tabsRow100 .roomBarLab86{flex:none}
+.tabsRow100 .roomHere86{flex:none}
+.tabsRow100 .roomChip86{flex:none;border:2px solid transparent;background-color:#1f2937;background-image:linear-gradient(#1f2937,#1f2937),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 4s linear infinite;padding:5px 10px}
+.tabsRow100 .roomChip86.on{background-image:linear-gradient(#ffb703,#ffb703),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1))}
+.tabsRow100 .quickBar91{flex:none;display:flex;gap:6px;padding:0;margin-left:auto}
+.tabsRow100 .quickBtn91{flex:none;padding:6px 11px;font-size:12.5px;border-radius:999px;border:2px solid transparent;background-color:#14101f;background-image:linear-gradient(#14101f,#14101f),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 4s linear infinite}
+/* ---- THE GLASS DOCK TRAY: one translucent tray, RGB border, TWO zones —
+   top zone: the ACTIONS as a single horizontally scrollable strip (right edge fades = swipe for more);
+   bottom zone: the money readout + the six folder buttons, exactly as before.
+   The tray is taller, so --dockH grows with it (the folder sheet, toasts and the app's reserved space all
+   follow the same variable). When a folder panel opens, the action strip tucks away (the v51 rule hides
+   .furnRow) and the tray shrinks back to nav height so the panel + scene get the room. ---- */
+body.inGame51{--dockH:calc(152px + env(safe-area-inset-bottom,0px))}
+body.inGame51.dockOpen47{--dockH:calc(92px + env(safe-area-inset-bottom,0px))}
+.menuDock{border-radius:20px 20px 0 0}
+.menuDock,body[data-theme] .menuDock{background-color:rgba(20,16,31,.74);background-image:linear-gradient(rgba(20,16,31,.74),rgba(20,16,31,.74)),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}
+.trayActs100{display:flex;flex-wrap:nowrap;gap:7px;overflow-x:auto;overflow-y:hidden;padding:6px 2px 4px;background:transparent;border:0;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent 100%);mask-image:linear-gradient(90deg,#000 90%,transparent 100%)}
+.trayActs100::-webkit-scrollbar{display:none}
+.trayActs100 .furn{flex:none;min-width:0;min-height:44px;padding:8px 13px;font-size:13.5px;border-radius:14px}
+.dockCore100{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;width:100%}
+/* ---- THE QUEUE'S NEW HOME: a tiny chip floating on the scene's top-right corner ---- */
+.qChip100{position:absolute;top:8px;right:8px;z-index:7;background:rgba(20,16,31,.85);color:#fff;border:2px solid #a855f7;border-radius:999px;padding:5px 11px;font-family:inherit;font-weight:900;font-size:12.5px;cursor:pointer;box-shadow:0 4px 14px #00000059;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);-webkit-tap-highlight-color:transparent}
+.qChip100:active{transform:scale(.94)}
+.qChip100.quiet{opacity:.5;border-color:#ffffff38;padding:4px 8px;font-size:11px}
+.qChip100.run{border-color:#22c55e}
+.qChip100.cool{border-color:#64748b}
+/* ---- RGB OFF (the existing Settings toggle) calms every new surface too ---- */
+body.rgbOff .infoPill100,body.rgbOff .needPill100,body.rgbOff .avatarChip100,body.rgbOff .tabsRow100 .roomChip86,body.rgbOff .tabsRow100 .quickBtn91,body.rgbOff .menuDock{animation:none!important}
+@media(prefers-reduced-motion:reduce){.infoPill100,.needPill100,.avatarChip100,.tabsRow100 .roomChip86,.tabsRow100 .quickBtn91{animation:none}}
+</style>
+<script>
+// ================= v100: 🖥️ THE MIX LAYOUT (A5 one-line top bar + A4 tidy rows) • 🧊 GLASS DOCK TRAY — the ACTIONS live in the dock as one scrollable strip • 📋 QUEUE = A TINY CHIP ON THE SCENE'S CORNER • 🎬 SCENE TAKES ALL THE FREED SPACE. Presentation/layout ONLY — all systems, behaviour and values from v91–v99 unchanged, saves carry over. =================
+function ensure100(){ if(!S)return null; if(!S.v100)S.v100={}; return S.v100 }
+/* ---------- QUEUE CHIP: 📋 ×N while queued • ▶ while the batch runs • ⏳ + back-at time while cooling down • quiet 📋 when empty ----------
+   The chip is painted through v99's own painter name (paintQBtn99), so every existing hook — the queue
+   add/remove/clear wrappers and the 1.5s repaint interval — now paints THIS chip instead of the old button. */
+let qSeenLen100=-1,qRunStamp100=0;
+function paintQChip100(){ const c=document.getElementById('qChip100'); if(!c)return; if(!S){ c.style.display='none'; return } c.style.display='';
+ const q=(S.queue84||[]).length;
+ if(q!==qSeenLen100){ if(qSeenLen100>=0&&q<qSeenLen100)qRunStamp100=performance.now(); qSeenLen100=q }
+ let face,cls='';
+ if(qLeft99()>0){ face='⏳ '+qText99(); cls='cool' }
+ else if(q>0){ const running=qRunStamp100&&(performance.now()-qRunStamp100<6000); face=running?'▶':'📋 ×'+q; if(running)cls='run' }
+ else { face='📋'; cls='quiet' }
+ if(c.textContent!==face)c.textContent=face;
+ const want='qChip100'+(cls?' '+cls:''); if(c.className!==want)c.className=want }
+function paintQBtn99(){ paintQChip100() }
+/* v99's render wrapper still appends its old #qBtn99 into the quick bar — the queue does NOT live in the
+   tabs row any more, so strip it back out on every render, then paint the scene-corner chip. */
+const _render100=render; render=function(){ _render100(); try{ const qb=document.getElementById('qBtn99'); if(qb)qb.remove(); paintQChip100() }catch(e){} };
+setInterval(function(){ try{ paintQChip100() }catch(e){} },1000);
+/* miniConfetti used to anchor to the old .headline block — it anchors to the slim top stack now, same bursts */
+function miniConfetti(){ const h=document.getElementById('topPin'); if(!h)return; const bits=['✨','🎉','⭐','💛','🌟']; for(let i=0;i<7;i++){const s=document.createElement('span'); s.className='confetti'; s.textContent=bits[i%5]; s.style.left=(6+Math.random()*88)+'%'; s.style.animationDelay=(Math.random()*.2)+'s'; h.appendChild(s); setTimeout(()=>s.remove(),2000)} }
+/* copy touch-ups: the queue's home, as the Settings card and tips describe it */
+const _vsc100=v84SettingsCard; v84SettingsCard=function(){ return _vsc100().replace('lives in the 📋 strip above your 🎒 Bag — tap it to line actions up (3 max, then a breather)','rides as a tiny 📋 chip on the scene\u2019s top-right corner — tap it to line actions up (3 max, then a breather)') };
+if(typeof TIPS!=='undefined'){ if(TIPS['queuebtn99'])TIPS['queuebtn99']={t:'📋 A chip on the scene',b:'The queue rides on the scene now — a tiny 📋 chip in the top-right corner of the room: ×1, ×2, ×3 as you line actions up, ▶ while the batch runs, and ⏳ with its back-at time while it cools down. Tap it to see, add or cancel. No rows, no strips — the screen belongs to the game.'};
+ if(TIPS['queue93'])TIPS['queue93'].b='The Activity Queue lives on the 📋 chip in the scene\u2019s top-right corner now. Line up to 3 actions; they play out in order at life speed, then the queue takes a short breather before it refills. Free will never queues anything, and queueing never speeds time.';
+ TIPS['layout100']={t:'🖥️ The Mix layout',b:'Everything slimmed down so the room gets the screen: ONE info pill up top (tap your portrait for the full detail), needs as pills, room tabs + Bag + Scrapbook on one row, and your ACTIONS live in the glass dock tray — swipe them sideways. Headlines moved off the main screen; they still run on the TV and news.'} }
+if(S)ensure100();
+window.__v100={ensure100:ensure100,paintQChip100:paintQChip100};
 </script>
 </body>
 </html>
