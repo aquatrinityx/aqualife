@@ -574,7 +574,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=111;
+const GAME_VERSION=113;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -6908,6 +6908,259 @@ window.addEventListener('load',function(){ setTimeout(function(){ try{
   app2.innerHTML='<div class="setup"><div style="background:#111;color:#fff;padding:18px;border-radius:18px"><div style="font-weight:900">AQUA<span style="color:#ffb703">LIFE</span></div><h1 style="margin:8px 0 6px;font-size:26px;line-height:1.1">😕 AquaLife hit a snag starting up</h1><p style="opacity:.85;font-size:14px;line-height:1.5;margin:0">The game did not draw its first screen. Your saved life is not touched by this — it lives in this browser either way. Tap below to try starting again.</p><p style="opacity:.9;font-size:12.5px;font-weight:700;letter-spacing:.02em;margin:10px 0 0">Made by AquaTechFantasy 🌊</p></div><button class="btn gold" style="padding:15px;font-size:16px;margin-top:14px" onclick="location.reload()">🔄 Tap to try again</button></div>';
  }catch(e){} },1200);
 }catch(e){} },3500) });
+</script>
+<style id="style113">
+.tutHi113{outline:3px solid #ffd23f!important;outline-offset:2px;box-shadow:0 0 0 5px rgba(255,210,63,.35),0 0 22px rgba(255,210,63,.75)!important;border-radius:12px;animation:tutPulse113 .8s ease-in-out infinite alternate;position:relative;z-index:5}
+@keyframes tutPulse113{from{box-shadow:0 0 0 3px rgba(255,210,63,.30),0 0 10px rgba(255,210,63,.5)}to{box-shadow:0 0 0 6px rgba(255,210,63,.45),0 0 26px rgba(255,210,63,.9)}}
+@media (prefers-reduced-motion: reduce){.tutHi113{animation:none}}
+.ttBlock113{display:flex;gap:9px;padding:7px 9px;border-radius:10px;margin-top:5px;background:#80808014;border:1.5px solid #80808022}
+.ttBlock113.on{background:#ffd23f22;border-color:#ffd23f;color:inherit}
+.ttBlock113 .ttT{font-weight:900;flex:none;min-width:74px}
+.mallRow113{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1.5px dashed #80808030}
+</style>
+<script>
+/* ================= v113: 🌱 PERSONALITY EVERY OTHER AGE — trait picking is OUT of character creation (no pick step in the start flow at all) and OUT of every age-up: the same 12-trait list is offered ONCE EVERY OTHER AGE — on the EVEN birthdays 2, 4, 6, 8, 10, 12, 14… — as an in-the-moment offer (the v107 accept/pass sheet) when that birthday lands, until all 12 traits are owned. Odd birthdays bring no pick. OLDER STARTS: a life starting at age A is owed floor(A/2) picks — one for each even birthday (2, 4, …) at or before the starting age — offered one by one in the start flow, capped so total traits never exceed 12. Existing saves keep every trait they already have; the new cadence applies from the next birthday onward. The v99/v107 BONUS offers from gameplay accomplishments are unchanged. Traits show read-only in the 📊 Full Detail sheet. • 🎓 TUTORIAL HIGHLIGHTS — each of the seven tutorial steps now spotlights the actual screen element it is talking about (needs row, ⚡ Actions button, 📱 phone button, 💼 Work tab, 🎓 School tab, 🌟 More Life tab) with a pulsing gold outline for the duration of the step; if a step's element is not in the current view, the step says so plainly instead of highlighting nothing. • 🛍️ MAPLE MALL SHOPPING — the mall has real shops and a 🛒 CART: 👗/👔 CLOTHES (gender department only), 🍔 FOOD COURT, 🎮 VIDEO GAMES, 🎬 MOVIES and 📱 CELL PHONES (the same PHONE_MODELS40 as the phone store, at store price lvlPrice — bought exactly like the pawn shop path: plan picker, payment, the phone lands in the Bag, then the mandatory setup flow runs). Add to cart, adjust quantities, check out: total verified against cash/bank (pay63 — cash first, then bank by debit card), items land in the 🎒 Bag. • 💇 GENDER-MATCHED HAIR & CLOTHING — HAIR_GIRL113 / HAIR_BOY113 partition the 25 hairstyles; a character is only OFFERED their own gender's cuts in the creation customizer, the 🎨 style sheet and the 💈/💇 barber/salon card, and only their own gender's clothing department at the mall (the Corner Store sells no clothing). A character's CURRENT look is never stripped: a style already worn stays wearable — the gate applies to new offers. • 🚪 MENU DOWN ON ARRIVAL — traveling to a place (goLoc / goWithParent) puts the open folder menu DOWN and it stays down: you land looking at the scene, every time, return visits included; reopen folders from the dock as usual. • 🎬 MENU DOWN DURING ACTIONS — starting an action (startActivity) tucks the menu away while the action plays in the scene; when the action finishes the menu pulls back up (and the v110 spot-restore returns you to the same panel/folder/tab/scroll, pressed action in view). • 🗓️ THE SCHOOL TIMETABLE — every school day (and college, same skeleton) runs the printed blocks: 8:00 AM 📚 MORNING CLASS · 10:30 AM 🛝 RECESS · 12:00 PM 🍽️ LUNCH (moved up from 12:30 to the printed time) · 1:00 PM 📚 AFTERNOON CLASS (a real second class beat) · 3:00 PM 🔔 DISMISSAL (the v109 bell sends you home through the travel system). The timetable card rides the 🎓 School folder with the current block lit. • ⏩ EXPERIENCE vs FINISH — the morning school choice and the shift sheet now name the pair plainly: EXPERIENCE (go in person, natural 1×, the existing attend/shift flows) or FINISH (simulate the remainder under the SAME rules — attendance counted exactly once, recess/lunch effects, needs drained by the real clock, grades/XP from the same class beats; work: hours, one payTaxed59 stub, performance — then a SUMMARY sheet). FINISH advances in small steps and INTERRUPTS the moment a major decision appears (an event sheet, a trait offer, any modal) — time is paused for the decision; resume FINISH from the School/Work folder. College class prompts get the same pair. • 🕐 TIME RULES (hardened, mostly the shipped model): natural 1× everywhere, sleep the only ×2, no idle speed-up, NPCs live on, important decisions pause time while shown, fast-forward exists ONLY as the school/work FINISH above — no Next Birthday / Skip Life control anywhere. Saves carry over: everything new lives in S.v113, defaulted lazily. ================= */
+function ensure113(){ if(!S)return null; if(!S.v113)S.v113={}; const v=S.v113; if(!Array.isArray(v.cart))v.cart=[]; if(v.aftDay===undefined)v.aftDay=0; if(v.lunchDay===undefined)v.lunchDay=0; if(v.startPicks113===undefined)v.startPicks113=false; return v }
+if(S)ensure113();
+
+/* ---------- A) PERSONALITY: no creation step, every-other-age picks ---------- */
+traitsBoxHtml99=function(){ return '' }; /* the creation trait box is GONE — no pick step in the start flow */
+creationPicks99=function(){ return 0 }; /* nothing is owed from creation any more, so the v107 shortfall offers stay silent */
+const _sg113=startGame;
+startGame=function(){ _sg113(); try{ if(!S||S.deadFlag)return; const v=ensure113(); if(!v)return; ensure99(); ensure107();
+ if(S.day<=1&&(S.totalXp||0)===0&&!v.startPicks113){ v.startPicks113=true;
+  /* OLDER-START RULE: owed picks = the number of EVEN birthdays (2, 4, 6, …) at or before the starting age = floor(startAge / 2), capped so owned + owed never exceeds the 12-trait pool. */
+  const owed=Math.max(0,Math.min(Math.floor(S.age/2),12-traitsOf99().length));
+  for(let i=0;i<owed;i++)queueOffer107('start','');
+  if(owed>0)log('🌱 PERSONALITY, EVERY OTHER YEAR — nobody picks traits at creation any more. They arrive one at a time on the EVEN birthdays (2, 4, 6, 8…). Starting at '+S.age+', '+S.name+' has already lived '+owed+' of those birthdays — so '+owed+' pick'+(owed===1?' is':'s are')+' offered now, one by one: accept the ones that fit, pass on the rest.');
+  save(); presentOffer107() }
+ }catch(e){} };
+const _nd113=nextDay;
+nextDay=function(skip){ const age0=S?S.age:0; const offers0=(S&&S.v107&&Array.isArray(S.v107.offers))?S.v107.offers.length:0; const r=_nd113(skip);
+ try{ if(S&&!S.deadFlag&&S.age>age0){ ensure99(); ensure107(); const V=S.v99;
+  if(S.age%2===1){ /* ODD birthday: the old every-birthday cadence may have queued a pick underneath — take it back; odd birthdays bring no pick */
+   for(let i=S.v107.offers.length-1;i>=offers0;i--){ if(S.v107.offers[i].kind==='birthday')S.v107.offers.splice(i,1) }
+   if(V.pendingPicks>0)V.pendingPicks=0;
+   if(S.journal){ for(let j=0;j<Math.min(6,S.journal.length);j++){ if(S.journal[j]&&S.journal[j].indexOf('BIRTHDAY TRAIT')>=0){ S.journal[j]='🎂 BIRTHDAY — '+S.name+' turned '+S.age+'. Personality picks land on the EVEN birthdays (2, 4, 6, 8…) now, so this one is cake, candles and a year older.'; break } } }
+  } else { /* EVEN birthday: exactly ONE pick this birthday, at any age, until the 12-trait pool runs out */
+   let seen=false; for(let i=S.v107.offers.length-1;i>=offers0;i--){ if(S.v107.offers[i].kind==='birthday'){ if(seen)S.v107.offers.splice(i,1); else seen=true } }
+   if(!seen&&V.traits.length<12&&poolLeft99().length){ queueOffer107('birthday','turning '+S.age); log('🎂🌱 EVERY-OTHER-BIRTHDAY TRAIT — turning '+S.age+' is an even birthday (2, 4, 6, 8…), so life offers '+S.name+' a trait pick, in the moment. Odd birthdays bring none — this is the cadence now.'); }
+  }
+  save(); presentOffer107() }
+ }catch(e){} return r };
+/* traits, read-only, on the Full Detail sheet */
+const _oss113=openSocialSheet;
+openSocialSheet=function(){ _oss113(); try{ if(!S)return; const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.traitsRO113'))return; ensure99(); const tr=traitsOf99(); const d=document.createElement('div'); d.className='traitsRO113'; d.style.cssText='margin:10px 0 4px;padding:10px 12px;border:1.5px solid #80808030;border-radius:12px'; d.innerHTML='<b>🌱 Personality traits</b> <span style="font-size:11.5px;opacity:.75">(read-only — new ones arrive as offers on even birthdays: 2, 4, 6, 8…)</span><div style="margin-top:6px">'+(tr.length?tr.map(function(t){ return '<span class="qChip93" style="margin:0 4px 4px 0">'+t+'</span>' }).join(''):'<span style="font-size:12.5px;opacity:.8">None yet — the first pick lands on the 2nd birthday.</span>')+'</div>'; const h2=sh.querySelector('h2'); if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling); else sh.appendChild(d) }catch(e){} };
+if(typeof TIPS!=='undefined'){ TIPS['traits99']={t:'🌱 Personality — every other age',b:'Nobody picks traits at creation any more, and birthdays no longer hand one out every year. The same 12-trait list is offered ONCE EVERY OTHER AGE — on the even birthdays 2, 4, 6, 8, 10… — as an in-the-moment offer: accept and pick on the spot, or pass. Starting older? You are owed one pick per even birthday up to your starting age, offered one by one as the life starts. Bonus offers from real life (a first job, a wedding, Level 10…) still arrive whenever they are earned. Your traits show read-only in 📊 Full Detail.'};
+ TIPS['offers107']={t:'🎁 Trait offers',b:'When life offers you a trait — an even birthday (2, 4, 6, 8…), or a bonus moment like a first job, a wedding or Level 10 — it arrives as a sheet in the moment: ACCEPT opens the picker and the trait is yours for good; PASS ("No thanks") and it is gone — no bank, no pile-up, no spending it later from a tab.'} }
+
+/* ---------- B) TUTORIAL HIGHLIGHTS ---------- */
+function tutClear113(){ try{ document.querySelectorAll('.tutHi113').forEach(function(el){ el.classList.remove('tutHi113') }) }catch(e){} }
+const TUT_HL113=['.needsRow100','.actBtn101','#phoneBtn','work','school','#phoneBtn','more'];
+function tutApply113(i){ tutClear113(); if(!S)return; const tgt=TUT_HL113[i]; if(!tgt)return; let el=null;
+ if(tgt==='work'||tgt==='school'||tgt==='more'){ const tabs=document.querySelectorAll('#dockCore100 .dockTab'); for(let k=0;k<tabs.length;k++){ if((tabs[k].getAttribute('onclick')||'').indexOf("dockGo('"+tgt+"')")>=0){ el=tabs[k]; break } } }
+ else el=document.querySelector(tgt);
+ if(el){ el.classList.add('tutHi113'); return }
+ const sh=document.getElementById('sheet'); if(sh&&!sh.querySelector('.tutNote113')){ const note=document.createElement('p'); note.className='small tutNote113'; note.style.marginTop='8px'; note.textContent='👀 What this step is talking about is not on screen in this view right now — look for it in the tray at the bottom (or the top of the screen) once you are playing.'; sh.appendChild(note) } }
+const _tut113=tutStep102;
+tutStep102=function(i){ _tut113(i); try{ tutApply113(i) }catch(e){} };
+const _cm113=closeModal;
+closeModal=function(){ tutClear113(); return _cm113() };
+
+/* ---------- D) GENDER-MATCHED HAIR & CLOTHING ---------- */
+const HAIR_GIRL113=['ponytail','bun','braids','longwaves','twintails','bob','spacebuns','frenchbraid','silkpress','runwaywaves','galacrown','curtains','wolfcut'];
+const HAIR_BOY113=['classic','short','curly','mohawk','cleanfade','dreadlocks','spiky','sidepart','afro','buzz','undercut','celebfade'];
+function gender113(){ if(S&&S.gender)return S.gender; if(typeof selGender!=='undefined')return selGender; return '' }
+function hairOK113(id){ const g=gender113(); if(g==='girl')return HAIR_GIRL113.indexOf(id)>=0; if(g==='boy')return HAIR_BOY113.indexOf(id)>=0; return true }
+function gateHairDom113(root){ if(!root)return; const g=gender113(); if(g!=='girl'&&g!=='boy')return; const btns=root.querySelectorAll('button'); for(let i=0;i<btns.length;i++){ const b=btns[i]; const oc=b.getAttribute('onclick')||''; let id=null; let m=oc.match(/selHairStyle='([a-z]+)'/); if(m)id=m[1]; if(!id){ m=oc.match(/setStyle\('hairStyle','([a-z]+)'\)/); if(m)id=m[1] } if(!id){ m=oc.match(/barberCut45\('([a-z]+)'\)/); if(m)id=m[1] } if(!id)continue; const isCurrent=b.classList.contains('on')||(b.textContent||'').indexOf('current cut')>=0; if(!isCurrent&&!hairOK113(id))b.remove() } }
+const _render113=render;
+render=function(){ const r=_render113(); try{ if(document.getElementById('pvCv'))gateHairDom113(document.body) }catch(e){} return r };
+const _os113=openSheet;
+openSheet=function(html,opts){ const r=_os113(html,opts); try{ gateHairDom113(document.getElementById('sheet')) }catch(e){} return r };
+const _hm113=hairMilestone45;
+hairMilestone45=function(oldAge){ if(!S||!S.gender){ _hm113(oldAge); return } const keep=HAIRSTYLES.filter(function(h){ return hairOK113(h.id)||h.id===S.hairStyle }); const orig=HAIRSTYLES.slice(); HAIRSTYLES.length=0; keep.forEach(function(h){ HAIRSTYLES.push(h) }); try{ _hm113(oldAge) } finally { HAIRSTYLES.length=0; orig.forEach(function(h){ HAIRSTYLES.push(h) }) } };
+
+/* ---------- E) MENU DOWN ON ARRIVAL ---------- */
+const _goLoc113=goLoc;
+goLoc=function(id){ const from=S?S.location:null; _goLoc113(id); try{ if(S&&id&&S.location===id&&from!==id)setDock(false) }catch(e){} };
+const _gwp113=goWithParent;
+goWithParent=function(){ const to=window._pendingLoc; _gwp113(); try{ if(S&&to&&S.location===to)setDock(false) }catch(e){} };
+
+/* ---------- F) MENU DOWN DURING ACTIONS, BACK UP WHEN DONE ---------- */
+const _sa113=startActivity;
+startActivity=function(icon,dur,x,y,nd,od,opts){ const wasOpen=(typeof dockOpen!=='undefined')&&dockOpen; if(wasOpen)setDock(false);
+ const done=function(){ try{ if(od)od() } finally { if(wasOpen)setDock(true) } };
+ return _sa113(icon,dur,x,y,nd,done,opts) };
+
+/* ---------- C) MAPLE MALL — shops & a cart ---------- */
+const MALL_CLOTHES113={
+ girl:[['🌸 Floral Sundress',28,'#ec4899','A twirl-approved floral sundress off the mall rack.'],['👗 Denim Skirt Set',24,'#3b82f6','Denim skirt and tee set — a mall classic.'],['🧶 Rose Cardigan',22,'#f472b6','A soft rose cardigan, endlessly layerable.'],['👚 Satin Blouse',26,'#a855f7','A satin blouse that dresses anything up.']],
+ boy:[['👔 Oxford Shirt',24,'#2563eb','A crisp Oxford shirt — sharp anywhere.'],['🧥 Street Hoodie',27,'#374151','A heavyweight street hoodie off the mall rack.'],['👖 Cargo Jeans',26,'#4b5563','Cargo jeans with pockets for days.'],['👕 Graphic Tee',16,'#0ea5e9','A graphic tee with main-character energy.']]};
+const MALL_FOOD113=[['🍔 Food-Court Burger',9],['🍕 Pizza Slice',6],['🌮 Taco Trio',8],['🧋 Bubble Tea',5],['🍟 Loaded Fries',7],['🍩 Glazed Donut',3]];
+const MALL_GAMES113=[['🎮 Star Kart Racers',39],['🕹️ Dungeon Depths II',29],['👾 Pixel Quest',19]];
+const MALL_MOVIES113=[['🎬 Galaxy Heist — Blu-ray',15],['🍿 The Last Lighthouse — Blu-ray',12],['🦖 Dino Island — Blu-ray',10]];
+function mallItem113(key){ if(!key)return null; const p=key.split('|'); const cat=p[0], nm=p[1];
+ if(cat==='clothes'){ const all=MALL_CLOTHES113.girl.concat(MALL_CLOTHES113.boy); for(let i=0;i<all.length;i++)if(all[i][0]===nm)return {cat:cat,name:nm,price:all[i][1],col:all[i][2],desc:all[i][3]}; return null }
+ if(cat==='food'){ for(let i=0;i<MALL_FOOD113.length;i++)if(MALL_FOOD113[i][0]===nm)return {cat:cat,name:nm,price:MALL_FOOD113[i][1]}; return null }
+ if(cat==='game'){ for(let i=0;i<MALL_GAMES113.length;i++)if(MALL_GAMES113[i][0]===nm)return {cat:cat,name:nm,price:MALL_GAMES113[i][1]}; return null }
+ if(cat==='movie'){ for(let i=0;i<MALL_MOVIES113.length;i++)if(MALL_MOVIES113[i][0]===nm)return {cat:cat,name:nm,price:MALL_MOVIES113[i][1]}; return null }
+ if(cat==='phone'){ const m=phoneModel40(nm); return {cat:cat,name:m.name,price:lvlPrice(m.price),model:nm} }
+ return null }
+function cartList113(){ const v=ensure113(); return v?v.cart:[] }
+function cartQty113(key){ const c=cartList113().find(function(ci){ return ci.key===key }); return c?c.qty:0 }
+function cartTotal113(){ let t=0; cartList113().forEach(function(ci){ const d=mallItem113(ci.key); if(d)t+=d.price*ci.qty }); return t }
+function cartCount113(){ let n=0; cartList113().forEach(function(ci){ n+=ci.qty }); return n }
+function cartAdd113(key,delta){ if(!S)return; const v=ensure113(); const ix=v.cart.findIndex(function(ci){ return ci.key===key }); if(key.indexOf('phone|')===0&&delta>0&&(ix<0||v.cart[ix].qty>=1)){ if(ix>=0)toast('📱 One phone per checkout — it gets its own plan & setup'); else v.cart.push({key:key,qty:1}); save(); mallSheet113(); return } if(ix<0){ if(delta>0)v.cart.push({key:key,qty:1}) } else { v.cart[ix].qty+=delta; if(v.cart[ix].qty<=0)v.cart.splice(ix,1) } save(); mallSheet113() }
+function cartClear113(){ const v=ensure113(); if(v)v.cart=[]; save(); mallSheet113() }
+function mallRow113(key,label,price){ const q=cartQty113(key); return '<div class="mallRow113"><span><b>'+label+'</b><br><span class="small">$'+price+'</span></span><span style="flex:none;display:flex;gap:6px;align-items:center">'+(q?'<button class="btn outline" style="width:auto;margin:0;padding:6px 11px" onclick="cartAdd113(\''+key.replace(/'/g,"\\'")+'\',-1)">−</button><b>'+q+' in cart</b>':'')+'<button class="btn gold" style="width:auto;margin:0;padding:6px 12px" onclick="cartAdd113(\''+key.replace(/'/g,"\\'")+'\',1)">🛒 Add</button></span></div>' }
+function mallSheet113(){ if(!S)return; ensure113(); const girl=S.gender==='girl'; const dept=girl?'👗 Girls\' clothing':'👔 Guys\' clothing';
+ let h='<h2>🛍️ Maple Mall — the shops</h2>'+moneyBar54()+'<p>Real shops, real stock, one 🛒 cart: fill it up, check out once, and everything lands in your 🎒 Bag. Phones are sold here exactly like the phone store and the pawn counter — plan picker, setup and all.</p>';
+ h+='<h3 style="margin-top:14px">'+dept+'</h3><p class="small" style="margin:2px 0 4px">This is the '+(girl?'girls':'guys')+' department — the mall only racks your side of the store.</p>'+MALL_CLOTHES113[girl?'girl':'boy'].map(function(c){ return mallRow113('clothes|'+c[0],c[0],c[1]) }).join('');
+ h+='<h3 style="margin-top:14px">🍔 Food Court</h3>'+MALL_FOOD113.map(function(c){ return mallRow113('food|'+c[0],c[0],c[1]) }).join('');
+ h+='<h3 style="margin-top:14px">🎮 Video Games</h3>'+MALL_GAMES113.map(function(c){ return mallRow113('game|'+c[0],c[0],c[1]) }).join('');
+ h+='<h3 style="margin-top:14px">🎬 Movies</h3>'+MALL_MOVIES113.map(function(c){ return mallRow113('movie|'+c[0],c[0],c[1]) }).join('');
+ h+='<h3 style="margin-top:14px">📱 Cell Phones</h3>'+(S.age<18?'<p class="small">Grown-ups buy phones — yours comes from '+giverName()+', same as the store and the pawn counter.</p>':PHONE_MODELS40.map(function(m){ const owned=S.hasPhone&&S.phone40&&S.phone40.model===m.id; return owned?'<div class="mallRow113"><span><b>'+m.name+'</b><br><span class="small">✓ This is your phone</span></span></div>':mallRow113('phone|'+m.id,m.name,lvlPrice(m.price)) }).join(''));
+ const cart=cartList113();
+ h+='<div style="margin-top:16px;border-top:2px solid #80808030;padding-top:10px"><h3>🛒 Your cart'+(cart.length?' — '+cartCount113()+' item'+(cartCount113()===1?'':'s'):'')+'</h3>';
+ if(!cart.length)h+='<p class="small">Empty — add something from the racks above.</p>';
+ else { h+=cart.map(function(ci){ const d=mallItem113(ci.key); if(!d)return ''; return '<div class="kv"><span>'+d.name+' × '+ci.qty+'</span><b>$'+(d.price*ci.qty)+'</b></div>' }).join('');
+  h+='<div class="kv" style="font-size:16px"><span><b>Total</b></span><b>$'+cartTotal113()+'</b></div><p class="small">Checkout pays cash first, then your bank by 💳 debit card — the usual money rules.'+ (cart.some(function(ci){ return ci.key.indexOf('phone|')===0 })?' Your phone checks out through the 📶 plan picker next, then runs the full setup — name it, lock code, tutorial — exactly like a phone bought anywhere else.':'')+'</p><button class="btn gold" style="margin-top:6px" onclick="mallCheckout113()">🛒 Check out — $'+cartTotal113()+'</button><button class="btn outline" style="margin-top:8px" onclick="cartClear113()">🗑 Clear cart</button>' }
+ h+='<button class="btn outline" style="margin-top:12px" onclick="closeModal()">‹ Back to the mall</button></div>';
+ openSheet(h) }
+function mallCheckout113(){ if(!S)return; ensure113(); const v=S.v113; const cart=v.cart.slice(); if(!cart.length){ toast('🛒 Your cart is empty'); return }
+ const total=cartTotal113(); if(!canPay63(total)){ toast('💵 Checkout is $'+total+' — cash'+(S.bank63&&S.bank63.debit?' + bank':'')+' can\'t cover it'); return }
+ const phoneEntry=cart.find(function(ci){ return ci.key.indexOf('phone|')===0 });
+ const others=cart.filter(function(ci){ return ci.key.indexOf('phone|')!==0 });
+ const slotsNeeded=others.reduce(function(a,ci){ return a+ci.qty },0)+(phoneEntry&&!S.hasPhone?1:0);
+ if(S.inv.length+slotsNeeded>bagCap()){ toast('🎒 Bag is FULL — pawn something before checking out'); return }
+ const othersTotal=others.reduce(function(a,ci){ const d=mallItem113(ci.key); return a+(d?d.price*ci.qty:0) },0);
+ if(othersTotal>0&&!pay63(othersTotal,'🛍️ Maple Mall')){ toast('💵 The till couldn\'t take the payment'); return }
+ const landed=[];
+ others.forEach(function(ci){ const d=mallItem113(ci.key); if(!d)return; for(let k=0;k<ci.qty;k++){ let it=null;
+   if(d.cat==='clothes'){ it=addItem(d.name,'clothes',Math.max(1,Math.round(d.price*0.5)),false,d.desc,'clothes113'); if(it)it.v113col=d.col }
+   else if(d.cat==='food'){ it=addItem(d.name,'food',Math.max(1,Math.round(d.price*0.4)),false,'Food-court fuel, bagged up for later.','snack') }
+   else if(d.cat==='game'){ it=addItem(d.name,'game',Math.max(1,Math.round(d.price*0.6)),false,'A game from the mall rack — play it from your Bag any time.','game113') }
+   else if(d.cat==='movie'){ it=addItem(d.name,'movie',Math.max(1,Math.round(d.price*0.5)),false,'A movie from the mall rack — watch it from your Bag any time.','movie113') }
+   if(it){ it.new91=true; landed.push(d.name) } } });
+ v.cart=phoneEntry?[phoneEntry]:[]; save();
+ log('🛍️🛒 MALL CHECKOUT — $'+total+' total at Maple Mall'+(landed.length?(': '+landed.join(', ')+' landed in your 🎒 Bag'):'')+(phoneEntry?'. The phone checks out through its 📶 plan picker, like any phone counter in town.':'.'));
+ if(phoneEntry){ const d=mallItem113(phoneEntry.key); const m=phoneModel40(d.model);
+  if(S.money<d.price&&S.bank63&&S.bank63.debit&&S.bank63.bank>0){ const move=Math.min(S.bank63.bank,d.price-S.money); if(move>0){ S.bank63.bank-=move; S.money+=move; txn63('🛍️ Mall checkout — cash readied for the phone',-move) } }
+  v.cart=[]; save(); window._phBuy40=d.model; window._phPrice40=d.price; window._phSrc40='🛍️ Maple Mall — brand new '+m.short; phonePlanPicker40(m,'🛍️ from Maple Mall, brand new');
+ } else { closeModal(); toast('🛍️ Checked out — $'+total); render() } }
+const _ui113=useItem;
+useItem=function(id){ const it=S&&(S.inv||[]).find(function(x){ return x.id===id });
+ if(it&&it.use==='clothes113'){ S.shirt=it.v113col||S.shirt; log('👕 OUTFIT ON — you put on the '+it.name+' from your Bag. It is yours and you are wearing it: the new colour is on your character everywhere.'); toast('👕 Wearing the '+it.name); save(); render(); if(window._bagPhone)phoneBag(); else openBag(); return }
+ if(it&&it.use==='game113'){ adj('fun',18); addXp(4,'tech'); log('🎮 GAME TIME — you played '+it.name+' from your Bag. Fun +18, and it goes right back on the shelf for next time.'); toast('🎮 '+it.name+' — Fun +18'); save(); render(); if(window._bagPhone)phoneBag(); else openBag(); return }
+ if(it&&it.use==='movie113'){ adj('fun',14); adj('social',3); log('🎬 MOVIE TIME — you watched '+it.name+' from your Bag. Fun +14 — a mall movie night, minus the mall.'); toast('🎬 '+it.name+' — Fun +14'); save(); render(); if(window._bagPhone)phoneBag(); else openBag(); return }
+ return _ui113(id) };
+
+/* ---------- G) THE TIMETABLE + H) EXPERIENCE vs FINISH ---------- */
+const TT113=[[480,'8:00 AM','📚 Morning Class','Learn subjects, answer questions, build school skills.'],[630,'10:30 AM','🛝 Recess','Head outside — play games, make friends, schoolyard events.'],[720,'12:00 PM','🍽️ Lunch','Eat with friends, interact with students, hear the cafeteria buzz.'],[780,'1:00 PM','📚 Afternoon Class','Lessons, activities, assignments and tests.'],[900,'3:00 PM','🔔 Dismissal','School ends, attendance updates, and you head home through the travel system.']];
+function ttCard113(college){ if(!S)return ''; const nm=(typeof nowMin57==='function')?nowMin57():0; const atPlace=college?(S.location==='college'):(S.location==='school');
+ let cur=-1; if(atPlace){ for(let i=0;i<TT113.length;i++){ if(nm>=TT113[i][0])cur=i } }
+ let h='<div class="card" style="border-color:var(--accent2)"><h3>🗓️ '+(college?'College':'School')+' Day — the timetable</h3><p class="small">The day runs on this skeleton, at natural 1× — the same five blocks fill with the usual lessons, people and events.</p>';
+ TT113.forEach(function(b,i){ h+='<div class="ttBlock113'+(i===cur?' on':'')+'"><span class="ttT">'+b[1]+'</span><span><b>'+b[2]+'</b><br><span class="small">'+b[3]+'</span></span>'+(i===cur?'<b style="margin-left:auto;flex:none">◀ now</b>':'')+'</div>' });
+ if(college)h+='<p class="small" style="margin-top:8px">College lectures meet inside this skeleton at <b>11:00 AM &amp; 6:00 PM</b> on weekdays — attend in person (Experience) or Finish the class from its prompt.</p>';
+ return h+'</div>' }
+function schoolDayOn113(){ if(!S)return false; const sk=schoolStageKey(S.age); return !!sk&&stageEnrolled()&&S.weather!=='snow'&&seasonOf().label!=='Summer'&&!onTermBreak()&&!(S.jail&&S.jail.in) }
+/* lunch moves to the printed 12:00 PM (the v91 beat waits for 12:30) + a real 1:00 PM afternoon class beat */
+setInterval(function(){ try{ if(!S||!inGame||rtPaused)return; const v=ensure91(); const w=ensure113(); if(!v||!w)return; if(ff113)return;
+ if(S.location!=='school'||S._schoolDay!==S.day||!inSchool())return;
+ if(document.getElementById('modal').classList.contains('open')||activity)return;
+ const nm=nowMin57();
+ if(nm>=720&&nm<780&&w.lunchDay!==S.day&&v.lunchDay91!==S.day){ w.lunchDay=S.day; v.lunchDay91=S.day; v.lastBeatNm91=nm; v.lunchDue91=true; save(); lunchBeat() }
+ if(nm>=780&&w.aftDay!==S.day){ w.aftDay=S.day; save(); log('📚 AFTERNOON CLASS — the 1:00 PM block: lessons, activities and assignment work until the bell.'); doGeneric('Attend Class',14,'study') }
+ }catch(e){} },4000);
+/* the fast-forward stepper: small steps, SAME rules, interrupts for decisions */
+let ff113=null;
+function ffStop113(){ if(ff113){ clearInterval(ff113.timer); ff113=null } }
+function ffInterrupt113(){ const f=ff113; ffStop113(); if(f&&f.kind==='work'&&S&&S.sched57&&S.sched57.doneDay===S.day)S.sched57.doneDay=0; /* an interrupted shift is NOT worked and NOT paid — it can be finished or attended after the decision, and no stub exists for it */
+ log('⏸️⏩ FINISH PAUSED — something important needs your decision, so time stopped for it (decisions always pause the clock). Sort it out, then Finish the rest from the '+(f&&f.kind==='work'?'💼 Work':'🎓 School')+' folder.'); toast('⏸️ Paused — a decision needs you') }
+function ffStep113(){ if(!S||!ff113)return; const f=ff113;
+ const m=document.getElementById('modal'); if((m&&m.classList.contains('open'))||activity||(S.v107&&S.v107.offers&&S.v107.offers.length>0)||S.deadFlag){ ffInterrupt113(); return }
+ const nm=nowMin57();
+ if(f.kind==='school'){
+  if(!f.recess&&nm>=630){ f.recess=true; adj('fun',8); adj('social',7); adj('fun',6); addXp(6,'social'); f.notes.push('🛝 10:30 Recess — yard time with classmates (Social +7, Fun up)') }
+  if(!f.lunch&&nm>=720){ f.lunch=true; let note; if(S.age<13){ note='the cafeteria fed you — school feeds kids, no buying involved' } else if(S.money>=4){ money(-4,'🍽️ Cafeteria lunch'); note='you bought the hot lunch for $4' } else { note='the free-lunch program covered you' } adj('hunger',22); adj('fun',3); f.notes.push('🍽️ 12:00 Lunch — '+note+' (Hunger +22)') }
+  if(!f.aft&&nm>=780){ f.aft=true; addXp(14,'study'); f.notes.push('📚 1:00 Afternoon Class — lessons & assignment work (Study +14 XP)') }
+  if(nm>=900){ ffStop113(); schoolSummary113(f); return }
+  advanceMinutes57(Math.min(20,900-nm),true);
+ } else if(f.kind==='work'){
+  if(nm>=f.endMin){ ffStop113(); shiftSummary113(f); return }
+  advanceMinutes57(Math.min(20,f.endMin-nm),true);
+ } else if(f.kind==='college'){
+  if(nm>=f.endMin){ ffStop113(); collegeSummary113(f); return }
+  advanceMinutes57(Math.min(15,f.endMin-nm),true);
+ } }
+function ffBegin113(kind,data){ ffStop113(); ff113=Object.assign({kind:kind,notes:[],recess:false,lunch:false,aft:false,timer:0},data||{}); ff113.timer=setInterval(ffStep113,200); toast('⏩ Finishing — time flows; a big decision will stop it') }
+function schoolSummary113(f){ if(!S)return; ensure113(); const g0=f.g0, g1=S.grades;
+ try{ if(S.location==='school'&&typeof sendHome109==='function')sendHome109() }catch(e){}
+ log('🎓⏩ SCHOOL DAY FINISHED — attendance counted (once), the blocks simulated under the same rules, and the 3:00 PM bell sent you home. Grades '+g0+'% → '+g1+'%.');
+ openSheet('<h2>🎓 School day — summary</h2><p>The rest of the day, lived for you under the <b>same rules</b> as being there — and the 🔔 3:00 PM bell sent you home.</p>'+f.notes.map(function(n){ return '<div class="kv"><span>'+n+'</span></div>' }).join('')+'<div class="kv"><span>✅ Attendance</span><b>Counted — exactly once</b></div><div class="kv"><span>📚 Grades</span><b>'+g0+'% → '+g1+'%</b></div><div class="kv"><span>🗓️ Day count</span><b>'+(S.term?(S.term.attended||0):0)+' days attended this term</b></div><button class="btn gold" style="margin-top:10px" onclick="closeModal();render()">Done — evening\'s mine</button>') }
+function finishSchool113(){ if(!S)return; ensure113(); if(ff113){ toast('⏩ Already finishing…'); return }
+ if(!schoolDayOn113()){ toast('🎓 No school day to finish right now'); return }
+ if(nowMin57()>=900){ toast('🔔 The school day is already over'); return }
+ closeModal();
+ const fresh113=S._schoolDay!==S.day;
+ if(fresh113){ S._schoolDay=S.day; ensure33(); if(S.term)S.term.attended=(S.term.attended||0)+1 }
+ if(S.attend)S.attend.attendDay=S.day; S.escort=null; S.location='school';
+ const g0=S.grades; const nm=nowMin57(); const notes=[];
+ if(fresh113){ addXp(18,'study'); notes.push('📚 8:00 Morning Class — lessons, questions, school skills (Study +18 XP)') }
+ log('🎓⏩ FINISH SCHOOL DAY — the rest of the day runs under the same rules: lessons, recess, lunch, classmates, needs, attendance (once) and grades — and it stops cold if a real decision shows up.');
+ ffBegin113('school',{g0:g0,notes:notes,recess:nm>=630,lunch:nm>=720,aft:nm>=780}) }
+function shiftSummary113(f){ if(!S||!S.jobInfo)return; const j=S.jobInfo; const net=payTaxed59(j.pay,'💼 '+j.title+' shift'); j.shifts++; S.careerShifts=(S.careerShifts||0)+1; adj('energy',-10); addXp(16,'tech'); if(typeof checkGoal==='function')checkGoal();
+ log('💼⏩ SHIFT FINISHED — '+j.title+' ('+fmtHour(f.sch.start)+'–'+fmtHour(f.sch.end)+'): hours, performance, needs and ONE pay stub processed. Net $'+net+' landed (gross $'+j.pay+', tax withheld). No duplicate wages — the ledger shows a single stub.');
+ openSheet('<h2>💼 End of shift — summary</h2><p>'+j.title+' — the remaining shift, simulated under the same rules as working it in person.</p><div class="kv"><span>🕐 Hours</span><b>'+fmtHour(f.sch.start)+' – '+fmtHour(f.sch.end)+' ('+(f.sch.end-f.sch.start)+'h)</b></div><div class="kv"><span>💵 Pay — one stub</span><b>Gross $'+j.pay+' · Net $'+net+'</b></div><div class="kv"><span>⭐ Performance</span><b>Shift '+(j.shifts)+' at this job • Tech +16 XP • Energy −10</b></div><div class="kv"><span>🧾 Ledger</span><b>One stub — wages processed exactly once</b></div><button class="btn gold" style="margin-top:10px" onclick="closeModal();render()">Done</button>'); save(); render() }
+function finishShift113(){ if(!S||!S.jobInfo)return; ensure57(); if(ff113){ toast('⏩ Already finishing…'); return } const j=S.jobInfo; const sch=schedOf57(j); if(!sch)return;
+ if(S.sched57.doneDay===S.day){ toast('💼 Today\'s shift is already worked — wages landed once'); return }
+ if(!isWorkDay57(j)){ toast('💤 No shift today — a scheduled day off'); return }
+ if(nowMin57()>=sch.end*60){ toast('💼 That shift is already over — no finishing a shift that has ended'); return }
+ S.sched57.doneDay=S.day; /* marked FIRST: no missed-shift warning, no second stub */
+ closeModal(); log('💼⏩ FINISH WORK SHIFT — the remaining shift runs under the same rules: hours, wages (one stub), performance, needs and workplace events — paused if a real decision shows up.');
+ ffBegin113('work',{sch:sch,endMin:sch.end*60}) }
+function collegeSummary113(f){ if(!S||!S.college)return; S.college.progress=Math.min(100,S.college.progress+14); S.college.classes++; addXp(18,'study'); log('🎓⏩ CLASS FINISHED — '+S.college.major+': the hour simulated under the same rules, degree progress '+S.college.progress+'%.'); if(typeof graduateCheck==='function')graduateCheck(); save(); render();
+ openSheet('<h2>🎓 Class — summary</h2><p>'+S.college.major+' — the class hour, finished under the same rules as sitting it.</p><div class="kv"><span>📈 Degree progress</span><b>'+S.college.progress+'%</b></div><div class="kv"><span>📚 Study</span><b>+18 XP</b></div><button class="btn gold" style="margin-top:10px" onclick="closeModal();render()">Done</button>') }
+function finishClass113(){ if(!S||!S.college||!S.college.enrolled)return; if(ff113){ toast('⏩ Already finishing…'); return } closeModal(); log('🎓⏩ FINISH CLASS — the class hour runs under the same rules; a real decision would stop it.'); ffBegin113('college',{endMin:nowMin57()+60}) }
+/* the morning school choice: Experience vs Finish, named plainly */
+const _map113=maybeAttendPrompt;
+maybeAttendPrompt=function(){ if(!S||!inGame)return _map113();
+ if(S.jail&&S.jail.in)return _map113(); if(S.vac&&S.vac.active)return _map113();
+ try{ ensure21() }catch(e){}
+ if(schoolDayOn113()&&S.attend&&S.attend.attendDay!==S.day&&!(document.getElementById('modal').classList.contains('open'))){ S.attend.attendDay=S.day; save();
+  openSheet('<h2>🎓 Time for school, '+S.name+'</h2><p>It\'s a school morning — '+schoolLevel(S.age)+' at '+schoolName(schoolStageKey(S.age))+'. The day runs <b>8:00 AM – 3:00 PM</b>: morning class, 10:30 recess, 12:00 lunch, afternoon class, then the bell sends you home. <b>Two ways to live it — same rules either way:</b></p><p class="small">📚 Grades '+S.grades+'% • Days skipped: '+S.attend.schoolSkips+' • School warnings: '+S.attend.schoolWarn+'/3</p><button class="btn orange" onclick="attendGo()">🎒 EXPERIENCE SCHOOL — go in person, live the day at 1×</button><button class="btn gold" style="margin-top:8px" onclick="finishSchool113()">⏩ FINISH SCHOOL DAY — fast-forward to the 3:00 PM bell, with a summary</button><button class="btn outline" style="margin-top:8px" onclick="attendSkip()">🛋️ Skip today</button>'); return }
+ return _map113() };
+/* the shift sheet: Experience vs Finish, named plainly */
+const _oss57_113=openShiftSheet57;
+openShiftSheet57=function(mode){ if(!S||!S.jobInfo)return _oss57_113(mode); const j=S.jobInfo; const sch=schedOf57(j); if(!sch)return _oss57_113(mode);
+ openSheet('<h2>💼 '+(mode==='now'?'Shift time — it is starting':'Today\'s shift')+' — '+j.title+'</h2><p>🗓 <b>'+schedDaysText57(sch)+'</b> • 🕐 <b>'+fmtHour(sch.start)+' – '+fmtHour(sch.end)+'</b> • <b>$'+j.pay+'</b> for the shift. <b>Two ways to work it — same pay, same rules:</b> go in person and live the shift, or finish it and read the summary. Blow it off past '+fmtHour(sch.end)+' and it counts as a missed shift — warnings stack ('+j.warnings+'/3, and 3 means FIRED).</p><button class="btn orange" onclick="shiftAttend57()">💼 EXPERIENCE WORK — go in person, natural time</button><button class="btn gold" style="margin-top:8px" onclick="finishShift113()">⏩ FINISH WORK SHIFT — simulate the rest, end-of-shift summary</button><button class="btn outline" style="margin-top:8px" onclick="shiftSkip57()">🛋️ Skip this shift</button>') };
+/* the college class prompt: same pair */
+const _ocp113=openCollegePrompt57;
+openCollegePrompt57=function(timeLbl){ if(!S||!S.college||!S.college.enrolled)return _ocp113(timeLbl);
+ openSheet('<h2>🎓 Class time — '+S.college.major+'</h2><p>🕐 It is <b>'+timeLbl+'</b> — your '+S.college.major+' class is starting ('+S.college.progress+'% through the degree). College runs the same timetable skeleton as school, with lectures at <b>11:00 AM &amp; 6:00 PM</b>. <b>Two ways — same rules:</b></p><button class="btn orange" onclick="closeModal();collegeClass()">🎓 EXPERIENCE — go to class in person, 1×</button><button class="btn gold" style="margin-top:8px" onclick="finishClass113()">⏩ FINISH CLASS — simulate the hour, with a summary</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Skip this one</button>') };
+/* folder cards: timetable + Experience/Finish controls in School & Work */
+const _rt113=renderTabs;
+renderTabs=function(active){ const r=_rt113(active); try{ if(!S||!inGame)return r; ensure113(); const p=document.getElementById('panel'); if(!p)return r; gateHairDom113(p); const grid=p.querySelector('.grid'); if(!grid)return r;
+ if(active==='school'){ const d=document.createElement('div'); d.innerHTML='';
+  if(S.college&&S.college.enrolled){ const c=document.createElement('div'); c.innerHTML=ttCard113(true); if(c.firstChild)grid.insertBefore(c.firstChild,grid.firstChild) }
+  if(schoolStageKey(S.age)&&stageEnrolled()){ const c=document.createElement('div'); c.innerHTML=ttCard113(false); if(c.firstChild)grid.insertBefore(c.firstChild,grid.firstChild);
+   if(schoolDayOn113()&&nowMin57()<900){ const b=document.createElement('div'); b.className='card'; b.style.borderColor='var(--accent2)';
+    if(S._schoolDay===S.day&&S.location==='school')b.innerHTML='<h3>⏩ Still in the school day?</h3><p>You are living it in person (Experience). You can hand the rest of the day to the simulation instead — same rules, bell at 3:00, summary at the end.</p><button class="btn gold" onclick="finishSchool113()">⏩ FINISH SCHOOL DAY — from here to the bell</button>';
+    else if(S._schoolDay!==S.day)b.innerHTML='<h3>🎓 Today\'s school day</h3><p>8:00 AM – 3:00 PM, your choice: live it, or finish it.</p><button class="btn orange" onclick="attendGo()">🎒 EXPERIENCE SCHOOL — go in person</button><button class="btn gold" style="margin-top:8px" onclick="finishSchool113()">⏩ FINISH SCHOOL DAY — summary at the bell</button>';
+    if(b.innerHTML)grid.insertBefore(b,grid.firstChild) } }
+ }
+ if(active==='work'&&S.jobInfo){ ensure57(); const sch=schedOf57(S.jobInfo);
+  if(sch&&isWorkDay57(S.jobInfo)&&S.sched57.doneDay!==S.day&&S.sched57.skipDay!==S.day){ const b=document.createElement('div'); b.className='card'; b.style.borderColor='var(--accent2)'; b.innerHTML='<h3>💼 Today\'s shift — '+S.jobInfo.title+'</h3><p>🕐 '+fmtHour(sch.start)+' – '+fmtHour(sch.end)+' • $'+S.jobInfo.pay+'. Your choice: live it, or finish it — same pay, one stub either way.</p><button class="btn orange" onclick="shiftAttend57()">💼 EXPERIENCE WORK — go in person</button><button class="btn gold" style="margin-top:8px" onclick="finishShift113()">⏩ FINISH WORK SHIFT — end-of-shift summary</button>'; grid.insertBefore(b,grid.firstChild) } }
+ if(active==='travel'&&S.location==='mall'){ const d=document.createElement('div'); d.className='card'; d.style.borderColor='var(--accent2)'; const n=cartCount113(); d.innerHTML='<h3>🛍️ Maple Mall — the shops</h3><p>The mall sells things now: '+(S.gender==='girl'?'👗 girls\' clothing':'👔 guys\' clothing')+', 🍔 food-court food, 🎮 video games, 🎬 movies and 📱 cell phones — all into one 🛒 cart, checked out once, everything landing in your 🎒 Bag.</p>'+(n?'<p><b>🛒 '+n+' item'+(n===1?'':'s')+' in your cart — $'+cartTotal113()+'</b></p>':'')+'<button class="btn gold" onclick="mallSheet113()">🛍️ Shop the mall'+(n?' — cart $'+cartTotal113():'')+'</button>'; grid.appendChild(d) }
+ }catch(e){} return r };
+if(typeof TIPS!=='undefined'){ if(!TIPS['mall113'])TIPS['mall113']={t:'🛍️ The mall sells things now',b:'Maple Mall has real shops and a 🛒 cart: clothing from your gender\'s department, food-court food, video games, movies and cell phones (same models, same plan picker and setup as the phone store and the pawn shop). Add to cart, check out once — cash first, then your bank by debit card — and it all lands in your 🎒 Bag.'};
+ if(!TIPS['timetable113'])TIPS['timetable113']={t:'🗓️ The school timetable',b:'Every school day — and college, same skeleton — runs five printed blocks: 8:00 AM morning class, 10:30 AM recess, 12:00 PM lunch, 1:00 PM afternoon class, 3:00 PM dismissal (the bell sends you home). Each morning you choose: EXPERIENCE it in person at natural 1×, or FINISH it — the same rules simulated to the bell, with a summary, stopping cold if a real decision shows up. Work shifts offer the same pair. There is no skip-life button: outside school and work, time just flows.'};
+ if(!TIPS['menudown113'])TIPS['menudown113']={t:'🚪🎬 The menu gets out of the way',b:'Two courtesies: travel anywhere and the folder menu goes DOWN and stays down — you land looking at the place, and reopen menus from the dock when you want them. And when you do an action, the menu tucks away while it plays in the scene, then pulls back up to the exact spot you left — same folder, same scroll, same button in view.'} }
+/* offer-sheet copy: the v107 lines still describe the old cadence — patch the two stale sentences wherever they surface */
+const _po113=presentOffer107;
+presentOffer107=function(){ _po113(); try{ const sh=document.getElementById('sheet'); if(!sh)return; const fix=function(root){ const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let n; while((n=w.nextNode())){ if(n.nodeValue.indexOf('creation picks on the table')>=0)n.nodeValue=n.nodeValue.replace(/[^.]*creation picks on the table[^.]*\./,'Personality arrives every other age — and a life starting at this age has already lived some even birthdays (2, 4, 6…), so those picks are offered now, one by one.'); if(n.nodeValue.indexOf('on birthdays until age 12')>=0)n.nodeValue=n.nodeValue.replace('Personality grows a trait at a time, on birthdays until age 12.','Personality grows a trait at a time — one pick on every EVEN birthday (2, 4, 6, 8…), until all 12 traits are yours.') } }; fix(sh) }catch(e){} };
+if(S)ensure113();
+window.__v113={ensure113:ensure113,hairOK113:hairOK113,mallSheet113:mallSheet113,mallCheckout113:mallCheckout113,cartAdd113:cartAdd113,finishSchool113:finishSchool113,finishShift113:finishShift113,finishClass113:finishClass113,ttCard113:ttCard113};
 </script>
 
 </body>
