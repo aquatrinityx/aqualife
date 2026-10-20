@@ -574,7 +574,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=118;
+const GAME_VERSION=119;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -1124,14 +1124,14 @@ function render(){
  <div class="topRow100">
   <button type="button" class="avatarChip100" onclick="openSocialSheet()" aria-label="Your character — tap for the full detail sheet"><canvas class="avatarCv" width="72" height="92" data-person="${S.name.replace(/"/g,'')}" role="img" aria-label="Portrait of ${S.name}"></canvas><span class="avLv100">Lv ${S.level}</span></button>
   <div class="infoPill100" role="group" aria-label="You at a glance — your info scrolls by; the clock and phone stay pinned">
-   <span class="ipView106"><span class="ipTrack106" id="ipTrack106"><span class="ipGroup106"><span class="ipSeg100 ipName100">${S.name}, ${S.age}</span><span class="ipSeg100">⭐ Lv <span data-roll="level">${S.level}</span> · <span data-roll="xp">${S.xp}</span>/100 XP</span><span class="ipSeg100 ipMoney100">💰 $<span data-roll="money">${S.money}</span></span><span class="ipSeg100">📅 Day ${S.day}</span><span class="ipSeg100">📍 ${placeOf().city}, ${placeOf().state}</span><span class="ipSeg100">${seasonOf().icon} ${seasonOf().label}</span><span class="ipSeg100">${wxOf().icon} ${wxOf().label} · ${phaseName()}</span><span class="ipSeg100">${envName}</span><span class="ipSeg100">🐾 ${S.pets.length} pet${S.pets.length===1?'':'s'}</span><span class="ipSeg100">🏠 ${mates.length} roommate${mates.length===1?'':'s'}</span><span class="ipSeg100">${S.married&&S.spouse?('💍 '+S.spouse):S.partner?('💍 '+S.partner):topCrush?('💘 '+topCrush):'💖 Single'}</span></span><span class="ipGroup106" aria-hidden="true"><span class="ipSeg100 ipName100">${S.name}, ${S.age}</span><span class="ipSeg100">⭐ Lv <span data-roll="level">${S.level}</span> · <span data-roll="xp">${S.xp}</span>/100 XP</span><span class="ipSeg100 ipMoney100">💰 $<span data-roll="money">${S.money}</span></span><span class="ipSeg100">📅 Day ${S.day}</span><span class="ipSeg100">📍 ${placeOf().city}, ${placeOf().state}</span><span class="ipSeg100">${seasonOf().icon} ${seasonOf().label}</span><span class="ipSeg100">${wxOf().icon} ${wxOf().label} · ${phaseName()}</span><span class="ipSeg100">${envName}</span><span class="ipSeg100">🐾 ${S.pets.length} pet${S.pets.length===1?'':'s'}</span><span class="ipSeg100">🏠 ${mates.length} roommate${mates.length===1?'':'s'}</span><span class="ipSeg100">${S.married&&S.spouse?('💍 '+S.spouse):S.partner?('💍 '+S.partner):topCrush?('💘 '+topCrush):'💖 Single'}</span></span></span></span>
+   <span class="ipView106"><span class="ipTrack106" id="ipTrack106"><span class="ipGroup106"><span class="ipSeg100 ipName100">${S.name}, ${S.age}</span><span class="ipSeg100">⭐ Lv <span data-roll="level">${S.level}</span> · <span data-roll="xp">${S.xp}</span>/100 XP</span><span class="ipSeg100 ipMoney100">💰 $<span data-roll="money">${S.money}</span></span><span class="ipSeg100">📍 ${placeOf().city}, ${placeOf().state}</span><span class="ipSeg100">${seasonOf().icon} ${seasonOf().label}</span><span class="ipSeg100">${wxOf().icon} ${wxOf().label} · ${phaseName()}</span><span class="ipSeg100">${envName}</span><span class="ipSeg100">🐾 ${S.pets.length} pet${S.pets.length===1?'':'s'}</span><span class="ipSeg100">🏠 ${mates.length} roommate${mates.length===1?'':'s'}</span><span class="ipSeg100">${S.married&&S.spouse?('💍 '+S.spouse):S.partner?('💍 '+S.partner):topCrush?('💘 '+topCrush):'💖 Single'}</span></span><span class="ipGroup106" aria-hidden="true"><span class="ipSeg100 ipName100">${S.name}, ${S.age}</span><span class="ipSeg100">⭐ Lv <span data-roll="level">${S.level}</span> · <span data-roll="xp">${S.xp}</span>/100 XP</span><span class="ipSeg100 ipMoney100">💰 $<span data-roll="money">${S.money}</span></span><span class="ipSeg100">📍 ${placeOf().city}, ${placeOf().state}</span><span class="ipSeg100">${seasonOf().icon} ${seasonOf().label}</span><span class="ipSeg100">${wxOf().icon} ${wxOf().label} · ${phaseName()}</span><span class="ipSeg100">${envName}</span><span class="ipSeg100">🐾 ${S.pets.length} pet${S.pets.length===1?'':'s'}</span><span class="ipSeg100">🏠 ${mates.length} roommate${mates.length===1?'':'s'}</span><span class="ipSeg100">${S.married&&S.spouse?('💍 '+S.spouse):S.partner?('💍 '+S.partner):topCrush?('💘 '+topCrush):'💖 Single'}</span></span></span></span>
    
    <button type="button" id="installBtn67" onclick="installApp67()" aria-label="Install AquaLife as an app" title="Install app" style="background:#ffb703;color:#111;padding:4px 10px;border-radius:999px;font-weight:900;white-space:nowrap">📲 Install</button>
   </div>
   ${S.hasPhone?`<button type="button" id="phoneBtn" class="phoneBtn101 ${unread?'phoneAlert':''}" onclick="openPhone()" aria-label="Open your phone${unread?' — '+unread+' unread':''}" style="background:#fff;color:#111;padding:9px 12px;border-radius:999px;font-weight:900">📱${unread?' • '+unread+' new':''}</button>`:`<button type="button" id="phoneBtn" class="phoneBtn101" onclick="noPhoneSheet()" aria-label="You have no phone yet" style="background:#574b3f;color:#fff;padding:9px 12px;border-radius:999px;font-weight:900">📵 No phone yet</button>`}
  </div>
  <section class="needsRow100" aria-label="Needs">${[['hunger','🍔','#f97316'],['energy','⚡','#eab308'],['fun','🎮','#a855f7'],['hygiene','🚿','#06b6d4'],['social','💬','#ec4899']].map(([k,ic,c])=>`<div class="needPill100${k==='social'?(n.social<30?' socCrit109':n.social<55?' socWarn109':''):''}" data-need="${k}"><span class="npIco100" aria-hidden="true">${ic}</span><span class="npBar100"><i style="width:${n[k]}%;background:${n[k]<30?'#ef4444':n[k]<55?'#f59e0b':c}"></i></span><span class="npNum100" data-roll="${k}">${n[k]}</span></div>`).join('')}</section>
- <div class="calRow109"><button type="button" class="calChip109" onclick="phoneCalendar89()" aria-label="Calendar — open your calendar">📅 Calendar</button></div>
+ <div class="calRow109"><span class="dayChip119" aria-label="Current day">Day ${S.day}</span><button type="button" class="calChip109" onclick="phoneCalendar89()" aria-label="Calendar — open your calendar">📅 Calendar</button></div>
  </div>
  <div class="roomWrap"><canvas id="cv" width="900" height="460"></canvas></div>
  <div class="tabsRow100"><div class="roomBar86" id="roomBar86" role="navigation" aria-label="Rooms in this place"></div><div class="quickBar91" id="quickBar91"></div></div>
@@ -6106,14 +6106,9 @@ function ensure101(){ if(!S)return null; if(!S.v101)S.v101={}; return S.v101 }
 let lastRealTab101='home', qSig101=null;
 function qSigOf101(){ if(!S)return ''; return (S.queue84||[]).join(',')+'|'+qLeft99() }
 function fixNav101(){ try{ const db=document.querySelector('#dockCore100 .dockBtns56'); if(!db)return; let b=db.querySelector('.actBtn101'); if(!b){ b=document.createElement('button'); b.type='button'; b.className='dockTab actBtn101'; b.setAttribute('aria-label','Folder: Actions — your room actions'); b.innerHTML='<span class="dtE">⚡</span><span class="dtL">Actions</span>'; b.onclick=function(){ dockGo101() }; db.insertBefore(b,db.firstChild) } const on=(typeof curTab!=='undefined'&&curTab==='actions101'); b.classList.toggle('on',!!on); if(on)db.querySelectorAll('.dockTab').forEach(function(x){ if(x!==b)x.classList.remove('on') }) }catch(e){} }
-function actionsFolderHtml101(){ if(!S)return ''; ensure84(); ensure93(); const tmp=document.createElement('div'); tmp.innerHTML=furnBtns82(); const q=S.queue84||[]; const cd=qLeft99()>0; let cards='';
- tmp.querySelectorAll('button.furn').forEach(function(btn){ const oc=btn.getAttribute('onclick')||''; const m=/act\('([a-z]+)'\)/.exec(oc); const id=m?m[1]:''; const pos=id?q.indexOf(id):-1; if(pos>=0)btn.setAttribute('onclick','openQueue93()');
-  let qrow='';
-  if(cd)qrow='<button type="button" class="qIt101 cool" onclick="openQueue93()">⏳ Queue '+qText99()+'</button>';
-  else if(pos>=0)qrow='<button type="button" class="qIt101 on" onclick="openQueue93()">📋 Queued #'+(pos+1)+' — tap to manage</button>';
-  else if(id)qrow='<button type="button" class="qIt101" onclick="queueAdd84(\''+id+'\')">＋ 📋 Queue it</button>';
-  cards+='<div class="card actCard101'+(pos>=0?' isQ101':'')+'">'+btn.outerHTML+(pos>=0?'<span class="qPos101">📋 #'+(pos+1)+'</span>':'')+'<div class="qRow101">'+qrow+'</div></div>' });
- return '<p class="small" style="margin:2px 2px 8px">⚡ Your room actions — tap one to do it now, or 📋 queue up to 3 and they play out in order, at life speed (queued sleep still sleeps at ×2).'+(cd?'<br>⏳ The queue is cooling down — '+qText99()+'.':'')+'</p><div class="grid actGrid101">'+cards+'</div><button class="btn outline" style="margin-top:10px" onclick="openQueue93()">📋 Manage the queue'+(q.length?' — '+q.length+' lined up':'')+'</button>' }
+function actionsFolderHtml101(){ if(!S)return ''; ensure84(); ensure93(); const tmp=document.createElement('div'); tmp.innerHTML=furnBtns82(); let cards='';
+ tmp.querySelectorAll('button.furn').forEach(function(btn){ cards+='<div class="card actCard101">'+btn.outerHTML+'</div>' });
+ return '<p class="small" style="margin:2px 2px 8px">⚡ Your room actions — tap one and it just happens, right away, at life speed (sleep still sleeps at ×2). No queue: pressing while another action is performing hands the stage straight to the new press.</p><div class="grid actGrid101">'+cards+'</div>' }
 function paintActions101(){ const p=document.getElementById('panel'); if(!p||!S)return; p.innerHTML=actionsFolderHtml101(); const t=document.getElementById('dsTitle'); if(t)t.textContent='⚡ Actions'; qSig101=qSigOf101() }
 function paintQCards101(){ if(!S||curTab!=='actions101'||!dockOpen)return; const sig=qSigOf101(); if(sig===qSig101)return; qSig101=sig; const p=document.getElementById('panel'); if(p)p.innerHTML=actionsFolderHtml101() }
 /* the queue painters now repaint the ⚡ cards (position + cooldown live there) — the scene chip is retired */
@@ -6235,7 +6230,7 @@ function shelterGo102(kind){ if(!S)return; ensure102(); const v=S.v102; if(kind=
 /* ---------- 🎓 TUTORIAL ---------- */
 const TUT102=[
  ['👋 Welcome to your life','This is the top of your screen: your <b>needs pills</b> (🍔 hunger, ⚡ energy, 🎉 fun, 🚿 hygiene, 💬 social, ❤️ health). They drain as the day runs — and at <b>zero they bite</b>: hunger can kill, no energy means you drop where you stand. Keep them fed.'],
- ['⚡ Actions — the tray folder','Your moves live in the <b>⚡ Actions</b> button in the glass tray at the bottom — tap it and every action card opens right there. Tap a card to do it (the camera zooms in for the moment, then comes back). On a card, <b>📋 Queue it</b> lines actions up — 3 max, they play in order, and the number on the card tells you where you stand.'],
+ ['⚡ Actions — the tray folder','Your moves live in the <b>⚡ Actions</b> button in the glass tray at the bottom — tap it and every action card opens right there. Tap a card and it just happens — no queue, no lining up: you press it, it happens (the camera zooms in once for the moment, then comes back).'],
  ['🕐 Time — and the one speedup','Time runs the world on its own: <b>one full day ≈ 24 real minutes</b> (5 game-minutes every 5 real seconds), and there is <b>no pause button</b> — check the time on your 📱 phone, on clocks in places around town, or on a ⌚ watch (wear one and it sits under Social). Nothing speeds time up except <b>sleep</b> — a real sleep you pick runs at ×2; passing out where you stand doesn\'t.'],
  ['💵 Money starts at $0','Nobody starts with money. Kids: weekly allowance, <b>🧹 chores</b> (age 5+, while you live at home) and 🧒 kid jobs. Teens get teen jobs at 14; adults work the <b>💼 Job Board</b> — apply, wait, get hired, work shifts. It all lives in the 💼 Work folder in the tray.'],
  ['🎓 School & growing up','School comes in stages — preschool to high school — and you <b>enroll</b> in the 🎓 School folder. Attend, study, keep grades up: there are conferences, dances, even prom (you can take your brother or sister — it\'s a whole thing). Every birthday adds a year, a stage, and new unlocks.'],
@@ -7567,6 +7562,268 @@ function treeHtml118(){ ensure78(); ensure118(); const f=S.fam78, V=S.v118; cons
 const _openFamTree78_118=openFamTree78; openFamTree78=function(){ if(!S)return; try{ showTip('family-tree'); openSheet(treeHtml118()) }catch(e){ _openFamTree78_118() } };
 if(typeof TIPS!=='undefined')TIPS['family-tree']={t:'🌳 The Family Tree — endless',b:'One tree, every generation, no cap: grandparents, parents (ages always shown — and step-parents when life adds them), you, siblings & half-siblings, your partner, your kids, your grandkids, and beyond. Parents can split up — the tree keeps BOTH of them forever, status and all, and it keeps growing through remarriages and new branches. In the 👽 Me tab.'};
 window.__v118={parentAge118:parentAge118,splitStance118:splitStance118,parentsDay118:parentsDay118,treeHtml118:treeHtml118};
+</script>
+<style id="style119">
+/* v119: the tutorial NEVER blurs the game — while a tutorial step is up the modal drops its backdrop blur entirely and keeps only a light dim, so the gold-highlighted element stays readable against the un-blurred scene */
+.modal.tut119{background:rgba(5,3,16,.28);backdrop-filter:none;-webkit-backdrop-filter:none}
+.dayChip119{font-family:inherit;font-size:11.5px;font-weight:900;color:var(--ink);padding:3px 10px;border-radius:999px;border:2px solid #ffffff2a;background:var(--card);white-space:nowrap}
+.driveRoad119{position:relative;height:64px;border-radius:12px;background:linear-gradient(180deg,#1e293b 52%,#475569 53%,#334155 54%);overflow:hidden;margin:10px 0}
+.driveCar119{position:absolute;top:12px;left:-12%;font-size:38px;animation:driveGo119 2.2s ease-in-out forwards}
+@keyframes driveGo119{to{left:86%}}
+@media(prefers-reduced-motion:reduce){.driveCar119{animation:none;left:44%}}
+.passChip119{display:inline-block;background:#ffffff14;border:1px solid #ffffff2a;border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:800;margin:2px 3px 2px 0}
+</style>
+<script>
+/* ================= v119: 🎓 TUTORIAL WITHOUT THE BLUR — while a tutorial step is showing, the modal loses its backdrop blur entirely (light dim only), so the step's gold-highlighted element stays VISIBLE against the un-blurred scene • 🎥 CAMERA DISCIPLINE — one zoom in, one zoom out: an action's own zoom (startActivity) is the only zoom during a performance and nothing reframes, extends or restarts it mid-action; conversation/meeting zooms now frame BOTH speakers (midpoint of you + them); stray zooms removed: (i) the v101 decorative tap-pulse (1.42×/1500ms on every panel tap) no longer zooms at all — the action itself zooms; (ii) ambient gentleFocus single-person reframes now pair-frame the two people talking; (iii) focus calls landing within a second of a zoom glide/extend that SAME zoom instead of restarting it • 🚪 ROOM CHANGES KEEP THE MENU DOWN — goRoom86 (and arrival via goLoc) now also cancels the v110 spot-restore and re-closes the dock after it, so nothing pulls the menu back up in the new room • 📋 THE QUEUE IS GONE — the Actions folder renders no Queue-it buttons, no position badges, no Manage-the-queue bar (edited at the source); the Home queue card renders nothing, queued leftovers are cleared, queueAdd84/openQueue93 just say so. Pressing an action FIRES it; pressing while another action performs hands the stage straight to the new press (the shipped startActivity takeover) — no line, no waiting • 😴 EVERYONE HAS A SLEEP SCHEDULE — per person, set once from who they are (kids 8 PM–7 AM, teens 10 PM–6/7 AM, adults 9–11 PM to 6–8 AM by name-hash, elders 9 PM–6 AM; family caregiver labels always read as adults) and kept in S.v119.sleep: while a person is asleep, calls and texts to them DO NOT go through (doCall/chooseReply/inviteOver say they're asleep and when they're back) and ambient conversation skips them • 💤 SLEEPING IS VISIBLE — asleep household members are put in the bedroom with a 💤 bubble, the scene draws 💤 + "asleep" over them, and the room list marks them "💤 asleep" • 🚗 VEHICLES, OWN & EQUIP ONE — every person owns vehicles deterministically (most own one from the shipped CAR_LISTINGS plus bike/scooter; some own a second, parked) with exactly ONE equipped — the equipped one is what's shown: an icon rides beside them away from home, and the résumé lists owned vs equipped with Equip buttons. The player maps onto the shipped car: S.car IS the equipped vehicle; buying another car sends the previous one to your garage (S.v119.garage — owned, unequipped) and the Travel Cars card lists them all with Equip buttons • 🛣️ THE DRIVING SCENE — travelling by an equipped vehicle (your car+license, or your escort driving theirs) plays a short on-the-road scene: the vehicle crossing, who is driving, and every passenger coming along — then arrival, menu down • 🚪 CHANGE ROOMS LISTS EVERYONE PRESENT — roomFolks106 now also counts the invited guest (S.guest), the sleepover guest, the door visitor and townsfolk in the room, not only family • 📸 SCRAPBOOK: ONE EVENT = ONE ENTRY — capture is deduped by event identity (normalised title + day) at the snap84 gate, so the milestone framing ("Milestone — First word") and the direct capture ("First Word") can no longer both land; existing books are deduped on load (rule: the first-listed entry for a normalised title + day is kept, later duplicates are removed) • 👽 ME TAB — the "Care & Growing" card is removed from the panel (the v114 automatic care underneath is untouched) • 👆 TAP A CHARACTER → THEIR RÉSUMÉ — tapping anyone drawn in the scene opens their résumé (the shipped openNpcResume54 sheet, extended below with age, relationship, schedule, sleep schedule and vehicles); tapping yourself opens your own detail sheet • 👶 EVERY CAREGIVER HAS A JOB + A SCHEDULE, AND THE TODDLER IS ALWAYS COVERED — caregivers (parents, homeowners, the toddler's carers) get a job from the shipped job world (their shipped npcJobOf47 job where they have one, else a deterministic JOB_BOARD assignment) with weekday shift hours, kept in S.v119.jobs; when every responsible caregiver is at work or asleep, coverage is arranged automatically — the shipped Babysitter ($20; household-paid for a toddler player, charged to a player-parent who can pay) or Daycare when the sitter money is not there — logged in the journal/headlines, shown as a "Who's with the toddler" card on the Me tab, and the sitter is drawn in the room • 📖 ANYONE CAN TEACH — the automatic development (todAutoDev114) now names its teacher from everyone around (family, the sitter, daycare): milestones they coach are credited in the journal and in the scrapbook entry; teachers also ASK — a daily offer sheet ("X offers to teach…") the player can accept (a real practice boost, teacher credited) or pass on; the player's own kids get the same credited teaching through kidAutoDev114 • 📅 THE DAY NUMBER LIVES IN ONE SPOT — "Day N" now sits beside the 📅 Calendar chip in the top stack (edited at the source) and is REMOVED from the scrolling info pill (both marquee copies); it still appears where it is content, not status: inside the Calendar itself, the Day Card and journal dates. Saves carry over: everything new lives in S.v119, defaulted lazily. ================= */
+function ensure119(){ if(!S)return null; if(!S.v119||typeof S.v119!=='object')S.v119={}; const V=S.v119; if(!V.sleep||typeof V.sleep!=='object')V.sleep={}; if(!V.jobs||typeof V.jobs!=='object')V.jobs={}; if(!V.veh||typeof V.veh!=='object')V.veh={}; if(!Array.isArray(V.garage))V.garage=[]; if(V.coverage===undefined)V.coverage=null; return V }
+if(S)ensure119();
+function hash119(str){ let h=7; str=String(str||''); for(let i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))>>>0; return h }
+function fmtH119(h){ if(h==null)return '—'; h=((Math.round(h)%24)+24)%24; const ap=h<12?'AM':'PM'; const hh=h%12===0?12:h%12; return hh+':00 '+ap }
+/* ---------- 😴 SLEEP SCHEDULES — one per person, set once, kept ---------- */
+function isCareLabel119(name){ try{ if(S&&S.tod&&S.tod.rels){ const ks=Object.keys(S.tod.rels); for(let i=0;i<ks.length;i++){ if(S.tod.rels[ks[i]]&&S.tod.rels[ks[i]].label===name)return true } } }catch(e){} return false }
+function sleepSched119(name){ if(!S||!name)return{bed:22,wake:7}; const V=ensure119(); if(V.sleep[name])return V.sleep[name];
+ const h=hash119(name); const age=(typeof charAge79==='function')?charAge79(name):null; let bed,wake;
+ if(isCareLabel119(name)||(typeof isParentNpc==='function'&&isParentNpc(name))){ bed=21+(h%3); wake=6+(h%3) }
+ else if(age!==null&&age<13){ bed=20; wake=7 }
+ else if(age!==null&&age<18){ bed=22; wake=6+(h%2) }
+ else if(age!==null&&age>=65){ bed=21; wake=6 }
+ else { bed=21+(h%3); wake=6+(h%3) }
+ V.sleep[name]={bed:bed,wake:wake}; return V.sleep[name] }
+function asleep119(name){ if(!S||!name||name===S.name)return false; if(name==='Family'||name==='School'||name==='FBI'||name==='Officer')return false; const sc=sleepSched119(name); const h=(S.hour==null?12:S.hour); return h>=sc.bed||h<sc.wake }
+const _dc119=doCall;
+doCall=function(who,fromWhere){ if(asleep119(who)){ const sc=sleepSched119(who); toast('😴 '+who+' is asleep — no calls or texts until '+fmtH119(sc.wake)); log('📵 You tried '+who+' — they are ASLEEP (their schedule: '+fmtH119(sc.bed)+'–'+fmtH119(sc.wake)+'). The call never rang and no text goes through: people sleep, and the phone respects it.'); return } return _dc119(who,fromWhere) };
+const _cr119=chooseReply;
+chooseReply=function(id,idx){ const m=(S&&S.phoneMsgs)?S.phoneMsgs.find(function(x){ return x.id===id }):null; if(m&&asleep119(m.from)){ toast('😴 '+m.from+' is asleep — your text can\'t go through until '+fmtH119(sleepSched119(m.from).wake)); return } return _cr119(id,idx) };
+const _io119=inviteOver;
+inviteOver=function(name){ if(asleep119(name)){ toast('😴 '+name+' is asleep right now — no answer, no coming over'); log('📵 You tried inviting '+name+' over — they are asleep ('+fmtH119(sleepSched119(name).bed)+'–'+fmtH119(sleepSched119(name).wake)+'). Nobody answers a door in their sleep.'); return } return _io119(name) };
+/* asleep people do not hold conversations — ambient chat skips them (their sprite is parked in the bedroom, asleep) */
+const _rc119=runConversations;
+runConversations=function(now){ const rest=[]; try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in'&&asleep119(n.name)){ rest.push(n); n.state='rest119' } }) }catch(e){}
+ try{ return _rc119(now) } finally { rest.forEach(function(n){ n.state='in' }) } };
+/* ---------- 💼 CAREGIVER JOBS + SCHEDULES ---------- */
+function cgJob119(name){ if(!S||!name)return null; const V=ensure119(); if(V.jobs[name])return V.jobs[name];
+ let title=null; try{ const j=(typeof npcJobOf47==='function')?npcJobOf47(name):null; if(j&&j.t)title=j.t }catch(e){}
+ if(!title){ try{ const jl=(typeof jobLine47==='function')?jobLine47(name):''; if(jl&&jl.indexOf('No job')!==0&&jl.indexOf(' at ')>0)title=jl.split(' at ')[0]; else if(jl&&jl.indexOf('No job')!==0)title=jl }catch(e){} }
+ if(!title){ const pool=JOB_BOARD.filter(function(j){ return !j.teen }); title=pool[hash119(name)%pool.length].t }
+ const start=7+(hash119(name+'·shift')%4); const job={title:title,start:start,end:start+8}; V.jobs[name]=job; return job }
+function cgAtWork119(name){ if(!S)return false; const j=cgJob119(name); if(!j)return false; if((S.day%7)>=5)return false; const h=(S.hour==null?0:S.hour); return h>=j.start&&h<j.end }
+function caregiverNames119(){ const out=[]; const push=function(n){ if(n&&out.indexOf(n)<0)out.push(n) };
+ if(!S)return out;
+ if(S.age>=1&&S.age<=4){ push((typeof todCare82==='function')?todCare82():null); push((typeof careHelper==='function')?careHelper():null);
+  if(S.tod&&S.tod.rels)Object.keys(S.tod.rels).forEach(function(k){ const r=S.tod.rels[k]; if(r&&(k==='caregiver'||k==='dad'||k==='mom'||k==='grandma'||k==='grandpa'))push(r.label) }) }
+ else { if(S.spouse)push(S.spouse); if(S.partner)push(S.partner); (S.housemates||[]).forEach(push) }
+ return out }
+/* ---------- 👶 TODDLER COVERAGE — never unwatched ---------- */
+let covHour119=-1;
+function coverageEval119(){ if(!S||(S.jail&&S.jail.in))return; const V=ensure119();
+ caregiverNames119().forEach(function(n){ cgJob119(n) });
+ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤'&&S.age<=4)return; // the toddler is asleep too — nobody needs cover
+ if(S.age>=1&&S.age<=4){ const cgs=caregiverNames119(); if(!cgs.length){ if(V.coverage){ V.coverage=null; save() } return }
+  const avail=cgs.filter(function(n){ return !asleep119(n)&&!cgAtWork119(n) });
+  if(avail.length){ if(V.coverage&&V.coverage.day===S.day){ V.coverage=null; save() } return }
+  if(!V.coverage||V.coverage.day!==S.day){ const p=cgs[0]; const sleeping=asleep119(p); const job=cgJob119(p);
+   V.coverage={day:S.day,who:'sitter',label:'🧑 The Babysitter ($20 — the household books & pays)',for:S.name,because:(sleeping?(p+' is asleep (sleep '+fmtH119(sleepSched119(p).bed)+'–'+fmtH119(sleepSched119(p).wake)+')'):(p+' is at work — '+(job?job.title:'work')+', '+fmtH119(job?job.start:9)+'–'+fmtH119(job?job.end:17)+')'))};
+   log('👶 COVERAGE — '+V.coverage.because+', so the household booked the 🧑 Babysitter ($20, household-paid) to watch '+S.name+'. A toddler is never left unwatched: the sitter is here in the house, and it is all in the journal.'); save() }
+  return }
+ const tots=(S.kids||[]).filter(function(k){ return k&&k.age>=1&&k.age<=4 });
+ if(!tots.length){ if(V.coverage&&V.coverage.day===S.day){ V.coverage=null; save() } return }
+ const other=S.spouse||S.partner; const otherAvail=!!other&&!asleep119(other);
+ let busyWhy=null;
+ if(S.jobInfo&&typeof isWorkDay57==='function'&&isWorkDay57(S.jobInfo)){ const sch=(typeof schedOf57==='function')?schedOf57(S.jobInfo):null; const h=(S.hour==null?0:S.hour); if(sch&&h>=sch.start&&h<sch.end)busyWhy='you are at work ('+S.jobInfo.title+', '+fmtH119(sch.start)+'–'+fmtH119(sch.end)+')' }
+ if(!busyWhy&&typeof activity!=='undefined'&&activity&&activity.icon==='💤')busyWhy='you are asleep';
+ if(!busyWhy){ if(V.coverage&&V.coverage.day===S.day){ V.coverage=null; save() } return }
+ if(otherAvail)return; // the other parent has them — covered at home, nothing to arrange
+ if(!V.coverage||V.coverage.day!==S.day){ const names=tots.map(function(k){ return k.name }).join(' & ');
+  if(S.money>=20){ money(-20,'👶 Babysitter — toddler coverage'); V.coverage={day:S.day,who:'sitter',label:'🧑 The Babysitter ($20)',for:names,because:busyWhy}; log('👶 COVERAGE — '+busyWhy+', so a 🧑 Babysitter ($20) is watching '+names+'. Arranged automatically, the moment it was needed — the toddler is never left unwatched.') }
+  else { V.coverage={day:S.day,who:'daycare',label:'🏫 Daycare',for:names,because:busyWhy}; log('👶 COVERAGE — '+busyWhy+', and the sitter money is not there, so '+names+' went to 🏫 Daycare for the stretch. Arranged automatically — never unwatched.') }
+  save() } }
+const _nd119=nextDay;
+nextDay=function(skip){ const r=_nd119(skip); try{ dedupeScrap119(); coverageEval119() }catch(e){} return r };
+/* ---------- 📖 TEACHING — anyone can teach: the do-path and the ask-path ---------- */
+function teacherPool119(){ const pool=[]; const push=function(n){ if(n&&pool.indexOf(n)<0&&n!==S.name)pool.push(n) };
+ if(!S)return pool; caregiverNames119().forEach(push);
+ if(S.tod&&S.tod.rels)Object.keys(S.tod.rels).forEach(function(k){ push(S.tod.rels[k].label) });
+ (S.housemates||[]).forEach(push);
+ try{ const V=ensure119(); if(V.coverage&&V.coverage.day===S.day)push(V.coverage.who==='sitter'?'Babysitter':'Daycare teacher') }catch(e){}
+ return pool }
+function normTitle119(t){ return String(t||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().replace(/^milestone /,'') }
+const _todAuto119=todAutoDev114;
+todAutoDev114=function(){ if(!S||S.age<1||S.age>4||!S.tod)return _todAuto119();
+ const before=Object.keys(S.tod.miles).filter(function(k){ return S.tod.miles[k] });
+ const r=_todAuto119();
+ try{ const pool=teacherPool119(); if(!pool.length)return r; const after=Object.keys(S.tod.miles).filter(function(k){ return S.tod.miles[k] });
+  const fresh=after.filter(function(k){ return before.indexOf(k)<0 });
+  const teacher=pool[hash119(S.name+'·'+S.day)%pool.length];
+  fresh.forEach(function(k){ const def=(typeof TOD_MILES72!=='undefined')?TOD_MILES72.find(function(m){ return m[0]===k }):null; const nm=def?def[2]:'milestone';
+   log('📖 TAUGHT BY '+teacher+' — the '+String(nm).toLowerCase()+' did not just happen: '+teacher+' coached it, little by little, until it landed. Anyone can teach — family, the sitter, daycare — and today it was '+teacher+'.');
+   const ent=(S.scrap84||[]).find(function(m){ return m.day===S.day&&normTitle119(m.title)===normTitle119(nm) });
+   if(ent&&ent.text.indexOf('Taught by')<0){ ent.text+=' Taught by '+teacher+'.'; save() } });
+  if(!fresh.length&&Math.random()<0.5){ const t2=pool[Math.floor(Math.random()*pool.length)]; log('📖 '+t2+' spent time teaching '+S.name+' today — words, steps and potty practice, a little at a time. It all feeds the same growing.') }
+ }catch(e){}
+ return r };
+const _kidAuto119=kidAutoDev114;
+kidAutoDev114=function(){ const before={}; try{ (S&&S.kids||[]).forEach(function(k){ if(k)before[k.name]=(k.dev114?k.dev114.words:0)||0 }) }catch(e){}
+ const r=_kidAuto119();
+ try{ (S.kids||[]).forEach(function(k){ if(k&&k.dev114&&before[k.name]===0&&k.dev114.words===1){ const pool=[S.name]; if(S.spouse||S.partner)pool.push(S.spouse||S.partner); (S.housemates||[]).forEach(function(h){ pool.push(h) }); const V=ensure119(); if(V.coverage&&V.coverage.day===S.day)pool.push('the Babysitter'); const t=pool[hash119(k.name+'·'+S.day)%pool.length]; log('📖 TAUGHT BY '+t+' — '+k.name+'\'s first word was coached by '+t+', word by word, all week. Anyone can teach — and someone did.') } }) }catch(e){}
+ return r };
+function teachAccept119(kind,teacher){ if(!S)return; ensure72(); const T=S.tod,D=S.dev84; if(!T||!D){ closeModal(); return }
+ if(kind==='comm'){ todXp72('comm',9); if(!D.words.length){ const w=pickArr(['mama','dada','ball','doggy','more','hi']); D.words.push(w); todMile72('word') } }
+ else if(kind==='motor'){ todXp72('motor',9); D.practice=(D.practice||0)+2; if(D.practice>=3&&!S.canWalk){ learnToWalk(); todMile72('steps',true) } }
+ else { todXp72('indep',9); D.potty=Math.min(100,(D.potty||0)+14); if(D.potty>=50)todMile72('potty') }
+ log('📖 '+teacher+' taught '+S.name+' today — a real little lesson, accepted and counted. Taught by '+teacher+'.'); toast('📖 '+teacher+' taught '+S.name+'!'); closeModal(); save(); render() }
+function teachDecline119(teacher){ if(!S)return; log('📖 '+teacher+' offered to teach, and the house passed for today — no hard feelings; the growing carries on in the background, as always.'); closeModal(); save() }
+/* ---------- 🎥 CAMERA DISCIPLINE — one zoom in, one zoom out ---------- */
+let camLog119=[], zoomIns119=0;
+const _fc119=focusCamera;
+focusCamera=function(x,y,opts){ opts=opts||{}; const now=performance.now();
+ if(opts.own&&opts.dur===1500&&opts.scale===1.42)return true; // (c) the v101 decorative tap-pulse: a zoom for no reason — gone. The action itself zooms.
+ if(typeof activity!=='undefined'&&activity&&!opts.own)return true; // (a) mid-performance: the action's own zoom holds — nothing else reframes, extends or restarts it (a fresh press zooms its own action, per the takeover model)
+ if(!opts.own&&!opts.pair119&&typeof charX!=='undefined'&&(Math.abs((x||0)-charX)>24||Math.abs((y||0)-charY)>24)){ const d=Math.hypot((x||450)-charX,(y||260)-charY); if(d>40&&d<560){ x=Math.round((x+charX)/2); y=Math.round((y+charY)/2); opts=Object.assign({},opts,{scale:Math.min(opts.scale||1.45,1.45)}) } } // (b) a person near you: frame BOTH speakers
+ if(camState.active&&now-camState.lastFocus<1000&&!opts.force){ camState.x=Math.max(40,Math.min(860,x||450)); camState.y=Math.max(40,Math.min(420,y||260)); camState.scale=Math.max(camState.scale,opts.scale||1.5); camState.until=Math.max(camState.until,now+(opts.dur||2400),camHoldUntil); camState.lastFocus=now; const tk=++camState.token; const wait=Math.max(80,camState.until-now); setTimeout(function(){ if(camState.token===tk){ camState.active=false; applyCameraTransform() } },wait+90); camLog119.push({t:now,kind:'glide',x:camState.x,y:camState.y,scale:camState.scale}); return true } // a fresh call inside the same zoom glides/extends it — it does not restart it
+ const wasActive=camState.active; const r=_fc119(x,y,opts); if(r&&!wasActive){ zoomIns119++; camLog119.push({t:now,kind:'in',x:x,y:y,scale:opts.scale||1.55}) } if(camLog119.length>60)camLog119.shift(); return r };
+const _gf119=gentleFocus;
+gentleFocus=function(n){ if(!n)return; if(typeof activity!=='undefined'&&activity)return; // ambient talk between two people: frame BOTH speakers, once
+ let other=null,bd=1e9; const all=[]; if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(m){ if(m!==n&&m.state==='in')all.push(m) }); if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(m){ if(m!==n&&m.state==='in')all.push(m) });
+ all.forEach(function(m){ const d=Math.hypot(m.x-n.x,m.y-n.y); if(d<bd){ bd=d; other=m } });
+ if(other&&bd<300){ focusCamera(Math.round((n.x+other.x)/2),Math.round((n.y+other.y)/2),{dur:3000,scale:1.35,pair119:true}); return }
+ return _gf119(n) };
+/* ---------- 🎓 TUTORIAL — no blur while a step is up ---------- */
+const _tut119=tutStep102;
+tutStep102=function(i){ _tut119(i); try{ const md=document.getElementById('modal'); if(md&&md.classList.contains('open'))md.classList.add('tut119') }catch(e){} };
+const _cm119=closeModal;
+closeModal=function(){ try{ const md=document.getElementById('modal'); if(md)md.classList.remove('tut119') }catch(e){} return _cm119() };
+/* ---------- 🚪 ROOM CHANGES & ARRIVALS — the menu stays DOWN ---------- */
+function menuDown119(){ try{ spot110=null }catch(e){} try{ setDock(false); setTimeout(function(){ try{ setDock(false) }catch(e){} },850) }catch(e){} }
+const _gr119=goRoom86;
+goRoom86=function(id){ const r=_gr119(id); menuDown119(); return r };
+/* ---------- 📋 THE QUEUE IS GONE (runtime half — the Actions UI is edited at the source) ---------- */
+try{ if(S&&Array.isArray(S.queue84)&&S.queue84.length){ S.queue84=[]; save() } }catch(e){}
+queueAdd84=function(){ toast('⚡ No queue any more — just press the action and it happens') };
+queueDel84=function(){};
+queueClear84=function(){ if(S)S.queue84=[] };
+queueTick84=function(){};
+queueCard84=function(){ return '' };
+openQueue93=function(){ toast('⚡ No queue any more — just press the action and it happens') };
+if(typeof TIPS!=='undefined'){ delete TIPS['queue84']; delete TIPS['queue93']; delete TIPS['queuebtn99'] }
+try{ const _vsc119=v84SettingsCard; v84SettingsCard=function(){ return _vsc119().replace('lives on the ⚡ Actions cards in the tray — line actions up right on their cards (3 max, then a breather)','is gone — actions just happen when you press them, no lining up') } }catch(e){}
+/* ---------- 📸 SCRAPBOOK — one event, one entry ---------- */
+const _snap119=snap84;
+snap84=function(key,icon,title,text,scene){ if(S&&Array.isArray(S.scrap84)&&title){ const nt=normTitle119(title); if(nt&&S.scrap84.some(function(m){ return m.day===S.day&&normTitle119(m.title)===nt }))return } return _snap119(key,icon,title,text,scene) };
+function dedupeScrap119(){ if(!S||!Array.isArray(S.scrap84))return 0; const seen={},out=[]; S.scrap84.forEach(function(m){ const k=normTitle119(m.title)+'|'+m.day; if(seen[k])return; seen[k]=1; out.push(m) }); const dropped=S.scrap84.length-out.length; if(dropped>0){ S.scrap84=out; save() } return dropped }
+/* ---------- 🚪 CHANGE ROOMS — everyone physically present is listed ---------- */
+const _rf119=roomFolks106;
+roomFolks106=function(rid){ let here=[]; try{ here=_rf119(rid)||[] }catch(e){}
+ const add=function(n){ if(n&&here.indexOf(n)<0)here.push(n) };
+ try{ const rm=(typeof curRoom86==='function')?curRoom86():null; const myRoom=rm?rm.id:null;
+  if(S.location===(typeof homeLoc==='function'?homeLoc():null)){
+   if(S.guest&&S.guest.day===S.day&&rid===myRoom)add(S.guest.name);
+   if(S.sleepover&&S.sleepover.at==='mine'&&S.sleepover.guest&&rid===myRoom)add(S.sleepover.guest);
+   if(typeof doorVisitor91!=='undefined'&&doorVisitor91&&rid===myRoom)add(doorVisitor91.name) }
+  if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in'&&(p.room86||'living')===rid)add(p.name) });
+ }catch(e){}
+ return here.map(function(n){ return asleep119(n)?(n+' 💤 asleep'):n }) };
+/* ---------- 🚗 VEHICLES — own several, equip ONE ---------- */
+const VEH_EXTRA119=[{name:'🚲 City Bike',price:60},{name:'🛵 Scooter',price:150}];
+function vehModels119(){ return CAR_LISTINGS.concat(VEH_EXTRA119) }
+function vehOf119(name){ if(!S||!name)return{owned:[],equipped:null}; const V=ensure119();
+ if(name===S.name){ const owned=(V.garage||[]).map(function(g){ return g.name }); if(S.car&&S.car.owned&&owned.indexOf(S.car.name)<0)owned.unshift(S.car.name); return {owned:owned,equipped:(S.car&&S.car.owned)?S.car.name:null} }
+ if(V.veh[name])return V.veh[name]; const h=hash119('veh·'+name); const models=vehModels119(); const owned=[];
+ if(h%10<7){ owned.push(models[h%models.length].name); if(h%5===0){ const second=models[(h>>3)%models.length].name; if(owned.indexOf(second)<0)owned.push(second) } }
+ const rec={owned:owned,equipped:owned.length?owned[0]:null}; V.veh[name]=rec; return rec }
+function equipVeh119(name,model){ if(!S)return; const rec=vehOf119(name); if(rec.owned.indexOf(model)<0)return; rec.equipped=model; log('🔑 '+name+' equipped the '+model+' — one vehicle at a time: the equipped one is the one you see them use; the rest stay parked, owned but idle.'); save(); openNpcResume54(name) }
+function equipCar119(i){ if(!S||!S.car||!S.car.owned)return; const V=ensure119(); const g=V.garage[i]; if(!g)return; const cur={name:S.car.name,price:S.car.price||0,gas:S.car.gas,condition:S.car.condition}; S.car.name=g.name; S.car.price=(g.price==null?S.car.price:g.price); S.car.gas=(g.gas==null?80:g.gas); S.car.condition=(g.condition==null?90:g.condition); V.garage[i]=cur; log('🔑 Equipped the '+g.name+' — it is the car on show now: the one in the scene, the one that drives your trips. The '+cur.name+' stays yours, parked in the garage, unequipped.'); save(); render(); renderTabs(curTab) }
+const _buyCar119=buyCar;
+buyCar=function(i){ const prev=(S&&S.car&&S.car.owned)?{name:S.car.name,price:S.car.price||0,gas:S.car.gas,condition:S.car.condition}:null; _buyCar119(i); try{ if(prev&&S.car&&S.car.owned&&S.car.name!==prev.name){ ensure119().garage.push(prev); log('🚗 The '+prev.name+' moves to your garage — still yours, just unequipped. Equip it any time from the 🚗 Cars card in Travel; only the equipped car shows and drives.'); save() } }catch(e){} };
+const _cars119=carsCardHtml114;
+carsCardHtml114=function(){ let h=_cars119(); try{ if(!S)return h; const V=ensure119(); let rows='';
+ if(S.car&&S.car.owned)rows+='<div class="kv"><span>'+S.car.name+' — ⛽ '+S.car.gas+'% • 🔧 '+S.car.condition+'%</span><b>⭐ EQUIPPED — on show</b></div>';
+ (V.garage||[]).forEach(function(g,i){ rows+='<div class="kv"><span>'+g.name+' — parked in your garage (owned, not equipped)</span><button class="btn outline" style="width:auto;margin:0;padding:6px 12px;flex:none" onclick="equipCar119('+i+')">🔑 Equip</button></div>' });
+ if(rows)h=h.replace(/<\/div>$/,'<h4 style="margin:12px 0 4px">🚗 Your vehicles — one equipped at a time</h4>'+rows+'</div>') }catch(e){} return h };
+/* person panels (event cards) gain the sleep + vehicle lines too */
+const _pp119=personPanelHtml;
+personPanelHtml=function(name){ let h=_pp119(name); try{ if(!name||name==='Officer'||name===S.name)return h; const sc=sleepSched119(name); const st=asleep119(name)?('😴 Asleep now — until '+fmtH119(sc.wake)):('🌙 Sleeps '+fmtH119(sc.bed)+'–'+fmtH119(sc.wake)); const veh=vehOf119(name);
+ h=h.replace(/<\/div><\/div>$/,'<div class="evRow"><span>😴 Sleep</span><b>'+st+'</b></div>'+(veh.equipped?'<div class="evRow"><span>🚗 Vehicle</span><b>'+veh.equipped+(veh.owned.length>1?' (equipped)':'')+'</b></div>':'')+'</div></div>') }catch(e){} return h };
+/* ---------- 🛣️ THE DRIVING SCENE ---------- */
+let driving119=false;
+const _goLoc119=goLoc;
+goLoc=function(id){ if(!S||driving119||id===S.location||(S.jail&&S.jail.in))return _goLoc119(id);
+ const md=document.getElementById('modal'); if((md&&md.classList.contains('open'))||(typeof activity!=='undefined'&&activity))return _goLoc119(id);
+ let veh=null,driver=null; const party=[S.name];
+ if(S.age>=18){ if(S.car&&S.car.owned&&S.car.license){ veh=S.car.name; driver=S.name } }
+ else if(S.escort){ const ev=vehOf119(S.escort); if(ev.equipped){ veh=ev.equipped; driver=S.escort; if(party.indexOf(S.escort)<0)party.push(S.escort) } }
+ if(window._dateWith&&party.indexOf(window._dateWith)<0)party.push(window._dateWith);
+ if(!veh)return _goLoc119(id);
+ const opt=(typeof TRAVEL_OPTS!=='undefined')?TRAVEL_OPTS.find(function(o){ return o[0]===id }):null; const dest=opt?opt[1]:id;
+ driving119=true;
+ openSheet('<h2>🚗 On the road</h2><p><b>'+driver+'</b> is driving the <b>'+veh+'</b> — the equipped vehicle — to <b>'+dest+'</b>.</p><div class="driveRoad119"><div class="driveCar119">'+veh.split(' ')[0]+'</div></div><p style="margin:6px 0 2px"><b>Coming along:</b></p><p>'+party.map(function(p){ return '<span class="passChip119">'+(p===S.name?'⭐ ':'')+p+'</span>' }).join('')+'</p><p class="small">The drive plays out on the road, then you arrive — menu down, scene first, like every arrival.</p>',{sfx:'pop'});
+ setTimeout(function(){ driving119=false; try{ closeModal() }catch(e){} const from=S.location; _goLoc119(id); try{ if(S.location===id&&from!==id)menuDown119() }catch(e){} },2350) };
+/* ---------- 💤 SLEEPING IS VISIBLE + 🚗 EQUIPPED VEHICLES RIDE ALONGSIDE ---------- */
+const _dr119=drawRoom;
+drawRoom=function(){ _dr119(); try{ if(!S||!inGame)return; const cv=document.getElementById('cv'); if(!cv)return; const ctx=cv.getContext('2d'); ctx.save(); ctx.textAlign='center';
+ const folks=[]; if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ folks.push(n) }); if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ folks.push(p) });
+ const atHome=S.location===(typeof homeLoc==='function'?homeLoc():null);
+ folks.forEach(function(n){ if(n.state!=='in')return; if(typeof npcs!=='undefined'&&npcs&&npcs.indexOf(n)>=0&&typeof npcHere86==='function'&&!npcHere86(n))return;
+  if(asleep119(n.name)){ ctx.font='17px sans-serif'; ctx.fillText('💤',n.x+24,n.y-58); ctx.font='bold 10px sans-serif'; ctx.fillStyle='#93c5fd'; ctx.fillText('asleep',n.x+24,n.y-43) }
+  else if(!atHome){ const veh=vehOf119(n.name); if(veh.equipped){ ctx.font='15px sans-serif'; ctx.fillText(veh.equipped.split(' ')[0],n.x-26,n.y-52) } } });
+ ctx.restore() }catch(e){} };
+/* ---------- 📄 RÉSUMÉ — the shipped sheet, extended with age, schedule, sleep & vehicles ---------- */
+const _res119=openNpcResume54;
+openNpcResume54=function(name){ _res119(name); try{ if(!S||!name)return; const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.res119'))return;
+ const age=(typeof charAge79==='function')?charAge79(name):null; const sc=sleepSched119(name); const cj=cgJob119(name); const jl=(typeof jobLine47==='function')?jobLine47(name):''; const hasJob=jl&&jl.indexOf('No job')!==0;
+ const isCare=caregiverNames119().indexOf(name)>=0||(typeof isParentNpc==='function'&&isParentNpc(name));
+ const veh=vehOf119(name);
+ let schedLine; if(age!==null&&age>=5&&age<18)schedLine='🎒 School days, 8:00 AM–3:00 PM'; else if(hasJob||isCare)schedLine='💼 '+(hasJob?jl:(cj?cj.title:'Work'))+(cj?(' • weekdays '+fmtH119(cj.start)+'–'+fmtH119(cj.end)):''); else schedLine='🏠 Home & around town — no fixed shift';
+ let vh; if(veh.owned.length){ vh='<h4 style="margin:12px 0 4px">🚗 Vehicles — one equipped at a time</h4>'+veh.owned.map(function(m){ const eq=m===veh.equipped; return '<div class="kv"><span>'+m+(eq?'':' <span class="small">(owned, parked — not the one in use)</span>')+'</span>'+(eq?'<b>⭐ EQUIPPED</b>':'<button class="btn outline" style="width:auto;margin:0;padding:6px 12px;flex:none" onclick="equipVeh119(\''+name.replace(/'/g,"\\'")+'\',\''+m.replace(/'/g,"\\'")+'\')">🔑 Equip</button>')+'</div>' }).join('') } else vh='<h4 style="margin:12px 0 4px">🚗 Vehicles</h4><p class="small">No vehicle right now — they get around on foot, like plenty of the town.</p>';
+ const d=document.createElement('div'); d.className='res119';
+ d.innerHTML='<h4 style="margin:12px 0 4px">📋 The full picture</h4>'
+ +'<div class="kv"><span>🎂 Age</span><b>'+(age===null?'—':age)+'</b></div>'
+ +'<div class="kv"><span>❤️ Relationship to you</span><b>'+contactRel(name)+'</b></div>'
+ +(isCare&&cj?'<div class="kv"><span>💼 Caregiver\'s job & shift</span><b>'+cj.title+' • '+fmtH119(cj.start)+'–'+fmtH119(cj.end)+' weekdays</b></div>':'')
+ +'<div class="kv"><span>🗓️ Daily schedule</span><b>'+schedLine+'</b></div>'
+ +'<div class="kv"><span>😴 Sleep schedule</span><b>'+fmtH119(sc.bed)+' – '+fmtH119(sc.wake)+(asleep119(name)?' • 😴 ASLEEP NOW — calls & texts wait until '+fmtH119(sc.wake):'')+'</b></div>'
+ +vh;
+ sh.appendChild(d) }catch(e){} };
+/* ---------- 👆 TAP A CHARACTER → THEIR RÉSUMÉ ---------- */
+document.addEventListener('click',function(e){ try{ if(!S||!inGame)return; const cv=document.getElementById('cv'); if(!cv||e.target!==cv)return; const md=document.getElementById('modal'); if(md&&md.classList.contains('open'))return;
+ const saved=cv.style.transform; cv.style.transform=''; const r2=cv.getBoundingClientRect(); cv.style.transform=saved; if(!r2.width)return;
+ let bx=(e.clientX-r2.left)/r2.width*900, by=(e.clientY-r2.top)/r2.height*460;
+ if(camState.active){ bx=camState.x+(bx-camState.x)/camState.scale; by=camState.y+(by-camState.y)/camState.scale }
+ const cand=[{name:S.name,x:charX,y:charY}];
+ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in'&&!(typeof npcHere86==='function'&&!npcHere86(n)))cand.push(n) });
+ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')cand.push(p) });
+ if(S.escort)cand.push({name:S.escort,x:(typeof escortX!=='undefined'?escortX:charX+70),y:(typeof escortY!=='undefined'?escortY:charY+12)});
+ if(S.guest&&S.guest.day===S.day)cand.push({name:S.guest.name,x:charX+(charX>470?-72:72),y:charY+16});
+ if(S.sleepover&&S.sleepover.at==='mine'&&S.sleepover.guest)cand.push({name:S.sleepover.guest,x:charX+(charX>470?-72:72),y:charY+16});
+ let best=null,bd=1e9; cand.forEach(function(c){ const d=Math.hypot(c.x-bx,(c.y-20)-by); if(d<bd){ bd=d; best=c } });
+ if(best&&bd<54){ if(best.name===S.name){ if(typeof openSocialSheet==='function')openSocialSheet() } else openNpcResume54(best.name) }
+ }catch(err){} },true);
+/* ---------- 👽 ME TAB — no "Care & Growing" card; the coverage state rides here ---------- */
+const _rt119=renderTabs;
+renderTabs=function(active){ const r=_rt119(active); try{ if(!S||!inGame)return r; const p=document.getElementById('panel'); if(!p)return r;
+ p.querySelectorAll('.card').forEach(function(c){ const h3=c.querySelector('h3'); if(h3&&h3.textContent.indexOf('Care & Growing')>=0)c.remove() });
+ const V=ensure119(); const cov=V.coverage;
+ if(cov&&cov.day===S.day&&!p.querySelector('.covCard119')){ const html=p.innerHTML; if(html.indexOf('Toddler Years')>=0||html.indexOf('Marriage & Family')>=0){ const d=document.createElement('div'); d.className='covCard119'; d.innerHTML='<div class="card" style="border-color:#38bdf8"><h3>👶 Who\'s with the toddler — covered</h3><p><b>'+cov.label+'</b> is watching <b>'+cov.for+'</b> right now, because '+cov.because+'. The toddler is never left unwatched: when the responsible caregiver\'s job or sleep gets in the way, the household arranges this on its own — and writes it in the journal.</p></div>'; p.insertBefore(d,p.firstChild) } }
+ }catch(e){} return r };
+/* ---------- ⏱️ v119 housekeeping: sleepers to bed, coverage on the hour, scrapbook kept clean ---------- */
+let scrapCleaned119=false;
+setInterval(function(){ try{ if(!S||!inGame)return; ensure119();
+ if(!scrapCleaned119){ scrapCleaned119=true; dedupeScrap119() }
+ const gh=Math.floor(S.day*24+(S.hour||0)); if(gh!==covHour119){ covHour119=gh; coverageEval119() }
+ const rooms=(typeof homeRooms86==='function')?homeRooms86():null; const hasBed=rooms&&rooms.some(function(r){ return r.id==='bedroom' });
+ if(hasBed){ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state!=='in')return; if(asleep119(n.name)){ n.room86='bedroom'; if(n.bubble!=='💤')n.bubble='💤' } else if(n.bubble==='💤')n.bubble='' });
+  (S.housemates||[]).forEach(function(hm){ if(asleep119(hm))RT86.mate[hm]='bedroom' }) }
+ }catch(e){} },1200);
+/* ---------- 📖 the ask-path: a teacher offers, once a day at most ---------- */
+setInterval(function(){ try{ if(!S||!inGame)return; const V=ensure119(); if(S.age<1||S.age>4)return; if(V.teachAskDay===S.day)return; const md=document.getElementById('modal'); if(md&&md.classList.contains('open'))return; if(typeof activity!=='undefined'&&activity)return; const h=(S.hour||0); if(h<8||h>19)return; if(Math.random()>0.30)return;
+ const pool=teacherPool119().filter(function(n){ return !asleep119(n)&&!cgAtWork119(n) }); if(!pool.length)return;
+ const teacher=pool[Math.floor(Math.random()*pool.length)];
+ const skills=[['comm','🗣️ first words & talking'],['motor','👣 standing & first steps'],['potty','🚽 potty training']]; const sk=skills[Math.floor(Math.random()*skills.length)];
+ V.teachAskDay=S.day; save();
+ openSheet('<h2>📖 '+teacher+' offers to teach</h2><p><b>'+teacher+'</b> has a little time and a lot of patience: “Want me to work on <b>'+sk[1]+'</b> with '+S.name+'? Little and often is how it lands.”</p><p class="small">Anyone can teach — family, the sitter, daycare. Accept and the practice happens now, feeding the same automatic growing, with '+teacher+' credited. Pass, and the day just carries on.</p><button class="btn gold" onclick="teachAccept119(\''+sk[0]+'\',\''+teacher.replace(/'/g,"\\'")+'\')">📖 Yes — teach away</button><button class="btn outline" style="margin-top:8px" onclick="teachDecline119(\''+teacher.replace(/'/g,"\\'")+'\')">Not today</button>',{sfx:'pop'});
+ }catch(e){} },7000);
+if(typeof TIPS!=='undefined'){ TIPS['sleep119']={t:'😴 Everyone sleeps on a schedule',b:'Every person in town — family and townsfolk alike — has their own sleep schedule now (it is on their résumé: tap anyone in the scene). While they are asleep, calls and texts simply do not go through, and you can SEE them asleep at home: in bed, 💤 overhead. Schedules also run the house: a caregiver who is at work or asleep cannot watch the toddler, so the household books the sitter or daycare automatically — watch for the 👶 Coverage notes.'};
+ TIPS['veh119']={t:'🚗 Vehicles: own a few, equip ONE',b:'People own vehicles now — and exactly one is EQUIPPED: the one you see them use, icon and all. The rest are owned but parked. Your shipped car is your equipped one; buy another and the old one moves to your garage (🚗 Cars card, in Travel) until you equip it again. Trips by vehicle play a little driving scene — car, driver, and everyone coming along.'} }
+window.__v119={ensure119:ensure119,sleepSched119:sleepSched119,asleep119:asleep119,cgJob119:cgJob119,cgAtWork119:cgAtWork119,caregiverNames119:caregiverNames119,coverageEval119:coverageEval119,vehOf119:vehOf119,equipVeh119:equipVeh119,equipCar119:equipCar119,dedupeScrap119:dedupeScrap119,normTitle119:normTitle119,teachAccept119:teachAccept119,teachDecline119:teachDecline119,camLog119:function(){ return camLog119 },zoomIns119:function(){ return zoomIns119 }};
 </script>
 
 </body>
