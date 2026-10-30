@@ -577,7 +577,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=148;
+const GAME_VERSION=149;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -9753,7 +9753,7 @@ function asstDrama132(choice){ const V=ensure132(); const a=V&&V.asst; if(!a)ret
  if(choice==='fire'){ log('🧾 FIRED — '+a.name+' is gone, keys collected, passwords changed. Rogue arc: closed.'); V.asst=null }
  else if(choice==='confront'){ if(Math.random()<0.5){ a.rogue=false; a.loyalty=80; log('🗣️ THE TALK — tears, honesty, a line drawn in pen. '+a.name+' swears the rogue chapter is closed. Time will grade that promise.') } else { a.loyalty=30; log('🗣️ THE TALK — denials, mostly. '+a.name+' is still here, and so is the feeling in your stomach.') } }
  else { a.loyalty=Math.max(10,(a.loyalty||70)-15); log('🙈 You let it ride. The help is good, the charges are small, and some part of you is keeping receipts anyway.') }
- closeModal(); try{ save(); render(); renderTabs('home') }catch(e){} }
+ closeModal(); try{ save(); render(); renderTabs('me') }catch(e){} }
 /* ---------- item 36 + 38 entry points inside Social • item 36: pay someone to stream ---------- */
 const _ps132=phoneSocial;
 phoneSocial=function(){ const r=_ps132(); try{ setTimeout(function(){ const scr=document.querySelector('#sheet .phoneScreen'); if(!scr||scr.querySelector('.streamHub132'))return; const d=document.createElement('div'); d.className='streamHub132'; d.innerHTML='<div class="msg"><b>🔴 Creator Hub</b><br><button class="btn" style="background:#dc2626;color:#fff;width:auto;padding:8px 13px;margin-top:6px" onclick="goLivePOV132()">🔴 Go Live — POV, from right here</button> <button class="btn gold" style="width:auto;padding:8px 13px;margin-top:6px" onclick="payStreamSheet132()">💸 Pay someone to stream</button></div>'; scr.appendChild(d) },30) }catch(e){} return r };
@@ -10004,7 +10004,7 @@ function nameBabyGo133(){ if(!S)return; const k=(S.kids||[]).find(function(x){ r
  k.cert133={name:k.name,bornDay:(k.born||S.day),when:'Day '+(k.born||S.day)+' • '+clockStr(),parents:[S.name,(k.coParent||S.spouse||S.partner||'—')],gender:k.gender||''};
  try{ achPop132('parent') }catch(e){}
  log('📜 BIRTH CERTIFICATE ISSUED — '+k.cert133.name+', born '+k.cert133.when+', parents: '+k.cert133.parents.join(' & ')+'. It stays with the family records in 👽 Me.');
- closeModal(); try{ save(); render(); renderTabs('home') }catch(e){} toast('📜 Certificate issued — '+k.name) }
+ closeModal(); try{ save(); render(); renderTabs('me') }catch(e){} toast('📜 Certificate issued — '+k.name) }
 function certView133(i){ const k=(S.kids||[])[i]; if(!k||!k.cert133)return; const c=k.cert133;
  openSheet('<div class="cert133"><div style="font-size:30px">📜</div><h2>Certificate of Birth</h2><p style="margin:2px 0;font-size:12px;letter-spacing:2px">'+String(placeOf().city||'').toUpperCase()+' • '+String(placeOf().state||'').toUpperCase()+'</p><div style="border-top:1.5px solid #b4530933;margin:10px 0"></div><p style="font-size:12px;margin:2px 0">This certifies that</p><div style="font-size:26px;font-weight:900">'+c.name+'</div><p style="margin:4px 0">was born on <b>'+c.when+'</b>'+(c.gender?' — a baby '+c.gender:'')+'</p><p style="margin:4px 0">Parents: <b>'+c.parents.join(' & ')+'</b></p><div style="border-top:1.5px solid #b4530933;margin:10px 0"></div><p style="font-size:11px;opacity:.75">Issued at the birth • Kept with the family records • AquaLife Registry</p></div><button class="btn gold" style="margin-top:12px" onclick="closeModal()">📜 Keep it safe</button>') }
 let certBusy133=false;
@@ -11042,7 +11042,7 @@ function quickStart136(){ const A={}; QL136_QS.forEach(function(q){ A[q.k]=QL136
  else if(A.job==='yes')notes.push('💼 A job was picked, but jobs need a grown-up start — this life starts job-free, board waiting.');
  log('⚡ QUICK LIFE, BUILT FROM YOUR ANSWERS — '+S.name+', a '+(g==='girl'?'girl':'boy')+' of '+S.age+', placed in '+placeLine()+'. How the answers landed:');
  notes.forEach(function(n){ log('⚡ '+n) });
- save(); try{ renderTabs('home') }catch(e){} render() }
+ save(); try{ renderTabs('me') }catch(e){} render() }
 
 /* ================= items 4, 5, 7, 8, 9, 10: Me slim-down, the Social hub, pets at the store ================= */
 function cardTitle136(el){ if(!el)return ''; const h=el.querySelector?el.querySelector('h3'):null; if(h)return h.textContent||''; const sm=el.querySelector?el.querySelector('summary'):null; return sm?(sm.textContent||''):'' }
@@ -12944,5 +12944,329 @@ focusCamera=function(x,y,opts){ if(opts&&opts.own&&opts.dur===1500&&opts.scale==
 window.__v148={version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — bug-fix build: What\u2019s New stays open • preschool is a scheduled 8–3 school day (no activity cards, no parents in school) • no Assistant for toddlers • area rooms use the Change Rooms dropdown');
 </script>
+<script>
+/* ================= v149 — ROUND 15 (owner's vision: maximum dopamine; the game should feel
+   like YOUR OWN personal life; family should feel POWERFUL) =================
+   Canonical numbers set by THIS copy (flagged for the ledger):
+   1) SCRAPBOOK + SELFIES — home: a new 📸 Scrapbook PHONE APP (real rendered canvas snapshots).
+      Snapshot format: 256×131 JPEG, quality 0.55 (≈10–18 KB each). Album cap: 24 photos,
+      oldest dropped first (FIFO). Auto-capture moments: birthdays/age-ups, weddings, babies,
+      first steps, first day of school, graduations, promotions, first job, big casino wins
+      (new biggest win ≥ $500), fights (win or lose, incl. scar captures via gainScar132),
+      playdates, toddler tussles, toddler drops, plus MANUAL 📸 Take a photo / 🤳 Take selfie.
+      Selfie/photo send relationship effect: romance meter +3 when a romance exists, Social +3,
+      and the contact replies referencing the photo (photo-specific reply pool).
+   2) VISUAL SCENES — startActivity performances are classified by icon into scene families
+      (work, school/study, workout, cooking/eating, dates/social outings, crime/heists,
+      park/fishing/outdoors) and play out IN the room scene: an animated partner figure +
+      family props act alongside the player for the shipped activity duration (1.4–3.3 s).
+      A 🎬 scene bar offers SKIP — skip dismisses the visual overlay only; the action still
+      resolves on its shipped timer (pace unchanged). Dates (dateGo128) and heists
+      (heistGo141) get scenes at their destination/job. No fishing action exists in this
+      copy (only a news line), so the park/outdoors family covers park time instead.
+   3) MENUS STAY OPEN — general rule: the open state of every <details> dropdown/accordion
+      (panel + sheets) is recorded on toggle and restored after every render cycle and on a
+      600 ms guard tick. Only the player's own toggle closes a menu. Start state unchanged.
+   4) NO AUTONOMY NOTIFICATIONS — the 🤖 FREE WILL toast (the v144 announcement layer) is
+      removed at the toast layer, and ANY toast raised while a free-will act executes is
+      swallowed unless it is a warning with teeth (⚠️/🚨/CPS/danger/starving). Autonomy
+      itself is untouched; the journal/log history entries stay (a record, not a popup).
+      Swept with it: any toast matching /free will/i or starting with 🤖, from any source.
+   5) TODDLER FIGHTS — the shipped battle engine (startBattle128/battleSheet128 presentation),
+      toddler-scaled: both sides 12 HP ("toddler power pool"), hits 1–3 dmg, no weapons,
+      no lethal, NO wanted level, NO hospital bills, NO battleEnd128 adult fallout.
+      Triggers: playdates 20%, park visits 10% per ambient check (max 1/day), preschool
+      (at school) 8% per ambient check (max 1/day), plus a 🥊 Toddler tussle button at
+      park/school. Consequences: tears (Fun −5 on a loss), winner Fun +6 / Social +4,
+      friendship points with that toddler −6 (win) / −3 (lose), 15% chance of a minor
+      booboo routed through item 7's minor-injury handling, caregiver reaction in the log.
+   6) NEGLECT → CHILD SERVICES — meter per child (NPC kids in S.kids aged 0–10, and the
+      player when aged 0–10). NPC-kid input: the shipped kid happiness — happy ≤20: +9 per
+      check, ≤35: +4, ≥55: −12 (care resumes → meter drains; careKid also −25 instantly).
+      Player input: own needs — 2+ of {hunger ≤5, hygiene ≤10, energy ≤5}: +9; 1 of them: +4;
+      all needs ≥40: −14. Checks run every 12 s of play. Escalation (one stage per day,
+      warnings ALWAYS fire before removal): Stage 1 at meter ≥40 — child-services CALL
+      (sheet + log + toast; a warning with teeth, NOT muted by item 4). Stage 2 at ≥70 —
+      a VISIT with a 2-game-day fix window (get the child happy / your needs restored).
+      Stage 3 at ≥100, or when the visit window lapses unfixed — the child is TAKEN.
+      (a) NPC kid → foster care (S.v149.fosterKids): earn-back model — after 2+ visits
+      (Visit button on the Me-tab foster card) and every remaining kid at happy ≥50 (or no
+      other kids), "Earn them back" returns them at happy 60, meter zeroed.
+      (b) Player toddler/kid → life CONTINUES in foster care: placement at Hope House
+      (location 'orphanage', the shipped orphanage home), a persistent foster card, foster
+      care slowly restores needs toward 45, and a Caseworker review (Me tab) can return
+      the player home after ≥2 days with all needs ≥40 at review. Parents stay in the
+      save's household data (no shipped system is torn up); the placement state governs.
+   7) TODDLER DROPS — carrying contexts: travelling with a caregiver (goWithParent),
+      caregiver-led activities for a player toddler, playdates, and a parent using
+      careKid on a toddler (age ≤3). Base chance 3% per check, +4% in tired hours
+      (9 PM–6 AM), +3% when travelling; cap 10%; max 2 checks/day. On a drop the player
+      SEES it (scene beat + spotlight card + life log + a Scrapbook capture). Injury roll:
+      55% no injury (tears, Fun −6) • 35% minor booboo (Health −4, heals on its own in
+      2 days — no bills) • 10% worse (Health −10, shipped healthSys.injured for 3 days,
+      doctor/hospital via the shipped systems if the player chooses). NO death routing.
+      NPC toddlers: happy −12, 35% a 2-day booboo flag on the kid record. */
+(function(){
+'use strict';
+/* ---------- shared state ---------- */
+function ensure149(){ if(!S)return null; if(!S.v149)S.v149={}; const V=S.v149;
+ if(!Array.isArray(V.scrap))V.scrap=[]; if(!V.neglect)V.neglect={}; if(!V.self)V.self={m:0,stage:0,fixBy:0,w1:false,w2:false};
+ if(!V.fosterKids)V.fosterKids={}; if(V.fosterSelf===undefined)V.fosterSelf=null; if(!V.todPals)V.todPals={};
+ if(!V.menus)V.menus={}; if(V.booboo===undefined)V.booboo=null; if(V.dropDay===undefined)V.dropDay=0; if(V.dropN===undefined)V.dropN=0;
+ if(V.todFightDay===undefined)V.todFightDay=0; return V }
+function placeName149(){ try{ const m={house:'home',orphanage:'Hope House',boarding:'the dorm',school:(typeof schoolName==='function'&&typeof schoolStageKey==='function')?schoolName(schoolStageKey(S.age)||'elem'):'school',street:'Maple Street',work:'work',college:'campus',jail:'jail',beach:'the beach',city:'the city',mountains:'the mountains',park:'the park',pawn:'the pawn shop',hospital:'the hospital',store:'the store',grocery:'the store',restaurant:'the restaurant',bar:'the bar',gym:'the gym',arcade:'the arcade',cinema:'the cinema',fair:'the fair',spa:'the spa'}; return m[S.location]||'out and about' }catch(e){ return 'out and about' } }
+function captureRaw149(){ try{ const cv=document.getElementById('cv'); if(!cv||!cv.width)return null; const c=document.createElement('canvas'); c.width=256; c.height=131; const x=c.getContext('2d'); x.fillStyle='#1e293b'; x.fillRect(0,0,256,131); x.drawImage(cv,0,0,256,131); return c.toDataURL('image/jpeg',0.55) }catch(e){ return null } }
+function capture149(cap,kind){ if(!S)return null; const V=ensure149(); const img=captureRaw149(); if(!img)return null; V.scrap.unshift({img:img,cap:cap,day:S.day,age:S.age,kind:kind||'moment'}); if(V.scrap.length>24)V.scrap.length=24; try{ save() }catch(e){} return img }
+window.__ensure149=ensure149;
+/* ---------- styles ---------- */
+try{ const st=document.createElement('style'); st.id='style149'; st.textContent='.scrapGrid149{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.scrapCell149{border-radius:12px;overflow:hidden;border:2px solid #ffffff30;background:#00000030;cursor:pointer}.scrapCell149 img{width:100%;height:86px;object-fit:cover;display:block}.scrapCell149 div{font-size:11px;font-weight:700;padding:5px 7px;line-height:1.35;color:#fff}.sceneBar149{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--dockH,92px) + 64px);z-index:65;background:#111;color:#fff;border:2px solid var(--accent2,#ffb703);border-radius:999px;padding:7px 8px 7px 14px;display:none;align-items:center;gap:10px;font-weight:800;font-size:13px;box-shadow:0 10px 26px #00000055}.sceneBar149.show{display:flex}.sceneBar149 button{background:var(--accent2,#ffb703);color:#111;border:0;border-radius:999px;padding:6px 12px;font-weight:900;font-family:inherit;cursor:pointer}'; document.head.appendChild(st) }catch(e){}
+/* ---------- 4) NO AUTONOMY NOTIFICATIONS — the toast layer goes quiet for free will ---------- */
+let fwRun149=false;
+try{ const _toast149=toast; toast=function(t){ try{ if(typeof t==='string'){ if(/^\s*🤖/.test(t)||/free will/i.test(t))return; if(fwRun149&&!/⚠️|🚨|child services|CPS|danger|starv|taken away/i.test(t))return } }catch(e){} return _toast149(t) } }catch(e){}
+try{ const _dfw149=doFreeWillRun66; doFreeWillRun66=function(kind){ fwRun149=true; try{ return _dfw149(kind) }finally{ fwRun149=false } } }catch(e){}
+/* ---------- 1) SCRAPBOOK + SELFIES ---------- */
+try{ const _snap149=snap84; snap84=function(key,icon,title,text,scene){ const r=_snap149(key,icon,title,text,scene); try{ if(S){ const img=capture149(icon+' '+title+' — Day '+S.day,'auto'); if(img)log('📸 SCRAPBOOK — that moment is framed for real now: “'+title+'” lives in your 📸 Scrapbook app, an actual picture of the scene.') } }catch(e){} return r } }catch(e){}
+try{ const _gs149=gainScar132; gainScar132=function(who){ const r=_gs149(who); try{ if(S&&(!who||who===S.name))capture149('🩹 The fight that left a mark — Day '+S.day,'fight') }catch(e){} return r } }catch(e){}
+try{ const _be149=battleEnd128; battleEnd128=function(res){ const r=_be149(res); try{ if(S)setTimeout(function(){ try{ capture149('🥊 The fight — '+(res==='win'?'won it':res==='lose'?'took the L':'walked away')+' • Day '+S.day,'fight') }catch(e){} },380) }catch(e){} return r } }catch(e){}
+/* v149 SHEET GUARD — the same law v148 set for What's New: while a v149 sheet
+   (Scrapbook, photo view, child-services warnings) is showing, programmatic
+   closes from performances/queues are ignored; only the player's own tap
+   inside the sheet (or on the backdrop) closes it. */
+function sheet149(html,opts){ /* refresh the shipped tap/intent markers: v132/v144 anti-resurrection rules drop phone sheets whose last tap looks stale — a v149 sheet always traces to a player tap or a warning that must show. Stamps are future-dated (+5s) so the v144 gate's STRICT 'intent is newer than the last phone close' comparison holds even where the page clock does not advance between the close and this open. */ try{ lastTap132=Date.now()+5000 }catch(e){} try{ phoneIntent144=Date.now()+5000 }catch(e){} window._v149OwnOpen=true; window._v149Sheet=true; try{ openSheet(html,opts) }finally{ window._v149OwnOpen=false } }
+if(!window._cm149){ window._cm149=closeModal;
+ closeModal=function(){ if(window._v149Sheet&&!window._v149Tap)return; window._v149Sheet=false; return window._cm149.apply(this,arguments) };
+ document.addEventListener('click',function(e){ if(window._v149Sheet&&e.target&&(e.target.id==='modal'||(e.target.closest&&e.target.closest('#sheet')))){ window._v149Tap=true; setTimeout(function(){ window._v149Tap=false },120) } },true);
+ const _os149=openSheet; openSheet=function(html,opts){ if(!window._v149OwnOpen)window._v149Sheet=false; return _os149.apply(this,arguments) };
+}
+function scrapbook149(){ if(!S)return; const V=ensure149(); let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">Real pictures of YOUR life — actual snapshots of the scene, framed the moment they happen: birthdays, weddings, babies, first jobs, big wins, fights, family moments. <b>'+V.scrap.length+' / 24</b> framed (the oldest rolls off at 24).</p>';
+ h+='<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" style="width:auto;margin:0;padding:10px 16px" onclick="takePhoto149()">📸 Take a photo</button><button class="btn" style="width:auto;margin:0;padding:10px 16px;background:#db2777;color:#fff" onclick="takeSelfie149()">🤳 Take a selfie</button></div>';
+ if(!V.scrap.length)h+='<p style="margin-top:12px">📸 Nothing framed yet — live a little, or take the first one yourself right now.</p>';
+ else h+='<div class="scrapGrid149">'+V.scrap.map(function(p,i){ return '<div class="scrapCell149" onclick="scrapView149('+i+')"><img src="'+p.img+'" alt="Scrapbook photo"><div>'+p.cap+'<br><span style="opacity:.75">Day '+p.day+' • age '+p.age+'</span></div></div>' }).join('')+'</div>';
+ h+='<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:12px" onclick="openPhone()">‹ Phone Home</button>';
+ sheet149(phoneShell('📸 Scrapbook',h)) }
+window.scrapbook149=scrapbook149;
+function scrapView149(i){ if(!S)return; const V=ensure149(); const p=V.scrap[i]; if(!p)return; const contacts=Object.keys(S.contacts||{}).filter(function(n){ return n!=='FBI'&&n!=='School' });
+ let h='<div style="border-radius:14px;overflow:hidden;border:2px solid #ffffff40"><img src="'+p.img+'" style="width:100%;display:block" alt="Scrapbook photo, large"></div><p style="font-size:13.5px;line-height:1.5;margin-top:10px"><b>'+p.cap+'</b><br><span style="opacity:.8">Day '+p.day+' • age '+p.age+'</span></p>';
+ if(contacts.length)h+='<h4 style="margin:12px 0 4px">💬 Send this photo to…</h4>'+contacts.slice(0,8).map(function(n){ return '<button class="btn" style="background:#1f2937;color:#fff;margin-top:6px" onclick="sendScrap149('+i+',\''+n.replace(/'/g,"\\'")+'\')\">📤 Send to '+n+'</button>' }).join('');
+ h+='<button class="btn" style="background:#7f1d1d;color:#fff;margin-top:10px" onclick="scrapDel149('+i+')">🗑️ Remove from the Scrapbook</button><button class="btn gold" style="margin-top:8px" onclick="scrapbook149()">‹ Back to the Scrapbook</button>';
+ sheet149(phoneShell('📸 Scrapbook',h)) }
+window.scrapView149=scrapView149;
+function scrapDel149(i){ if(!S)return; const V=ensure149(); V.scrap.splice(i,1); save(); scrapbook149() }
+window.scrapDel149=scrapDel149;
+function takePhoto149(){ if(!S)return; const img=capture149('📸 '+placeName149()+' — Day '+S.day,'manual'); if(!img){ toast('📸 No scene to snap right now'); return } log('📸 PHOTO TAKEN — a real snapshot of '+placeName149()+', framed in the Scrapbook.'); try{ sfx('pop') }catch(e){} setTimeout(function(){ try{ scrapbook149() }catch(e){} },120) }
+window.takePhoto149=takePhoto149;
+function takeSelfie149(){ if(!S)return; const img=capture149('🤳 Selfie — '+placeName149()+' • Day '+S.day,'selfie'); if(!img){ toast('🤳 No scene for a selfie right now'); return } window._selfie149=img; log('🤳 SELFIE — snapped at '+placeName149()+' and filed in the Scrapbook. Looking like your own main character.'); setTimeout(function(){ try{ scrapbook149() }catch(e){} },120) }
+window.takeSelfie149=takeSelfie149;
+const PHOTO_REACT149=['okay this photo?? 📸😍 framing it. actually framing it','the PHOTO omg — you look so alive in this one ❤️','wait, is that really where you are rn?? iconic 📸','showing this to everyone. EVERYONE. 📸✨','this one has main-character energy and you know it 😌📸'];
+function photoReact149(to){ setTimeout(function(){ try{ if(!S)return; pushMsg(to,pickArr(PHOTO_REACT149)); try{ if(S.romance&&S.romance[to]){ S.romance[to].meter=Math.min(100,(S.romance[to].meter||0)+3); S.romance[to].lastTouch=S.day } }catch(e){} adj('social',3); log('💬 '+to+' reacted to your photo — ❤️ +3. A picture really is worth a thousand texts.'); save() }catch(e){} },2400) }
+function sendScrap149(i,to){ if(!S||!S.hasPhone){ toast('📱 You need your phone to send photos'); return } const V=ensure149(); const p=V.scrap[i]; if(!p)return; const m={id:Date.now()+Math.floor(Math.random()*9999)+820000,from:'You',to:to,text:'📷 Photo: '+p.cap,read:true,replied:true,img:{scene:'🤳📸',cap:p.cap,bg:pickArr(PHOTO_BGS),real:p.img}}; S.phoneMsgs.unshift(m); if(S.phoneMsgs.length>50)S.phoneMsgs.pop(); try{ markTalk69(to) }catch(e){} log('📤 Sent a photo to '+to+' — “'+p.cap+'”. It lives in the thread now, and in the Scrapbook.'); save(); photoReact149(to); openConvo(to) }
+window.sendScrap149=sendScrap149;
+function sendPhoto149(to){ if(!S)return; const img=capture149('📸 Photo for '+to+' — '+placeName149()+' • Day '+S.day,'sent'); if(!img){ toast('📸 No scene to snap right now'); return } const m={id:Date.now()+Math.floor(Math.random()*9999)+820001,from:'You',to:to,text:'📷 Photo: right now at '+placeName149(),read:true,replied:true,img:{scene:'🤳📸',cap:'right now at '+placeName149(),bg:pickArr(PHOTO_BGS),real:img}}; S.phoneMsgs.unshift(m); if(S.phoneMsgs.length>50)S.phoneMsgs.pop(); try{ markTalk69(to) }catch(e){} log('📤 Sent '+to+' a photo of RIGHT NOW — '+placeName149()+', as it actually looks.'); save(); photoReact149(to); openConvo(to) }
+window.sendPhoto149=sendPhoto149;
+/* selfies sent through the shipped 🤳 Send Selfie now carry the REAL snapshot + land in the Scrapbook */
+try{ const _ss149=sendSelfie; sendSelfie=function(to){ const r=_ss149(to); try{ if(S){ const img=capture149('🤳 Selfie sent to '+to+' — '+placeName149()+' • Day '+S.day,'selfie'); if(img){ const m=(S.phoneMsgs||[]).find(function(x){ return x.from==='You'&&x.img&&!x.img.real }); if(m)m.img.real=img; save(); if(typeof openConvo==='function')openConvo(to) } } }catch(e){} return r } }catch(e){}
+/* threads render REAL photos (and the viewer shows them big) */
+try{ const _oc149=openConvo; openConvo=function(from){ const r=_oc149(from); try{ const sh=document.getElementById('sheet'); if(!sh)return r; sh.querySelectorAll('.photoCard').forEach(function(card){ const oc=card.getAttribute('onclick')||''; const mm=oc.match(/openPhoto\((\d+)\)/); if(!mm)return; const msg=(S.phoneMsgs||[]).find(function(x){ return x.id===+mm[1] }); if(msg&&msg.img&&msg.img.real){ const sc=card.querySelector('.photoScene'); if(sc)sc.innerHTML='<img src="'+msg.img.real+'" style="width:100%;border-radius:8px;display:block" alt="Photo in this chat">'; card.style.background='#111827' } });
+ const selfieBtn=Array.prototype.slice.call(sh.querySelectorAll('button')).find(function(b){ return (b.getAttribute('onclick')||'').indexOf('sendSelfie(')>=0 });
+ if(selfieBtn&&!sh.querySelector('.sendPhoto149')){ const b=document.createElement('button'); b.className='btn sendPhoto149'; b.style.cssText='width:auto;margin:0;padding:10px 14px;background:#0ea5e9;color:#fff'; b.textContent='📸 Send a photo'; b.onclick=function(){ sendPhoto149(from) }; selfieBtn.parentNode.appendChild(b) } }catch(e){} return r } }catch(e){}
+try{ const _op149=openPhoto; openPhoto=function(id){ const r=_op149(id); try{ const m=(S.phoneMsgs||[]).find(function(x){ return x.id===id }); if(m&&m.img&&m.img.real){ const sh=document.getElementById('sheet'); const sc=sh?sh.querySelector('.photoScene'):null; if(sc)sc.innerHTML='<img src="'+m.img.real+'" style="width:100%;border-radius:10px;display:block" alt="Photo, full size">' } }catch(e){} return r } }catch(e){}
+try{ if(typeof PHONE_APPS!=='undefined'&&!PHONE_APPS.find(function(a){ return a.id==='scrap149' }))PHONE_APPS.push({id:'scrap149',icon:'📸',name:'Scrapbook'}) }catch(e){}
+try{ if(typeof PHONE_LAUNCH!=='undefined')PHONE_LAUNCH.scrap149=function(){ scrapbook149() } }catch(e){}
+/* ---------- 2) VISUAL SCENES — show it, don't tell it ---------- */
+const SCENE_FAM149={work:{label:'💼 On the job',prop:'💻',prop2:'🧰'},school:{label:'🎒 In class',prop:'✏️',prop2:'📖'},workout:{label:'🏋️ Working out',prop:'🏋️',prop2:'💦'},cooking:{label:'🍳 In the kitchen',prop:'🍳',prop2:'🥘'},social:{label:'🎉 Out together',prop:'🎵',prop2:'✨'},crime:{label:'🎭 The job goes down',prop:'💰',prop2:'👀'},park:{label:'🌳 Park time',prop:'🎣',prop2:'🦋'},drop:{label:'🤕 The drop!',prop:'🧸',prop2:'💫'}};
+function sceneFamFor149(icon){ switch(icon){ case '💻': case '🧹': case '💼': return 'work'; case '📚': case '🎒': return 'school'; case '🏋️': case '🏃': case '💪': return 'workout'; case '🍳': case '🍽️': case '🍪': return 'cooking'; case '🎉': case '📱': case '🎮': case '💕': return 'social'; case '😈': case '🤝': case '🎭': return 'crime'; case '🎣': case '🌳': case '🎢': case '🛝': return 'park'; default: return null } }
+let scene149=null;
+function sceneBar149(){ let bar=document.getElementById('sceneBar149'); if(!bar){ bar=document.createElement('div'); bar.id='sceneBar149'; bar.className='sceneBar149'; document.body.appendChild(bar) } return bar }
+function playScene149(fam,x,y,dur){ if(!fam||!SCENE_FAM149[fam])return; scene149={fam:fam,x:x||450,y:y||300,t0:performance.now(),until:performance.now()+(dur||2400)}; const bar=sceneBar149(); bar.innerHTML='<span>🎬 '+SCENE_FAM149[fam].label+' — playing out now</span><button type="button" onclick="skipScene149()">⏭ Skip</button>'; bar.classList.add('show') }
+function skipScene149(){ scene149=null; const bar=document.getElementById('sceneBar149'); if(bar)bar.classList.remove('show') }
+window.skipScene149=skipScene149; window.playScene149=playScene149;
+try{ const _sa149=startActivity; startActivity=function(icon,dur,x,y,needsDelta,onDone,opts){ const fam=sceneFamFor149(icon); if(fam)playScene149(fam,x,y,dur); try{ dropCheck149('activity') }catch(e){} return _sa149(icon,dur,x,y,needsDelta,onDone,opts) } }catch(e){}
+try{ const _dg149=dateGo128; dateGo128=function(nm,loc){ const r=_dg149(nm,loc); try{ playScene149('social',450,300,2800) }catch(e){} return r } }catch(e){}
+try{ if(typeof heistGo141==='function'){ const _hg149=heistGo141; heistGo141=function(){ playScene149('crime',450,300,3000); return _hg149() } } }catch(e){}
+try{ const _dr149=drawRoom; drawRoom=function(){ const r=_dr149(); try{ if(!scene149)return r; const now=performance.now(); if(now>scene149.until){ skipScene149(); return r } const cv=document.getElementById('cv'); if(!cv)return r; const ctx=cv.getContext('2d'); const F=SCENE_FAM149[scene149.fam]; const t=(now-scene149.t0)/1000; const bob=Math.sin(t*5)*5; const x=scene149.x, y=scene149.y;
+ ctx.save(); ctx.textAlign='center';
+ /* the second figure — a co-worker / classmate / date / crewmate — acting it out beside you */
+ const nx=Math.max(60,Math.min(840,x+92)), ny=y+8+bob*0.4;
+ ctx.fillStyle='#00000026'; ctx.beginPath(); ctx.ellipse(nx,ny+64,20,5,0,0,7); ctx.fill();
+ ctx.fillStyle='#f5d0b0'; ctx.beginPath(); ctx.arc(nx,ny,11,0,7); ctx.fill();
+ ctx.fillStyle='#334155'; ctx.beginPath(); ctx.roundRect(nx-10,ny+10,20,30,6); ctx.fill();
+ ctx.fillStyle='#475569'; ctx.fillRect(nx-10,ny+40,8,20); ctx.fillRect(nx+2,ny+40,8,20);
+ /* family props, animated */
+ ctx.font='26px serif'; const lift=scene149.fam==='workout'?Math.abs(Math.sin(t*3.2))*13:(Math.sin(t*2.6)*4);
+ ctx.fillText(F.prop,nx+26,ny-8-lift); ctx.font='19px serif'; ctx.fillText(F.prop2,x-58,y-26+Math.sin(t*3.4)*5);
+ if(scene149.fam==='cooking'){ ctx.font='15px serif'; for(let i=0;i<3;i++)ctx.fillText('~',x-20+i*16,y-58-Math.abs(Math.sin(t*2+i))*10) }
+ if(scene149.fam==='social'){ ctx.font='16px serif'; for(let i=0;i<3;i++)ctx.fillText('♪',x-40+i*34,y-64-Math.abs(Math.sin(t*2.4+i*1.3))*12) }
+ if(scene149.fam==='crime'){ ctx.font='17px serif'; ctx.fillText('…',nx+4,ny-30) }
+ ctx.restore() }catch(e){} return r } }catch(e){}
+/* ---------- 3) MENUS STAY OPEN — the general rule ---------- */
+let restoring149=false;
+function menuKey149(d){ const sm=d.querySelector(':scope > summary'); const t=sm?(sm.textContent||'').trim().replace(/\s+/g,' ').slice(0,70):''; return t||null }
+document.addEventListener('toggle',function(e){ try{ if(restoring149)return; const d=e.target; if(!d||d.tagName!=='DETAILS')return; if(!S)return; const V=ensure149(); const k=menuKey149(d); if(!k)return; if(d.open)V.menus[k]=1; else delete V.menus[k]; }catch(err){} },true);
+function restoreMenus149(){ try{ if(!S)return; const V=ensure149(); if(!V.menus)return; let changed=false; document.querySelectorAll('details').forEach(function(d){ const k=menuKey149(d); if(k&&V.menus[k]&&!d.open){ d.open=true; changed=true } }); if(changed){ restoring149=true; setTimeout(function(){ restoring149=false },60) } }catch(e){} }
+setInterval(restoreMenus149,600);
+/* ---------- 7) TODDLER DROPS + INJURY ---------- */
+function booboo149(src){ if(!S)return; const V=ensure149(); V.booboo={untilDay:S.day+2,src:src}; adj('health',-4); log('🩹 BOOBOO — a real bruise and a lot of tears. It is the minor kind: it heals on its own in about 2 days, no doctor, no bill. (Item 7 minor tier.)'); save() }
+function dropResolve149(whoLabel,isPlayerTod){ const roll=Math.random(); playScene149('drop',typeof charX!=='undefined'?charX:450,typeof charY!=='undefined'?charY:320,1600);
+ try{ showSpotlight('🤕','THE DROP!',whoLabel+' hit the floor — a horrible half-second, then the crying starts. Everybody saw it happen.') }catch(e){}
+ log('🤕 THE DROP — '+whoLabel+'. It happened in front of everyone: a slip, a gasp, a landing that was NOT soft.');
+ setTimeout(function(){ try{ capture149('🤕 The drop — Day '+S.day,'drop') }catch(e){} },320);
+ if(roll<0.55){ if(isPlayerTod){ adj('fun',-6); log('😭 Tears, loud ones — but that is all: no injury. Shaken, cuddled, furious about it for a full minute.') } }
+ else if(roll<0.90){ if(isPlayerTod)booboo149('drop'); else log('🩹 A minor booboo from the drop — bruise tier, heals on its own in about 2 days.') }
+ else { if(isPlayerTod){ try{ ensure21() }catch(e){} if(S.healthSys){ S.healthSys.injured=true; S.healthSys.injuredDays=3 } adj('health',-10); log('🚑 That landing was worse — Health −10 and a real injury (the shipped injury system: 3 days, or the doctor in 👽 Me can fix it today). A drop can hurt. It can never kill — that pipeline is separate and this is not it.') } else log('🚑 The little one took a real knock — a caregiver problem now: watch them, and the doctor exists if it looks worse.') } }
+function dropCheck149(ctx){ if(!S||!inGame||S.deadFlag)return false; const V=ensure149(); const isTod=S.age>=1&&S.age<=4; const hasTodKid=(S.kids||[]).some(function(k){ return k.age<=3 }); if(!isTod&&!hasTodKid)return false; if(ctx==='activity'&&!(isTod&&typeof todCared82==='function'&&todCared82()))return false; if(V.dropDay!==S.day){ V.dropDay=S.day; V.dropN=0 } if(V.dropN>=2)return false; let chance=0.03; const h=S.hour||12; if(h>=21||h<6)chance+=0.04; if(ctx==='travel')chance+=0.03; chance=Math.min(0.10,chance); V.dropN++; if(Math.random()>=chance)return false;
+ if(isTod&&(ctx==='travel'||ctx==='activity'||ctx==='playdate')){ dropResolve149(S.name+' got dropped by their caregiver',true); return true }
+ const k=(S.kids||[]).find(function(x){ return x.age<=3 }); if(k){ k.happy=Math.max(0,(k.happy||75)-12); if(Math.random()<0.35)k.booboo149=S.day+2; dropResolve149('You dropped '+k.name+' — an accident, mid-carry',false); save() } return true }
+window.dropCheck149=dropCheck149;
+try{ const _gwp149=goWithParent; goWithParent=function(){ const r=_gwp149(); try{ setTimeout(function(){ dropCheck149('travel') },650) }catch(e){} return r } }catch(e){}
+try{ const _ck149=careKid; careKid=function(i,kind){ const r=_ck149(i,kind); try{ if(S){ const V=ensure149(); const k=(S.kids||[])[i]; if(k){ const n=V.neglect[k.name]; if(n){ n.m=Math.max(0,n.m-25) } if(k.age<=3)dropCheck149('carry') } } }catch(e){} return r } }catch(e){}
+/* ---------- 5) TODDLER FIGHTS ---------- */
+const TOD_OPP149=['Milo','Pip','Ziggy','Noa','Remy','Tilly','Juno','Otto'];
+function todOppName149(){ try{ if(S.tod&&S.tod.friends&&S.tod.friends.length)return pickArr(S.tod.friends).name }catch(e){} return pickArr(TOD_OPP149) }
+function startTodFight149(opp,where){ if(!S||S.age<1||S.age>4)return; if(window._b128)return; try{ closeModal() }catch(e){}
+ startBattle128({kind:'todfight149',name:opp,icon:'🧒',power:5,hp:12,canFlee:true,onEnd:function(){}});
+ const b=window._b128; if(!b)return; b.php=12; b.maxPhp=12; b.hp=12; b.maxHp=12; b.power=5; b.wname=null; b.wboost=0; b.lethal=false;
+ b.lines=['🧸 TODDLER TUSSLE at '+where+' — '+opp+' grabbed the good toy and '+S.name+' is NOT having it. Toddler rules: tiny hits, big feelings, grown-ups already hurrying over.'];
+ b.lines=b.lines.filter(function(l){ return l.indexOf('🔫')<0 }); battleSheet128();
+ log('🥊 TODDLER TUSSLE — '+S.name+' vs '+opp+' at '+where+'. Toy-related. Extremely serious (to them).'); }
+window.startTodFight149=startTodFight149;
+function todFightEnd149(res,opp){ window._b128=null; const V=ensure149(); try{ closeModal() }catch(e){}
+ if(!V.todPals[opp])V.todPals[opp]={pts:50}; const pal=V.todPals[opp];
+ if(res==='win'){ adj('fun',6); adj('social',4); pal.pts=Math.max(0,pal.pts-6); log('🏆 TUSSLE WON — '+opp+' yielded the toy and the playground respects it. Fun +6, Social +4. (Friendship with '+opp+': '+pal.pts+' — toddler grudges are real but short.)') }
+ else if(res==='lose'){ adj('fun',-5); pal.pts=Math.max(0,pal.pts-3); log('😭 TUSSLE LOST — tears, the FULL waterworks, and a caregiver scoop-up. Fun −5. No injuries for losing a toddler fight — just feelings, enormous ones.') }
+ else { log('🏃 The tussle broke up — a grown-up arrived with snacks and both sides accepted the treaty.') }
+ try{ if(S.tod&&S.tod.friends){ const f=S.tod.friends.find(function(x){ return x.name===opp }); if(f)f.pts=Math.max(0,(f.pts||25)+(res==='win'?-6:-3)) } }catch(e){}
+ if(res!=='fled'&&Math.random()<0.15){ booboo149('tussle'); log('🩹 The tussle left a booboo behind — item 7 minor tier: heals on its own, no hospital, no bill, NO wanted level (toddler fights are not crime).') }
+ setTimeout(function(){ try{ capture149('🥊 Toddler tussle vs '+opp+' — Day '+S.day,'fight') }catch(e){} },350);
+ save(); try{ render() }catch(e){} }
+try{ const _bm149=battleMove128; battleMove128=function(mv){ const b=window._b128; if(!b||b.kind!=='todfight149')return _bm149(mv); const opp=b.name;
+ if(mv==='flee'){ todFightEnd149('fled',opp); return }
+ if(mv==='guard'){ b.guard=true; b.lines.push('🛡️ '+S.name+' puts both arms up — the classic toddler fortress.') }
+ else { const hit=Math.random()<0.82; const dmg=hit?1+Math.floor(Math.random()*3):0; if(dmg>0){ b.hp-=dmg; b.lines.push('💥 Tiny hit! '+dmg+' bonk'+(dmg>1?'s':'')+' — devastating (toddler scale).') } else b.lines.push('😬 A swing at the air. The air is undefeated.') }
+ if(b.hp<=0){ todFightEnd149('win',opp); return }
+ let ed=Math.random()<0.75?1+Math.floor(Math.random()*2):0; if(b.guard){ ed=Math.max(0,ed-1); b.guard=false } b.php-=ed; if(ed>0)b.lines.push('🧒 '+opp+' bonks back for '+ed+'.'); b.turn++;
+ if(b.php<=0){ todFightEnd149('lose',opp); return }
+ battleSheet128() } }catch(e){}
+try{ const _pd149=playdate137; playdate137=function(){ const r=_pd149(); try{ if(S&&S.age>=1&&S.age<=4){ setTimeout(function(){ try{ dropCheck149('playdate') }catch(e){} },500); if(Math.random()<0.20){ const opp=todOppName149(); setTimeout(function(){ startTodFight149(opp,'the playdate') },900) } } }catch(e){} return r } }catch(e){}
+/* ---------- 6) NEGLECT → CHILD SERVICES → TAKEN AWAY ---------- */
+function cpsSheet149(title,body){ const show=function(){ sheet149('<h2>'+title+'</h2><p style="line-height:1.55">'+body+'</p><button class="btn gold" onclick="closeModal()">I understand — this is serious</button>',{sfx:'bad',buzz:[200,80,200]}) };
+ const m=document.getElementById('modal'); if(m&&m.classList.contains('open')){ toast('📞 CHILD SERVICES — see your journal NOW'); log('📞 '+title+' — '+body.replace(/<[^>]*>/g,'')); setTimeout(function(){ const mm=document.getElementById('modal'); if(!(mm&&mm.classList.contains('open')))show() },4000); return } show() }
+function cpsStage1_149(who){ log('📞 CHILD SERVICES CALLED — about '+who+'. A caseworker has seen the signs: missed meals, exhaustion, a little one running on empty. This is stage 1 of 3 and it is a WARNING WITH TEETH: turn the care around and this goes away. Keep ignoring it and they come in person.'); try{ if(S.hasPhone)pushMsg('Caseworker','📞 This is the child-services office. We have concerns about '+who+'. Please call us back — and please, feed and rest your little one. This is a first warning.') }catch(e){} cpsSheet149('📞 Child Services — First Warning','A caseworker is calling about <b>'+who+'</b>. The signs are there: needs left at empty, day after day. This is <b>stage 1 of 3</b>.<br><br>Care for them — really care, meals and rest and attention — and the meter drains and this file closes. Ignore it, and stage 2 is a visit to your door.') }
+function cpsStage2_149(who){ log('🚪 CHILD SERVICES VISIT — a caseworker came to the door about '+who+'. The file is open on the table. TWO game days to show real care, or stage 3 is removal. No surprises after this: the next knock takes the child.'); cpsSheet149('🚪 Child Services — The Visit','The caseworker has been <b>inside your home</b> and seen it: <b>'+who+'</b> is not being cared for. This is <b>stage 2 of 3</b>.<br><br>You have <b>2 game days</b> to fix it — needs restored and kept up. If the window closes with things still bad, '+who.split(' ')[0]+' will be <b>taken into care</b>. You were warned at every step.') }
+function takeKid149(k){ if(!S)return; const V=ensure149(); const ix=(S.kids||[]).indexOf(k); if(ix<0)return; S.kids.splice(ix,1); V.fosterKids[k.name]={age:k.age,day:S.day,visits:0,happy:k.happy||40}; delete V.neglect[k.name];
+ log('🚨 TAKEN — child services removed '+k.name+' from the household today and placed them in foster care. It did not come out of nowhere: a call, then a visit, then this. The Me tab keeps their foster card — visit, get the house right, and you can EARN them back.'); cpsSheet149('🚨 '+k.name+' Has Been Taken Into Care','Child services removed <b>'+k.name+'</b> today, after the call and the visit changed nothing. They are safe tonight — in <b>foster care</b>, fed and looked after by people whose whole job is this.<br><br>This is not the end of the story: visit them (their card lives in 👽 Me), keep the house cared-for, and the caseworker can approve a return. Family is powerful — prove it.'); save(); try{ render() }catch(e){} }
+function takeSelf149(){ if(!S)return; const V=ensure149(); V.fosterSelf={since:S.day}; V.self.stage=0; V.self.m=0; S.location='orphanage';
+ log('🚨 TAKEN INTO CARE — child services placed '+S.name+' at Hope House today, after the call and the visit changed nothing. Your life does NOT end: it continues HERE, in foster care — new roof, caseworker, meals you do not have to beg for. Your parents are no longer your household. Earn your way home: keep your needs up, and after 2 days the Caseworker review in 👽 Me can send you back.'); cpsSheet149('🚨 You Have Been Taken Into Care','After the call and the visit, child services placed <b>you</b> in foster care — tonight you sleep at <b>Hope House</b>, safe and fed, under a caseworker\'s eye. Your parents are no longer your household.<br><br>Your life continues here — school, friends, all of it. Keep your needs cared for, and in <b>2 days</b> you can ask for the <b>Caseworker review</b> (👽 Me) to go home. It was never a surprise: the warnings came first, every time.'); save(); try{ render() }catch(e){} }
+function neglectDay149(){ if(!S)return; const V=ensure149();
+ (S.kids||[]).filter(function(k){ return k.age<=10 }).forEach(function(k){ const n=V.neglect[k.name]; if(!n)return;
+  if(n.stage===0&&n.m>=40){ n.stage=1; n.w1=true; cpsStage1_149(k.name) }
+  else if(n.stage===1&&n.m>=70){ n.stage=2; n.w2=true; n.fixBy=S.day+2; cpsStage2_149(k.name) }
+  else if(n.stage===2&&((S.day>n.fixBy&&(k.happy||0)<55)||n.m>=100)){ takeKid149(k) }
+  else if(n.stage===1&&n.m>=100){ n.stage=2; n.w2=true; n.fixBy=S.day+2; cpsStage2_149(k.name) } });
+ const sf=V.self; if(S.age<=10&&!V.fosterSelf){
+  if(sf.stage===0&&sf.m>=40){ sf.stage=1; sf.w1=true; cpsStage1_149('you, '+S.name) }
+  else if(sf.stage===1&&sf.m>=70){ sf.stage=2; sf.w2=true; sf.fixBy=S.day+2; cpsStage2_149('you, '+S.name) }
+  else if(sf.stage===2){ const n=S.needs||{}; const fixed=(n.hunger||0)>=40&&(n.hygiene||0)>=40&&(n.energy||0)>=40; if((S.day>sf.fixBy&&!fixed)||sf.m>=100)takeSelf149() } } }
+function visitFoster149(name){ if(!S)return; const V=ensure149(); const f=V.fosterKids[name]; if(!f)return; f.visits++; log('💛 VISIT — you spent real time with '+name+' at the foster home. Small hands, big feelings, a drawing pressed into yours on the way out. Visit '+f.visits+' — the caseworker writes these down. They count.'); toast('💛 Visited '+name+' ('+f.visits+')'); save(); try{ render(); renderTabs('home') }catch(e){} }
+window.visitFoster149=visitFoster149;
+function earnBack149(name){ if(!S)return; const V=ensure149(); const f=V.fosterKids[name]; if(!f)return; if(f.visits<2){ toast('📋 The caseworker needs at least 2 visits on the file first ('+f.visits+'/2)'); return } const othersOk=(S.kids||[]).every(function(k){ return (k.happy||0)>=50 }); if(!othersOk){ toast('📋 Every child at home needs to be at 50%+ happy before a return is approved'); return }
+ delete V.fosterKids[name]; S.kids.push({name:name,age:f.age,born:S.day-f.age*8,happy:60,gender:'girl',canWalk:f.age>=2}); log('🏠💛 REUNITED — the caseworker approved it and '+name+' came HOME today. Foster care did its job; so, in the end, did you. The file is closed, the meter is zero, and the house feels whole again.'); toast('🏠💛 '+name+' is home!'); save(); try{ render(); renderTabs('home') }catch(e){} }
+window.earnBack149=earnBack149;
+function fosterReview149(){ if(!S)return; const V=ensure149(); if(!V.fosterSelf)return; if(S.day<V.fosterSelf.since+2){ toast('📋 The review opens on Day '+(V.fosterSelf.since+2)+' — two full days in care first'); return } const n=S.needs||{}; if(!((n.hunger||0)>=40&&(n.hygiene||0)>=40&&(n.energy||0)>=40)){ toast('📋 Not yet — the caseworker needs to see Hunger, Hygiene AND Energy all at 40+'); return }
+ V.fosterSelf=null; V.self={m:0,stage:0,fixBy:0,w1:false,w2:false}; S.location='house'; log('🏠💛 REVIEW PASSED — the caseworker signed it and '+S.name+' went HOME today. Foster care was a chapter, not the ending. Family, powerful — when it does the work.'); toast('🏠💛 You are going home!'); save(); try{ render() }catch(e){} }
+window.fosterReview149=fosterReview149;
+/* ---------- render passes: foster cards, toddler tussle, photo card, menu restore ---------- */
+try{ const _rt149=renderTabs; renderTabs=function(active){ const r=_rt149(active); try{ if(S&&inGame){ const panel=document.getElementById('panel'); const V=ensure149();
+ if(panel&&(active==='home'||active==='me')){ const grid=panel.querySelector('.grid')||panel; let html='';
+  Object.keys(V.fosterKids).forEach(function(name){ const f=V.fosterKids[name]; html+='<div class="card" style="border-color:#ef4444"><h3>💛 '+name+' — in foster care</h3><p>Taken on Day '+f.day+' after the warnings ran their course. Visits on file: <b>'+f.visits+'</b> (2 needed, plus every child at home at 50%+ happy, to earn them back).</p><button class="btn gold" onclick="visitFoster149(\''+name.replace(/'/g,"\\'")+'\')">💛 Visit '+name.split(' ')[0]+'</button><button class="btn" style="margin-top:8px" onclick="earnBack149(\''+name.replace(/'/g,"\\'")+'\')">🏠 Earn them back</button></div>' });
+  if(V.fosterSelf)html+='<div class="card" style="border-color:#ef4444"><h3>🏠 You are in foster care — Hope House</h3><p>Placed on Day '+V.fosterSelf.since+'. Your life continues here — and foster care keeps your needs from bottoming out. The review to go home opens Day '+(V.fosterSelf.since+2)+', with Hunger, Hygiene and Energy all at 40+.</p><button class="btn gold" onclick="fosterReview149()">📋 Caseworker review — ask to go home</button></div>';
+  if(html&&!panel.querySelector('.fosterCard149')){ const d=document.createElement('div'); d.className='fosterCard149'; d.innerHTML=html; grid.insertBefore(d,grid.firstChild) } }
+ if(panel&&active==='home'&&!panel.querySelector('.photoCard149')){ const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.className='card photoCard149'; d.innerHTML='<h3>📸 This moment, for real</h3><p>Frame what is actually happening — a real snapshot of the scene, filed in your 📸 Scrapbook.</p><button class="btn gold" onclick="takePhoto149()">📸 Take a photo</button><button class="btn" style="background:#db2777;color:#fff;margin-top:8px" onclick="takeSelfie149()">🤳 Take a selfie</button>'+((S.age>=1&&S.age<=4&&(S.location==='park'||S.location==='school'))?'<button class="btn" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="setTimeout(function(){startTodFight149(todOppName149(),S.location===\\\'park\\\'?\\\'the park\\\':\\\'preschool\\\')},120)"">🥊 Toddler tussle</button>':''); grid.insertBefore(d,grid.firstChild) }
+ restoreMenus149(); } }catch(e){} return r } }catch(e){}
+/* ---------- the 12-second heartbeat: watchers + meters ---------- */
+let lastDay149=null, lastAge149=null, lastJob149=null, lastBig149=null;
+setInterval(function(){ try{ if(!S||!inGame||S.deadFlag)return; const V=ensure149();
+ if(lastDay149===null){ lastDay149=S.day; lastAge149=S.age; lastJob149=!!(S.jobInfo||S.hasJob); lastBig149=(S.casino&&S.casino.biggest)||0 }
+ if(S.day!==lastDay149){ lastDay149=S.day; neglectDay149(); if(V.booboo&&S.day>=V.booboo.untilDay){ V.booboo=null; log('🩹 The booboo healed — all better, no bill ever arrived. Minor injuries heal on their own here.'); save() } (S.kids||[]).forEach(function(k){ if(k.booboo149&&S.day>=k.booboo149){ delete k.booboo149; log('🩹 '+k.name+'\'s booboo healed up on its own.') } }) }
+ if(lastAge149!==null&&S.age>lastAge149){ /* birthday capture rides snap84 (bday key); this is the backstop for paths that skip it */ setTimeout(function(){ try{ capture149('🎂 Birthday — turned '+S.age+' • Day '+S.day,'birthday') }catch(e){} },600) }
+ lastAge149=S.age;
+ const hasJob=!!(S.jobInfo||S.hasJob); if(lastJob149===false&&hasJob){ lastJob149=true; setTimeout(function(){ try{ capture149('💼 First job'+(S.jobInfo?(' — '+S.jobInfo.title):'')+' • Day '+S.day,'job') }catch(e){} },500) } else lastJob149=hasJob;
+ const big=(S.casino&&S.casino.biggest)||0; if(lastBig149!==null&&big>lastBig149&&big>=500){ setTimeout(function(){ try{ capture149('🎰 BIG WIN — $'+big+' at the casino • Day '+S.day,'casino') }catch(e){} },500) } lastBig149=Math.max(lastBig149||0,big);
+ /* foster care looks after you: needs drift up toward 45, never down into danger */
+ if(V.fosterSelf&&S.needs){ ['hunger','hygiene','energy'].forEach(function(k){ if(S.needs[k]<45)adj(k,3) }) }
+ /* neglect accrual — NPC kids (shipped happiness is their needs proxy) */
+ (S.kids||[]).filter(function(k){ return k.age<=10 }).forEach(function(k){ if(!V.neglect[k.name])V.neglect[k.name]={m:0,stage:0,fixBy:0,w1:false,w2:false}; const n=V.neglect[k.name]; const hp=k.happy||0;
+  if(hp<=20)n.m=Math.min(110,n.m+9); else if(hp<=35)n.m=Math.min(110,n.m+4); else if(hp>=55){ n.m=Math.max(0,n.m-12); if(n.m===0&&n.stage>0){ n.stage=0; n.w1=false; n.w2=false; log('💚 THE FILE CLOSES — '+k.name+' is cared for again, really cared for. Child services steps back. This is how stage-'+ 'warnings end when a family does the work.') } } });
+ /* neglect accrual — the player, when a toddler/kid */
+ if(S.age<=10&&!V.fosterSelf&&S.needs){ const n=S.needs; const bad=((n.hunger||0)<=5?1:0)+((n.hygiene||0)<=10?1:0)+((n.energy||0)<=5?1:0); const sf=V.self;
+  if(bad>=2)sf.m=Math.min(110,sf.m+9); else if(bad===1)sf.m=Math.min(110,sf.m+4); else if((n.hunger||0)>=40&&(n.hygiene||0)>=40&&(n.energy||0)>=40){ sf.m=Math.max(0,sf.m-14); if(sf.m===0&&sf.stage>0){ sf.stage=0; sf.w1=false; sf.w2=false; log('💚 THE FILE CLOSES — you are fed, rested and clean again, and child services steps back.') } } }
+ /* ambient toddler-fight triggers: preschool & the park */
+ if(S.age>=1&&S.age<=4&&V.todFightDay!==S.day&&!window._b128&&!(typeof activity!=='undefined'&&activity)){ const m=document.getElementById('modal'); if(!(m&&m.classList.contains('open'))){ if(S.location==='park'&&Math.random()<0.10){ V.todFightDay=S.day; startTodFight149(todOppName149(),'the park') } else if(S.location==='school'&&Math.random()<0.08){ V.todFightDay=S.day; startTodFight149(todOppName149(),'preschool') } } }
+ restoreMenus149(); }catch(e){} },12000);
+/* ================= v149 ESCALATED FIXES — 📳 HAPTICS THAT REACH THE MOTOR + 🎥 THE IDLE-CAMERA LAW =================
+   BUG A — NO VIBRATION ANYWHERE (owner, real Android handset: not on calls, not anywhere).
+   End-to-end audit of the shipped path: buzz(pat) (v29) is the single funnel for ALL of it —
+   36 call sites, including hap141's tap/money/win/jackpot/punch/hurt/error/success patterns,
+   the global pointerdown tap-buzz, the notification double-buzz, openSheet's opts.buzz
+   patterns, and the v131 incoming-call ring loop, which re-issues buzz([150,70,150]) every
+   2400ms for as long as callState lives (self-stops on answer/decline/miss via hideCallCard).
+   buzz() DOES reach navigator.vibrate(pat) with the right patterns — the calls were being made.
+   The gates are NOT the default cause: a fresh save starts sfxOff:false (save init) with
+   ensure29 backfilling false, dnd:false likewise (ensure31), and the ONLY writers of either
+   flag are the player's own two toggles (⚙️ Settings and the phone's ⚙️ Settings) — no
+   migration zeroes them. What the shipped code never did is PRIME the Vibration API:
+   Android Chrome honours navigator.vibrate only on a document holding user activation and
+   silently discards calls issued cold — and the patterns that matter most (the ring loop)
+   fire from a setInterval, never from inside a gesture. So on the handset every pattern could
+   be dropped by the platform even though the game called it. Fix, at the single funnel:
+   buzz() now routes through vibRaw149 (which also counts calls vs platform-accepted calls
+   for diagnosis), and the FIRST genuine pointerdown/touchend on the page fires a 1ms prime
+   from inside the gesture handler — re-armed whenever the page returns to the foreground —
+   so gesture-driven AND timer-driven patterns land on an activated document. The ring loop's
+   ~2.4s re-issue cadence is untouched. Gates unchanged: S.sfxOff and S.dnd still silence
+   everything, exactly as shipped. Diagnostics: window.__v149.haptics149(). */
+let hap149={primed:false,calls:0,accepted:0,supported:(typeof navigator!=='undefined'&&'vibrate' in navigator)};
+function vibRaw149(pat){ hap149.calls++; try{ const r=navigator.vibrate(pat); if(r)hap149.accepted++; return r }catch(e){ return false } }
+buzz=function(pat){ if(!S||S.sfxOff)return; if(S.dnd)return; vibRaw149(pat) };
+function primeHaptics149(){ if(hap149.primed||!hap149.supported)return; hap149.primed=true; try{ navigator.vibrate(1) }catch(e){} }
+['pointerdown','touchend'].forEach(function(ev){ document.addEventListener(ev,primeHaptics149,true) });
+document.addEventListener('visibilitychange',function(){ if(!document.hidden)hap149.primed=false });
+console.log('📳 v149 haptics: buzz() funnel primed on first touch — vibrate API '+(hap149.supported?'present':'ABSENT on this device/browser'));
+
+/* BUG B — RANDOM SELF-ZOOM AT IDLE (owner: "the game randomly zooms in on its own without
+   you doing an action"). Audit of every camera mover outside action performances: the one
+   true idle offender is gentleFocus — the ambient-conversation system had nearby NPCs
+   chatting call focusCamera(npc,{dur:3000,scale:1.3}) whenever nobody was performing,
+   throttled only by a 9-second refractory: at idle the camera drifted in to 1.3x for ~3s at
+   a time, over and over, with nothing on screen to explain it. Everything else checked and
+   cleared: day rollover / Morning Briefing (no focus call), incoming calls & texts (no
+   focus call), resize / orientation (the only resize listener syncs sheet height — no
+   camera code), canvas rebirth on render (render()'s trailing applyCameraTransform() only
+   re-applies a LIVE hold — it cannot start one). THE LAW from here: at idle, NOTHING zooms.
+   gentleFocus is stood down entirely (NPCs still chat — bubbles, pair-framing and all — the
+   camera simply never chases them), and focusCamera itself is gated at this outermost
+   layer: a zoom may start ONLY inside an action performance (an activity is running, or
+   startActivity's own camera hold — camHoldUntil — is live, or the call is the player's
+   own-action focus, opts.own) or when explicitly forced. Every other call is swallowed
+   silently (returns true, so focusOrSpotlight callers don't fall back to a pop-up). Event
+   sheets (weddings, busts, household moments) still open exactly as shipped — they just no
+   longer shove the camera first. One action still gets exactly its one gated zoom (v148's
+   machine underneath is untouched). Diagnostics: window.__v149.camBlocked149(). */
+let camBlocked149=0;
+const _fcGate149=focusCamera;
+focusCamera=function(x,y,opts){ opts=opts||{};
+ const acting=(typeof activity!=='undefined'&&!!activity);
+ const holdLive=(typeof camHoldUntil!=='undefined'&&performance.now()<camHoldUntil);
+ if(acting||holdLive||opts.own||opts.force)return _fcGate149(x,y,opts);
+ camBlocked149++; return true };
+gentleFocus=function(){};
+console.log('🎥 v149 idle-camera law: ambient focus stood down — the camera moves only inside an action performance or by the player');
+/* ---------- What's New ---------- */
+const WN149_CARD='<div class="card" style="border-color:var(--accent2)"><h3>✨ What\u2019s New — v149</h3><p>📸 <b>The Scrapbook is REAL now</b> — a phone app full of actual snapshots of your scenes: birthdays, weddings, babies, first jobs, big casino wins, fights, family moments — plus 📸 Take a photo and 🤳 selfies you can SEND from Messages, and your people react to the actual picture.</p><p>🎬 <b>Show it, don\u2019t tell it:</b> work shifts, classes, workouts, cooking, dates, heists and park time now PLAY OUT in the scene, with a ⏭ Skip if you are in a hurry. 📌 <b>Menus stay open</b> once you open them — only you close them. 🤫 <b>Autonomy is silent:</b> no more free-will announcements at the bottom; they just live.</p><p>👶 <b>The toddler years got teeth:</b> toddlers can tussle with other toddlers (tiny hits, big feelings), a caregiver can DROP a toddler (booboos heal; worse lands in the injury system — never worse than that), and sustained neglect now escalates for real: a child-services call, a visit, and a child can be <b>taken into foster care</b> — with visits and a way to earn them back. Warnings always come first.</p><p>📳 <b>Vibration, fixed at the root:</b> the buzz patterns were always being called — but nothing ever woke the vibration motor up, so Android could silently drop them, especially the incoming-call ring loop. The first touch now primes the motor, and every buzz in the game — taps, money, wins, fights, notifications, and that ~2.4s call-ring loop — flows through the one primed funnel. (Your 🔊 Sound &amp; vibration switch and 🌙 DND still rule, as always.)</p><p>🎥 <b>The camera sits still now:</b> it used to drift in on nearby NPCs chatting, all on its own. No more — at idle NOTHING zooms. The camera moves only inside an action\u2019s one gated shot, or when you move it.</p></div>';
+try{ const _wn149=whatsNewHtml124; whatsNewHtml124=function(){ let h=''; try{ h=_wn149() }catch(e){} return WN149_CARD+h } }catch(e){}
+window.__v149={ensure149:ensure149,capture149:capture149,scrapbook149:scrapbook149,haptics149:function(){ return hap149 },camBlocked149:function(){ return camBlocked149 },version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — round 15: real scrapbook & selfies • visual scenes • menus stay open • silent autonomy • toddler fights • child services • toddler drops');
+})();
+</script>
 </body>
 </html>
+
