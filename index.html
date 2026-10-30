@@ -574,7 +574,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=137;
+const GAME_VERSION=138;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -11150,6 +11150,221 @@ setInterval(function(){ try{ flushCeremony137() }catch(e){} },2600);
 /* version-note wrapper (same pattern as v136): the label reads the LIVE version constant */
 if(typeof openWhatsNew==='function'){ const _own137=openWhatsNew; openWhatsNew=function(){ _own137(); try{ const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.wn137'))return; const d=document.createElement('div'); d.className='wn137'; d.innerHTML='<div class="card" style="text-align:left"><h3>🆕 What\'s new in v'+GAME_VERSION+'</h3><p class="small">🧸 <b>The Toddler Round:</b> four toddler skills (🗣️ Talk · 🏃 Move · 🦄 Imagine · 🧩 Think) on the toddler\'s card, one temperament per toddler, BitLife-style toddler event cards, milestone ceremonies with scrapbook photos, playdates & pet bonding — and a lifelong <b>Happy Start / Top-Notch</b> bonus at age 5 for skills raised well.<br>🧺 Alley starts are the alleyway now — never a rolled house. 💼 Work is just your job (name + dropdown); the careers browser is gone from Work. 🚗 Travel lost its Housing card (the 🏠 Property app owns housing) and gained 🚶 walking to the park & close places plus 📞 call-a-ride. 📱 Phone: no more 📅 Calendar app, no more ⭐ Essentials folder, a multi-pal 🦖 PocketPal (dinosaur! shark! alien! robot!), a 📖 Phone Book of everyone you have met, and 🎉 Throw Party in 🧹 Services. 👨‍👩‍👧 No family, no group chat. 💬 Texts got real — varied, situation-flavoured, never the same line twice from the same person. 📬 Sponsorship inbox in ❤️ Social, with sponsored items shipped to your 📮 PO box. 🌑 The burner phone is off the Dark Web — the Burner app stays.</p></div>'; const body=sh.querySelector('.sheetCard')||sh; body.insertBefore(d,body.children[1]||null) }catch(e){} } }
 console.log('AquaLife v'+GAME_VERSION+' — round 9 layer loaded');
+</script>
+<script>
+/* ================= v138: ROUND 10 (11 items) — 🔒 ASSISTANT OUT OF ME IN JAIL + 😴 JAIL SLEEP UNDER ME • 📈 FOLLOWERS GROW ON THEIR OWN (events • viral posts • live streaming) • ⏰ OVERTIME after a worked shift • 🚨 FIRED FOR LATENESS / SHOWING UP INTOXICATED (the shipped 3-warning ladder, always signalled) • 📚 STUDY LEAVES ACTIONS FOR A REAL 📚 LIBRARY location • 📟 BURNER (dealer) APP: "Put it away" OUT + the Street Life section OUT • 🐞 PEOPLE STAY IN THEIR ROOMS/PLACES — the general presence fix (townsfolk scene filler ignored haunts; household NPC presence was location-blind away from home) • 🕶️ ANONYMOUS MODE IS BACK (rebuilt — no surviving code traces of the old one were found in this copy) WITH A ⚙️ SETTINGS ON/OFF TOGGLE • 💬 AUTONOMOUS SOCIAL — the character chats on its own when people are right there. Saves roll forward: S.v138 defaults lazily. ================= */
+function ensure138(){ if(!S)return null; if(!S.v138||typeof S.v138!=='object')S.v138={}; const V=S.v138;
+ if(V.anon===undefined)V.anon=false; if(V.otDay===undefined)V.otDay=-9;
+ if(V.lastUseDay===undefined)V.lastUseDay=-9; if(V.lastUseMin===undefined)V.lastUseMin=-99999;
+ if(V.autoSocNext===undefined)V.autoSocNext=0; return V }
+function anon138(){ const V=ensure138(); return !!(V&&V.anon) }
+if(typeof TIPS!=='undefined'){ TIPS['library138']={t:'📚 Study lives at the Library now',b:'The Study section left the ⚡ Actions tab for good — it all moved to a real place: 📚 <b>The Library</b>, on the 🚗 Travel list. Every option that was in Actions\' Study is there (Light review, Cram session, Study skills, Tech session, Cooking practice, Fitness theory, Social skills) with the same effects — you just go to the library to study now.'};
+ TIPS['anon138']={t:'🕶️ Anonymous mode is back',b:'⚙️ Settings → 🕶️ Anonymous mode, on or off, your call. While it is ON: 📰 news & headlines never print your name (you are "an unidentified local"), 📸 posts go out as 🕶️ Anonymous instead of your handle (and your Social profile shows the mask), and 🔴 streams run anonymous — no name, no face. Your life, money, followers and record are untouched — only the name the world sees changes.'};
+ TIPS['followers138']={t:'📈 Followers grow on their own now',b:'Three taps opened: 🎉 in-game EVENTS bring new followers in (once you have a social profile), 🔥 a post can GO VIRAL — a follower surge on the spot, and 🔴 followers trickle in WHILE you are live, not just when the stream ends. Fame still follows followers, and the 📬 sponsorship inbox in ❤️ Social still feeds on both.'} }
+
+/* ---------- item 10: 🕶️ ANONYMOUS MODE — a ⚙️ Settings toggle; the public surfaces mask your name ---------- */
+function anonToggle138(){ if(!S)return; const V=ensure138(); if(!V)return; V.anon=!V.anon; save();
+ log(V.anon?'🕶️ ANONYMOUS MODE: ON — set in ⚙️ Settings. From here the world sees a mask: news prints "an unidentified local", posts go out as 🕶️ Anonymous, streams run faceless. Your name still runs your life — it just stops being the headline.':'🕶️ ANONYMOUS MODE: OFF — set in ⚙️ Settings. Your name is back on everything: the news, your posts, your streams.');
+ toast(V.anon?'🕶️ Anonymous mode ON':'🕶️ Anonymous mode OFF — name back on');
+ try{ openSettings121() }catch(e){} try{ render() }catch(e){} }
+const _sch138=settingsCardHtml121;
+settingsCardHtml121=function(){ let c=_sch138(); try{ if(c){ const V=ensure138(); const on=!!(V&&V.anon); c+='<div class="card anonCard138"><h3>🕶️ Anonymous mode</h3><p>Go faceless in public, Howard-style: while this is ON, 📰 news &amp; headlines call you <b>"an unidentified local"</b> (never your name), 📸 your posts go out as <b>🕶️ Anonymous</b> and your Social profile wears the mask, and 🔴 your streams run anonymous. Nothing about your life, money or record changes — only the name the world sees.</p><button class="btn '+(on?'gold':'outline')+'" style="margin-top:8px" onclick="anonToggle138()">🕶️ Anonymous mode: '+(on?'ON':'OFF')+' — tap to turn '+(on?'off':'on')+'</button></div>' } }catch(e){} return c };
+/* news & headlines never print the name while anonymous */
+const _ns138=newsStory;
+newsStory=function(head,body,notoriety){ try{ if(S&&anon138()&&S.name){ const mask=function(t){ return typeof t==='string'?t.split(S.name).join('an unidentified local'):t }; head=mask(head); body=mask(body) } }catch(e){} return _ns138(head,body,notoriety) };
+/* streams run anonymous */
+const _sl138=startLive46;
+startLive46=function(){ const r=_sl138(); try{ if(S&&anon138()){ const st=document.getElementById('liveStatus'); if(st)st.innerHTML='🔴 LIVE — 🕶️ streaming as Anonymous (no name, no face)'; liveChatLine46('<b style="color:#fca5a5">SYSTEM</b> — 🕶️ this stream is anonymous: no name, no face, just the content') } }catch(e){} return r };
+
+/* ---------- item 3: 📈 FOLLOWERS GROW ON THEIR OWN ---------- */
+/* (c) while live: a trickle of followers lands DURING the stream (the shipped end-of-stream bonus stays) — builder numbers: 45% of ticks (1.4s) convert, +1 follower, +1 more at 60+ viewers, +1 more at 160+, capped at +75 per stream */
+const _st138=stepLive46;
+stepLive46=function(){ const r=_st138(); try{ const s=(typeof liveState!=='undefined')?liveState:null; if(s&&S&&!S.deadFlag){ if(s._g138===undefined)s._g138=0; if(s._g138<75&&Math.random()<0.45){ let g=1+(s.viewers>=60?1:0)+(s.viewers>=160?1:0); g=Math.min(g,75-s._g138); if(g>0){ s._g138+=g; gainFollowers(g) } } } }catch(e){} return r };
+/* (b) viral posts — builder numbers: 12% + 1% per Fame level per post; surge = 30 + 20% of current followers + 15 per Fame level. This wrapper also carries item 10's post masking (posts go out as 🕶️ Anonymous while the mode is on) */
+const _dp138=doPost;
+doPost=function(kind){ let old=null, prevTop=null;
+ try{ if(S){ prevTop=(S.posts&&S.posts[0])||null; if(anon138()&&S.profile){ old=S.profile.handle; S.profile.handle='🕶️ Anonymous' } } }catch(e){}
+ const r=_dp138(kind);
+ try{ if(old!==null&&S&&S.profile)S.profile.handle=old }catch(e){}
+ try{ if(S&&S.profile&&S.profile.created&&S.posts&&S.posts.length&&S.posts[0]!==prevTop){ const p0=S.posts[0]; if(p0&&!p0.news&&!p0.viral){ const chance=0.12+0.01*(S.fame||1); if(Math.random()<chance){ const surge=30+Math.round((S.followers||0)*0.2)+15*(S.fame||1); p0.viral=true; p0.text=p0.text+' — 🔥 WENT VIRAL'; p0.likes=(p0.likes||0)+surge*3; gainFollowers(surge,'🔥 YOUR POST WENT VIRAL — the algorithm picked it up and ran with it'); toast('🔥 VIRAL POST — +'+surge+' followers!'); try{ showTip('followers138') }catch(e){} save(); phoneSocial() } } } }catch(e){}
+ return r };
+/* the Social profile itself wears the mask while anonymous */
+const _ps138=phoneSocial;
+phoneSocial=function(){ let old=null; try{ if(S&&anon138()&&S.profile&&S.profile.created){ old=S.profile.handle; S.profile.handle='🕶️ Anonymous' } }catch(e){} const r=_ps138(); try{ if(old!==null&&S&&S.profile)S.profile.handle=old }catch(e){} return r };
+/* (a) new events bring followers — builder numbers: +3–8 plus (Fame − 1) when a household or toddler event card lands; needs a social profile for the followers to land on */
+function evGain138(kind){ try{ if(!S||S.deadFlag||(S.jail&&S.jail.in))return; if(!(S.profile&&S.profile.created))return; const g=3+Math.floor(Math.random()*6)+Math.max(0,(S.fame||1)-1); gainFollowers(g,'📣 the '+kind+' got people talking — new faces found your page') }catch(e){} }
+const _mhe138=maybeHouseholdEvent;
+maybeHouseholdEvent=function(){ let wasOpen=false; try{ const m0=document.getElementById('modal'); wasOpen=!!(m0&&m0.classList.contains('open')) }catch(e){} const r=_mhe138.apply(null,arguments); try{ const m=document.getElementById('modal'); if(m&&m.classList.contains('open')&&!wasOpen)evGain138('household event') }catch(e){} return r };
+const _te138=todEvent72;
+todEvent72=function(){ let wasOpen=false; try{ const m0=document.getElementById('modal'); wasOpen=!!(m0&&m0.classList.contains('open')) }catch(e){} const r=_te138.apply(null,arguments); try{ const m=document.getElementById('modal'); if(m&&m.classList.contains('open')&&!wasOpen)evGain138('family moment') }catch(e){} return r };
+
+/* ---------- items 4 + 5: ⏰ OVERTIME & 🚨 WORK DISCIPLINE ---------- */
+/* builder overtime model: +2 hours at 1.5× the hourly rate (hourly = shift pay ÷ scheduled shift hours), taxed like a shift via payTaxed59, −12 energy, needs energy ≥ 20, once per day, only on a day whose shift was already worked */
+function otPay138(){ if(!S||!S.jobInfo)return 0; const j=S.jobInfo; let hrs=8; try{ const sch=schedOf57(j); if(sch)hrs=Math.max(1,sch.end-sch.start) }catch(e){} return Math.max(5,Math.round(j.pay/hrs*1.5*2)) }
+function otDone138(){ try{ ensure57(); return !!(S&&S.sched57&&S.jobInfo&&S.sched57.doneDay===S.day) }catch(e){ return false } }
+function workOvertime138(){ if(!S||!S.jobInfo)return; const V=ensure138(); if(!V)return; if(S.jail&&S.jail.in){ toast('⛓️ Not from in here'); return } if(!otDone138()){ toast('⏰ Overtime opens once today\'s shift is worked'); return } if(V.otDay===S.day){ toast('⏰ Overtime is once a day — already banked'); return } if(S.needs&&S.needs.energy<20){ toast('🥱 Too wiped for overtime — energy under 20'); return }
+ V.otDay=S.day; const gross=otPay138(); try{ advanceMinutes57(120,true) }catch(e){} adj('energy',-12); const net=payTaxed59(gross,'⏰ '+S.jobInfo.title+' overtime'); addXp(6,'tech');
+ log('⏰ OVERTIME — two extra hours at '+S.jobInfo.title+', time-and-a-half: net $'+net+' landed (gross $'+gross+'). The shift was already yours; this was the extra mile on top of it.');
+ toast('⏰ Overtime done — +$'+net); save(); render(); try{ renderTabs('work') }catch(e){} }
+/* builder discipline model (FAIR — every step is signalled, nothing is silent): lateness has a 30-minute grace; later than that = +1 warning on the SHIPPED 3-warning ladder (the count already shows on your Work card) and the shift still runs. Showing up intoxicated (used within the last 4 game-hours) = +1 warning and you are SENT HOME (no pay; the day is marked skipped so no second missed-shift warning piles on). 3 warnings total = the shipped fireJob ends it, with the reason named. */
+function intox138(){ if(!S)return false; const V=ensure138(); if(!V||V.lastUseDay!==S.day)return false; let now=0; try{ now=nowMin57() }catch(e){ return false } return now>=V.lastUseMin&&(now-V.lastUseMin)<=240 }
+function discipline138(kind){ if(!S||!S.jobInfo)return false; const j=S.jobInfo; j.warnings=(j.warnings||0)+1;
+ if(kind==='intox'){ if(j.warnings>=3){ fireJob('😵 showed up intoxicated — after the warnings, that was the last straw.'); return false }
+  try{ ensure57(); S.sched57.skipDay=S.day }catch(e){}
+  log('😵🚨 SENT HOME — you clocked in at '+j.title+' visibly intoxicated and your manager was not guessing: the smell, the eyes, all of it. No shift, no pay — and that is warning '+j.warnings+'/3 on your record. One more after this and the job is gone.');
+  openSheet('<h2>😵 Sent home — intoxicated at work</h2><p>Your manager at <b>'+j.title+'</b> took one look and made the call: <b>you are in no state to work</b>. You were sent home — no shift, no pay.</p><p>⚠️ That is <b>warning '+j.warnings+' of 3</b>. The count lives on your Work card; at 3, you are fired. Showing up within a few hours of using is what does it.</p><button class="btn gold" onclick="closeModal()">Understood</button>');
+  toast('😵 Sent home — warning '+j.warnings+'/3'); return false }
+ /* late */
+ if(j.warnings>=3){ fireJob('⏰ lateness, again — warning 3 of 3. The roster spot went to somebody who shows up on time.'); return false }
+ log('⏰🚨 LATE — you clocked in at '+j.title+' well past start time and your manager clocked it too: that is warning '+j.warnings+'/3. The shift still runs — but the count on your Work card is real, and at 3 you are fired.');
+ toast('⏰ Late — warning '+j.warnings+'/3'); return true }
+function clockInCheck138(){ if(!S||!S.jobInfo)return 'ok'; try{ ensure57(); const j=S.jobInfo; const sch=schedOf57(j); if(!sch||!isWorkDay57(j))return 'ok'; if(S.sched57.doneDay===S.day||S.sched57.skipDay===S.day)return 'ok'; if(intox138())return 'intox'; if(nowMin57()-sch.start*60>30)return 'late' }catch(e){} return 'ok' }
+function guardShift138(orig){ return function(){ const c=clockInCheck138(); if(c==='intox'){ discipline138('intox'); save(); render(); return } if(c==='late'&&!discipline138('late')){ save(); render(); return } return orig.apply(null,arguments) } }
+shiftAttend57=guardShift138(shiftAttend57);
+shiftFF57=guardShift138(shiftFF57);
+if(typeof finishShift113==='function')finishShift113=guardShift138(finishShift113);
+if(typeof jobShift==='function')jobShift=guardShift138(jobShift);
+/* intoxication stamps: using (your own stock or the Trouble "Drugs" move) starts the 4-hour clock the boss can smell */
+const _du138=dealUse;
+dealUse=function(k){ const r=_du138(k); try{ if(S){ const V=ensure138(); if(V){ V.lastUseDay=S.day; try{ V.lastUseMin=nowMin57() }catch(e){} } } }catch(e){} return r };
+const _dt138=doTrouble;
+doTrouble=function(t){ try{ if(S&&typeof t==='string'&&t.indexOf('Drugs')>=0){ const V=ensure138(); if(V){ V.lastUseDay=S.day; try{ V.lastUseMin=nowMin57() }catch(e){} } } }catch(e){} return _dt138.apply(null,arguments) };
+
+/* ---------- item 6: 📚 THE LIBRARY — a real place; ALL of Actions' Study moves here ---------- */
+try{ if(!TRAVEL_OPTS.some(function(o){ return o[0]==='library' }))TRAVEL_OPTS.push(['library','📚 The Library — quiet stacks, study tables, zero distractions']) }catch(e){}
+try{ LOC_THEMES.library={wall:['#e9dcbc','#f2e7cb','#dfcfa6'],wains:'#6d5136',wainsTop:'#82664a',wainsLine:'#4f3a24',floor:['#96633a','#8a5a30','#a06c40','#7f5229'],floorLine:'#4f3a2455',tiles:false,rug:'rect',rugA:'#7d2d3b',rugB:'#93384a',rugRing:'#5c1f28',fridge:['#f3e6c8','#e8d9b0','#c9b586'],couch:['#d9c6a3','#c8b18a','#a68d63'],bedCol:'#7d2d3b',blanket:'#f2c14e'} }catch(e){}
+try{ LOC_LABELS92.library='📚 the library' }catch(e){}
+try{ if(typeof LOC_CLOCKS110!=='undefined'&&LOC_CLOCKS110)LOC_CLOCKS110.library=1 }catch(e){}
+try{ if(typeof WALKABLE137!=='undefined'&&WALKABLE137.indexOf('library')<0)WALKABLE137.push('library') }catch(e){}
+const _tc138=townCounts;
+townCounts=function(loc){ if(loc==='library')return 2; return _tc138(loc) };
+function libraryCard138(){ if(!S||S.location!=='library')return '';
+ return '<div class="card libraryCard138" style="border-color:var(--accent2)"><h3>📚 The Library — study hall</h3><p>Quiet stacks, long tables, and every study option that used to live in ⚡ Actions — same sessions, same effects, in the place they always belonged.</p>'
+ +'<button class="btn" onclick="study132(\'school\',\'light\')">📖 Light review — schoolwork, easy does it</button>'
+ +'<button class="btn" onclick="study132(\'school\',\'cram\')">📝 Cram session — grades hard, costs energy</button>'
+ +'<button class="btn" onclick="study132(\'study\',\'session\')">🧠 Study skills session</button>'
+ +'<button class="btn" onclick="study132(\'tech\',\'session\')">💻 Tech session</button>'
+ +'<button class="btn" onclick="study132(\'cooking\',\'session\')">🍳 Cooking practice</button>'
+ +'<button class="btn" onclick="study132(\'fitness\',\'session\')">🏋️ Fitness theory</button>'
+ +'<button class="btn" onclick="study132(\'social\',\'session\')">🗣️ Social skills session</button></div>' }
+
+/* ---------- items 7 + 8: 📟 THE BURNER (dealer) APP — "Put it away" out; the Street Life section out ---------- */
+const _pb138=phoneBurner63;
+phoneBurner63=function(){ const r=_pb138(); try{ const sh=document.getElementById('sheet'); if(sh){
+  sh.querySelectorAll('button').forEach(function(b){ if((b.textContent||'').trim()==='Put it away')b.remove() });
+  const sq=sh.querySelector('.squad131'); if(sq){ sq.querySelectorAll('button').forEach(function(b){ if((b.getAttribute('onclick')||'').indexOf('streetLife128')>=0)b.remove() }); const h=sq.querySelector('h4'); if(h&&(h.textContent||'').indexOf('Street Life')>=0)h.textContent='🛡️ Squad' }
+ } }catch(e){} return r };
+
+/* ---------- item 9: 🐞 PEOPLE STAY IN THEIR ROOMS / PLACES — the general presence fix ----------
+   ROOT CAUSE 1 (townsfolk): initTownsfolk picked regulars whose haunt matches the location, then FILLED the rest of the scene from the whole town registry — any known person, whatever their haunt (the 35% "any" branch) — so the same faces materialised wherever the player went, and re-rolled at every new location: they effectively followed the player area to area.
+   ROOT CAUSE 2 (household): updateLiving only ever forced PARENTS out of the scene away from home; every other household NPC kept cycling in/out on timers regardless of S.location, and drawRoom drew any of them with state "in" at ANY location — the only other gate, npcHere86, returned TRUE whenever the current location had no room set (i.e. everywhere except home). Their pets inherited the same leak, and presence lists (free-will chat, multiplayer opponents, conversations) read the same state.
+   THE FIX, at that level: (1) after a scene is built, anyone whose haunt is not this location is filtered out and the scene tops up with people who actually belong here (genTownsperson stamps the haunt of the place it is created for); (2) away from home, ALL household NPCs are held out of the scene — the parents' shipped rule, generalised — unless a deliberate-movement exception (companionException133: your escort, today's invited guest, your date, a sleepover guest, a crew member ordered to be with you) names them; bodyguards are a separate sprite system and untouched, as are the knock-on-the-door visitors, guests and dates, which never lived in these arrays; (3) npcHere86 itself now answers "not here" away from home (same exceptions), so every list that asks it agrees. */
+const _it138=initTownsfolk;
+initTownsfolk=function(){ _it138(); try{ if(!S||typeof townsfolk==='undefined'||!townsfolk)return; const loc=S.location; townsfolk=townsfolk.filter(function(p){ const rec=(S.town&&S.town.people)?S.town.people[p.name]:null; return !rec||rec.haunt===loc }); const want=townCounts(loc); let guard=0; while(townsfolk.length<want&&guard++<8){ const rec=genTownsperson(loc); if(rec)townsfolk.push(townSprite(rec,townsfolk.length)) } }catch(e){} };
+const _nh138=npcHere86;
+npcHere86=function(n){ try{ if(S&&S.location!==homeLoc())return (typeof companionException133==='function')?companionException133(n.name):false }catch(e){} return _nh138(n) };
+const _ul138=updateLiving;
+updateLiving=function(now){ const r=_ul138(now); try{ if(S&&inGame&&typeof npcs!=='undefined'&&npcs&&S.location!==homeLoc()){ npcs.forEach(function(n){ if(n.state!=='out'&&!(typeof companionException133==='function'&&companionException133(n.name))){ n.state='out'; n.next=now+25000; n.bubble=''; n.say=''; n.sayUntil=0 } }) } }catch(e){} return r };
+
+/* ---------- item 11: 💬 AUTONOMOUS SOCIAL — people right here get talked to, on its own ----------
+   Builder limits: checks every 5s; fires at most once per 50–80s; only when someone is present in the SAME room/place (the fixed presence gates), Social ≤ 92, the character is free (no activity running, no sheet open, not asleep, not in jail) — it never interrupts a player-chosen action. Each beat: +7 Social, +2 Fun, +3 Social XP and a conversation tick with that person (convoDone93, the shipped relationship memory) — silent, like shipped free will: bubbles, no journal spam. */
+function presentPeople138(){ const out=[], seen={}; const add=function(n){ if(n&&n!==S.name&&!seen[n]){ seen[n]=1; out.push(n) } };
+ try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in'&&(typeof npcHere86!=='function'||npcHere86(n)))add(n.name) }) }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')add(p.name) }) }catch(e){}
+ try{ if(S.location===homeLoc()){ (S.housemates||[]).forEach(function(h){ if(typeof mateHere86!=='function'||mateHere86(h))add(h) }); (S.kids||[]).forEach(function(k){ if(k.age>=5&&(typeof kidHere86!=='function'||kidHere86(k)))add(k.name) }) } }catch(e){}
+ if(S.escort)add(S.escort); if(S.guest&&S.guest.day===S.day)add(S.guest.name); if(typeof window!=='undefined'&&window._dateWith)add(window._dateWith); if(S.sleepover&&S.sleepover.at==='mine')add(S.sleepover.guest);
+ return out }
+setInterval(function(){ try{ if(!S||!inGame||S.deadFlag)return; if(S.jail&&S.jail.in)return; const V=ensure138(); if(!V)return; const now=performance.now(); if(now<(V.autoSocNext||0))return; if(typeof activity!=='undefined'&&activity)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(typeof playerAsleep128==='function'&&playerAsleep128())return; if(!S.needs||S.needs.social>92)return; const folks=presentPeople138(); if(!folks.length)return;
+ V.autoSocNext=now+50000+Math.random()*30000; const who=pickArr(folks);
+ try{ const spr=(typeof npcs!=='undefined'&&npcs?npcs.find(function(n){ return n.name===who }):null)||(typeof townsfolk!=='undefined'&&townsfolk?townsfolk.find(function(p){ return p.name===who }):null); if(spr){ const td=(S.town&&S.town.people&&S.town.people[who]&&typeof TOWN_TRAITS!=='undefined')?(TOWN_TRAITS[S.town.people[who].trait]||{}).lines:null; spr.say=pickArr((typeof CONVO_LINES!=='undefined'&&CONVO_LINES[who])||td||['hey — good seeing you 🙂','what have you been up to?','we should hang out more, honestly']); spr.sayUntil=now+3300 } if(typeof fwSay==='function'&&typeof CONVO_REPLIES!=='undefined')fwSay(pickArr(CONVO_REPLIES)) }catch(e){}
+ adj('social',7); adj('fun',2); addXp(3,'social'); try{ if(typeof convoDone93==='function')convoDone93(who) }catch(e){} save() }catch(e){} },5000);
+
+/* ---------- the render pass: items 1, 2, 4, 6 land in their tabs ---------- */
+const _rt138=renderTabs;
+renderTabs=function(active){ const r=_rt138(active); try{ if(!S||!inGame)return r; const panel=document.getElementById('panel'); if(!panel)return r; const cur=(typeof curTab!=='undefined'&&curTab)?curTab:active; const V=ensure138();
+ /* item 6: Study leaves Actions entirely (its card, and the dropdown the shipped pass wraps it in) */
+ if(cur==='actions101'){ panel.querySelectorAll('.card,.actCard101').forEach(function(card){ const h=card.innerHTML||''; if(h.indexOf('study132(')>=0||h.indexOf("act('study')")>=0){ const dd=card.closest('details.dd132'); if(dd)dd.remove(); else card.remove() } }) }
+ /* item 6: at the Library, its study hall card leads the Travel tab + the place is named right */
+ if(cur==='travel'&&S.location==='library'){ panel.querySelectorAll('h3,summary').forEach(function(h){ if((h.textContent||'').indexOf('📍 You are here:')===0)h.textContent='📍 You are here: 📚 The Library' }); if(!panel.querySelector('.libraryCard138')){ const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.innerHTML=libraryCard138(); if(d.firstChild)grid.insertBefore(d.firstChild,grid.children[1]||null) } }
+ /* item 4: the overtime card joins Work once today's shift is worked */
+ if(cur==='work'&&S.jobInfo&&!(S.jail&&S.jail.in)&&otDone138()&&!panel.querySelector('.otCard138')){ const d=document.createElement('div'); if(V&&V.otDay===S.day){ d.innerHTML='<div class="card otCard138"><h3>⏰ Overtime</h3><p>Already banked today — overtime is once a day, after the shift.</p></div>' } else { d.innerHTML='<div class="card otCard138"><h3>⏰ Overtime — today\'s shift is in</h3><p>Stay <b>2 more hours</b> at '+S.jobInfo.title+' at <b>time-and-a-half</b>: <b>$'+otPay138()+'</b> gross, taxed like a shift, −12 energy. Once a day.</p><button class="btn gold" onclick="workOvertime138()">⏰ Work overtime — 2h at 1.5×</button></div>' } if(d.firstChild)panel.appendChild(d.firstChild) }
+ /* items 1 + 2: in jail the panel IS the Me view — the Assistant never shows in it, and the cell sleep card does */
+ if(S.jail&&S.jail.in){ panel.querySelectorAll('.card').forEach(function(card){ const h=card.querySelector('h3'); if(h&&/Assistant/.test(h.textContent||'')){ const dd=card.closest('details.dd132'); if(dd)dd.remove(); else card.remove() } });
+  if(!panel.querySelector('.jailSleep138')){ const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.innerHTML='<div class="card jailSleep138"><h3>😴 Sleep — your cell</h3><p>Your bunk, your hours — sleep in here follows the same rules as anywhere else: pick your rest. (⏩ Serve the day, on the jail panel, is still how a full day rolls.)</p><button class="btn" onclick="sleep132(\'power\')">⚡ Power nap — 20 minutes of magic (+18 energy)</button><button class="btn" style="margin-top:8px" onclick="sleep132(\'nap\')">💤 Nap — a proper lie-down (+32 energy)</button></div>'; if(d.firstChild)grid.appendChild(d.firstChild) } }
+ }catch(e){} return r };
+/* version-note wrapper (same pattern as v137): the label reads the LIVE version constant */
+if(typeof openWhatsNew==='function'){ const _own138=openWhatsNew; openWhatsNew=function(){ _own138(); try{ const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.wn138'))return; const d=document.createElement('div'); d.className='wn138'; d.innerHTML='<div class="card" style="text-align:left"><h3>🆕 What\'s new in v'+GAME_VERSION+'</h3><p class="small">🔒 <b>Jail rules:</b> the 🧑‍💼 Assistant no longer appears in 👽 Me while you are locked up — and Me gains a 😴 <b>sleep card for your cell</b> (power nap or a proper nap, the usual sleep rules; serving the day still rolls the day).<br>📈 <b>Followers grow on their own:</b> 🎉 events bring them in, 🔥 posts can go VIRAL, and 🔴 they trickle in while you stream.<br>💼 <b>Work gets real:</b> ⏰ <b>overtime</b> after a worked shift (2 hours at time-and-a-half, once a day) — and 🚨 <b>you can be fired</b>: clock in 30+ minutes late or show up within hours of using and warnings land on the shipped 3-warning ladder, always announced, never silent.<br>📚 <b>Study moved house:</b> out of ⚡ Actions, into a real 📚 <b>Library</b> on the Travel list — every study option, same effects.<br>📟 <b>Burner cleanup:</b> the "Put it away" button and the Street Life section are out of the dealer app (Street Life still opens from the Crime folder\'s burner card).<br>🐞 <b>Bug fixed at the root:</b> people stay in their rooms and places now — nobody trails you area to area any more (your escort, guests, dates and on-duty bodyguards still move with you on purpose, as always).<br>🕶️ <b>Anonymous mode is BACK</b> — rebuilt, with an on/off toggle in ⚙️ Settings: news, posts and streams mask your name while it is on.<br>💬 <b>Your character socialises on its own:</b> when people are right there and it is free, it chats — Social feeds itself a little, like the rest of free will.</p></div>'; const body=sh.querySelector('.sheetCard')||sh; body.insertBefore(d,body.children[1]||null) }catch(e){} } }
+console.log('AquaLife v'+GAME_VERSION+' — round 10 layer loaded');
+</script>
+<script>
+/* ================= v138 ITEM 12 (post-finalize addition): 🍽️ MAKE STARVING REAL =================
+   Reworks the shipped v98/v135 at-zero starvation (was: −9 health per need-tick at hunger 0, plus
+   −3 at ≤3, death in minutes) into a gradual ~2-DAY decline. Model (builder-chosen, flagged):
+   • Hunger pinned at 0 starts the STARVING clock (v98's warnings at 25/15/10 stay as the on-ramp;
+     v98's at-zero burn and v135's ≤3 burn are SHIELDED while hunger is exactly 0: the chain runs
+     with hunger nudged to 1 and any health it touches is refunded, so only this model drains).
+   • Stage drains per GAME-HOUR — stage 1 (0–12h): health −2, energy −1 · stage 2 (12–24h):
+     health −4, energy −2 · stage 3 (24–48h): health −6, energy −3.
+   • At ~24h the character becomes SICK through the shipped sickness state (S.healthSys.sick,
+     shown by the shipped Doctor & Health presentation). The sickness is PINNED (sickDays held
+     at 3): eating stops the decline but does NOT cure it, and medicine can't shorten it — only a
+     doctor cures it (any shipped cure: 🏥 See the doctor $40, 🩺 checkup $25, hospital treatment —
+     all clear healthSys.sick, which this layer detects). If a doctor treats it but the player still
+     never eats, the sickness returns 12h later. Death: if the clock reaches ~48h at zero hunger —
+     or health hits 0 from the drains first — the shipped starveDie98 runs (family-tree "Starvation"
+     + permanent-death pipeline, unchanged). Jail (subsistence floors) and under-5s are exempt,
+     exactly as v98 had them. Eating at any point clears the clock; a treated-and-fed recovery
+     closes the chapter in the journal. */
+(function(){
+ if(typeof TIPS!=='undefined'&&!TIPS['starve138'])TIPS['starve138']={t:'🍽️ Starving is a slide, not a cliff',b:'Hunger pinned at zero starts a decline of about two days: health and energy drain faster at each stage, around the one-day mark you come down SICK — and once sick, food alone will not cure you; a doctor has to treat it. Ignore it all for ~48 hours and the old end waits: starvation, in the family tree.'};
+ const RATES138=[{h:2,e:1},{h:4,e:2},{h:6,e:3}];
+ function stage138(mins){ return mins<720?0:(mins<1440?1:2) }
+ function hs138(){ try{ if(typeof ensure16==='function')ensure16() }catch(e){} if(S&&!S.healthSys)S.healthSys={sick:false,sickDays:0,injured:false,injuredDays:0,doctorVisits:0}; return S?S.healthSys:null }
+ let lastMin138b=null, accH138=0, accE138=0;
+ const _nc138b=needsCheck98;
+ needsCheck98=function(fromTick){
+  let shield=false, h0=0;
+  try{ if(S&&inGame&&!S.deadFlag&&S.age>=5&&typeof jailed98==='function'&&!jailed98()&&S.needs&&S.needs.hunger<=0){ shield=true; h0=S.needs.health; S.needs.hunger=1 } }catch(e){}
+  let r;
+  if(shield){ const _logSv=log; log=function(m){ if(typeof m==='string'&&m.indexOf('Fed again — the starvation clock stops')>=0)return; return _logSv.apply(null,arguments) }; try{ r=_nc138b(fromTick) }finally{ log=_logSv } }
+  else r=_nc138b(fromTick);
+  try{
+   if(!S||!inGame||S.deadFlag)return r;
+   const V=ensure138(); if(!V)return r; const n=S.needs;
+   if(typeof jailed98==='function'&&jailed98()){ if(V.starveStart!==undefined&&V.starveStart!==null){ V.starveStart=null; V.starveSick=false } lastMin138b=null; return r }
+   if(S.age<5)return r;
+   if(shield){
+    n.hunger=0; if(S.v98)S.v98.starving=true;
+    if(n.health<h0)adj('health',h0-n.health);
+    const now=nowMin57();
+    if(V.starveStart===undefined||V.starveStart===null){ V.starveStart=now; V.starveSick=false; V.sickAgainAt=null; lastMin138b=now; accH138=0; accE138=0; log('🍽️ STARVING — hunger hit zero, and the body keeps the receipts this time: a slow decline over about two days. Eat and it stops — but leave it a day and sickness sets in, and sickness needs a doctor.'); toast('🍽️ STARVING — the decline begins') }
+    if(lastMin138b===null)lastMin138b=now;
+    let elapsed=now-lastMin138b; if(elapsed<0)elapsed=0; if(elapsed>240)elapsed=240; lastMin138b=now;
+    const total=now-V.starveStart;
+    const rate=RATES138[stage138(total)];
+    accH138+=rate.h*elapsed/60; accE138+=rate.e*elapsed/60;
+    const dh=Math.floor(accH138), de=Math.floor(accE138); accH138-=dh; accE138-=de;
+    if(de>0)adj('energy',-de);
+    if(dh>0){ adj('health',-dh); if(n.health<=0){ starveDie98(); return r } }
+    const H=hs138();
+    if(H){
+     if(!V.starveSick&&total>=1440){ V.starveSick=true; H.sick=true; H.sickDays=3; log('🤒 STARVATION SICKNESS — a day on empty and the body starts shutting doors: fever, shakes, no strength. Food will stop the slide now, but it will NOT cure this — only a doctor can. (🏥 Me → Doctor & Health, a checkup, or the hospital.)'); toast('🤒 Starving made you SICK — see a doctor') }
+     if(V.starveSick&&H.sick&&H.sickDays<3)H.sickDays=3;
+     if(V.starveSick&&!H.sick){ V.starveSick=false; V.sickAgainAt=total+720; log('🏥 The starvation sickness is treated — but the tank is still empty. Eat, or the decline (and the sickness) comes back.') }
+     if(!V.starveSick&&V.sickAgainAt!==null&&V.sickAgainAt!==undefined&&total>=V.sickAgainAt&&total<2880){ V.starveSick=true; H.sick=true; H.sickDays=3; V.sickAgainAt=null; log('🤒 THE SICKNESS IS BACK — treated, but never fed. The body cannot heal on empty. Doctor again — and this time, food after.'); toast('🤒 Starvation sickness returned') }
+    }
+    if(total>=2880){ starveDie98(); return r }
+   } else {
+    if(V.starveStart!==undefined&&V.starveStart!==null){ V.starveStart=null; lastMin138b=null; accH138=0; accE138=0; if(V.starveSick)log('🍽️ FED — the decline stops here. But the starvation sickness stays: food alone does not cure it. A doctor does. (🏥 Me → Doctor & Health.)') }
+    if(V.starveSick){ const H=hs138(); if(H){ if(H.sick&&H.sickDays<3)H.sickDays=3; if(!H.sick){ V.starveSick=false; log('🏥 Treated and fed — the starvation chapter closes. Keep the tank off zero.') } } }
+   }
+  }catch(e){}
+  return r };
+ const _rt138b=renderTabs;
+ renderTabs=function(active){ const r=_rt138b(active); try{ if(S&&inGame&&active==='home'&&!S.deadFlag){ const V=ensure138(); if(V&&V.starveStart!==undefined&&V.starveStart!==null&&S.needs&&S.needs.hunger<=0){ const p=document.getElementById('panel'); if(p&&!p.querySelector('.starveCard138')){ const total=nowMin57()-V.starveStart; const hrs=Math.max(0,Math.floor(total/60)); const d=document.createElement('div'); d.innerHTML='<div class="card starveCard138" style="border:2px solid var(--red)"><h3>🍽️ STARVING — hour '+hrs+' of the decline (stage '+(stage138(total)+1)+' of 3)</h3><p>'+(V.starveSick?'🤒 <b>Starvation sickness has set in.</b> Food stops the decline but does <b>not</b> cure this — a <b>doctor</b> has to treat it (🏥 Me → Doctor &amp; Health, a checkup, or the hospital).':'Health and energy are draining, faster at each stage. Around hour 24 the sickness sets in — after that, food alone will not cure you; a doctor will.')+' If hunger stays at zero to about <b>hour 48</b>, the body gives out: starvation, in the family tree.</p></div>'; if(d.firstChild)p.insertBefore(d.firstChild,p.firstChild) } } } }catch(e){} return r };
+ if(typeof openWhatsNew==='function'){ const _own138b=openWhatsNew; openWhatsNew=function(){ _own138b(); try{ const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.wn138b'))return; const d=document.createElement('div'); d.className='wn138b'; d.innerHTML='<div class="card" style="text-align:left"><h3>🍽️ Starving is real now (round 10, item 12)</h3><p class="small">Hunger at zero is a <b>two-day slide</b> now, not an instant cliff: health &amp; energy drain, faster at each stage. Around a day in you get <b>sick</b> — and once sick, <b>food alone won\'t cure you; a doctor must treat it</b>. Ignore everything to ~48 hours and the old end waits: <b>starvation, in the family tree</b>.</p></div>'; const body=sh.querySelector('.sheetCard')||sh; const anchor=body.querySelector('.wn138'); if(anchor&&anchor.nextSibling)body.insertBefore(d,anchor.nextSibling); else body.appendChild(d) }catch(e){} } }
+ console.log('[AquaLife v138] item 12 loaded: starvation = ~2-day decline, sickness at ~24h, doctor-only cure, death at ~48h.');
+})();
 </script>
 </body>
 </html>
