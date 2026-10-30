@@ -577,7 +577,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=149;
+const GAME_VERSION=150;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -13265,6 +13265,99 @@ const WN149_CARD='<div class="card" style="border-color:var(--accent2)"><h3>✨ 
 try{ const _wn149=whatsNewHtml124; whatsNewHtml124=function(){ let h=''; try{ h=_wn149() }catch(e){} return WN149_CARD+h } }catch(e){}
 window.__v149={ensure149:ensure149,capture149:capture149,scrapbook149:scrapbook149,haptics149:function(){ return hap149 },camBlocked149:function(){ return camBlocked149 },version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — round 15: real scrapbook & selfies • visual scenes • menus stay open • silent autonomy • toddler fights • child services • toddler drops');
+})();
+</script>
+<script>
+/* ================= v150 — FISHING PARITY =================
+   The app copy's round 15 added FISHING at the park pond as a scened action; this copy
+   had only the 🎣 fishing news line. Now the pond fishes HERE too, on the shipped
+   machinery: the Fish action runs through startActivity with the 🎣 icon, which the
+   v149 scene engine already classifies as the park family — so casting out, waiting on
+   the bobber and the catch moment PLAY OUT in the room scene (scene bar + ⏭ Skip, the
+   camera's one gated shot), and only then does the catch resolve. Never an instant
+   text resolution.
+   WHERE: 🌳 Maple Street & Park (location 'street'), standing in 🌳 The Park room —
+   a pond card rides the Home panel there; from the street's other areas it offers
+   🚶 Head to the pond first (the shipped v123 goArea123 area walk — street areas run
+   on AREA_ROOMS123, not the v86 house rooms).
+   NUMBERS (this copy's design, flagged for the ledger — modest, park-scale):
+   • Cost: FREE, like the other park actions. Needs via the performance: Energy −6,
+     Fun +8. Clock: the shipped default 20 game-minutes for an unlisted icon.
+   • Storm cancels it, like every shipped outdoor plan (doFun's rule); rain is fine.
+   • CATCH TABLE (rolled when you cast, so the scene can play the true ending):
+       30% nothing / it got away — the calm was the catch
+       25% 🐟 Sunfish — Bag value $3
+       20% 🐠 Bluegill — Bag value $5
+       12% 🐡 Largemouth bass — Bag value $9
+        6% 🌟 Golden koi — Bag value $25 (rare keepsake; sell-only)
+        4% 👢 Old boot — Bag value $1 (junk, sellable)
+        3% 🧰 Lost tackle box — Bag value $12 (sellable)
+   • CAUGHT FISH ARE REAL BAG ITEMS (kind 'food', the shipped addItem — the Bag-full
+     rule applies untouched: a full bag means the fish slips back into the pond). Their
+     shipped uses: EAT from the Bag (the shipped 'snack' use — Hunger +14, Fun +3) or
+     SELL from the Bag / at the 🏪 Pawn Shop for the shipped pawn price (≈85% of value
+     with the usual jitter: roughly $3 / $4 / $8 / $21). No new systems were built.
+   • XP: +7 Fitness on a landed catch (fish, junk or treasure), +3 on a quiet cast.
+   • Stats live in S.v150 (casts / caught / best) — additive only; existing saves and
+     every other field are untouched. */
+(function(){
+'use strict';
+function ensure150(){ if(!S)return null; if(!S.v150)S.v150={}; const V=S.v150; if(V.casts===undefined)V.casts=0; if(V.caught===undefined)V.caught=0; if(V.best===undefined)V.best=''; return V }
+window.__ensure150=ensure150;
+let fishScene150=null;
+const FISH_TABLE150=[
+ {p:0.30,kind:'none'},
+ {p:0.25,kind:'fish',name:'🐟 Sunfish',v:3,d:'Small, sunny, proud of itself. A real park-pond classic.'},
+ {p:0.20,kind:'fish',name:'🐠 Bluegill',v:5,d:'A panfish with opinions. Caught at the Maple Street pond.'},
+ {p:0.12,kind:'fish',name:'🐡 Largemouth bass',v:9,d:'The pond\'s local heavyweight. It fought. You won.'},
+ {p:0.06,kind:'fish',name:'🌟 Golden koi',v:25,d:'A glint of actual gold under the park water. The pond\'s legend — and it bit YOUR line.',sellOnly:true},
+ {p:0.04,kind:'junk',name:'👢 Old boot',v:1,d:'One (1) boot. The pond\'s oldest joke, now in your bag.'},
+ {p:0.03,kind:'junk',name:'🧰 Lost tackle box',v:12,d:'Somebody\'s whole tackle kit, snagged off the pond floor. Lures, line, a tiny wrench.'}
+];
+function rollFish150(){ let r=Math.random(),acc=0; for(let i=0;i<FISH_TABLE150.length;i++){ acc+=FISH_TABLE150[i].p; if(r<acc)return FISH_TABLE150[i] } return FISH_TABLE150[0] }
+function fishValue150(nm){ const f=FISH_TABLE150.find(function(x){ return x.name===nm }); return f?f.v:0 }
+function atPond150(){ if(!S||S.location!=='street')return false; try{ const rm=curRoom86(); if(rm)return rm.id==='park' }catch(e){} try{ const V=ensure123(); return ((V.areaRoom&&V.areaRoom.street)||'sidewalk')==='park' }catch(e){ return false } }
+function fishGo150(){ if(!S||!inGame)return; const V=ensure150();
+ if(typeof activity!=='undefined'&&activity){ toast('🎣 One thing at a time — let this moment finish first'); return }
+ if(S.location!=='street'){ toast('🎣 The pond is at 🌳 Maple Street & Park'); return }
+ if(!atPond150()){ try{ goArea123('park') }catch(e){} }
+ if((S.weather||'sunny')==='storm'){ toast('⛈️ Storm! Nobody fishes in a thunderstorm — the pond will wait.'); log('⛈️ A thunderstorm cancelled your fishing — the pond keeps, the lightning does not negotiate.'); save(); return }
+ const res=rollFish150(); V.casts++; save();
+ fishScene150={t0:performance.now(),dur:3100,x:300,y:302,res:res};
+ setTimeout(function(){ try{ if(S)log('🎣 …the bobber sits on the water. A ripple spreads. Patience is the whole technique.') }catch(e){} },1500);
+ startActivity('🎣',3000,300,302,{energy:-6,fun:8},function(){ fishScene150=null; if(!S)return;
+  if(res.kind==='none'){ addXp(3,'fitness'); if(Math.random()<0.45)log('🎣 IT GOT AWAY — the bobber plunged, you struck, and the line came back waving a wet nothing. The pond wins this round.'); else log('🎣 Nothing bit — a stretch of perfect quiet by the water. Some days the calm IS the catch.'); save(); render(); return }
+  const it=addItem(res.name,res.kind==='fish'?'food':'loot',res.v,false,res.d,(res.kind==='fish'&&!res.sellOnly)?'snack':null);
+  if(res.sellOnly){ if(it){ V.caught++; V.best=res.name; log('🎣🌟 GOLDEN KOI — the pond\'s legend just bit YOUR line! It is in your 🎒 Bag, worth real money at the pawn counter. Some people would keep it forever. The counter guy would not.'); try{ sfx('win') }catch(e){} } else log('🎣🌟 A GOLDEN KOI flashed on your line — but your 🎒 Bag is FULL and it slipped away into legend. The pond remembers. So will you.') }
+  else if(res.kind==='fish'){ if(it){ V.caught++; if(res.v>fishValue150(V.best))V.best=res.name; log('🎣🐟 CAUGHT — '+res.name+'! It is in your 🎒 Bag: eat it from the bag, or sell it in the Bag / at the 🏪 Pawn Shop. ('+V.caught+' caught, all told.)'); try{ sfx('win') }catch(e){} } else log('🎣🐟 CAUGHT — but your 🎒 Bag is FULL, so it slipped the hook and went home to the pond. Pawn something and come back for it.') }
+  else if(res.name.indexOf('👢')>=0){ log('🎣👢 You caught… a boot. One boot. The pond has been sitting on that joke for years. It is in your Bag — the pawn shop will give you a whole dollar for the legend.') }
+  else { log('🎣🧰 Snagged something heavy off the pond floor: a lost tackle box, kit and all. In your Bag — pawn it or keep it as a trophy of the deep.') }
+  addXp(7,'fitness'); save(); render() });
+}
+window.fishGo150=fishGo150;
+/* the pond card on the Home panel while you are at Maple Street & Park */
+try{ const _rt150=renderTabs; renderTabs=function(active){ const r=_rt150(active); try{ if(S&&inGame&&active==='home'){ const panel=document.getElementById('panel'); if(panel&&S.location==='street'&&!panel.querySelector('.fishCard150')){ const V=ensure150(); const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.className='card fishCard150'; d.style.borderColor='#0ea5e9';
+  if(atPond150()){ d.innerHTML='<h3>🎣 The Park Pond</h3><p>The pond at the quiet end of the park — ducks, reeds, and things moving under the surface. Cast a line and watch it play out: the cast, the wait, the moment the bobber goes under. Caught fish land in your 🎒 Bag — eat them from the bag or sell them at the 🏪 Pawn Shop.</p>'+(V.casts?'<p class="small">🎣 Casts: <b>'+V.casts+'</b> • 🐟 Caught: <b>'+V.caught+'</b>'+(V.best?' • 🌟 Best: <b>'+V.best+'</b>':'')+'</p>':'')+'<button class="btn gold" onclick="fishGo150()">🎣 Fish — cast a line (free)</button>' }
+  else { d.innerHTML='<h3>🎣 The Park Pond</h3><p>There is a fishing pond at the quiet end of the park — ducks, reeds, and things moving under the surface.</p><button class="btn outline" onclick="goArea123(\'park\')">🚶 Head to the pond</button>' }
+  grid.insertBefore(d,grid.firstChild) } } }catch(e){} return r } }catch(e){}
+/* the fishing scene itself: pond, rod, line, bobber — cast, wait, and the catch moment,
+   drawn over the shipped room render for exactly the performance's duration */
+try{ const _dr150=drawRoom; drawRoom=function(){ const r=_dr150(); try{ if(!fishScene150)return r; const now=performance.now(); const el=now-fishScene150.t0; if(el>fishScene150.dur+250){ fishScene150=null; return r } const cv=document.getElementById('cv'); if(!cv)return r; const ctx=cv.getContext('2d'); const hx=(typeof charX!=='undefined'?charX:300), hy=(typeof charY!=='undefined'?charY:302); const px=hx-118, py=hy+44; const castT=Math.min(1,el/550); const waitT=Math.max(0,el-550); const endT=fishScene150.dur-el;
+ ctx.save(); ctx.textAlign='center';
+ ctx.fillStyle='#0ea5e955'; ctx.beginPath(); ctx.ellipse(px,py+8,112,27,0,0,7); ctx.fill(); ctx.fillStyle='#38bdf888'; ctx.beginPath(); ctx.ellipse(px,py+5,96,21,0,0,7); ctx.fill();
+ if(castT>=1&&endT>700){ ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.6; for(let i=0;i<2;i++){ const rp=((waitT/900)+i*0.5)%1; ctx.globalAlpha=0.5*(1-rp); ctx.beginPath(); ctx.ellipse(px,py,6+rp*26,2+rp*6,0,0,7); ctx.stroke() } ctx.globalAlpha=1 }
+ const bx=castT<1?(hx+(px-hx)*castT):px;
+ const by=castT<1?((hy+16)+(py-(hy+16))*castT-Math.sin(castT*Math.PI)*46):(py+Math.sin(waitT/280)*2.2-((endT<=700&&fishScene150.res.kind!=='none')?4:0));
+ ctx.strokeStyle='#92400e'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(hx-2,hy+26); ctx.lineTo(hx+16,hy-2); ctx.stroke(); ctx.lineWidth=1;
+ ctx.strokeStyle='#f8fafccc'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(hx+10,hy+8); ctx.quadraticCurveTo((hx+bx)/2,Math.min(hy,by)-16,bx,by); ctx.stroke();
+ ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(bx,by,4.6,0,7); ctx.fill(); ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.arc(bx,by-2.2,4.6,Math.PI,0); ctx.fill();
+ if(endT<=700){ const ct=Math.max(0,Math.min(1,1-(endT/700))); if(fishScene150.res.kind!=='none'){ ctx.font='22px serif'; ctx.fillText('💦',px-14,py-8-ct*10); ctx.fillText('💦',px+16,py-4-ct*8); ctx.font='26px serif'; ctx.fillText(fishScene150.res.name.split(' ')[0],px,py-16-Math.sin(ct*Math.PI)*34) } else { ctx.font='18px serif'; ctx.fillText('💦',px,py-8-ct*8) } }
+ ctx.restore() }catch(e){} return r } }catch(e){}
+/* ---------- What's New ---------- */
+const WN150_CARD='<div class="card" style="border-color:var(--accent2)"><h3>✨ What\'s New — v150</h3><p>🎣 <b>FISHING IS HERE</b> — the park pond at 🌳 Maple Street & Park is fishable now. Stand at the pond and hit <b>🎣 Fish</b>: the cast, the wait on the bobber and the catch moment all play out in the scene, like every performance. Sunfish, bluegill, the pond\'s bass — and one golden legend under the water. Caught fish are real 🎒 Bag items: <b>eat them from the Bag</b> or <b>sell them</b> in the Bag or at the 🏪 Pawn Shop. Free to fish, a storm cancels, and a full bag means the fish slips home free.</p></div>';
+try{ const _wn150=whatsNewHtml124; whatsNewHtml124=function(){ let h=''; try{ h=_wn150() }catch(e){} return WN150_CARD+h } }catch(e){}
+window.__v150={ensure150:ensure150,fishGo150:fishGo150,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — fishing parity: 🎣 Fish at the park pond, a real scene (cast • wait • catch), bag fish you can eat or pawn');
 })();
 </script>
 </body>
