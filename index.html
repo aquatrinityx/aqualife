@@ -577,7 +577,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=145;
+const GAME_VERSION=147;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -2807,7 +2807,7 @@ function drawRoom(){
  if(npcs)npcs.forEach(n=>{ if(n.state==='out')return; if(isParentNpc(n.name)&&loc!==homeLoc())return; if(typeof npcHere86==='function'&&!npcHere86(n))return; const np=npcPetFor(n.name); if(np){ const pp=petDrawPos('npc:'+n.name,n.x+(n.x>450?-36:36),n.y+36,np.mode==='roam'&&np.type!=='Fish',nowMs); drawPetSprite(ctx,np,pp.x,pp.y,nowMs,true) } });
  if(townsfolk)townsfolk.forEach(p=>{ if(p.state==='out')return; const rec=S.town&&S.town.people?S.town.people[p.name]:null; if(rec&&rec.pet){ const pp=petDrawPos('town:'+p.name,p.x+(p.x>450?36:-36),p.y+36,rec.pet.mode==='roam'&&rec.pet.type!=='Fish',nowMs); drawPetSprite(ctx,rec.pet,pp.x,pp.y,nowMs,true) } });
  // ---- CAREGIVER HELP: a crawling baby never does things alone — during any activity a grown-up is right there beside them, helping ----
- if(activity&&(isCrawling()||todCared82())){ const hn=(typeof todCare82==='function'&&todCare82())||careHelper(); const hd=(typeof personDefFor82==='function')?personDefFor82(hn):PEOPLE_DEFS[hn]; if(hd&&((S.age<2&&!S.canWalk)||(typeof roomHas141==='function'&&roomHas141(hn))))drawNPCSprite(ctx,{name:hn,icon:hd.icon,col:hd.col,hair:hd.hair,x:charX+(charX>470?-68:68),y:charY+14,state:'in',bubble:'🍼',say:'',sayUntil:0},nowMs,false) }
+ if(activity&&(isCrawling()||todCared82())){ let hn=(typeof todCare82==='function'&&todCare82())||careHelper(); /* v146 item 15: BABYSITTER-STATE GATE — while the sitter is on duty the parents are AWAY (that is the point of the sitter): this caregiver-help figure never renders a parent/caregiver then. It used to check only the caregiver's ROOM (v141) — an at-work parent's room record still matched, and the under-2 branch checked nothing at all — so Mom materialised beside the toddler mid-sitting. The on-duty sitter is drawn by the v120 scene pass instead. */ if(hn&&typeof sitterOnDuty146==='function'&&sitterOnDuty146())hn=null; const hd=hn?((typeof personDefFor82==='function')?personDefFor82(hn):PEOPLE_DEFS[hn]):null; if(hd&&((S.age<2&&!S.canWalk)||(typeof roomHas141==='function'&&roomHas141(hn))))drawNPCSprite(ctx,{name:hn,icon:hd.icon,col:hd.col,hair:hd.hair,x:charX+(charX>470?-68:68),y:charY+14,state:'in',bubble:'🍼',say:'',sayUntil:0},nowMs,false) }
  // ---- PLAYER: pixel chibi with walk cycle — or, for a baby who has not learned to walk yet, a CRAWL cycle (slower, on all fours) ----
  const crawling=isCrawling();
  const dx=targetX-charX, dy=targetY-charY; if(Math.abs(dx)>4||Math.abs(dy)>4){ const spd=crawling?0.038:0.08; charX+=dx*spd; charY+=dy*spd; walkPhase+=crawling?0.3:0.35; dir=dx>4?'right':dx<-4?'left':'front' } else walkPhase=0; if(activity&&activity.icon==='💤'){ charX=targetX; charY=targetY; walkPhase=0 } /* v144: sleep is still — no gliding across the room mid-sleep (the sliding sleeper + bed read as glitching) */
@@ -3942,7 +3942,7 @@ function inAppBrowser68(){ try{ if(window.self!==window.top)return true }catch(e
 function installPromptNow68(){ if(!deferredInstall67)return; const p=deferredInstall67; deferredInstall67=null; syncInstall67(); closeModal(); p.prompt(); if(p.userChoice)p.userChoice.then(function(c){ console.log('[AquaLife] install choice:',c&&c.outcome) }) }
 function installApp67(){ if(isStandalone67()){ toast('✅ AquaLife is already running as the installed app'); return } if(deferredInstall67){ installPromptNow68(); return } openInstallSheet68() }
 function openInstallSheet68(){ const ua=navigator.userAgent||''; const ios=/iphone|ipad|ipod/i.test(ua); const chromeSteps='<p><b>🤖 Android — in Chrome:</b></p><p>1️⃣ Tap the <b>⋮ menu</b> at the top-right of Chrome.<br>2️⃣ Tap <b>Install app</b> (on some phones it says <b>Add to Home screen</b>).<br>3️⃣ Tap <b>Install</b>. AquaLife lands on your home screen with its own icon and opens full-screen, no browser bar — like any app.</p>'; const iosSteps='<p><b>🍎 iPhone / iPad — in Safari:</b></p><p>1️⃣ Tap the <b>Share</b> button (the square with an arrow pointing up).<br>2️⃣ Scroll down and tap <b>Add to Home Screen</b>.<br>3️⃣ Tap <b>Add</b>. The AquaLife icon lands on your home screen and opens full-screen, no browser bars.</p>'; const first=ios?iosSteps:chromeSteps; const second=ios?chromeSteps:iosSteps; openSheet('<h2>📲 Get the AquaLife app</h2>'+(deferredInstall67?'<p>Good news — your browser is offering a real one-tap install right now:</p><button class="btn gold" onclick="installPromptNow68()">📲 Install AquaLife — one tap</button><p class="small" style="margin-top:8px">…or use your browser\u2019s own menu route below:</p>':'<p>AquaLife installs from your browser — about ten seconds, and it is this exact game:</p>')+first+'<div style="margin-top:12px">'+second+'</div>'+(inAppBrowser68()?'<p style="margin-top:10px;background:#7f1d1d;border:1px solid #f87171;border-radius:10px;padding:9px 11px">⚠️ <b>You are reading this inside another app\u2019s built-in browser</b> — it cannot install anything, and its menus have no install option. Open this same link in <b>Chrome</b> (Android) or <b>Safari</b> (iPhone) first, then follow the steps above.</p>':'<p class="small" style="margin-top:8px">Reading this inside another app (Muse, Messages, Facebook…)? Its built-in browser cannot install — open the link in Chrome or Safari first.</p>')+'<h3 style="margin-top:14px">🤖 The Android app (APK)</h3><p>There is also a real Android app package of this exact game — built with PWABuilder, package name <b>com.minilifesim.game</b>. It is not a different game: the app opens this same live link, so it is always the newest version. Install the APK file on an Android phone (Android may ask you to allow installs from that source — that is normal for APK files) and AquaLife gets its own home-screen icon and opens full-screen with no browser bar. No APK handy? The Chrome install above gives you the same app, straight from the browser.</p><p class="small" style="margin-top:8px">Whichever way you install, it is this same game at this same address — a life saved in Chrome on this phone carries straight over.</p><p class="small" style="margin-top:10px;text-align:center;font-weight:700">Made by AquaTechFantasy 🌊</p><button class="btn gold" style="margin-top:10px" onclick="closeModal()">Got it</button>') }
-// ---- v67, synced v124: SERVICE WORKER — registers the offline shell (data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0MCc7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg==, cache aqualife-shell-v125; the static host scopes it to assets/ — see the note in that file). v124: after registering, ask for an update check right away and again whenever the app comes back to the foreground; and if a NEW worker takes control mid-session, reload ONCE so the fresh build is what is actually on screen — that is how an installed copy that was holding an old build lands on the newest one at the next open instead of staying stale. ----
+// ---- v67, synced v124: SERVICE WORKER — registers the offline shell (data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0Nic7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg==, cache aqualife-shell-v125; the static host scopes it to assets/ — see the note in that file). v124: after registering, ask for an update check right away and again whenever the app comes back to the foreground; and if a NEW worker takes control mid-session, reload ONCE so the fresh build is what is actually on screen — that is how an installed copy that was holding an old build lands on the newest one at the next open instead of staying stale. ----
 if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').then(function(reg){ console.log('[AquaLife] service worker registered — scope:',reg.scope); try{ reg.update() }catch(e){} document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ reg.update() }catch(e){} } }); var hadCtl124=!!navigator.serviceWorker.controller, reloaded124=false; navigator.serviceWorker.addEventListener('controllerchange',function(){ if(hadCtl124&&!reloaded124){ reloaded124=true; window.location.reload() } }) }).catch(function(err){ console.warn('[AquaLife] service worker registration failed:',err) }) }) }
 syncInstall67();
 
@@ -8393,7 +8393,7 @@ const _r123=render; render=function(){ const r=_r123.apply(null,arguments); try{
 if(typeof TIPS!=='undefined'){ if(!TIPS['quick123'])TIPS['quick123']={t:'⚡ Quick Life',b:'New lives now start with a choice: ⚡ Quick Life (the dice roll a boy or girl, a name, a style, a family and a town, and place you straight in) or 🎨 Normal Life (the full custom setup). Inside Normal, 🎲 Random style rolls just the look.'}; if(!TIPS['crib123'])TIPS['crib123']={t:'🛏️ Crib → stand → crawl → walk',b:'Toddlers stay in the crib until they learn to stand. Before that they cannot change rooms at all — a caregiver picks them up, carries them, and puts them down. Standing unlocks crawling; walking is the next milestone.'}; if(!TIPS['doctor123'])TIPS['doctor123']={t:'🏥 The doctor',b:'Checkups and flu shots live in 👽 Me → 🏥 Doctor & Health (and at the hospital Clinic). Shots are tracked — overdue flu shots invite sick days, and a checkup fixes a sickness today.'}; if(!TIPS['relbars123'])TIPS['relbars123']={t:'💖 The relationship ladder',b:'Dating & Relationships lives in 👽 Me now: every person you start to like gets a progress bar — Unknown → Friendly → Cool → Interested → Like → Dating → Engaged → Married (Divorced is remembered too).'}; if(!TIPS['mallrooms123'])TIPS['mallrooms123']={t:'🛍️ The mall is rooms now',b:'Atrium, Clothes Wing, Food Court, Games & Movies, Phone Store and a Bag Shop — walk between them with the room chips and shop room by room. Other places have rooms too: check the chips under the scene.'}; if(!TIPS['bookbag123'])TIPS['bookbag123']={t:'🎒 Bookbags',b:'The bag is locked for toddlers — a grown-up opens it with them. More bookbags are sold at the Corner Store and the mall Bag Shop, and you can wear & repaint yours in 👽 Me → 🎒 Your Bookbag.'} }
 window.__v123={ensure123:ensure123,quickLife123:quickLife123,randomStyle123:randomStyle123,moveStage123:moveStage123,carryTo123:carryTo123,doctorSheet123:doctorSheet123,docDo123:docDo123,relStage123:relStage123,relPct123:relPct123,buyBookbag123:buyBookbag123,wearBookbag123:wearBookbag123,bagColor123:bagColor123,bagSheet123:bagSheet123,mallGo123:mallGo123,mallSheet123:mallSheet123,goArea123:goArea123,paintTop123:paintTop123};
 
-/* ================= v124: 🔢 THE VERSION IS VISIBLE NOW — GAME_VERSION existed only inside the code (save stamps & update checks), with no label anywhere on screen, so a player had no way to tell which version they were running — and an installed copy holding an older build looked identical to the newest one. Now the version is printed where a player can actually see it: a small line at the bottom of every start screen (the install gate, the welcome-back screen and the new-life setup), a line + a ✨ What's new button inside ⚙️ Settings, and a small v-tag on the bottom bar while playing — every one of them reads the live GAME_VERSION constant, so the label can never drift from the code. ✨ ONE-TIME UPDATE NOTE: when a returning player's seen-version (the existing SEEN_KEY record, written at every life start) is behind GAME_VERSION, the welcome-back screen opens with a 🎉 "just updated" banner: ✨ See what's new opens an honest note (what v124 added, plus the v123 round it follows), and either button marks the version seen so it never nags twice. New players never see it — a fresh life stamps the seen-version at start, as it always has. 🔄 FRESHER OPENS: the service-worker registration (above) now checks for a new worker on load and on every return to the foreground, and reloads once if a new worker takes control; data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0MCc7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg== itself is hardened to match (new cache name, network-first revalidated navigations, error/redirected responses never cached as the shell, stale-while-revalidate assets). Saves carry over untouched: nothing in the save format changes. ================= */
+/* ================= v124: 🔢 THE VERSION IS VISIBLE NOW — GAME_VERSION existed only inside the code (save stamps & update checks), with no label anywhere on screen, so a player had no way to tell which version they were running — and an installed copy holding an older build looked identical to the newest one. Now the version is printed where a player can actually see it: a small line at the bottom of every start screen (the install gate, the welcome-back screen and the new-life setup), a line + a ✨ What's new button inside ⚙️ Settings, and a small v-tag on the bottom bar while playing — every one of them reads the live GAME_VERSION constant, so the label can never drift from the code. ✨ ONE-TIME UPDATE NOTE: when a returning player's seen-version (the existing SEEN_KEY record, written at every life start) is behind GAME_VERSION, the welcome-back screen opens with a 🎉 "just updated" banner: ✨ See what's new opens an honest note (what v124 added, plus the v123 round it follows), and either button marks the version seen so it never nags twice. New players never see it — a fresh life stamps the seen-version at start, as it always has. 🔄 FRESHER OPENS: the service-worker registration (above) now checks for a new worker on load and on every return to the foreground, and reloads once if a new worker takes control; data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0Nic7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg== itself is hardened to match (new cache name, network-first revalidated navigations, error/redirected responses never cached as the shell, stale-while-revalidate assets). Saves carry over untouched: nothing in the save format changes. ================= */
 (function(){ try{ const st=document.createElement('style'); st.id='style124'; st.textContent='.verLine124{text-align:center;font-weight:800;font-size:12px;letter-spacing:.05em;opacity:.7;margin:14px 0 2px}.verChip124{font-size:9.5px;font-weight:800;letter-spacing:.05em;opacity:.65;color:#fff;white-space:nowrap;flex:none}.upd124{margin-bottom:14px;border:2.5px solid var(--accent2);background:var(--card);border-radius:16px;padding:16px}.upd124 h3{margin:0 0 4px}.upd124 p{margin:0 0 6px;color:var(--mut);font-size:13.5px;line-height:1.5}'; document.head.appendChild(st) }catch(e){} })();
 function verTag124(){ return 'AquaLife v'+GAME_VERSION }
 function verLineHtml124(){ return '<p class="verLine124">🌊 '+verTag124()+'</p>' }
@@ -11242,7 +11242,7 @@ const _teg137=todEventGo72; todEventGo72=function(ci){ const ev=window._todEv72;
 /* item 4: milestone ceremonies — a milestone becomes a family moment + a scrapbook photo, queued and shown when the screen is free */
 const _tm137=todMile72; todMile72=function(id,silent){ let had=false; try{ had=!!(S&&S.tod&&S.tod.miles&&S.tod.miles[id]) }catch(e){} _tm137(id,silent); try{ if(S&&S.tod&&S.tod.miles&&S.tod.miles[id]&&!had){ const V=ensure137(); if(V&&V.ceremonyQ.indexOf(id)<0)V.ceremonyQ.push(id) } }catch(e){} };
 function flushCeremony137(){ try{ if(!S||!inGame||S.deadFlag)return; const V=ensure137(); if(!V||!V.ceremonyQ.length)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(typeof activity!=='undefined'&&activity)return; const id=V.ceremonyQ.shift(); const def=(typeof TOD_MILES72!=='undefined')?TOD_MILES72.find(function(x){ return x[0]===id }):null; if(!def)return; try{ snap84('cer137_'+id,def[1],'📸 Milestone — '+def[2].charAt(0)+def[2].slice(1).toLowerCase(),S.name+' '+def[3]+' The whole house was there for it — this one got framed.','📸 '+def[1]+' 🎉') }catch(e){}
- const folks=[]; try{ currentRoommates().forEach(function(p){ if(p.name!==S.name)folks.push(p.name) }) }catch(e){} const cg=(typeof careHelper==='function')?careHelper():null; if(cg&&folks.indexOf(cg)<0)folks.unshift(cg);
+ const folks=[]; try{ currentRoommates().forEach(function(p){ if(p.name!==S.name)folks.push(p.name) }) }catch(e){} const cg=(typeof careHelper==='function')?careHelper():null; if(cg&&folks.indexOf(cg)<0&&!(typeof sitterOnDuty146==='function'&&sitterOnDuty146()))folks.unshift(cg); /* v146 item 15: while the sitter is on duty the caregiver is away — not a ceremony witness either */
  const reacts=['was on their feet before it even finished happening','got the photo JUST in time','is still telling the neighbours about it','teared up a little and is denying it','has told this story twice already today'];
  const rHtml=folks.slice(0,3).map(function(n,i){ return '<div class="kv"><span>🎉 '+n+'</span><b>'+reacts[(i+ (id.length))%reacts.length]+'</b></div>' }).join('');
  openSheet('<h2>'+def[1]+' '+def[2]+'!</h2><div style="text-align:center;font-size:40px;line-height:1.2">'+def[1]+'📸</div><p><b>'+S.name+'</b> '+def[3]+'</p>'+(rHtml?('<p class="small" style="margin-bottom:4px">The household, witnessing history:</p>'+rHtml):'<p class="small">No crowd for this one — just the moment itself, and it still counts.</p>')+'<p class="small">📸 A photo of it went straight into the 📸 Scrapbook.</p><button class="btn gold" onclick="closeModal()">🎉 Back to the day</button>',{sfx:'win'}); save() }catch(e){} }
@@ -11871,7 +11871,7 @@ function groupContacts141(){ try{ const sh=document.getElementById('sheet'); if(
 const _pm141=phoneMessages; phoneMessages=function(){ const r=_pm141(); groupContacts141(); return r };
 const _pc141b=phoneCalls; phoneCalls=function(){ const r=_pc141b(); groupContacts141(); return r };
 /* ---------- item 31: SOCIAL — People Around Town + Pets Around You COMBINE into one 🌍 Around You block, LAST in Social ---------- */
-function combineAround141(){ try{ const panel=document.getElementById('panel'); if(!panel||panel.querySelector('.around141'))return; const find=function(txt){ const els=panel.querySelectorAll('.card'); for(let i=0;i<els.length;i++){ const h=els[i].querySelector('h3'); if(h&&h.textContent.indexOf(txt)>=0)return els[i] } return null }; const people=find('People Around Town'), pets=find('Pets Around You'); if(!people&&!pets)return; const box=document.createElement('div'); box.className='card around141'; box.style.borderColor='var(--accent2)'; box.innerHTML='<h3>🌍 Around You</h3><p class="small" style="margin-top:0">The people and the pets, in one place — everybody around you, at the bottom of Social where you left them.</p>'; const move=function(card,label){ if(!card)return; const wrap=card.closest('details.dd132'); const sub=document.createElement('div'); sub.innerHTML='<h4 style="margin:10px 0 4px">'+label+'</h4>'; const body=document.createElement('div'); Array.prototype.slice.call(card.childNodes).forEach(function(n){ if(n.tagName!=='H3')body.appendChild(n) }); sub.appendChild(body); box.appendChild(sub); if(wrap)wrap.remove(); else card.remove() }; move(people,'👥 People'); move(pets,'🐾 Pets'); const grid=panel.querySelector('.grid')||panel; grid.appendChild(box) }catch(e){} }
+function combineAround141(){ try{ const panel=document.getElementById('panel'); if(!panel||panel.querySelector('.around141'))return; const find=function(txt){ const els=panel.querySelectorAll('.card'); for(let i=0;i<els.length;i++){ const h=els[i].querySelector('h3'); if(h&&h.textContent.indexOf(txt)>=0)return els[i] } return null }; const people=find('People Around Town'), pets=find('Pets Around You'); if(!people&&!pets)return; const box=document.createElement('details'); box.className='dd132 around141'; box.style.borderColor='var(--accent2)'; box.innerHTML='<summary style="cursor:pointer;font-weight:900;padding:2px 0">🌍 Around You <span class="ddChev132">▸</span></summary><div class="ddBody"><p class="small" style="margin-top:0">The people and the pets, in one place — everybody around you, at the bottom of Social where you left them.</p></div>'; const ddBody=box.querySelector('.ddBody'); const move=function(card,label){ if(!card)return; const wrap=card.closest('details.dd132'); const sub=document.createElement('div'); sub.innerHTML='<h4 style="margin:10px 0 4px">'+label+'</h4>'; const body=document.createElement('div'); Array.prototype.slice.call(card.childNodes).forEach(function(n){ if(n.tagName!=='H3')body.appendChild(n) }); sub.appendChild(body); ddBody.appendChild(sub); if(wrap)wrap.remove(); else card.remove() }; move(people,'👥 People'); move(pets,'🐾 Pets'); const grid=panel.querySelector('.grid')||panel; grid.appendChild(box) }catch(e){} }
 const _rt141b=renderTabs; renderTabs=function(active){ const r=_rt141b(active); try{ if(S&&inGame){ const cur=(typeof curTab!=='undefined'&&curTab)?curTab:active; if(cur==='life')combineAround141() } }catch(e){} return r };
 /* ---------- item 32: TRAVEL — On Foot & Rides in the SAME COLUMN as everything else: full-width rows, one per place, the ride call as a full-width row of the same card. Mechanics untouched (walkTo137 / canWalkTo137 / rideSheet137, same walkable set, same 20 min / −8 energy, same ride rules). ---------- */
 const _wc141=walkCard137; walkCard137=function(){ if(!S)return ''; try{ const opts=TRAVEL_OPTS.filter(function(o){ return o[0]!==S.location }); const rows=opts.map(function(o){ const w=canWalkTo137(o[0]); return w?'<button class="btn outline" onclick="walkTo137(\''+o[0]+'\')">🚶 Walk to '+o[1]+' — ~20 min • −8 energy</button>':'<button class="btn outline" style="opacity:.45" onclick="toast(\'🚶 Too far to walk — walking is for the park and close places. Farther needs a car, or call someone for a ride.\')">🚶 '+o[1]+' — too far to walk</button>' }).join(''); return '<div class="card walkCard137"><h3>🚶 On Foot & Rides</h3><p class="small" style="margin-top:0">One column, like every other way to travel: a row per place. Walking is for the 🌳 park and the close places — about <b>20 minutes</b> and <b>8 energy</b>; hit zero mid-walk and you <b>pass out</b> where you stand. Farther than that needs a car — or a phone call:</p>'+rows+'<button class="btn gold" style="margin-top:8px" onclick="rideSheet137()">📞 Call someone for a ride</button></div>' }catch(e){ return _wc141() } };
@@ -12184,5 +12184,617 @@ window.__v145={noteWake145:noteWake145,wakeSnap145:wakeSnap145,version:function(
 console.log('AquaLife v'+GAME_VERSION+' — v145: Rip It full-Bag no-charge fix + sleep pose resets to standing at the bed on every wake, autonomy never moves a sleeping figure');
 </script>
 
+
+<script>
+/* ================= v146 — ROUND 14 =================
+   1) Dealer: squad out, RUNNERS in (Runner Money). 2) Lay Low / Go Quiet / Cool the Heat gone.
+   3) The outside "your runners — they sell for you" block gone. 4) Production needs Dark-Market equipment.
+   5) Casino winnings pay in CHIPS; the Cage converts 1 chip = $1. 6) Travel collapsed, current area on top.
+   7) Change log clean + short. 8) Sleep only where there's a bed. 9) Free-typed texts, realistic replies.
+   10) Texting pacing (no pile-ups; replies land ~2 game-min later). 11) Three new penny slot machines.
+   12) Scratch-off resurrection killed + casino close-and-leave guard. 13) Action camera: one zoom in, one zoom out. */
+function ensure146(){ if(!S)return null; if(!S.v146||typeof S.v146!=='object')S.v146={}; const V=S.v146;
+ if(typeof V.chips!=='number')V.chips=0;
+ if(!Array.isArray(V.runners))V.runners=[];
+ if(!V.equip||typeof V.equip!=='object')V.equip={};
+ if(!Array.isArray(V.requests))V.requests=[];
+ if(!Array.isArray(V.pendingReplies))V.pendingReplies=[];
+ if(!V.lastReply||typeof V.lastReply!=='object')V.lastReply={};
+ if(typeof V.heatAcc!=='number')V.heatAcc=0;
+ return V }
+if(S)ensure146();
+
+/* ================= ITEM 13 — ACTION CAMERA: EXACTLY ONE ZOOM IN, ONE ZOOM OUT =================
+   Root cause: v128's single-flight machine armed its release timer from the FOCUS call's own
+   duration (default 2.6s) and never consulted camHoldUntil — the hold startActivity sets for the
+   WHOLE performance. Any action longer than the focus duration lost its zoom mid-performance
+   (zoom out), and the next focus call in the chain (event beats, conversation framing, the next
+   queued sub-action) zoomed straight back in — in, out, in, out for one action. v146 replaces the
+   machine: while a zoom is holding, focus calls only EXTEND the hold (never re-frame, never
+   re-zoom); a single watcher performs the one zoom-out when the hold AND the action are both
+   done; a short refractory after each zoom-out swallows instant re-zooms from chained beats. */
+let cam146={on:false,holdUntil:0,lastOut:0,epoch:0,ins:0,outs:0};
+function camOut146(){ if(!cam146.on)return; cam146.on=false; cam146.lastOut=performance.now(); cam146.epoch++; cam146.outs++;
+ try{ camState.active=false; camState.token++; applyCameraTransform() }catch(e){} }
+const _focusCamera146=focusCamera;
+focusCamera=function(x,y,opts){ opts=opts||{}; const now=performance.now();
+ const modalEl=document.getElementById('modal'); if(modalEl&&modalEl.classList.contains('open')&&!opts.force)return false;
+ if(!document.querySelector('.roomWrap')||!document.getElementById('cv'))return false;
+ const holdEnd=Math.max(now+(opts.dur||2600),(typeof camHoldUntil!=='undefined'?camHoldUntil:0));
+ if(cam146.on){ /* a zoom is already holding for this action — extend it, never re-frame or re-zoom */
+  if(holdEnd>cam146.holdUntil){ cam146.holdUntil=holdEnd; try{ camState.until=holdEnd }catch(e){} }
+  return true }
+ if(now-cam146.lastOut<650&&!opts.force&&!((typeof camHoldUntil!=='undefined'?camHoldUntil:0)>cam146.lastOut))return true; /* refractory: swallow the instant re-zoom of a chained beat */
+ cam146.on=true; cam146.holdUntil=holdEnd; cam146.epoch++; cam146.ins++;
+ try{ camState.active=true; camState.x=Math.max(40,Math.min(860,x||450)); camState.y=Math.max(40,Math.min(420,y||260)); camState.scale=opts.scale||1.55; camState.until=holdEnd; camState.lastFocus=now }catch(e){}
+ if(opts.own){ try{ scrollRoomIntoFocus() }catch(e){} }
+ try{ applyCameraTransform() }catch(e){}
+ return true };
+releaseCamera=function(force){ const now=performance.now();
+ if(!force&&now<Math.max(cam146.holdUntil,(typeof camHoldUntil!=='undefined'?camHoldUntil:0)))return;
+ camOut146() };
+gentleFocus=function(n){ if(!n||(typeof activity!=='undefined'&&activity))return; if(performance.now()-camState.lastFocus<9000)return; focusCamera(n.x,n.y,{dur:3000,scale:1.3}) };
+setInterval(function(){ try{ if(!cam146.on)return; const now=performance.now();
+  const hold=(typeof camHoldUntil!=='undefined'?camHoldUntil:0);
+  if(hold>cam146.holdUntil){ cam146.holdUntil=hold; try{ camState.until=hold }catch(e){} }
+  if(now>=cam146.holdUntil&&now>=hold)camOut146() }catch(e){} },140);
+
+/* ================= ITEM 5 — CASINO CHIPS =================
+   Bets stay CASH-in. GAME winnings land in CHIPS (S.v146.chips): tracked in the casino and the
+   phone wallet, spendable nowhere, converted at the Cage for exactly 1 chip = $1, no fee.
+   Diversion happens at the two shipped choke points: pay139 (roulette, craps, baccarat, video
+   poker, racing, keno, bingo, sportsbook, progressive jackpot, tournaments) and the money()
+   labels for slots / scratch-offs / members free spin / blackjack. Stake returns stay cash.
+   Unchanged: daily wheel, reward track, comps, marker, prize tiers (prize check still runs). */
+const CHIP_LABELS146={'🎰 Slots payout':1,'🪙 Scratch-off win':1,'🎰 Members free spin':1};
+function addChips146(amt,label){ amt=Math.round(amt||0); if(amt<=0||!S)return; const V=ensure146(); V.chips+=amt;
+ try{ if(typeof casinoPrizeCheck141==='function')casinoPrizeCheck141(amt,label||'') }catch(e){}
+ try{ if(typeof countStat==='function')countStat('casinoWon141',amt) }catch(e){}
+ try{ document.querySelectorAll('.chipsAmt146').forEach(function(el){ el.textContent=V.chips }) }catch(e){} }
+function cage146(){ if(!S)return; const V=ensure146(); if(V.chips<=0){ toast('🧫 No chips to cash in — win some first'); return }
+ const amt=V.chips; V.chips=0; money(amt,'🧫 Casino cage — chips cashed in');
+ log('🧫 CAGE — '+amt+' chips cashed in for $'+amt+' cash. Exactly 1 chip = $1, no fee, no games.'); toast('🧫 +$'+amt+' cash from chips');
+ save(); try{ phoneCasino() }catch(e){} }
+const CHIP_PAY_LABELS146={'♠️ Video poker win':1,'🂡 Baccarat win':1,'🎡 Roulette win':1,'🎰💰 PROGRESSIVE JACKPOT':1,'🎱 Bingo consolation':1,'🎱 Bingo win':1,'🎲 Craps any-seven win':1,'🎲 Craps field win':1,'🎲 Craps win':1,'🏆 Tournament prize':1,'🐎 Racing place':1,'🐎 Racing win':1,'📱 Sportsbook win':1,'🔢 Keno win':1};
+const _money146=money;
+money=function(n,label){ try{ if(S&&typeof n==='number'&&n>0&&typeof label==='string'){
+  if(CHIP_LABELS146[label]||CHIP_PAY_LABELS146[label]||label.indexOf('👑 Progressive jackpot')===0){ const r=_money146(0,label); addChips146(n,label); return r }
+  if(label==='🃏 Blackjack'&&typeof bj117!=='undefined'&&bj117&&bj117.bet>0&&n>bj117.bet){
+   const cashPart=bj117.bet, chipPart=n-cashPart; const r=_money146(cashPart,label); addChips146(chipPart,label); return r }
+  if(label==='🤠 Hold\u2019em cash-out'){ const buy=window._heBuy146||200;
+   if(n>buy){ const r=_money146(buy,label); addChips146(n-buy,label); log('🤠 Hold\u2019em: your $'+buy+' buy-in came back as cash — the $'+(n-buy)+' you won landed in 🧫 chips.'); return r } }
+ } }catch(e){} return _money146(n,label) };
+if(typeof window.holdemSit139==='function'){ const _heSit146=window.holdemSit139;
+ window.holdemSit139=function(vip){ try{ window._heBuy146=vip?2000:200 }catch(e){} return _heSit146(vip) } }
+const _phoneCasino146=phoneCasino;
+phoneCasino=function(){ const r=_phoneCasino146(); try{ if(!S)return r; const V=ensure146(); const scr=document.querySelector('#sheet .phoneScreen'); if(!scr)return r;
+ if(!scr.querySelector('.chipsCard146')){ const d=document.createElement('div'); d.className='chipsCard146';
+  d.innerHTML='<div style="background:#052e2b;border:1.5px solid #2dd4bf;border-radius:13px;padding:11px;margin:10px 0;text-align:left"><b>🧫 Your chips: <span class="chipsAmt146">'+V.chips+'</span></b><div style="font-size:12.5px;opacity:.9;margin:4px 0 8px">Casino game winnings pay in chips now — chips are <b>not spendable</b> anywhere. Cash them in here:</div><button class="btn gold" style="margin:0" onclick="cage146()">🏦 Cashier Cage — convert chips to cash (1 chip = $1)</button></div>'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:0 0 10px"><button class="btn" style="margin:0;background:#7f1d1d;color:#fff" onclick="phoneSlots146(\'chilli\')">🌶️ Hot Chilli Mania</button><button class="btn" style="margin:0;background:#365314;color:#fff" onclick="phoneSlots146(\'huff\')">🐷 Huff N Puff</button><button class="btn" style="margin:0;background:#075985;color:#fff" onclick="phoneSlots146(\'aqua\')">🌊 Aqua Slots</button></div>';
+  const anchor=scr.children[1]||null; if(anchor)scr.insertBefore(d,anchor); else scr.appendChild(d) } }catch(e){} return r };
+const _phoneBank146=phoneBank;
+phoneBank=function(){ const r=_phoneBank146(); try{ if(!S)return r; const V=ensure146(); const scr=document.querySelector('#sheet .phoneScreen'); if(scr&&!scr.querySelector('.chipsRow146')){ const d=document.createElement('div'); d.className='chipsRow146';
+  d.innerHTML='<div style="background:#052e2b;border:1.5px solid #2dd4bf;border-radius:12px;padding:9px 11px;margin:10px 0;font-size:13px">🧫 <b>Casino chips: <span class="chipsAmt146">'+V.chips+'</span></b> — not spendable; convert them at the 🎰 Casino\u2019s Cashier Cage, 1 chip = $1.</div>';
+  scr.appendChild(d) } }catch(e){} return r };
+const _walletCard146=walletCard128;
+walletCard128=function(){ let h=_walletCard146(); try{ if(S&&h){ const V=ensure146(); if(V.chips>0)h=h.replace(/<\/div>\s*$/,'<p style="margin-top:6px">🧫 Casino chips: <b>'+V.chips+'</b> — cash them in at the 🎰 Casino cage, 1 chip = $1.</p></div>') } }catch(e){} return h };
+
+/* ================= ITEM 11 — THREE NEW PENNY SLOT MACHINES =================
+   Same penny mechanics, same weighted reels, same payout table (by symbol position), same spin
+   lockout, same points (1 per $1 wagered), same silent-settle-on-close as the original machine. */
+const SLOT_PAY_IDX146=[4,6,12,10,20,40,100];
+const MACHINES146={
+ chilli:{name:'🌶️ Hot Chilli Mania',syms:['🌶️','🫑','🧀','🌮','🔥','💥','👑'],bg:'linear-gradient(160deg,#450a0a,#7f1d1d)',bd:'#f97316'},
+ huff:{name:'🐷 Huff N Puff',syms:['🐷','🌾','🪵','🧱','🏠','🐺','💨'],bg:'linear-gradient(160deg,#1a2e05,#365314)',bd:'#a3e635'},
+ aqua:{name:'🌊 Aqua Slots',syms:['🌊','🐠','🦀','🐚','⚓','💎','🔱'],bg:'linear-gradient(160deg,#082f49,#0c4a6e)',bd:'#38bdf8'} };
+let slotTimer146=null, slotLast146={};
+function slotPickIdx146(){ const tot=SLOT_WTS.reduce(function(a,b){return a+b},0); let r=Math.random()*tot;
+ for(let i=0;i<SLOT_WTS.length;i++){ r-=SLOT_WTS[i]; if(r<=0)return i } return 0 }
+function phoneSlots146(mid){ const M=MACHINES146[mid]; if(!M)return; if(!S.casino)S.casino={spent:0,won:0,plays:0,biggest:0};
+ const L=slotLast146[mid];
+ const reels=L?L.syms.map(function(s){return '<span style="display:inline-block;min-width:52px;padding:8px 0;background:#00000055;border-radius:9px;margin:0 3px">'+s+'</span>'}).join(''):'<span style="opacity:.75">— — —</span>';
+ const pays=M.syms.map(function(s,i){ return '<div>'+s+' '+s+' '+s+' <b>×'+SLOT_PAY_IDX146[i]+'</b></div>' }).join('');
+ openSheet(phoneShell(M.name,`<div style="text-align:center;background:${M.bg};border:2px solid ${M.bd};border-radius:14px;padding:14px">
+ <div style="font-size:34px;letter-spacing:3px" id="slotReels146">${reels}</div>
+ <div id="slotMsg146" style="min-height:22px;margin-top:8px;font-weight:800">${L?L.msg:'Pulls cost cash — prizes land in 🧫 chips.'}</div>
+ <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px">${[1,2,5,10,25].map(function(b){return '<button class="btn gold" style="margin:0;padding:9px 2px" onclick="spinSlot146(\''+mid+'\','+b+')">$'+b+'</button>'}).join('')}</div>
+ <button class="btn outline" style="color:#fff;border-color:#ffffff66" onclick="phoneCasino()">← Casino floor</button>
+ <div style="text-align:left;font-size:12.5px;opacity:.92;margin-top:10px"><b>Paytable (3 of a kind, × your bet)</b>${pays}<div>Any pair pays ×1.5. Points: 1 per $1 bet. Winnings pay in 🧫 chips.</div></div></div>`)) }
+function spinSlot146(mid,bet){ const M=MACHINES146[mid]; if(!M||!S)return;
+ if(slotTimer146||(typeof slotTimer!=='undefined'&&slotTimer)){ toast('🎰 A spin is already turning — one at a time'); return }
+ if(S.money<bet){ toast('💵 Need $'+bet); return }
+ if(!S.casino)S.casino={spent:0,won:0,plays:0,biggest:0};
+ money(-bet,'🎰 '+M.name+' spin'); S.casino.spent+=bet; S.casino.plays++;
+ try{ casinoPts117(bet) }catch(e){}
+ /* the shared progressive pool lives inside the v139 module and is fed/hit by the original Penny Slots; the themed machines run the identical base game without touching that pool. */
+ let ticks=0; const reelsEl=()=>document.getElementById('slotReels146');
+ slotTimer146=setInterval(function(){ ticks++; const el=reelsEl(); if(el)el.innerHTML=[0,1,2].map(function(){ return '<span style="display:inline-block;min-width:52px;padding:8px 0;background:#00000055;border-radius:9px;margin:0 3px">'+M.syms[slotPickIdx146()]+'</span>' }).join('');
+  if(ticks>=11){ clearInterval(slotTimer146); slotTimer146=null;
+   const idx=[slotPickIdx146(),slotPickIdx146(),slotPickIdx146()]; const syms=idx.map(function(i){return M.syms[i]});
+   let payout=0,kind='';
+   if(idx[0]===idx[1]&&idx[1]===idx[2]){ payout=bet*SLOT_PAY_IDX146[idx[0]]; kind='triple' }
+   else if(idx[0]===idx[1]||idx[1]===idx[2]||idx[0]===idx[2])payout=Math.max(1,Math.round(bet*1.5));
+   if(payout>0){ money(payout,'🎰 Slots payout'); S.casino.won+=payout; if(payout>(S.casino.biggest||0))S.casino.biggest=payout }
+   const msg=payout>0?('🧫 +'+payout+' chips'+(kind==='triple'?' — THREE '+syms[0]+'!':'')):'No win — the house keeps this one.';
+   slotLast146[mid]={syms:syms,msg:msg};
+   if(kind==='triple'){ log('🎰 '+M.name+' — THREE '+syms[0]+'! '+payout+' chips on a $'+bet+' pull.'); try{ if(payout>=250&&typeof bigWinReact==='function')bigWinReact(payout,'🎰 '+M.name) }catch(e){} }
+   save();
+   const msgEl=document.getElementById('slotMsg146'); const stillOpen=!!(document.getElementById('modal')&&document.getElementById('modal').classList.contains('open')&&reelsEl());
+   if(stillOpen){ const el2=reelsEl(); if(el2)el2.innerHTML=syms.map(function(s){ return '<span style="display:inline-block;min-width:52px;padding:8px 0;background:#00000055;border-radius:9px;margin:0 3px">'+s+'</span>' }).join(''); if(msgEl)msgEl.textContent=msg; try{ render() }catch(e){} }
+  } },90) }
+const _phoneSlots146=phoneSlots;
+phoneSlots=function(){ const r=_phoneSlots146(); try{ const scr=document.querySelector('#sheet .phoneScreen'); if(scr&&!scr.querySelector('.machRow146')){ const d=document.createElement('div'); d.className='machRow146';
+  d.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px"><button class="btn" style="margin:0;background:#7f1d1d;color:#fff" onclick="phoneSlots146(\'chilli\')">🌶️ Hot Chilli Mania</button><button class="btn" style="margin:0;background:#365314;color:#fff" onclick="phoneSlots146(\'huff\')">🐷 Huff N Puff</button><button class="btn" style="margin:0;background:#075985;color:#fff" onclick="phoneSlots146(\'aqua\')">🌊 Aqua Slots</button></div><p style="font-size:12.5px;opacity:.85;margin-top:7px">🧫 Slot winnings pay in chips — cash them in at the Cage.</p>';
+  scr.appendChild(d) } }catch(e){} return r };
+
+/* ================= ITEM 12 — CASINO CLOSE-AND-LEAVE GUARD =================
+   Root cause of the scratch-off resurrection: v132's near-miss suspense wrapper completes a
+   scratched cell on a 900ms TIMER, and the base scratchCell repaints phoneScratch() UNCONDITIONALLY
+   — so the scratch screen re-paints over whatever the player moved to (casino floor, another app)
+   or re-opens after they left. v144's gate only reasons about the phone being closed; it lets a
+   phone sheet replace a DIFFERENT phone sheet while the phone is open. v146: a casino game screen
+   may only (a) repaint ITSELF while it is the screen showing, or (b) open from a fresh tap / phone
+   intent. Everything else is dropped — results still settle silently into balances. */
+const CASINO_SCREENS146=[['Daily Wheel','wheel'],['Scratch-Offs','scratch'],['Hot Chilli Mania','chilli'],['Huff N Puff','huff'],['Aqua Slots','aqua'],['Penny Slots','penny'],['Video Poker','poker'],['Horse Racing','racing'],["And they\u2019re off",'racing'],['Casino Tournaments','tourney'],['Casino Members Card','members'],['Casino Marker','marker'],['Comps & Rewards','comps'],['VIP High-Roller','vip'],['Casino Free Spin','freespin'],['Counting Room','counting'],['Baccarat','baccarat'],['Craps Table','craps'],['Sportsbook','sports'],['Blackjack','bj'],['Roulette','roulette'],['Keno','keno'],['Bingo','bingo'],["Hold\u2019em",'holdem'],['Texas Hold','holdem']];
+function casinoTitle146(html){ if(typeof html!=='string')return null;
+ if(html.indexOf('Scratch-Offs')>=0&&html.indexOf('Roulette')>=0&&html.indexOf('Blackjack')>=0)return 'floor';
+ for(let i=0;i<CASINO_SCREENS146.length;i++){ if(html.indexOf(CASINO_SCREENS146[i][0])>=0)return CASINO_SCREENS146[i][1] } return null }
+/* v146.1 hardening: tap-TARGET awareness. The first cut keyed on ANY recent tap — but the
+   scratch suspense timer fires 900ms after the scratch tap, and a navigation tap in between
+   (floor, Messages, ✕) landed inside the freshness window and waved the resurrection through.
+   Now a casino game screen may open only when (a) it is repainting ITSELF, (b) the player's
+   actual tap hit a control whose onclick opens THIS screen, or (c) the phone itself was just
+   intentionally opened and no other phone screen is in the way. A timer satisfies none of these. */
+let lastTapOc146='', lastTapOcAt146=0;
+document.addEventListener('pointerdown',function(ev){ try{ const t=ev.target&&ev.target.closest?ev.target.closest('[onclick]'):null; lastTapOc146=t?(t.getAttribute('onclick')||''):''; lastTapOcAt146=Date.now() }catch(e){} },true);
+const CASINO_OPENERS146={ scratch:['phoneScratch(','storeScratch82(','buyScratch(','buyStoreScratch82(','scratchCell('],
+ penny:['phoneSlots(','spinSlot('], chilli:['phoneSlots146(','spinSlot146('], huff:['phoneSlots146(','spinSlot146('], aqua:['phoneSlots146(','spinSlot146('],
+ wheel:['wheel141(','spinWheel141('], racing:['racing139(','raceBet139('], tourney:['tourn139(','tournSlots139(','tournPoker139('],
+ members:['casinoCard117(','casinoFreeSpin117('], marker:['marker139(','markerTake139(','markerRepay139('], comps:['comps139(','compBuy139('],
+ vip:['vip139('], freespin:['casinoFreeSpin117('], counting:['counting139('], baccarat:['baccarat139(','bacPlay139('],
+ craps:['craps139(','crapsPass139(','crapsField139(','crapsSeven139('], sports:['sports139(','sportsBet139('],
+ bj:['bjStart117(','bjDeal117(','bjHit117(','bjStand117(','bjDouble117('], roulette:['roulette139(','roulSpin139(','roulPickSet139('],
+ keno:['keno139(','kenoDraw139('], bingo:['bingo139(','bingoPlay139('], holdem:['holdem139(','holdemSit139(','holdemCash139('] };
+function casinoNavOk146(title){ const md=document.getElementById('modal'); const open=!!(md&&md.classList.contains('open'));
+ const intentFresh=(typeof phoneIntent144!=='undefined')&&(Date.now()-phoneIntent144<600);
+ const sheet=document.getElementById('sheet'); const cur=open&&sheet?casinoTitle146(sheet.innerHTML):null;
+ if(open&&cur===title)return true; /* a screen may always repaint itself */
+ const ops=CASINO_OPENERS146[title]||[];
+ if(lastTapOc146&&Date.now()-lastTapOcAt146<900&&ops.some(function(o){ return lastTapOc146.indexOf(o)>=0 }))return true; /* the tap itself asked for this screen */
+ if(!open)return intentFresh; /* closed phone: only a fresh intentional phone-open may raise a casino screen — never a timer */
+ if(intentFresh&&!cur)return true; /* phone just opened onto a non-casino screen (home/floor) and this is its first nav */
+ return false }
+const _openSheet146=openSheet;
+openSheet=function(html,arg2){ try{ if(typeof html==='string'&&typeof isPhoneSheet144==='function'&&isPhoneSheet144(html)){
+  const t=casinoTitle146(html);
+  if(t&&t!=='floor'&&!casinoNavOk146(t))return undefined; /* stale timer repaint of a casino game — dropped; the result already settled silently */
+ } }catch(e){} return _openSheet146(html,arg2) };
+const _phoneScratch146=phoneScratch;
+phoneScratch=function(){ try{ if(!casinoNavOk146('scratch'))return }catch(e){} return _phoneScratch146() };
+const _storeScratch146=(typeof storeScratch82==='function')?storeScratch82:null;
+if(_storeScratch146)storeScratch82=function(){ try{ if(!casinoNavOk146('scratch'))return }catch(e){} return _storeScratch146() };
+
+/* ================= ITEMS 1–3 — DEALER: SQUAD OUT, RUNNERS IN =================
+   Locked numbers: buy a runner $250, max 4; levels 1–5 from sale XP; the runner's cut is
+   Lv1 30% / Lv2 26% / Lv3 22% / Lv4 18% / Lv5 15% — the rest of every sale lands in the player's
+   CASH (with the shipped money chirp). Higher level = faster selling (9→5 game-min per unit).
+   Runners sell automatically from stock assigned to them. When out or low they ASK: a request in
+   the dealer app + a phone notification; approve moves stock from the player's stash, deny leaves
+   them dry. No approval = no stock = no sales. Sales accrue heat slowly into S.wanted. */
+const RUNNER_CUT146=[30,26,22,18,15], RUNNER_SELLMIN146=[9,8,7,6,5], RUNNER_XP146=[0,50,130,240,380];
+function runnerLevel146(r){ let lv=1; for(let i=0;i<5;i++){ if((r.xp||0)>=RUNNER_XP146[i])lv=i+1 } return lv }
+function runnerStockTotal146(r){ let t=0; for(const k in (r.stock||{}))t+=r.stock[k]||0; return t }
+burnerSquad131=function(){ return '' };          /* item 1: the squad section is gone from the dealer app */
+burnerRunnersHtml132=function(){ return '' };    /* item 1: the old "your runners" block is gone from the dealer app */
+crewCard63=function(){ return '' };              /* item 3: the outside "🛡️ Your Crew — they sell for you" location card is gone */
+crewDay63=function(){};                          /* the legacy crew auto-sale engine is retired — runners (above) sell now */
+crimeHomeHtml132=function(){ if(!S)return ''; const stars='★'.repeat(S.wanted||0)+'☆'.repeat(Math.max(0,5-(S.wanted||0)));
+ let h='<div class="msg" style="border:1.5px solid #7f1d1d"><b>🚨 Your Trouble — the whole record, in the Burner</b>'
+ +'<div class="kv"><span>🚔 Wanted</span><b>'+stars+' ('+(S.wanted||0)+'★)</b></div>'
+ +'<div class="kv"><span>📜 Record</span><b>'+(S.record||0)+' charge(s)</b></div>'
+ +'<div class="kv"><span>😈 Street Lv</span><b>'+(typeof streetLv==='function'?streetLv():1)+'</b></div>'
+ +'<div class="kv"><span>💊 Dealing Lv</span><b>'+(typeof dealingLv==='function'?dealingLv():1)+'</b></div>'
+ +'<div class="kv"><span>💪 Strength / 🥊 Fighting</span><b>Lv '+(typeof skillLv==='function'?skillLv('strength'):1)+' / Lv '+(typeof skillLv==='function'?skillLv('fighting'):1)+'</b></div>'
+ +'<div class="kv"><span>🌡️ Addiction</span><b>'+(S.addiction||0)+'%</b></div>'
+ +'<div class="kv"><span>🪪 Papers</span><b>'+(S.gunLic?'Gun license ✓':'Gun license — apply at the 🔫 Gun Store')+'</b></div>'
+ +'<p style="font-size:12px;opacity:.85;margin:6px 0">🌡️ Heat cools on its own — with no new crimes, a star melts about every six hours. The Crime tab is gone: this app is where trouble lives now.</p>';
+ if(S.jail&&S.jail.escaped&&typeof turnIn94==='function')h+='<button class="btn gold" style="width:auto;padding:8px 13px" onclick="turnIn94()">🙌 Turn yourself in</button> ';
+ else if((S.wanted||0)>0)h+='<button class="btn gold" style="width:auto;padding:8px 13px" onclick="turnInSelf132()">🙌 Turn yourself in — face it now</button> ';
+ if((S.wanted||0)>0&&typeof fixerPay==='function')h+='<button class="btn" style="width:auto;padding:8px 13px" onclick="fixerPay()">🕶️ The Fixer — wipe it (pricey)</button>';
+ return h+'</div>' };
+layLow132=function(){ try{ toast('🌫️ Lay Low is gone — heat cools on its own now') }catch(e){} }; /* item 2: handler stubbed so no stale sheet can throw; the button is rendered nowhere */
+function runnerNotif146(text){ try{ const el=document.getElementById('textNotif'); if(!el)return;
+ el.innerHTML='💬 <b>📟 Runner</b><div>'+text+'</div>'; el.classList.add('show'); try{ sfx('textIn') }catch(e){}
+ el.onclick=function(){ el.classList.remove('show'); try{ phoneBurner63() }catch(e){} };
+ clearTimeout(window._runnerNotifT146); window._runnerNotifT146=setTimeout(function(){ el.classList.remove('show') },6000) }catch(e){} }
+function runnerAsk146(r){ const V=ensure146(); let bestK='thc',bestN=-1;
+ Object.keys(DRUG_PRODUCTS).forEach(function(k){ const n=(S.stash&&S.stash[k])||0; if(n>bestN){ bestN=n; bestK=k } });
+ const lv=runnerLevel146(r); const qty=3+lv;
+ V.requests.push({runner:r.name,k:bestK,qty:qty,day:S.day}); r.reqOkAt=absMin110()+720;
+ const prod=DRUG_PRODUCTS[bestK];
+ const line=r.name+' wants '+qty+'× '+(prod?prod.name:bestK)+' — approve in the 📟 Burner app';
+ log('🏃📟 '+line+'.'); try{ toast('🏃 '+line) }catch(e){} runnerNotif146(line) }
+function approveReq146(idx){ const V=ensure146(); const q=V.requests[idx]; if(!q)return; const r=V.runners.find(function(x){ return x.name===q.runner });
+ const have=(S.stash&&S.stash[q.k])||0; const prod=DRUG_PRODUCTS[q.k];
+ if(have<=0){ toast('🧪 None in your stash — produce or buy some '+(prod?prod.name:q.k)+' first'); return }
+ const give=Math.min(q.qty,have); S.stash[q.k]-=give; if(r){ if(!r.stock)r.stock={}; r.stock[q.k]=(r.stock[q.k]||0)+give; if(!r.nextSale)r.nextSale=absMin110()+RUNNER_SELLMIN146[runnerLevel146(r)-1] }
+ V.requests.splice(idx,1); log('🏃🤝 Handed '+q.runner+' '+give+'× '+(prod?prod.name:q.k)+' from your stash — selling starts on its own now.');
+ toast('🏃 '+q.runner+' stocked with '+give+'× '+(prod?prod.name:q.k)); save(); try{ phoneBurner63() }catch(e){} }
+function denyReq146(idx){ const V=ensure146(); const q=V.requests[idx]; if(!q)return; V.requests.splice(idx,1);
+ const r=V.runners.find(function(x){ return x.name===q.runner }); if(r)r.reqOkAt=absMin110()+720;
+ log('🏃🚫 Told '+q.runner+' no — no stock moves, no sales happen. They\u2019ll ask again later.'); save(); try{ phoneBurner63() }catch(e){} }
+function buyRunner146(){ if(!S)return; const V=ensure146();
+ if(V.runners.length>=4){ toast('🏃 Runner crew is full — 4 max'); return }
+ if(S.money<250){ toast('💸 A runner costs $250 cash — you have $'+S.money); return }
+ const nm=nameForGender(pickArr(['male','female']))+' '+pickArr(TOWN_LAST);
+ money(-250,'🏃 Runner hired — '+nm);
+ V.runners.push({name:nm,xp:0,stock:{},sold:0,earned:0,nextSale:0,reqOkAt:0});
+ log('🏃 RUNNER HIRED — '+nm+' joins for $250. Lv1: keeps a 30% cut, sells about every 9 minutes from stock you hand over. When they run dry, they\u2019ll ask.'); toast('🏃 '+nm+' hired — Lv1 runner');
+ save(); try{ phoneBurner63() }catch(e){} }
+function runnerTick146(){ if(!S||!inGame||S.deadFlag)return; const V=ensure146(); if(!V.runners.length)return; const now=absMin110(); let changed=false;
+ V.runners.forEach(function(r){ const lv=runnerLevel146(r); const total=runnerStockTotal146(r);
+  if(total>0){ if(!r.nextSale)r.nextSale=now+RUNNER_SELLMIN146[lv-1];
+   let guard=0;
+   while(now>=r.nextSale&&runnerStockTotal146(r)>0&&guard<12){ guard++;
+    let bk=null,bn=-1; for(const k in r.stock){ if((r.stock[k]||0)>bn){ bn=r.stock[k]; bk=k } }
+    if(!bk)break; const p=DRUG_PRODUCTS[bk]; if(!p)break;
+    r.stock[bk]--; const gross=dealPrice(p); const mine=Math.round(gross*(100-RUNNER_CUT146[lv-1])/100);
+    money(mine,'🏃 Runner sale — '+r.name); r.sold=(r.sold||0)+1; r.earned=(r.earned||0)+mine; r.xp=(r.xp||0)+15;
+    V.heatAcc+=(p.heat||5); if(V.heatAcc>=16){ V.heatAcc=0; if((S.wanted||0)<5){ S.wanted=(S.wanted||0)+1; log('🏃🚔 Runner heat — word of '+r.name+'\u2019s selling reached the law. Wanted +1★. It builds slowly; it also cools slowly.') } }
+    const nl=runnerLevel146(r); if(nl>lv){ log('🏃⬆️ '+r.name+' hit Lv'+nl+' — cut drops to '+RUNNER_CUT146[nl-1]+'% and the selling speeds up.'); try{ toast('🏃⬆️ '+r.name+' is now Lv'+nl) }catch(e){} }
+    r.nextSale+=RUNNER_SELLMIN146[runnerLevel146(r)-1]; changed=true } }
+  const hasReq=V.requests.some(function(q){ return q.runner===r.name });
+  if(runnerStockTotal146(r)<=1&&!hasReq&&now>=(r.reqOkAt||0))runnerAsk146(r) });
+ if(changed)save() }
+function runnerMoneyHtml146(){ if(!S||!burnerOn63())return ''; const V=ensure146(); const bank=(typeof ensure131==='function')?(ensure131().runnerBank||0):0;
+ let h='<div class="rm146" style="border-top:1px dashed #ffffff2a;margin-top:12px;padding-top:10px"><b>💰 Runner Money</b> — your runners sell for you, on their own, from stock you hand them. You keep the sale minus their cut, straight into your 💵 cash.';
+ if(bank>0)h+='<div class="msg" style="margin-top:7px">🏦 Old runner bank: <b>$'+bank+'</b> waiting. <button class="btn sm gold" onclick="collectRunner131()">💰 Collect $'+bank+'</button></div>';
+ V.requests.forEach(function(q,i){ const prod=DRUG_PRODUCTS[q.k]; const have=(S.stash&&S.stash[q.k])||0;
+  h+='<div class="msg" style="margin-top:7px;border:1.5px solid #f59e0b">🏃 <b>'+q.runner+'</b> wants <b>'+q.qty+'× '+(prod?prod.name:q.k)+'</b> <span style="opacity:.8">(you hold '+have+')</span><div style="display:flex;gap:7px;margin-top:6px"><button class="btn sm gold" style="margin:0" onclick="approveReq146('+i+')">✅ Approve — hand it over</button><button class="btn sm outline" style="margin:0" onclick="denyReq146('+i+')">🚫 Deny</button></div></div>' });
+ if(!V.runners.length)h+='<p style="font-size:13px;opacity:.88;margin-top:7px">No runners yet. A runner costs <b>$250</b> (max 4). They start at Lv1 keeping a <b>30%</b> cut and sell about every 9 minutes; every sale earns XP toward Lv5 (15% cut, a sale about every 5 minutes).</p>';
+ V.runners.forEach(function(r){ const lv=runnerLevel146(r); const stock=Object.keys(r.stock||{}).filter(function(k){ return r.stock[k]>0 }).map(function(k){ const p=DRUG_PRODUCTS[k]; return r.stock[k]+'× '+(p?p.name:k) }).join(', ')||'nothing — dry';
+  const nextLv=lv<5?(' · '+(RUNNER_XP146[lv]-(r.xp||0))+' XP to Lv'+(lv+1)):' · MAX LEVEL';
+  h+='<div class="msg" style="margin-top:7px">🏃 <b>'+r.name+'</b> — Lv'+lv+' · keeps '+RUNNER_CUT146[lv-1]+'% · sells ~every '+RUNNER_SELLMIN146[lv-1]+' min'+nextLv+'<br><span style="font-size:12.5px;opacity:.88">🎒 Holding: '+stock+' · 📦 '+ (r.sold||0) +' sold · 💵 $'+(r.earned||0)+' earned for you</span></div>' });
+ if(V.runners.length<4)h+='<button class="btn gold" onclick="buyRunner146()">🏃 Buy a runner — $250'+(V.runners.length?' ('+V.runners.length+'/4)':'')+'</button>';
+ else h+='<p style="font-size:12.5px;opacity:.8;margin-top:6px">Crew full — 4 runners is the max.</p>';
+ h+='<div style="font-size:12px;opacity:.8;margin-top:5px">No approval = no stock = no sales. Runner heat lands in your ⭐ wanted, slowly.</div></div>';
+ return h }
+const _phoneBurner146=phoneBurner63;
+phoneBurner63=function(){ const r=_phoneBurner146(); try{ if(S&&burnerOn63()){ const scr=document.querySelector('#sheet .phoneScreen'); if(scr&&!scr.querySelector('.rm146')){ const d=document.createElement('div'); d.innerHTML=runnerMoneyHtml146(); if(d.firstChild)scr.appendChild(d.firstChild) } } }catch(e){} return r };
+
+/* ================= ITEM 4 — PRODUCTION NEEDS DARK-MARKET EQUIPMENT =================
+   Prices scale with each line's per-run street value (THC 5×$26=$130 · Shrooms 4×$40=$160 ·
+   LSD 6×$34=$204): 🌿 Indoor Grow Rig $400 · 🍄 Sterile Fruiting Chamber $650 · 🌀 Chemistry Lab Rig $1,200. */
+const EQUIP146={ thc:{name:'🌿 Indoor Grow Rig',price:400,line:'THC'},
+ shrooms:{name:'🍄 Sterile Fruiting Chamber',price:650,line:'Shrooms'},
+ lsd:{name:'🌀 Chemistry Lab Rig',price:1200,line:'LSD'} };
+function buyEquip146(k){ if(!S)return; const V=ensure146(); const eq=EQUIP146[k]; if(!eq)return;
+ if(V.equip[k]){ toast('🧪 You already own the '+eq.name); return }
+ let paid=false; try{ paid=pay63(eq.price,'🧪 '+eq.name,true) }catch(e){ paid=false }
+ if(!paid){ try{ if(S.money>=eq.price){ money(-eq.price,'🧪 '+eq.name); paid=true } }catch(e){} }
+ if(!paid){ toast('💸 The '+eq.name+' is $'+eq.price+' — not enough behind it'); return }
+ V.equip[k]=true; log('🧪 EQUIPMENT BOUGHT — the '+eq.name+' ($'+eq.price+') is set up and yours for good. The '+eq.line+' line can produce now.'); toast('🧪 '+eq.name+' installed');
+ save(); try{ phoneDarkWeb117() }catch(e){} }
+const _phoneDarkWeb146=phoneDarkWeb117;
+phoneDarkWeb117=function(){ const r=_phoneDarkWeb146(); try{ if(!S)return r; const V=ensure146(); const scr=document.querySelector('#sheet .phoneScreen'); if(!scr||scr.querySelector('.equip146'))return r;
+ const d=document.createElement('div'); d.className='equip146';
+ d.innerHTML='<div style="border-top:1px dashed #ffffff2a;margin-top:12px;padding-top:10px"><b>🧪 Production Equipment</b><div style="font-size:12.5px;opacity:.88;margin:3px 0 8px">No equipment, no production — each line needs its own rig, bought once, yours forever.</div>'+
+ Object.keys(EQUIP146).map(function(k){ const eq=EQUIP146[k]; return V.equip[k]
+  ?'<div class="msg" style="margin-top:6px">'+eq.name+' — <b>OWNED</b> · the '+eq.line+' line is open</div>'
+  :'<button class="btn" style="background:#14532d;color:#fff" onclick="buyEquip146(\''+k+'\')">'+eq.name+' — $'+eq.price+' (opens the '+eq.line+' line)</button>' }).join('')+'</div>';
+ scr.appendChild(d) }catch(e){} return r };
+const _prodStart146=prodStart133;
+prodStart133=function(key){ if(!S)return; const V=ensure146(); const eq=EQUIP146[key];
+ if(eq&&!V.equip[key]){ toast('🧪 Needs '+eq.name+' — Dark Market'); log('🧪 PRODUCTION BLOCKED — the '+(PROD133[key]?PROD133[key].label:key)+' line needs the '+eq.name+' ($'+eq.price+', one-time) — buy it on the 🌐 Dark Web Market first. No equipment, no run.'); try{ prodSheet133() }catch(e){} return }
+ return _prodStart146(key) };
+const _prodSheet146=prodSheet133;
+prodSheet133=function(){ const r=_prodSheet146(); try{ if(!S)return r; const V=ensure146(); const sheetEl=document.getElementById('sheet'); if(!sheetEl||sheetEl.querySelector('.prodEq146'))return r;
+ const d=document.createElement('div'); d.className='prodEq146';
+ d.innerHTML=Object.keys(EQUIP146).map(function(k){ const eq=EQUIP146[k]; return '<div style="font-size:12.5px;margin-top:4px">'+(V.equip[k]?('✅ '+eq.name+' — owned'):('🔒 '+eq.line+' needs <b>'+eq.name+'</b> — 🌐 Dark Market, $'+eq.price))+'</div>' }).join('');
+ const host=sheetEl.querySelector('.phoneScreen')||sheetEl; const h2=host.querySelector('h2'); if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling); else host.appendChild(d) }catch(e){} return r };
+
+/* ================= ITEM 6 — TRAVEL: COLLAPSED, CURRENT AREA ON TOP ================= */
+const _renderTabs146=renderTabs;
+renderTabs=function(tab){ const r=_renderTabs146(tab); try{ travelPass146() }catch(e){} return r };
+function travelPass146(){ if(!S)return; const cur=(typeof curTab!=='undefined'&&curTab)?curTab:(typeof active!=='undefined'?active:'');
+ if(cur!=='travel')return; const panel=document.getElementById('panel'); if(!panel)return;
+ const grid=panel.querySelector('.grid')||panel; const units=Array.prototype.slice.call(grid.children);
+ if(!units.length)return;
+ const titleOf=function(u){ const t=u.querySelector('summary,h3'); return t?t.textContent.trim():'' };
+ let lead=null,current=null;
+ units.forEach(function(u){ const t=titleOf(u); if(!lead&&t.indexOf('You are here')>=0)lead=u });
+ /* the by-foot spam card is gone — walk/ride live inside each destination now (find it by its heading, wherever it nests) */
+ Array.prototype.slice.call(panel.querySelectorAll('h3,summary')).forEach(function(hd){ if(hd.textContent.indexOf('On Foot')>=0){ const u=(hd.closest?hd.closest('details,.card,section'):null)||hd.parentNode; if(u&&u!==panel&&u.parentNode)u.parentNode.removeChild(u) } });
+ /* current place's own card → right under the "You are here" lead, opened */
+ try{ const leads=(typeof LOC_LEAD141!=='undefined'&&LOC_LEAD141[S.location])||[];
+  units.forEach(function(u){ if(current||u===lead)return; const t=titleOf(u); if(leads.some(function(x){ return t.indexOf(x)>=0 }))current=u }) }catch(e){}
+ /* destinations out of the lead card → one collapsed "Where to?" accordion, walk/ride folded in per place */
+ if(lead){ const btns=Array.prototype.slice.call(lead.querySelectorAll('button')).filter(function(b){ return (b.getAttribute('onclick')||'').indexOf('goLoc(')>=0 });
+  if(btns.length){ const dests=btns.map(function(b){ const m=(b.getAttribute('onclick')||'').match(/goLoc\('([^']+)'\)/); return m?{id:m[1],label:b.textContent.trim()}:null }).filter(Boolean);
+   const parent=btns[0].parentNode; btns.forEach(function(b){ if(b.parentNode)b.parentNode.removeChild(b) });
+   if(parent)parent.innerHTML='<span style="opacity:.85;font-size:13px">Pick a destination in <b>🧭 Where to?</b> below — every place opens its own Go / Walk / Ride options.</span>';
+   const det=document.createElement('details'); det.className='dd132 destAcc146';
+   let body='<summary style="cursor:pointer;font-weight:900;padding:2px 0">🧭 Where to? — places &amp; travel <span class="ddChev132">▸</span></summary><div class="ddBody">';
+   dests.forEach(function(ds){ const here=ds.id===S.location; let canWalk=false; try{ canWalk=(typeof canWalkTo137==='function')&&canWalkTo137(ds.id) }catch(e){}
+    body+='<details class="dd132" style="margin-top:6px"><summary style="cursor:pointer;font-weight:800">'+ds.label+(here?' · 📍 you are here':'')+' <span class="ddChev132">▸</span></summary><div class="ddBody">'
+     +(here?'<div style="font-size:13px;opacity:.85;margin-bottom:5px">You are standing here — its actions are at the top of this tab.</div>':'<button class="btn gold" onclick="goLoc(\''+ds.id+'\')">🚗 Go here</button>')
+     +(here?'':(canWalk?'<button class="btn" onclick="walkTo137(\''+ds.id+'\')">🚶 Walk here — 20 min, no fare</button>':'<div style="font-size:12.5px;opacity:.75;margin-top:4px">🚶 Too far / not walkable from here.</div>'))
+     +(here?'':'<button class="btn outline" onclick="rideSheet137(\''+ds.id+'\')">📞 Call a ride here</button>')
+     +'</div></details>' });
+   body+='</div>'; det.innerHTML=body;
+   if(lead.parentNode)lead.parentNode.insertBefore(det,lead.nextSibling);
+   /* the accordion REPLACES the flat destination cards — remove the originals so no place lists twice */
+   const norm146=function(s){ return String(s||'').replace(/[▸▾]\s*$/,'').trim() };
+   const destLabels={}; dests.forEach(function(ds){ destLabels[norm146(ds.label)]=1 });
+   Array.prototype.slice.call(grid.children).forEach(function(u){ if(u===lead||u===current||u===det)return; const t=norm146(titleOf(u)); if(t&&destLabels[t]&&u.parentNode)u.parentNode.removeChild(u) }) } }
+ if(current&&current.parentNode){ if(lead&&lead.parentNode)lead.parentNode.insertBefore(current,lead.nextSibling);
+  if(current.tagName==='DETAILS')current.setAttribute('open','') }
+ /* everything else: collapsed by default (the shipped all-menus-collapsed law) */
+ Array.prototype.slice.call(grid.children).forEach(function(u){ if(u===lead||u===current)return;
+  if(u.tagName==='DETAILS'){ let keep=false; try{ const sm=u.querySelector('summary'); if(sm&&typeof menuKey135==='function'&&typeof window._open135!=='undefined'&&window._open135&&window._open135[menuKey135(sm)])keep=true }catch(e){}
+   if(!keep)u.removeAttribute('open') } });
+ /* de-dupe by heading (round 13's rule, enforced on the final DOM too) */
+ const seen={}; Array.prototype.slice.call(grid.children).forEach(function(u){ const t=titleOf(u); if(!t)return; if(seen[t]){ if(u.parentNode)u.parentNode.removeChild(u) } else seen[t]=1 }) }
+
+/* ================= ITEM 7 — CHANGE LOG: CLEAN + SHORT ================= */
+const WN146_CARD='<div class="card" style="border-color:var(--accent2)"><h3>✨ What\u2019s New — v146</h3><p>🏃 <b>Runners replace the squad</b> — buy runners in the dealer app\u2019s new Runner Money section ($250, max 4). They level up as they sell, keep a shrinking cut (30% at Lv1 down to 15% at Lv5), and ask you for product when they run dry.</p><p>🚫 Lay Low, Go Quiet and Cool the Heat are gone — heat cools on its own. 🧪 Producing now needs its equipment from the Dark Market. 🎰 Casino winnings pay in 🧫 chips — convert them at the Cashier Cage, 1 chip = $1. Three new penny slots: 🌶️ Hot Chilli Mania, 🐷 Huff N Puff, 🌊 Aqua Slots.</p><p>🧭 Travel is collapsed with your current area on top. 😴 Sleep only works where there\u2019s a bed. 💬 You can type your own texts now — and people answer what you actually said, after a realistic couple of minutes. The scratch-off screen stays closed when you leave it, the action camera zooms in once and out once, and 🌍 Around You in ❤️ Social is a dropdown now, like everything else.</p><p>👶 While the babysitter is on duty, Mom stays away — she doesn\\u2019t pop up mid-sitting any more; the sitter is the one who\\u2019s there. 🕐 Toddler time runs a little faster (×1.5) so the little years move along, and toddlers now doze off on their own more often.</p></div>';
+function cleanLog146(h){ return String(h||'').replace(/~~([\s\S]*?)~~/g,'$1').replace(/~~/g,'').replace(/\*\*([\s\S]*?)\*\*/g,'<b>$1</b>').replace(/`([^`]*)`/g,'$1').replace(/(^|>)\s*#{1,4}\s*/g,'$1') }
+const _whatsNew146=whatsNewHtml124;
+whatsNewHtml124=function(){ let h=''; try{ h=cleanLog146(_whatsNew146()) }catch(e){}
+ try{ const tmp=document.createElement('div'); tmp.innerHTML=h; const cards=Array.prototype.slice.call(tmp.querySelectorAll(':scope > .card'));
+  if(cards.length){ const older=cards.map(function(c){ return c.outerHTML }).join('');
+   return WN146_CARD+'<details class="dd132 older146"><summary style="cursor:pointer;font-weight:900">📚 Older updates <span class="ddChev132">▸</span></summary><div class="ddBody">'+older+'</div></details>' } }catch(e){}
+ return WN146_CARD+'<details class="dd132 older146"><summary style="cursor:pointer;font-weight:900">📚 Older updates <span class="ddChev132">▸</span></summary><div class="ddBody">'+h+'</div></details>' };
+const _openWhatsNew146=(typeof openWhatsNew==='function')?openWhatsNew:null;
+if(_openWhatsNew146)openWhatsNew=function(){ const r=_openWhatsNew146(); try{ const sheet=document.getElementById('sheet'); if(!sheet)return r;
+  const older=sheet.querySelector('details.older146 .ddBody'); if(!older)return r;
+  Array.prototype.slice.call(sheet.querySelectorAll('[class*="wn1"]')).forEach(function(d){ if(!older.contains(d))older.appendChild(d) });
+ }catch(e){} return r };
+
+/* ================= ITEM 8 — SLEEP ONLY WHERE THERE'S A BED =================
+   Bed-legal: your home (any origin — house, crib, family home), a jail cell, the casino comp
+   hotel night, and the City Hotel room. Everywhere else the player-initiated sleep actions are
+   refused with a clear line. Crash-sleep keeps its shipped in-place collapse, but on waking the
+   figure is carried to the nearest bed-legal spot: home, at the bed anchor. */
+let hotelNight146=false;
+function bedLegal146(){ if(!S)return false; if(S.jail&&S.jail.in)return true;
+ try{ if(S.location===homeLoc())return true }catch(e){}
+ if(S.location==='city')return true; if(hotelNight146)return true; return false }
+const _compBuy146=compBuy139;
+compBuy139=function(kind){ if(kind==='hotel')hotelNight146=true; try{ return _compBuy146(kind) }finally{ if(kind==='hotel')setTimeout(function(){ hotelNight146=false },50) } };
+const _sleep132146=sleep132;
+sleep132=function(kind){ if(S&&!fwNoFast66&&!bedLegal146()){ toast('🛏️ No bed here — sleep is for home or a place with a bed'); log('🛏️ NO BED HERE — you can only sleep at home or somewhere with an actual bed (a hotel room, a jail cell). Not here.'); return }
+ return _sleep132146(kind) };
+const _act146=act;
+act=function(type){ if(type==='sleep'&&S&&!fwNoFast66&&!bedLegal146()){ toast('🛏️ No bed here — sleep is for home or a place with a bed'); log('🛏️ NO BED HERE — you can only sleep at home or somewhere with an actual bed (a hotel room, a jail cell). Not here.'); return }
+ return _act146(type) };
+const _startActivity146=startActivity;
+startActivity=function(icon,dur,x,y,needsDelta,onDone,opts){ const crashSleep=(icon==='💤'&&dur===3200&&typeof charX!=='undefined'&&x===charX&&y===charY&&!(opts&&opts.sleep91));
+ if(crashSleep&&typeof onDone==='function'){ const od=onDone;
+  onDone=function(){ od(); try{ if(S&&S.location!==homeLoc()){ S.location=homeLoc(); charX=680; charY=200; targetX=680; targetY=200;
+   log('😴 When you came to, you dragged yourself home and woke at your own bed — the nearest place with one.'); save(); render() } }catch(e){} } }
+ return _startActivity146(icon,dur,x,y,needsDelta,onDone,opts) };
+
+/* ================= ITEMS 9 + 10 — FREE-TYPED TEXTS, REAL REPLIES, REAL PACING =================
+   10a) No pile-ups: a contact with an unanswered text to you sends nothing more until you reply —
+   enforced inside the ambient schedulers (randomText / familyText) by refreshing the sender's
+   last-text stamp so the shipped filters skip them this round.
+   10b) Replies land ~2 game-minutes after you send: typed sends queue a reply at
+   absMin + 2 and the v146 tick delivers it through pushMsg (banner + buzz ship free).
+   9) The reply engine reads intent (greeting, question, plans, money, work, school, family,
+   insult, apology, joke, love, goodbye), answers the question actually asked, flavours it by
+   persona (parents, family, partner/crush, friends, Caseworker, FBI, dealers/regulars, town
+   traits) and remembers the thread (chatMem topic/tone/promise/grudge) — with anti-repeat. */
+function unanswered146(name){ if(!S||!S.phoneMsgs)return false; return S.phoneMsgs.some(function(m){ return m.from===name&&!m.replied&&!m.callLog }) }
+const _randomText146=randomText;
+randomText=function(){ try{ if(S){ ensure69(); const seen={}; (S.contacts?Object.keys(S.contacts):[]).concat(['Mom','Dad','Family']).forEach(function(n){ if(seen[n])return; seen[n]=1;
+  if(unanswered146(n))S.lastText69[n]=gNow69() }) } }catch(e){} return _randomText146() };
+const _familyText146=familyText;
+familyText=function(){ try{ if(unanswered146('Family'))return false }catch(e){} return _familyText146() };
+function persona146(from){ if(!S)return 'friend';
+ if(from==='Mom')return 'mom'; if(from==='Dad')return 'dad'; if(from==='Family')return 'family';
+ if(from==='FBI')return 'fbi'; if(from==='Caseworker')return 'caseworker'; if(from==='School')return 'school';
+ if(S.regulars&&S.regulars[from])return 'regular'; try{ if(typeof KINGPINS!=='undefined'&&KINGPINS[from])return 'kingpin' }catch(e){}
+ try{ const rom=(typeof romOf==='function')?romOf(from):null; if(rom&&(rom.stage>=3||rom.partner))return 'partner'; if(rom&&rom.stage>=1)return 'crush' }catch(e){}
+ try{ const t=S.town&&S.town.people&&S.town.people[from]; if(t&&t.trait)return t.trait }catch(e){}
+ return 'friend' }
+function intent146(t){ const l=' '+String(t||'').toLowerCase()+' ';
+ if(/\b(sorry|my bad|apologize|apologise|forgive me|didn\u2019t mean it|didn't mean it)\b/.test(l))return 'apology';
+ if(/\b(stupid|dumb|idiot|loser|shut up|hate you|ugly|annoying|you suck|trash|pathetic|boring|whatever,? leave|leave me alone|fuck you|bitch)\b/.test(l))return 'insult';
+ if(/\b(love you|miss you|crush|like you|be mine|girlfriend|boyfriend|you\u2019re cute|you're cute|date me)\b/.test(l))return 'love';
+ if(/\b(meet|hang|come over|hangout|see you|get together|link up|pull up)\b|\b(tonight|tomorrow|weekend)\b.*\b(come|meet|hang|do|go)\b|\blet'?s\b|\bwanna\b/.test(l))return 'plan';
+ if(/\b(money|borrow|lend|cash|owe|pay me|broke|dollar|rent|\\$)\b/.test(l))return 'money';
+ if(/\b(school|class|grade|teacher|homework|exam|test tomorrow|college)\b/.test(l))return 'school';
+ if(/\b(work|job|shift|boss|fired|promotion|interview|hired)\b/.test(l))return 'work';
+ if(/\b(mom|dad|family|parents|dinner at|home)\b/.test(l))return 'family';
+ if(/\b(thank|thanks|thx|appreciate)\b/.test(l))return 'thanks';
+ if(/\b(lol|lmao|haha|😂|🤣|joke|funny|hilarious)\b/.test(l))return 'joke';
+ if(/\b(bye|gtg|gotta go|see ya|talk later|goodnight|good night)\b/.test(l))return 'bye';
+ if(/[?]\s*$/.test(l)||/\b(what|why|how|when|where|who|can i|can you|can we|could|would|should|do you|did you|are you|is it|have you)\b/.test(l))return 'question';
+ if(/^\s*(hi+|hey+|hello|yo|sup|hiya|morning|good morning|afternoon|evening)\b/.test(l)&&l.length<42)return 'greeting';
+ return 'chat' }
+function pickFresh146(from,arr){ const V=ensure146(); let pool=arr.slice(); const last=V.lastReply[from];
+ if(pool.length>1&&last)pool=pool.filter(function(x){ return x!==last }); const r=pool[Math.floor(Math.random()*pool.length)]; V.lastReply[from]=r; return r }
+function replyFor146(from,txt){ const V=ensure146(); const per=persona146(from); const it=intent146(txt);
+ const mem=(S.chatMem&&S.chatMem[from])||{}; const fam=(per==='mom'||per==='dad'||per==='family');
+ const street=(per==='regular'||per==='kingpin'); const official=(per==='fbi'||per==='caseworker');
+ const close=(per==='partner'||per==='crush');
+ const topic=(typeof topicOf==='function')?topicOf(txt):'';
+ let pool=[];
+ if(it==='insult'){ if(fam)pool=['…okay. That one actually hurt. I\u2019m going to give you some space — think about how you talk to family.','Wow. Really? After everything. We\u2019ll talk when you\u2019ve cooled off.','I\u2019m not doing this over text. Come say it to my face or don\u2019t say it at all.'];
+  else if(official)pool=['Noted. Attitude like that goes in the file, and the file does not forget.','Careful. Words like that have a way of becoming evidence of character.'];
+  else if(street)pool=['😤 Say less. Watch how you talk to me — business is business but respect is respect.','lol bold words from somebody who needs ME. Careful.'];
+  else if(close)pool=['…that\u2019s how we\u2019re talking now? okay. i\u2019m hurt, not gonna lie.','wow. i don\u2019t even know what to say to that. give me a minute.'];
+  else pool=['damn, okay?? didn\u2019t know we were like THAT now 😕','rude much?? what did i even do','ok wow. noted. don\u2019t text me when you need something then'];
+  try{ if(S.romance&&S.romance[from]&&typeof romMeter==='function')romMeter(from,-4); if(fam)S.bond=Math.max(0,(S.bond||0)-2) }catch(e){} }
+ else if(it==='apology'){ if(mem.grudge)pool=['…okay. thank you for saying that. we\u2019re good — just don\u2019t make it a habit.','i appreciate that, really. water under the bridge. 💛','apology accepted. let\u2019s just move forward, yeah?'];
+  else pool=['you\u2019re all good, seriously — nothing to apologize for 😊','hey, we\u2019re fine. i appreciate you saying it though.','no hard feelings at all. we good 🤝'];
+  try{ if(S.chatMem&&S.chatMem[from])S.chatMem[from].grudge=0 }catch(e){} }
+ else if(it==='greeting'){ if(fam)pool=['Hi sweetheart! Everything okay?','Hey! I was just thinking about you. How\u2019s your day going?','Hello love — good to hear from you. What do you need?'];
+  else if(official)pool=['State your business.','This line is monitored. What do you need?'];
+  else if(close)pool=['heyy you 😊 i was just about to text you','hiii 💛 you just made my phone worth looking at','hey hey. missed you — what\u2019s up?'];
+  else if(street)pool=['yo. talk to me','what\u2019s good. you need something or you just checking in?'];
+  else pool=['heyy! what\u2019s up?','yo! perfect timing, i was bored out of my mind','hey hey 👋 what\u2019s going on'] }
+ else if(it==='question'){ const l=String(txt).toLowerCase();
+  if(/how are you|how'?s it|how do you feel|you (ok|okay|good|alright)/.test(l))pool=fam?['I\u2019m alright, love — better now that you asked. How are YOU eating? Sleeping? Tell me the truth.','Oh I\u2019m fine, don\u2019t you worry about me. More importantly — how are you holding up?']:(close?['honestly? better now that you\u2019re texting me 😊 wbu, how are YOU','i\u2019m good, i\u2019m good. had a weird day but this fixed it. how about you?']:['i\u2019m alright! same old, same old. you?','pretty good honestly. day\u2019s been quiet. how about you, what\u2019s your day looking like?','can\u2019t complain! busy but good. you good?']);
+  else if(/where are you|where'?s|you at|your location/.test(l))pool=fam?['At home, love. Where else would I be — come by if you need anything.','Just at the house. Everything alright?']:['around! not far from you actually','out and about lol, why — you trying to see me? 👀','at my spot. what\u2019s up, you need me somewhere?'];
+  else if(/what are you doing|wyd|what'?s up|what happened|up to/.test(l))pool=['nothing much, just existing near a screen apparently 😅 you?','was literally just scrolling and doing nothing. save me','same thing i\u2019m always doing — thinking about food and avoiding responsibilities. you?'];
+  else if(/can (i|we)|could (i|we)|okay if|mind if/.test(l))pool=mem.grudge?['…i\u2019m still a little salty with you, not gonna lie. ask me again when you\u2019ve made it right.']:(close||fam?['of course you can. you don\u2019t even have to ask 💛','yes! obviously yes. when?']:['yeah, i\u2019m down. give me the details','should be fine by me — when were you thinking?','honestly yeah. let\u2019s figure out the when']);
+  else if(/^why|why\b/.test(l))pool=['honestly? because that\u2019s just how it worked out. life\u2019s weird like that','long story lol. short version: it made sense at the time','because nobody stopped it, i guess. why, what are you thinking?'];
+  else if(/when\b/.test(l))pool=['soon, i promise. like actually soon, not "soon" soon','this week if life behaves. i\u2019ll pin it down and text you','give me a day to sort my schedule and i\u2019ll give you a real answer'];
+  else pool=['good question… honestly i think so, yeah. let me think on it a sec','hmm. my gut says yes but don\u2019t quote me lol','i\u2019d say it depends — tell me more so i don\u2019t answer the wrong thing','real answer? i don\u2019t fully know yet. but i\u2019m figuring it out'] }
+ else if(it==='plan'){ if(mem.grudge)pool=['i\u2019m still cooling off from earlier, honestly. raincheck until we\u2019re good.','mm. ask me after you\u2019ve apologized properly.'];
+  else if(close)pool=['say less 😍 i\u2019m in. text me the time and i\u2019ll be ready','YES. i\u2019ve been waiting for you to ask. when and where?','obviously i\u2019m coming. you had me at the first word 💛'];
+  else if(fam)pool=['Of course, love — family first, always. Tell me when and I\u2019ll have food ready.','That sounds lovely. Come by the house, we\u2019ll make a day of it.'];
+  else if(official)pool=['In-person meetings go through the office. You know the procedure.','Anything in person gets scheduled officially. Send the request properly.'];
+  else if(street)pool=['aight. name the spot — public, quick, no weirdness','i can move. send the when and where'];
+  else pool=['i\u2019m down! when were you thinking?','ooo yes, let\u2019s actually do it this time instead of just texting about it 😅','count me in. send me the details and i\u2019ll make it work','maybe — depends on the day. pitch me the plan'] }
+ else if(it==='money'){ if(fam)pool=['Baby, if you need help you ASK, you don\u2019t hint. How much are we talking?','Money talk — okay. Come see me and we\u2019ll sort it like family.'];
+  else if(street)pool=['business is business. numbers first, feelings later — what\u2019s the figure?','you know i don\u2019t move money on vibes. paperwork or it didn\u2019t happen'];
+  else if(official)pool=['Financial inquiries go in writing, through the proper channel. Not over text.'];
+  else pool=['okayyy let\u2019s talk numbers — how much and what for? no judgment lol','money stuff makes me nervous but go on, i\u2019m listening','i might be able to help a little — emphasis on little 😅 what do you need?'] }
+ else if(it==='work'||it==='school'){ const w=it==='work';
+  pool=w?['work\u2019s been WORKING me 😭 how\u2019s your job treating you','i swear my boss has a sixth sense for ruining fridays. you surviving yours?','grind recognizes grind 🤝 we really do this every day huh']
+       :['school is school — some days i\u2019m a genius, some days i\u2019m furniture 😅 how are your classes','don\u2019t remind me about homework. anyway — you actually studying or just texting about studying','we\u2019re gonna make it through this semester. probably. hopefully.'] }
+ else if(it==='family'){ pool=fam?['Family is everything, love. We look after each other — that\u2019s the rule.','You know how we do. Dinner soon, all of us. I mean it.']:['family stuff is heavy, huh. you good though? for real','that sounds like a whole situation 😅 tell me everything'] }
+ else if(it==='love'){ if(close)pool=['stoppp you\u2019re gonna make my whole week 💛','i\u2014 okay you can\u2019t just SAY things like that and expect me to function','right back at you. obviously. always.'];
+  else if(fam)pool=['I love you too, sweetheart. Always. 💛','And don\u2019t you forget it — this family loves you something fierce.'];
+  else pool=['oh?? 👀 say more','aww — careful, i might start believing you lol','that\u2019s sweet of you to say. really.'] }
+ else if(it==='thanks'){ pool=['anytime. seriously — that\u2019s what i\u2019m here for 💛','of course!! you don\u2019t have to thank me','you\u2019d do the same for me. probably. hopefully 😅'] }
+ else if(it==='joke'){ pool=['STOPPP 😂😂','no because why is that actually funny','i\u2019m not supposed to laugh at that but here we are 🤣','you\u2019re ridiculous. never change'] }
+ else if(it==='bye'){ pool=['okayy, talk later 💛 don\u2019t be a stranger','bye for now! text me when you\u2019re free again','later! and hey — actually reply next time 😌'] }
+ else { if(topic==='game')pool=['okay but real talk, we still owe each other a rematch 🎮','you and these games lol. i respect the grind though','don\u2019t start me on games, i will not stop talking'];
+  else if(topic==='food')pool=['don\u2019t talk to me about food, i\u2019m starving and everything sounds good rn 🍔','okay food opinions are serious business. continue','you had me at food. say less'];
+  else if(per==='Chef'||per==='Foodie')pool=['as a chef, i have THOUGHTS. strong ones. go on','food talk is my love language, continue'];
+  else if(mem.promise&&Math.random()<0.4)pool=['speaking of — you still owe me that plan you promised. i haven\u2019t forgotten 😌','btw i\u2019m still holding you to what you said before. just so you know'];
+  else if(mem.lastTopic&&mem.lastTopic===topic&&topic)pool=['we really keep coming back to this, huh 😅 i\u2019m not mad about it','okay at this point this is OUR topic. continue'];
+  else pool=['okay wait, tell me more — i\u2019m invested now','hmm, interesting. and how do YOU feel about it, honestly?','i hear you. loud and clear. what brought that on?','say more words, i like where this is going','real. okay so what\u2019s the plan then?'] }
+ return fill(pickFresh146(from,pool)) }
+function sendTyped146(from){ if(!S)return; const inp=document.getElementById('txtIn146'); if(!inp)return; const txt=(inp.value||'').trim(); if(!txt)return;
+ if(typeof serviceGated40==='function'&&serviceGated40('send a text'))return;
+ const V=ensure146(); if(!S.phoneMsgs)S.phoneMsgs=[]; if(!S.chatMem)S.chatMem={}; if(!S.chatMem[from])S.chatMem[from]={};
+ for(let i=0;i<S.phoneMsgs.length;i++){ const m=S.phoneMsgs[i]; if(m.from===from&&!m.replied&&!m.callLog){ m.replied=true; break } }
+ S.phoneMsgs.unshift({id:Date.now()+Math.floor(Math.random()*999),from:'You',to:from,text:txt,read:true,replied:true});
+ const mem=S.chatMem[from]; mem.lastReplyDay=S.day; try{ mem.lastTopic=(typeof topicOf==='function')?topicOf(txt):'' }catch(e){}
+ const it=intent146(txt); if(it==='insult')mem.grudge=S.day; if(it==='apology')mem.grudge=0;
+ try{ if(typeof markTalk69==='function')markTalk69(from) }catch(e){}
+ adj('social',2);
+ V.pendingReplies=V.pendingReplies.filter(function(q){ return q.from!==from });
+ if(from!=='School')V.pendingReplies.push({from:from,at:absMin110()+2,txt:txt}); /* ~2 game-minutes, not instant */
+ save(); render(); try{ openConvo(from) }catch(e){} }
+const _openConvo146=openConvo;
+openConvo=function(from){ const r=_openConvo146(from); try{ if(!S||from==='School')return r; const V=ensure146();
+  const scr=document.querySelector('#sheet .phoneScreen')||document.getElementById('sheet'); if(!scr||scr.querySelector('.composer146'))return r;
+  const typing=V.pendingReplies.some(function(q){ return q.from===from });
+  const d=document.createElement('div'); d.className='composer146';
+  d.innerHTML=(typing?'<div style="font-size:12px;opacity:.75;margin-top:8px">💬 '+from+' is typing…</div>':'')
+   +'<div style="display:flex;gap:6px;margin-top:9px"><input id="txtIn146" type="text" maxlength="240" placeholder="Type a message…" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ffffff33;background:#00000040;color:#fff;font-size:16px"><button class="btn gold" style="width:auto;margin:0;padding:10px 14px" onclick="sendTyped146(\''+String(from).replace(/'/g,"\\'")+'\')">Send</button></div>'
+   +'<div style="font-size:11.5px;opacity:.7;margin-top:4px">They read what you write — and answer it. Replies take a couple of minutes, like real life.</div>';
+  scr.appendChild(d);
+  const inp=d.querySelector('#txtIn146'); if(inp)inp.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ ev.preventDefault(); sendTyped146(from) } });
+ }catch(e){} return r };
+function deliverReplies146(){ if(!S)return; const V=ensure146(); if(!V.pendingReplies.length)return; const now=absMin110(); let delivered=false;
+ for(let i=V.pendingReplies.length-1;i>=0;i--){ const q=V.pendingReplies[i]; if(now>=q.at){ V.pendingReplies.splice(i,1);
+   const reply=replyFor146(q.from,q.txt); try{ pushMsg(q.from,reply) }catch(e){} delivered=true;
+   try{ if(typeof openThread42!=='undefined'&&openThread42===q.from){ const md=document.getElementById('modal'); if(md&&md.classList.contains('open'))openConvo(q.from) } }catch(e){} } }
+ if(delivered)save() }
+let lastRunnerTick146=0;
+setInterval(function(){ try{ deliverReplies146() }catch(e){}
+ try{ const now=Date.now(); if(now-lastRunnerTick146>=4000){ lastRunnerTick146=now; runnerTick146() } }catch(e){} },1000);
+
+/* ================= ITEM 15: MOM DOESN'T SHOW UP WHILE THE SITTER IS ON DUTY =================
+   Root cause: coverage (v119/v120) only exists while EVERY caregiver is at work or asleep — the
+   sitter is booked precisely because Mom is away. But the toddler CARE systems never read the
+   babysitter state: the scene's caregiver-help figure (in drawRoom, gated by ROOM only in v141 —
+   and for under-2s not gated at all) kept rendering Mom beside the player mid-sitting, and the
+   care-credit lines (careName82) kept naming her as the one feeding/tucking-in. The fix is a
+   babysitter-STATE gate: while coverage says the sitter is on duty today, no parent/caregiver
+   figure renders (the line-2810 draw checks sitterOnDuty146) and care credits name the sitter.
+   No sitter on duty → Mom's normal presence is completely unchanged. Same gate covers Dad and
+   every other caregiver, because the figure and the credits draw from the same caregiver name. */
+function sitterOnDuty146(){ try{ if(!S)return false; const V9=(typeof ensure119==='function')?ensure119():null; const cov=V9&&V9.coverage; if(!cov||cov.day!==S.day||cov.who!=='sitter')return false; const V=(typeof ensure120==='function')?ensure120():null; if(V&&V.covState==='declined')return false; return true }catch(e){ return false } }
+const _cn82_146=careName82;
+careName82=function(){ try{ if(sitterOnDuty146()){ const st=(typeof ensureSitter120==='function')?ensureSitter120():null; if(st&&st.name)return st.name } }catch(e){} return _cn82_146() };
+/* ================= ITEM 16: TODDLER PACE + TODDLER DOZING =================
+   (a) While the player is a toddler (ages 1–4 — the band every toddler system in the game uses),
+   the clock runs ×1.5 the base rate: Howard's explicit exception alongside sleep's ×2 (which
+   still stacks during sleep). The 10-game-minute step is unchanged; base rate returns at age 5.
+   (b) Toddlers doze off ON THEIR OWN more often: at a bed-legal spot (item 8's rule), a sleepy
+   toddler (energy < 55) drifts into a shipped nap by free will — announced like all autonomy. */
+const TODDLER_PACE146=1.5;
+function toddler146(){ return !!(S&&S.age>=1&&S.age<=4&&!(S.jail&&S.jail.in)) }
+const _pace84_146=pace84;
+pace84=function(){ const p=_pace84_146(); return toddler146()?p*TODDLER_PACE146:p };
+let _todDozeAt146=0;
+setInterval(function(){ try{ if(!S||!inGame||S.deadFlag||!toddler146())return; if(typeof activity!=='undefined'&&activity)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(!bedLegal146())return; if(!S.needs||S.needs.energy>=55)return; const now=Date.now(); if(now<_todDozeAt146)return; _todDozeAt146=now+45000; if(Math.random()<0.45)return; log('💤 FREE WILL — '+S.name+' dozed off on their own, the way toddlers do — a proper nap in a proper bed spot.'); try{ fwSay('💤 dozing off…') }catch(e){} sleep132('nap') }catch(e){} },1000);
+window.__v146={ensure146:ensure146,chips:function(){ return ensure146().chips },cage146:cage146,buyRunner146:buyRunner146,approveReq146:approveReq146,denyReq146:denyReq146,runnerTick146:runnerTick146,buyEquip146:buyEquip146,phoneSlots146:phoneSlots146,spinSlot146:spinSlot146,sendTyped146:sendTyped146,replyFor146:replyFor146,intent146:intent146,bedLegal146:bedLegal146,travelPass146:travelPass146,casinoTitle146:casinoTitle146,cam146:cam146,MACHINES146:MACHINES146,EQUIP146:EQUIP146,sitterOnDuty146:sitterOnDuty146,toddler146:toddler146,TODDLER_PACE146:TODDLER_PACE146};
+console.log('🌊 AquaLife v146 layer — runners in/squad out, chips & cage, 3 new slots, typed texts, travel collapse, bed-only sleep, scratch guard, single-flight camera');
+
+</script>
+<script>
+/* ================= v147 — ITEM 17: TODDLER BIRTHDAYS EVERY OTHER DAY UNTIL PRESCHOOL =================
+   Howard's ruling (Oct 30, 2026 — his self-correction governs: every OTHER day, not every day):
+   while a child is on the toddler track, a BIRTHDAY lands every OTHER game day. The shipped
+   v121 pace table (stageDays121) already ran the baby year (age 0–1) at 2 days; it ran ages
+   2–3 at 3 days and age 4 at 4 days. This layer sets the interval to exactly 2 days for every
+   toddler-band age (current ages 1, 2, 3 and 4 — the band every round-9 toddler system uses:
+   toddler146(), the Talk/Move/Imagine/Think card, todDay72, temperaments), and leaves every
+   other age on the shipped table untouched.
+
+   THE COUNTING MODEL (exact): from the standard toddler start at age 1, the accelerated
+   birthdays are turning 2 (day +2), turning 3 (day +4), turning 4 (day +6) and turning 5
+   (day +8) — FOUR every-other-day birthdays spanning 8 game days (the shipped table took 12).
+   PRESCHOOL (🧸 Preschool, SCHOOL_STAGES.pre = ages 3–4, enrollment via checkSchoolStage)
+   is reached on the SECOND accelerated birthday — turning 3 — so exactly 2 every-other-day
+   birthdays make preschool. The track keeps its every-other-day beat through the preschool
+   toddler years (ages 3–4) because the round-9 toddler systems still run there, and it ends
+   at the turning-5 birthday: the kid age-up, where toddler skills graduate, temperament
+   retires and 🧸 Preschool gives way to 📚 Elementary. From age 5 on, the shipped yearly
+   pace resumes exactly as before (age 5 → 4 days, 6–12 → 5, 13–17 → 6, 18–64 → 7, 65+ → 10).
+
+   HOW THE ACCELERATED BIRTHDAYS COUNT (wired into the round-9 systems):
+   • They are REAL birthdays, not fractional ages: each one is the shipped nextDay birthday
+     block doing S.age++ exactly once, just sooner. Every age-keyed threshold therefore sees
+     true ages in true order — learn-to-walk at turning 2, preschool enrollment at turning 3,
+     chores at turning 5, and so on. Nothing is skipped, doubled or faked.
+   • Toddler SKILLS (🗣️ Talk · 🏃 Move · 🦄 Imagine · 🧩 Think, plus the eight tod skills):
+     XP still accrues per action and per day exactly as shipped — acceleration changes WHEN
+     the birthdays land, never the XP bars or the level thresholds. There is simply less
+     calendar time to train in, which is the intended toddler speed-up (and the ×1.5 toddler
+     clock from item 16 means more lived minutes inside each of those days).
+   • HAPPY START / TOP-NOTCH: todGraduate72 still runs on the first todDay72 tick at age ≥ 5,
+     i.e. right after the TRUE turning-5 birthday, and the v137 wrapper still reads the four
+     skill levels at that moment: min Lv ≥ 8 → 🏆 Top-Notch (+30% lifelong), else average
+     Lv ≥ 5 with min ≥ 3 → 🌱 Happy Start (+15%). The bars are unchanged — only the date moved.
+   • THE TRUE-5TH-BIRTHDAY TRAITS RULE (v99/v107/v113/v128/v136): every trait gate keys on
+     the RESULTING age (S.age % 5 === 0) after a real +1. The accelerated birthdays turning
+     2, 3 and 4 are ordinary birthdays for the traits box — they bank nothing, pop nothing,
+     and any birthday offer is purged exactly as shipped. The accelerated turning-5 birthday
+     IS a true 5th birthday (the age becomes exactly 5), so it banks/presents its one trait
+     pick exactly as shipped. Because each accelerated birthday adds exactly one year, no
+     fifth birthday can be skipped over or counterfeited.
+   • BIRTH CERTIFICATES (v133, k.cert133): issued at a child's birth with the real birth day
+     stamped — untouched. The player's own children still age through the shipped kidsAgeUp
+     on the player's birthdays, exactly as before; this item governs the toddler aging track
+     itself (the player-character toddler years, same scope as item 16's toddler146()).
+   • TOWNSFOLK: npcPaceSync121 reads the same stageDays121 table, so toddler townsfolk ride
+     the same every-other-day track — one pace table for everyone, as shipped in v121.
+   • EXISTING SAVES: no save field is added, moved or rewritten. A save already mid-interval
+     at ages 2–4 simply finds its next birthday due sooner under the new interval (ageDue121
+     compares against the stored ageStartDay anchor) — the acceleration taking effect, not
+     save damage. The Day Card and Calendar follow automatically: nextBdayDay121,
+     ageAtDay121, playerBdayOn121 and countBdays121 all read stageDays121 at call time.
+   • Pairs with item 16 as shipped: the ×1.5 toddler clock pace is untouched and still
+     returns to base rate at age 5 — the same birthday that ends this track. ================= */
+const _stageDays121_147=stageDays121;
+stageDays121=function(a){ if(a!==undefined&&a!==null&&a>=1&&a<=4)return 2; return _stageDays121_147(a) };
+try{ if(window.__v121)window.__v121.stageDays121=stageDays121 }catch(e){}
+function toddlerBday147(){ return !!(S&&S.age>=1&&S.age<=4) }
+const WN147_CARD='<div class="card" style="border-color:var(--accent2)"><h3>✨ What\u2019s New — v147</h3><p>🎂 <b>Toddler birthdays come every other day now.</b> While your little one is a toddler (ages 1–4), each birthday lands just <b>2 game days</b> after the last — turning 2, 3, 4 and 5 in eight days flat. 🧸 <b>Preschool arrives at turning 3</b>, the toddler skills (🗣️ Talk · 🏃 Move · 🦄 Imagine · 🧩 Think) graduate at the true turning-5 birthday — 🌱 Happy Start and 🏆 Top-Notch are judged exactly as before, just sooner — and from age 5 the normal birthday pace is back. The 🌱 traits box still only ever appears on true fifth birthdays (5, 10, 15, 20…).</p></div>';
+const _wn147=whatsNewHtml124;
+whatsNewHtml124=function(){ let h=''; try{ h=_wn147() }catch(e){} return WN147_CARD+h };
+window.__v147={stageDays121:stageDays121,toddlerBday147:toddlerBday147,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — item 17: toddler birthdays every OTHER day (ages 1–4 → 2-day intervals; preschool at turning 3, the 2nd accelerated birthday; kid age-up at true turning 5; shipped pace resumes from age 5)');
+</script>
 </body>
 </html>
