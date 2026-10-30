@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
 <meta name="theme-color" content="#1a120b"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -18,6 +18,9 @@
 :root{--bg:#fff7e6;--card:#fff;--ink:#1f1a14;--mut:#6b5d4f;--line:#e8dcc8;--accent:#e85d2a;--accent2:#ffb703;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;--blue:#3b82f6;--radius:18px}
 @media(prefers-color-scheme:dark){:root{--bg:#171310;--card:#221c18;--ink:#fff8ec;--mut:#c9b8a3;--line:#3a2f27}}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+/* v144: random-zoom cure — double-tap zoom off globally (game is tap-heavy), and form fields at 16px so mobile Safari never focus-zooms the page */
+html,body{touch-action:manipulation}
+input,textarea,select{font-size:16px!important}
 button{font:inherit;cursor:pointer;border:0}
 .app{max-width:980px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
 /* HEADLINES */
@@ -574,7 +577,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=143;
+const GAME_VERSION=145;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -1080,7 +1083,7 @@ function miniConfetti(){ const h=document.querySelector('.headline'); if(!h)retu
 // ---- QUICK-REWARD TUNING (internal polish): tiny wins get celebrated constantly — hot-streak bonuses on back-to-back actions, lucky micro-moments, a small delight most days, micro-confetti on real money gains. Small numbers roll and flash exactly like big ones.
 let actStreak=0;
 function dopamineBeat(){ if(!S)return; actStreak++;
- if(actStreak%5===0){ const bonus=4+Math.floor(Math.random()*5); setTimeout(function(){ if(!S)return; money(bonus,'✨ Hot-streak bonus'); toast('🔥 '+actStreak+' actions in a flow — hot-streak bonus +$'+bonus+'!'); miniConfetti(); log('🔥 Hot streak! '+actStreak+' actions back-to-back — a lucky $'+bonus+' bonus landed in your Bank. Momentum is a real mechanic here.'); save(); render() },380) }
+ if(actStreak%5===0){ const bonus=4+Math.floor(Math.random()*5); setTimeout(function(){ if(!S)return; money(bonus,'✨ Hot-streak bonus'); toast('🔥 '+actStreak+' actions in a flow — hot-streak bonus +$'+bonus+'!'); miniConfetti(); log('🔥 Hot streak! '+actStreak+' actions back-to-back — a lucky $'+bonus+' bonus landed in your cash. Momentum is a real mechanic here.'); save(); render() },380) }
  else if(Math.random()<0.09){ const treats=[['✨ Lucky moment — a $3 coin glints on the ground. Yours now.',function(){ money(3,'✨ Lucky find') }],['💬 A stranger complimented you out of nowhere. It lands all day.',function(){ adj('social',5); adj('fun',3) }],['🎵 Your song comes on at the perfect moment. Instant mood lift.',function(){ adj('fun',6) }],['🍀 Right place, right time — somebody hands you the last free sample. Elite.',function(){ adj('hunger',6); adj('fun',4) }]]; const t=pickArr(treats); setTimeout(function(){ if(!S)return; t[1](); toast(t[0].split(' — ')[0]+'!'); miniConfetti(); log(t[0]); save(); render() },380) } }
 function dailyDelight(){ if(!S||Math.random()>0.45)return; const opts=[function(){ const amt=2+Math.floor(Math.random()*7); money(amt,'✨ Found money'); return '✨ Found $'+amt+' on the ground — the day started generous.' },function(){ adj('social',5); adj('fun',4); return '💬 Somebody held the door, smiled, and told you that you look like you are going places. It stuck with you all day.' },function(){ adj('fun',6); return '🎵 The perfect song found you at the perfect moment. Instant main-character energy.' },function(){ ensure21(); S.fridge.snacks++; return '🍪 A neighbour dropped off snacks “just because” — +1 snack waiting in the fridge.' },function(){ addXp(6,'social'); return '⭐ A little kid pointed at you today and whispered “cool.” Officially certified.' }]; const msg=opts[Math.floor(Math.random()*opts.length)](); log(msg); toast('✨ A good little moment landed today'); miniConfetti() }
 function applyStatFx(prev){ if(!prev||!S)return; const cur=snapStats(); if(!cur)return; const app=document.getElementById('app');
@@ -1534,7 +1537,7 @@ function doCall(who,fromWhere){ if(onTalkCd69(who)>0){ toast('⏳ Give '+who+' a
  const fxMap={Family:()=>{S.bond=clamp(S.bond+4);adj('social',8);adj('fun',4)},Maya:()=>{adj('social',12);adj('fun',8);addXp(6,'social')},Sam:()=>{adj('social',10);adj('fun',10);addXp(5,'social')},School:()=>{S.grades=clamp(S.grades+2);adj('social',3)},Caseworker:()=>{adj('social',8);adj('health',3);S.bond=clamp(S.bond+2)}}; const fx=fxMap[who]||(()=>{adj('social',8)});
  let title,body;
  if(roll<.2){ title='📵 No answer'; body=who+' didn\'t pick up — it went to voicemail. You left a message.'; log('Called '+who+' — no answer.') }
- else if(roll<.38){ title='📲 They\'ll call back'; body=who+' is in the middle of something and will call you back. Watch for their text!'; log('Called '+who+' — they\'ll call back.'); setTimeout(()=>{ if(!S)return; pushMsg(who,'Sorry I missed your call, {n}! What\'s up? 📞'); save(); render() },6000) }
+ else if(roll<.38){ title='📲 They\'ll call back'; body=who+' is in the middle of something — they will ring you back in a moment. Keep your phone handy.'; log('Called '+who+' — they\'ll call back.'); setTimeout(()=>{ if(!S)return; const m=document.getElementById('modal'); const busy=(m&&m.classList.contains('open'))||(typeof callState!=='undefined'&&callState)||(typeof activity!=='undefined'&&activity); if(!busy&&!S.deadFlag){ callState={from:who,kind:'chat',at:Date.now()}; if(typeof showCallCard==='function'){ showCallCard(who); log('📲 '+who+' called back — just like they said.'); save(); return } } pushMsg(who,'tried to ring you back but you were mid-something — texting instead! Sorry I missed your call, {n}! What\'s up? 📞'); save(); render() },6000) }
  else { fx(); addXp(4,'social'); title='📞 Great chat!'; body='You and '+who+' talked for a while'+((S.chatMem&&S.chatMem[who]&&S.chatMem[who].lastTopic)?' — caught up properly about '+({talent:'the talent show',game:'the big game',food:'food plans',school:'school stuff',call:'everything',chat:'life lately',photo:'those photos',money:'money stuff',checkin:'how you are doing',heat:'staying out of trouble'})[S.chatMem[who].lastTopic]+', like you do':' — catching up for real')+'. Watch the stats flash up top.'; log('Called '+who+' — good catch-up.') }
  S.phoneMsgs.unshift({id:Date.now()+31,from:who,text:'📞 Call — '+title.replace(/^📞 |^📵 |^📲 /,'')+': '+body,read:true,replied:true,callLog:true}); if(S.phoneMsgs.length>60)S.phoneMsgs.length=60;
  save(); render();
@@ -1879,8 +1882,8 @@ function buyTicket(quick){ if(S.money<5){ toast('A ticket is $5 — you\'re shor
 const SCRATCH_MULT={'🍒':2,'🔔':3,'🍀':5,'⭐':10,'💎':20,'💰':50};
 function phoneScratch(){ const card=S.scratchCard; let inner='';
  if(card&&!card.done){ inner='<p style="font-size:12.5px;opacity:.9;margin-top:0">Your $'+card.price+' card — tap every foil square to scratch it off. Three matching symbols win that prize:</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+card.cells.map((sym,i)=>card.revealed[i]?'<div style="background:#111;border:1.5px solid #ffb703;border-radius:12px;padding:16px 0;text-align:center;font-size:30px">'+sym+'</div>':'<button onclick="scratchCell('+i+')" style="background:linear-gradient(135deg,#c0c6ce,#8a939e);border-radius:12px;padding:16px 0;font-size:22px;color:#39424e;font-weight:900">?</button>').join('')+'</div><p style="font-size:12px;opacity:.85;margin-top:10px">'+card.revealed.filter(Boolean).length+'/9 scratched • Prizes (× card price): 🍒×2 🔔×3 🍀×5 ⭐×10 💎×20 💰×50</p>' }
- else if(card&&card.done){ inner='<div style="text-align:center;padding:6px"><div style="font-size:34px">'+(card.prize>0?'🎉':'🗑️')+'</div><h3 style="margin:4px">'+(card.prize>0?'You won $'+card.prize+'!':'No three-of-a-kind')+'</h3><p style="font-size:12.5px;opacity:.9">'+(card.prize>0?'Paid straight into your Bank.':'That one\'s a dud — the house thanks you.')+'</p></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+card.cells.map(sym=>'<div style="background:#111;border:1.5px solid #ffffff2a;border-radius:12px;padding:12px 0;text-align:center;font-size:24px">'+sym+'</div>').join('')+'</div>' }
- else inner='<p style="font-size:12.5px;opacity:.9;margin-top:0">Buy a card, scratch the foil, find three matching symbols. Prizes pay instantly into your Bank.</p>';
+ else if(card&&card.done){ inner='<div style="text-align:center;padding:6px"><div style="font-size:34px">'+(card.prize>0?'🎉':'🗑️')+'</div><h3 style="margin:4px">'+(card.prize>0?'You won $'+card.prize+'!':'No three-of-a-kind')+'</h3><p style="font-size:12.5px;opacity:.9">'+(card.prize>0?'Paid straight into your cash.':'That one\'s a dud — the house thanks you.')+'</p></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+card.cells.map(sym=>'<div style="background:#111;border:1.5px solid #ffffff2a;border-radius:12px;padding:12px 0;text-align:center;font-size:24px">'+sym+'</div>').join('')+'</div>' }
+ else inner='<p style="font-size:12.5px;opacity:.9;margin-top:0">Buy a card, scratch the foil, find three matching symbols. Prizes pay instantly into your cash.</p>';
  openSheet(phoneShell('🪙 Scratch-Offs',inner+'<h4 style="margin:14px 0 4px">Buy a card</h4>'+[3,5,10].map(p=>'<button class="btn" style="background:#1f2937;color:#fff;margin-top:6px" onclick="buyScratch('+p+')">🪙 $'+p+' Scratch Card</button>').join('')+'<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:10px" onclick="phoneCasino()">‹ Casino floor</button>')) }
 function buyScratch(price){ if(S.scratchCard&&!S.scratchCard.done){ toast('Finish scratching your current card first'); return } if(S.money<price){ toast('Need $'+price+' for that card'); return } money(-price,'🪙 Scratch-off card'); S.casino.spent+=price; S.casino.plays++;
  S.scratchFrom82='phone'; S.scratchCard=dealScratchCard82(price); save(); render(); phoneScratch() }
@@ -2728,12 +2731,15 @@ function drawRoom(){
  } else if(loc==='restaurant'){
  drawTableF(ctx,214,246,true); drawTableF(ctx,470,252,false); drawCouchF(ctx,640,240,th.couch,150); drawCounterF(ctx,84,196);
  } else {
- if(loc==='school'||loc==='college')drawCounterF(ctx,84,196); else drawFridgeF(ctx,84,196,th.fridge);
+ /* v144 (item 5): public places draw PUBLIC furniture — counter/desks/tables/lockers. No fridge, couch, bed or shower in a bank, bar or shop. */
+ const pub144=['bank','bar','liquor','gym','spa','barber','salon','vet','work'].indexOf(loc)>=0;
+ const inst144=pub144||loc==='school'||loc==='college';
+ if(inst144)drawCounterF(ctx,84,196); else drawFridgeF(ctx,84,196,th.fridge);
  drawTableF(ctx,214,246,loc!=='house');
- if(loc==='school'||loc==='college')drawDesksF(ctx,368,246); else drawCouchF(ctx,368,240,th.couch,168);
- drawDeskF(ctx,556,224,loc==='school'||loc==='college');
- if(loc==='school'||loc==='college')drawNookF(ctx,676,224,th); else drawBedF(ctx,676,224,th,loc!=='house');
- if(loc==='school'||loc==='college')drawLockersF(ctx,800,228); else drawShowerF(ctx,806,228,loc!=='house');
+ if(inst144)drawDesksF(ctx,368,246); else drawCouchF(ctx,368,240,th.couch,168);
+ drawDeskF(ctx,556,224,inst144);
+ if(pub144)drawLockersF(ctx,676,224); else if(loc==='school'||loc==='college')drawNookF(ctx,676,224,th); else drawBedF(ctx,676,224,th,loc!=='house');
+ if(inst144)drawLockersF(ctx,800,228); else drawShowerF(ctx,806,228,loc!=='house');
  }
  // extras: coffee table at home, globe at school, plant & lamp where they belong
  if(dloc==='house'){ ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(452,330,52,10,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#8a5a24'; ctx.fillRect(408,306,88,10); ctx.fillRect(414,316,8,14); ctx.fillRect(482,316,8,14); ctx.font='18px sans-serif'; ctx.fillText('🍎🍊',428,304) }
@@ -2804,9 +2810,9 @@ function drawRoom(){
  if(activity&&(isCrawling()||todCared82())){ const hn=(typeof todCare82==='function'&&todCare82())||careHelper(); const hd=(typeof personDefFor82==='function')?personDefFor82(hn):PEOPLE_DEFS[hn]; if(hd&&((S.age<2&&!S.canWalk)||(typeof roomHas141==='function'&&roomHas141(hn))))drawNPCSprite(ctx,{name:hn,icon:hd.icon,col:hd.col,hair:hd.hair,x:charX+(charX>470?-68:68),y:charY+14,state:'in',bubble:'🍼',say:'',sayUntil:0},nowMs,false) }
  // ---- PLAYER: pixel chibi with walk cycle — or, for a baby who has not learned to walk yet, a CRAWL cycle (slower, on all fours) ----
  const crawling=isCrawling();
- const dx=targetX-charX, dy=targetY-charY; if(Math.abs(dx)>4||Math.abs(dy)>4){ const spd=crawling?0.038:0.08; charX+=dx*spd; charY+=dy*spd; walkPhase+=crawling?0.3:0.35; dir=dx>4?'right':dx<-4?'left':'front' } else walkPhase=0;
+ const dx=targetX-charX, dy=targetY-charY; if(Math.abs(dx)>4||Math.abs(dy)>4){ const spd=crawling?0.038:0.08; charX+=dx*spd; charY+=dy*spd; walkPhase+=crawling?0.3:0.35; dir=dx>4?'right':dx<-4?'left':'front' } else walkPhase=0; if(activity&&activity.icon==='💤'){ charX=targetX; charY=targetY; walkPhase=0 } /* v144: sleep is still — no gliding across the room mid-sleep (the sliding sleeper + bed read as glitching) */
  const actP=activity?Math.min(1,(nowMs-activity.start)/activity.dur):1; const actIcon=activity&&actP<1?activity.icon:null;
- let bob=crawling?Math.abs(Math.sin(walkPhase))*2:Math.abs(Math.sin(walkPhase))*5;
+ let bob=crawling?Math.abs(Math.sin(walkPhase))*2:Math.abs(Math.sin(walkPhase))*5; if(actIcon==='💤')bob=0; /* v144: a sleeping figure never bobs against its bed/blanket */
  if(actIcon==='🍽️'||actIcon==='🍪'||actIcon==='🍔'||actIcon==='🍦')bob+=Math.abs(Math.sin(nowMs/110))*4;
  if(actIcon==='🏃')bob+=Math.abs(Math.sin(nowMs/85))*7;
  const x=charX; let y=charY-bob; if(actIcon==='🐾')y+=14;
@@ -4445,7 +4451,7 @@ function dealScratchCard82(price){ const syms=Object.keys(SCRATCH_MULT); let cel
  for(let i=cells.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=cells[i]; cells[i]=cells[j]; cells[j]=t }
  return {price:price,cells:cells,revealed:[false,false,false,false,false,false,false,false,false],prize:prize,done:false} }
 function scratchGridHtml82(card){ if(card&&!card.done)return '<p style="font-size:12.5px;opacity:.9;margin-top:0">Your $'+card.price+' card — tap every foil square to scratch it off. Three matching symbols win that prize:</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+card.cells.map(function(sym,i){ return card.revealed[i]?'<div style="background:#111;border:1.5px solid #ffb703;border-radius:12px;padding:16px 0;text-align:center;font-size:30px">'+sym+'</div>':'<button onclick="scratchCell('+i+')" style="background:linear-gradient(135deg,#c0c6ce,#8a939e);border-radius:12px;padding:16px 0;font-size:22px;color:#39424e;font-weight:900">?</button>' }).join('')+'</div><p style="font-size:12px;opacity:.85;margin-top:10px">'+card.revealed.filter(Boolean).length+'/9 scratched • Prizes (× card price): 🍒×2 🔔×3 🍀×5 ⭐×10 💎×20 💰×50</p>';
- if(card&&card.done)return '<div style="text-align:center;padding:6px"><div style="font-size:34px">'+(card.prize>0?'🎉':'🗑️')+'</div><h3 style="margin:4px">'+(card.prize>0?'You won $'+card.prize+'!':'No three-of-a-kind')+'</h3><p style="font-size:12.5px;opacity:.9">'+(card.prize>0?'Paid straight into your Bank.':'That one\'s a dud — the house thanks you.')+'</p></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+card.cells.map(function(sym){ return '<div style="background:#111;border:1.5px solid #ffffff2a;border-radius:12px;padding:12px 0;text-align:center;font-size:24px">'+sym+'</div>' }).join('')+'</div>';
+ if(card&&card.done)return '<div style="text-align:center;padding:6px"><div style="font-size:34px">'+(card.prize>0?'🎉':'🗑️')+'</div><h3 style="margin:4px">'+(card.prize>0?'You won $'+card.prize+'!':'No three-of-a-kind')+'</h3><p style="font-size:12.5px;opacity:.9">'+(card.prize>0?'Paid straight into your cash.':'That one\'s a dud — the house thanks you.')+'</p></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+card.cells.map(function(sym){ return '<div style="background:#111;border:1.5px solid #ffffff2a;border-radius:12px;padding:12px 0;text-align:center;font-size:24px">'+sym+'</div>' }).join('')+'</div>';
  return '<p style="font-size:12.5px;opacity:.9;margin-top:0">Buy a card at the till, scratch the foil, find three matching symbols. Prizes pay instantly into your Bank.</p>' }
 function cornerStoreCard82(){ if(!S)return ''; const card=S.scratchCard; const inProg=card&&!card.done;
  return '<div class="card" style="border-color:var(--accent2)"><h3>🏪 The Corner Store</h3><p>The bell over the door, the humming cooler, shelves of snacks and drinks — and the 🪙 <b>scratch-off rack by the till</b>. Scratch-offs live in exactly two places: <b>here, in person</b>, and in the 📱 <b>Casino app</b> on your phone. They never just turn up in your change, in a drawer, or out of thin air.</p><p>💰 Your cash: <b>$'+S.money+'</b>'+(inProg?' • 🪙 A card is in progress ('+card.revealed.filter(Boolean).length+'/9 scratched)':'')+'</p>'+(S.age>=18?'<button class="btn gold" onclick="storeScratch82()">🪙 '+(inProg?'Finish your scratch-off':'Scratch-Offs — buy &amp; scratch at the till')+'</button>':'<p class="small" style="margin-top:8px">🔒 <b>The scratch-off rack is 18+</b> — the clerk will not sell you a card until your 18th birthday. Same rule as the 🎰 Casino app.</p>')+(S.age>=13?'<button class="btn" style="margin-top:8px" onclick="buyOwnFood(\'snack\')">🍪 Buy a snack — $4</button><button class="btn" style="margin-top:8px" onclick="buyOwnFood(\'takeout\')">🍔 Buy takeout — $9</button>':'<p class="small" style="margin-top:8px">🧒 Little kids don\'t buy food here — a grown-up handles food, same as everywhere else.</p>')+'</div>' }
@@ -6642,7 +6648,7 @@ paintRoomBar86=function(){ const bar=document.getElementById('roomBar86'); if(!b
 function roomPickHtml106(){ if(!S)return ''; const rooms=roomsFor86(S.location); if(!rooms||!rooms.length)return ''; const rm=curRoom86();
  let h='<p class="small" style="margin:2px 2px 8px">🚪 Every room in this place, stacked — tap one to walk there. The fridge, the bed, the shower and the TV still walk you to their room on their own.</p><div class="roomList106">';
  rooms.forEach(function(r){ const folks=roomFolks106(r.id); const on=rm&&r.id===rm.id;
-  h+='<button type="button" class="roomRow106'+(on?' on':'')+'" onclick="pickRoom106(\''+r.id+'\')" aria-label="Go to the '+r.name+(on?' — you are here':'')+'"><span class="rrIco106">'+r.icon+'</span><span class="rrMain106"><b>'+r.name+'</b><span class="rrFolks106">'+(folks.length?('👥 '+folks.join(', ')):'Nobody here right now')+'</span></span>'+(on?'<span class="rrTag106">✓ You are here</span>':'<span class="rrGo106">Walk there ›</span>')+'</button>' });
+  h+='<button type="button" class="roomRow106'+(on?' on':'')+'" onclick="pickRoom106(\''+r.id+'\')" aria-label="Go to the '+r.name+(on?' — you are here':'')+'"><span class="rrIco106">'+r.icon+'</span><span class="rrMain106"><b>'+r.name+'</b><span class="rrFolks106">'+(folks.length?('👥 '+folks.join(', ')):(on?'Nobody else here':'Nobody here right now'))+'</span></span>'+(on?'<span class="rrTag106">✓ You are here</span>':'<span class="rrGo106">Walk there ›</span>')+'</button>' });
  return h+'</div>' }
 function paintRoomPick106(){ const p=document.getElementById('panel'); if(!p||!S)return; p.innerHTML=roomPickHtml106(); const t=document.getElementById('dsTitle'); if(t)t.textContent='🚪 Change Rooms'; try{ const db=document.querySelector('#dockCore100 .dockBtns56'); if(db)db.querySelectorAll('.dockTab').forEach(function(x){ x.classList.remove('on') }) }catch(e){} }
 function openRoomPick106(){ navIntent91=true; try{ if(curTab==='rooms106'&&dockOpen){ setDock(false) } else { renderTabs('rooms106'); setDock(true); dockScrollTop() } } finally{ navIntent91=false; try{ noteMenuCtx91() }catch(e){} } }
@@ -6981,6 +6987,7 @@ window.roulette139=roulette139; window.roulLabel139=roulLabel139; window.roulSet
 console.log('AquaLife v'+GAME_VERSION+' — round 11 layer loaded: casino expansion + NPC guns');
 })();
 </script>
+
 
 </body>
 </html>
@@ -9783,7 +9790,7 @@ atWork120=function(name){ if(S&&name&&(name===(S.spouse||S.partner))&&momDuty132
 function playerSleeping132(){ try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤')return true; if(typeof playerAsleep128==='function'&&playerAsleep128())return true }catch(e){} return false }
 setInterval(function(){ try{ if(!S||!inGame)return; const V=ensure132(); if(!V)return; if(playerSleeping132()){ if(!V.sleepAnchor||V.sleepAnchor.loc!==S.location)V.sleepAnchor={x:charX,y:charY,loc:S.location}; else { charX=V.sleepAnchor.x; charY=V.sleepAnchor.y } } else V.sleepAnchor=null }catch(e){} },200);
 const _dr132=drawRoom;
-drawRoom=function(){ const r=_dr132(); try{ if(!S||!inGame)return r; if(playerSleeping132()){ const cv=document.getElementById('cv'); const ctx=cv?cv.getContext('2d'):null; if(ctx){ const x=charX,y=charY; const theme=(typeof LOC_THEMES!=='undefined'&&(LOC_THEMES[S.location]||LOC_THEMES.house))||{}; ctx.save(); /* the BED under the sleeper + covers OVER them: this is real sleep, in a real bed */
+drawRoom=function(){ const r=_dr132(); try{ if(!S||!inGame)return r; if(playerSleeping132()){ let _skipBed144=false; try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤'&&activity.dur){ const ap=(performance.now()-activity.start)/activity.dur; if(ap<0.14||ap>0.90)_skipBed144=true } }catch(e){} if(_skipBed144)return r; /* v144: no bed painted while the figure is still climbing in or out (ez ease) — the snap-in bed at both ends of a sleep, worst at ×2, read as glitching */ const cv=document.getElementById('cv'); const ctx=cv?cv.getContext('2d'):null; if(ctx){ const x=charX,y=charY; const theme=(typeof LOC_THEMES!=='undefined'&&(LOC_THEMES[S.location]||LOC_THEMES.house))||{}; ctx.save(); /* the BED under the sleeper + covers OVER them: this is real sleep, in a real bed */
   ctx.fillStyle='#6b4423'; ctx.beginPath(); ctx.roundRect(x-24,y+6,150,52,8); ctx.fill();
   ctx.fillStyle='#f8fafc'; ctx.beginPath(); ctx.roundRect(x-20,y+10,36,40,7); ctx.fill();
   ctx.fillStyle=theme.blanket||'#2563eb'; ctx.beginPath(); ctx.roundRect(x+2,y+12,118,42,10); ctx.fill(); ctx.fillStyle='#ffffff30'; ctx.fillRect(x+2,y+12,118,7); ctx.restore() } } }catch(e){} return r };
@@ -11256,7 +11263,7 @@ const _hl137=homeLoc; homeLoc=function(){ if(S&&S.origin==='alley')return 'stree
 const _sg137=startGame; startGame=function(mode,origin){ _sg137(mode,origin); try{ if(S&&S.origin==='alley'){ S.homeless80=true; if(S.location==='house')S.location='street'; try{ LOC_LABELS92.street='🧺 the alleyway' }catch(e){} log('🧺 THE ALLEYWAY — this is where the story starts: a cardboard-flat corner behind the shops, sky for a ceiling. No house was rolled for this life, because there is no house — the alley is the start, and it stays the start until '+S.name+' earns a real place by the usual rules.'); save(); try{ render() }catch(e){} } else { try{ if(LOC_LABELS92.street!=='🌳 Maple Street & Park')LOC_LABELS92.street='🌳 Maple Street & Park' }catch(e){} } }catch(e){} };
 /* ---------- 💼 WORK = JUST THE JOB (items 8 + 10): name + one dropdown. The 💼 Careers & Jobs browser is out of Work. ---------- */
 function workCard137(){ if(!S)return ''; const head='<div class="foldhead" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin:2px 0 8px">📁 Work</div>';
- if(S.jobInfo){ const ji=S.jobInfo; return head+'<div class="card"><h3 style="margin-top:0">'+ji.icon+' '+String(ji.title).replace(/^\S+\s+/,'')+'</h3><details class="dd132"><summary>▸ Job actions & details</summary><div class="ddBody">'+String(jobBoardHtml()).replace(/<h3[^>]*>[\s\S]*?<\/h3>/,'')+'</div></details></div>' }
+ if(S.jobInfo){ const ji=S.jobInfo; return head+'<div class="card"><h3 style="margin-top:0">'+jobHead144(ji)+'</h3><details class="dd132"><summary>▸ Job actions & details</summary><div class="ddBody">'+String(jobBoardHtml()).replace(/<h3[^>]*>[\s\S]*?<\/h3>/,'')+'</div></details></div>' }
  if(S.age<18){ return head+'<div class="card"><h3 style="margin-top:0">💼 No job yet</h3><details class="dd132"><summary>▸ Ways to earn</summary><div class="ddBody">'+(typeof kidJobsChores56==='function'?kidJobsChores56():'<p class="small">Kid jobs open up as you grow.</p>')+'</div></details></div>' }
  let inner=''; try{ const apps=jobAppsCardHtml43(); if(apps&&String(apps).trim())inner=apps }catch(e){}
  if(!inner)inner='<p class="small">No job right now — and nothing pending. Work shows your job when you have one; this tab is the job, and only the job.</p>';
@@ -11930,6 +11937,251 @@ try{
 }catch(e){}
 window.__v143={version:function(){ return GAME_VERSION }};
 console.log('AquaLife v'+GAME_VERSION+' — tester pass: sponsorship fees reach the bank, jackpot rolls only on real spins, craps bets always resolve, sportsbook settles on the day roll, bank earnings chirp');
+</script>
+
+<script>
+/* ================================================================
+   v144 — ROUND 13 (Howard approved: items 1, 2 and 3–22).
+   Item 1: 🃏 Rip It card app. Item 2: Empire Sell Business (70% → Bank).
+   Items 3–22: the 3-day real-play corrections. New numbers canonical
+   on this copy. Everything rides shipped systems: buzz(), chirp141,
+   celebrate141/casinoFx141, bankMoney63, money().
+   ================================================================ */
+function ensure144(){ if(!S)return null; if(!S.v144||typeof S.v144!=='object')S.v144={}; const V=S.v144;
+ if(!V.ripit||typeof V.ripit!=='object')V.ripit={cards:{},opened:0,earned:0};
+ if(!V.ripit.cards||typeof V.ripit.cards!=='object')V.ripit.cards={};
+ if(!V.calls||typeof V.calls!=='object')V.calls={day:-1,n:0};
+ if(V.appsDefault!==true){ V.appsDefault=true; try{ ensure110(); if(S.v110&&S.v110.apps)S.v110.apps.ripit=true }catch(e){} }
+ /* item 14 (migration): an existing hospital bill prints its amount + due day, everywhere it shows */
+ try{ (S.inv||[]).forEach(function(it){ if(it&&it.use==='bill141'&&it.amt141&&String(it.name).indexOf('$')<0){ it.name='🧾 Hospital bill — $'+it.amt141+' (due Day '+(it.dueDay141||'?')+')'; it.desc='A hospital bill for $'+it.amt141+'. Due Day '+(it.dueDay141||'?')+'. Pay it from your Bag before it goes to collections. A bill is a bill: it can never be sold, pawned or gifted.' } }) }catch(e){}
+ return V }
+
+/* ---------- item 20: updates don't rewind your life — clock minutes + room persist in the save ---------- */
+try{ if(S){ if(typeof S._clk144==='number'){ rtAcc=S._clk144 } if(S.location){ roomLoc86=S.location } } }catch(e){}
+try{ const _sv144=save; save=function(){ try{ if(S){ S._clk144=Math.floor(rtAcc); S._roomLoc144=S.location } }catch(e){} return _sv144() } }catch(e){}
+
+/* ---------- item 3: PHONE-CLOSE RESURRECTION HUNT ----------
+   v132's guard covered 2.6s after a close and only while the modal was shut.
+   The real-play resurrection outlived it (a queued/timed phone sheet landing
+   later). v144 rule: a phone sheet may only appear if the phone is already
+   open, OR a real user tap happened after the last close. Timer-driven
+   repaints/reopens are dropped; payouts already settled into balances. */
+let phoneClosedAt144=0;
+try{ const _cm144=closeModal; closeModal=function(){ try{ phoneClosedAt144=Date.now() }catch(e){} return _cm144() } }catch(e){}
+function isPhoneSheet144(h){ return typeof h==='string'&&(h.indexOf('class="phone"')>=0||h.indexOf('phoneScreen')>=0||h.indexOf('phoneShell')>=0) }
+/* v144 hardening (owner repro): the old gate let a timed phone sheet through whenever the STALE sheet content still looked like a phone sheet — but closeModal leaves that content in place, so a spin timer finishing after ✕ re-opened Penny Slots over a closed phone. New rule, no clock window: a phone sheet may appear ONLY if (a) the modal is open AND already showing a phone sheet (in-phone navigation), or (b) a real tap landed after the last close, or (c) openPhone() itself is driving. Everything else settles silently into balances. */
+let phoneIntent144=0;
+try{ const _op144=openPhone; openPhone=function(){ try{ phoneIntent144=Date.now() }catch(e){} return _op144.apply(null,arguments) } }catch(e){}
+try{ const _os144=openSheet; openSheet=function(html,opts){ try{ if(isPhoneSheet144(html)&&phoneClosedAt144){ const md=document.getElementById('modal'); const modalOpen=!!(md&&md.classList.contains('open')); const sh=document.getElementById('sheet'); const curIsPhone=!!(sh&&isPhoneSheet144(sh.innerHTML)); const tapped=(typeof lastTap132==='number'&&lastTap132>phoneClosedAt144)||phoneIntent144>phoneClosedAt144; if(!(modalOpen&&curIsPhone)&&!tapped)return } }catch(e){} return _os144(html,opts) } }catch(e){}
+
+/* ---------- item 6: money displays never stale — repaint every money surface on every change ---------- */
+function paintMoney144(){ try{ if(!S)return; const cash='$'+S.money; const bank=(S.bank63&&typeof S.bank63.bank==='number')?S.bank63.bank:0;
+ document.querySelectorAll('[data-roll="money"]').forEach(function(el){ el.textContent=cash });
+ document.querySelectorAll('.pmAmt').forEach(function(el){ el.textContent=(S.bank63&&S.bank63.debit?'💰 💳':'💰')+' '+cash });
+ document.querySelectorAll('.mbAmt').forEach(function(el){ el.textContent=cash });
+ document.querySelectorAll('.phoneMoney54').forEach(function(el){ const lab=el.querySelector('.pmLab'); if(lab&&lab.textContent.indexOf('Cash')<0)lab.textContent='💵 Cash on hand'; let b=el.querySelector('.pmBank144'); if(!b){ b=document.createElement('span'); b.className='pmBank144'; b.style.cssText='font-weight:800;opacity:.95;margin-left:6px'; el.appendChild(b) } b.textContent='🏦 Bank $'+bank });
+ }catch(e){} }
+try{ const _mn144=money; money=function(n,label){ const r=_mn144(n,label); paintMoney144(); return r } }catch(e){}
+try{ const _bm144b=bankMoney63; bankMoney63=function(n,label){ const r=_bm144b(n,label); paintMoney144(); return r } }catch(e){}
+try{ const _as144=appSub; appSub=function(id){ if(id==='bank'){ try{ return '🏦 $'+((S&&S.bank63&&S.bank63.bank)||0)+' in the bank' }catch(e){} } if(id==='ripit'){ try{ const V=ensure144(); const owned=Object.keys(V.ripit.cards).filter(function(k){ return V.ripit.cards[k]>0 }).length; return owned?('🃏 '+owned+'/40 collected'):'🃏 rip packs!' }catch(e){} } return _as144(id) } }catch(e){}
+
+/* ---------- item 8: FREE means $0 — the $0 AquaBasic can never floor up to $1 ----------
+   Root cause (found by DRIVING it): the claim button calls buyPhone40('free'),
+   which parks the model in window._phBuy40 and sets window._phPrice40=null;
+   choosePlan40(planId) then prices the purchase as lvlPrice(model.price) —
+   and the v141 lvlPrice floor turns $0 into $1, charged to cash + ledger.
+   Fix: when the parked purchase model is a $0 model, pin the price at $0
+   before the inner pricing runs. Plan switches (no parked purchase) untouched. */
+try{ const _cp144=choosePlan40; choosePlan40=function(planId){ try{ if(window._phBuy40){ const m=phoneModel40(window._phBuy40); if(m&&m.price===0)window._phPrice40=0 } }catch(e){} return _cp144(planId) } }catch(e){}
+try{ const _bp144=buyPhone40; buyPhone40=function(modelId){ const r=_bp144(modelId); try{ const m=phoneModel40(modelId); if(m&&m.price===0)window._phPrice40=0 }catch(e){} return r } }catch(e){}
+
+/* ---------- item 10: members points = exactly 1 pt per $1 actually wagered ----------
+   Root causes: the v117 wrappers on spinSlot/buyScratch/buyTicket award points
+   on the WRAPPER call — including rejected spins (in-flight / no funds) and
+   failed buys. v144 trims any award back to the cash that actually left. */
+function ptsTrim144(before){ try{ const V=ensure117(); const c=V.casino; const wagered=Math.max(0,before.money-S.money); const gained=c.pts-before.pts; const over=gained-wagered; if(over>0){ c.pts-=over; c.life-=over } }catch(e){} }
+['spinSlot','buyScratch','buyTicket'].forEach(function(fn){ try{ const inner=window[fn]; if(typeof inner!=='function')return; window[fn]=function(){ const before={pts:ensure117().casino.pts,money:S?S.money:0}; const r=inner.apply(null,arguments); ptsTrim144(before); return r } }catch(e){} });
+
+/* ---------- item 11: walk time = stated time — a "~20 min" walk advances EXACTLY 20 ----------
+   Root cause: advanceMinutes57 adds to rtAcc directly while the ambient tick
+   keeps a partial 10-minute step banked in rtStep59; the banked step flushes
+   right after the walk, so the clock showed +30. Zero the banked step and
+   reconcile any overshoot after the walk. Energy −8 stays as shipped. */
+try{ const _wk144=walkTo137; walkTo137=function(id){ let before=null; try{ before=absMin110(); rtStep59=0 }catch(e){} const r=_wk144(id); try{ if(before!=null){ const d=absMin110()-before; if(d>20){ const over=d-20; if(rtAcc>=over){ rtAcc-=over; if(typeof syncClock57==='function')syncClock57() } } } }catch(e){} return r } }catch(e){}
+
+/* ---------- item 12: current location is not a travel button ----------
+   Root cause: the v98 driver-law wrapper inspects the destination BEFORE the
+   base already-here check, so tapping your own row errored "🚗 No wheels". */
+try{ const _gl144=goLoc; goLoc=function(id){ try{ if(S&&id===S.location){ const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))closeModal(); toast('📍 You are already here — this place is where you are'); return } }catch(e){} return _gl144(id) } }catch(e){}
+
+/* ---------- item 4: arrival lead in real play + Travel de-dup + truthful "You are here" ---------- */
+function locDisplay144(id){ try{ if(id==='house')return '🏠 '+(S.startHome80?S.startHome80.label:'Family House'); if(id==='street'&&S.homeless80)return '📦 Your street corner'; const o=(typeof TRAVEL_OPTS!=='undefined')?TRAVEL_OPTS.find(function(x){ return x[0]===id }):null; if(o)return o[1]; const L=(typeof LOC!=='undefined'&&LOC[id])?LOC[id]:null; if(L&&(L.name||L.label))return (L.icon?L.icon+' ':'')+(L.name||L.label); return id }catch(e){ return id } }
+function travelFix144(){ const panel=document.getElementById('panel'); if(!panel)return; const grid=panel.querySelector('.grid'); if(!grid)return;
+ /* truthful label: the 📍 card always names the place you are actually standing in */
+ const hereName=locDisplay144(S.location);
+ const headOf144=function(c){ return c.querySelector(':scope > summary')||c.querySelector(':scope > h3')||c.querySelector('summary,h3') };
+ /* v144 fix-of-the-fix: Travel cards are <details> whose heading is a <summary>, not an <h3> — the first pass only rewrote h3 cards, so the 📍 card (and the de-dupe / lead passes) never touched the details cards: at the bank the 📍 card still read "🏠 Home" and the bank shop card appeared twice. All passes below read the heading from summary OR h3. */
+ Array.prototype.slice.call(grid.children).forEach(function(c){ const h=headOf144(c); if(h&&/^\s*📍\s*You are here/.test(h.textContent))h.textContent='📍 You are here: '+hereName });
+ /* de-dupe: one card per heading in Travel — no repeated "you are here", no duplicate shop rows */
+ const seen={}; Array.prototype.slice.call(grid.children).forEach(function(c){ const h=headOf144(c); const key=h?h.textContent.trim().toLowerCase().replace(/\s+/g,' '):''; if(key&&seen[key])c.remove(); else if(key)seen[key]=1 });
+ /* drop the generic "— you are here" locCard when a richer card for the same place exists (the bank showed both its counter card and a generic bank card) */
+ try{ const heads=Array.prototype.slice.call(grid.children).map(function(c){ const h=headOf144(c); return h?h.textContent.trim():'' }); Array.prototype.slice.call(grid.children).forEach(function(c,i){ const t=heads[i]; const m=t.match(/^(.+?)\s*—\s*you are here\s*$/i); if(m){ const place=m[1].trim().toLowerCase(); const richer=heads.some(function(o,j){ return j!==i&&o.toLowerCase().indexOf(place)>=0&&!/^📍/.test(o) }); if(richer)c.remove() } }) }catch(e){}
+ /* the current location's primary card leads — however you arrived */
+ try{ const lead=(typeof LOC_LEAD141!=='undefined')?LOC_LEAD141[S.location]:null; if(lead){ const cards=grid.children; for(let i=0;i<cards.length;i++){ const h=headOf144(cards[i]); if(h&&lead(h.textContent)){ if(cards[i]!==grid.firstElementChild)grid.insertBefore(cards[i],grid.firstElementChild); break } } } }catch(e){}
+}
+
+/* ---------- item 5: places are places — the Actions row at a public place is that place's own ---------- */
+const PUB144=['bank','bar','liquor','gym','spa','barber','salon','vet','work','store','grocery','mall','pawn','arcade','cinema','restaurant','hospital','school','college'];
+try{ const _fb144=furnBtns82; furnBtns82=function(){ try{ if(S&&inGame&&PUB144.indexOf(S.location)>=0)return '<button class="furn" onclick="act(\'eat\')">🍽️ Eat (buy a meal)</button><button class="furn" onclick="act(\'play\')">🎮 Play</button><button class="furn" onclick="act(\'study\')">📚 Study</button><span class="small" style="align-self:center;opacity:.75">🛏️ Beds, 🚿 showers & 📺 TVs live at home — these are this place\'s own actions.</span>' }catch(e){} return _fb144() } }catch(e){}
+</script>
+
+<script>
+/* ================= v144 part 2: jobs, fights, bills, autonomy, calls, Empire, Rip It ================= */
+
+/* ---------- item 7: JOBS HONESTY — one source of truth for track + rung ----------
+   Root cause (a): workCard137 builds its heading from jobInfo.icon — a field
+   that does not exist — printing literally "undefined Teacher".
+   Root cause (b): two catalogs (CAREERS127 vs canonical CAREERS128) stamped
+   different levels. v144 re-derives track/level from CAREERS128 by title. */
+function jobTruth144(){ try{ if(!S||!S.jobInfo)return; const f=careerFind128(S.jobInfo.title); if(f){ S.jobInfo.track=f.track.id; S.jobInfo.level=f.level } }catch(e){} }
+function jobHead144(ji){ if(!ji)return '💼 No job yet'; const t=String(ji.title||''); if(!t)return '💼 No job yet'; if(ji.icon)return ji.icon+' '+t.replace(/^\S+\s+/,''); if(/^\S+\s/.test(t)&&!/^[A-Za-z0-9]/.test(t))return t; try{ const f=careerFind128(t); if(f&&f.track&&f.track.icon)return f.track.icon+' '+t }catch(e){} return '💼 '+t }
+try{ const _tj144=takeJob; takeJob=function(){ const r=_tj144.apply(null,arguments); jobTruth144(); return r } }catch(e){}
+try{ const _wc144=workCard137; workCard137=function(){ jobTruth144(); let h=_wc144(); try{ if(S&&S.jobInfo)h=h.replace(/<h3>undefined[^<]*<\/h3>/,'<h3>'+S.jobInfo.title+'</h3>') }catch(e){} return h } }catch(e){}
+try{ if(typeof jobsApp140==='function'){ const _ja144=jobsApp140; jobsApp140=function(){ jobTruth144(); return _ja144.apply(null,arguments) } } }catch(e){}
+
+/* item 7c: SWITCHING jobs = the same application flow as a fresh application.
+   Root cause: careerEnter128 only applied when path==='job' AND unemployed —
+   an employed tap fell through to takeJob = instant hire. Now EVERY board /
+   Jobs-app entry applies on the ONE shared state (S.jobApps); a switch is
+   flagged and resolves while you keep your current job until you accept. */
+try{ const _ce144=careerEnter128; careerEnter128=function(tid,lvl){ try{ if(S){ const tr=track128(tid); if(tr){ const title=rungTitle128(tr,0); if(S.jobInfo&&title===S.jobInfo.title){ toast('💼 That is the job you already have'); return } if(typeof hasRecord126==='function'&&hasRecord126())return _ce144(tid,lvl); applyJob43(title); const apps=S.jobApps||[]; for(let i=apps.length-1;i>=0;i--){ if(apps[i].title===title&&apps[i].status==='pending'){ if(S.jobInfo)apps[i].switch144=true; break } } return } } }catch(e){} return _ce144(tid,lvl) }; try{ careerEnter127=careerEnter128 }catch(e){} }catch(e){}
+try{ const _jad144=jobAppsDay43; jobAppsDay43=function(){ const hasSwitch=S&&S.jobInfo&&(S.jobApps||[]).some(function(a){ return a.switch144&&a.status==='pending' }); if(!hasSwitch)return _jad144(); const sw=(S.jobApps||[]).filter(function(a){ return a.switch144&&a.status==='pending' }); S.jobApps=(S.jobApps||[]).filter(function(a){ return !(a.switch144&&a.status==='pending') }); const r=_jad144(); sw.forEach(function(a){ if(S.day>=a.resolveDay){ if((typeof hasRecord126==='function'&&hasRecord126())||Math.random()>0.45){ a.status='rejected'; log('📋💼 SWITCH APPLICATION — '+a.title+': they passed this time. Your current job ('+(S.jobInfo?S.jobInfo.title:'')+') is untouched — reapply any time.') } else { a.status='offer'; log('📋🎉 SWITCH OFFER — '+a.title+' wants you! Accept it from 💼 Work → Applications: the switch happens when you accept, and your current job stays yours until then.'); toast('💼🎉 Job offer: '+a.title) } } S.jobApps.push(a) }); return r } }catch(e){}
+
+/* ---------- renderTabs post-pass: travel lead (item 4) + work truth (item 7) ---------- */
+try{ const _rtb144=renderTabs; renderTabs=function(active){ try{ if(active==='work')jobTruth144() }catch(e){} const r=_rtb144(active); try{ if(S&&inGame){ ensure144(); if(active==='travel')travelFix144() } }catch(e){} return r } }catch(e){}
+
+/* ---------- items 5 + 16: act() — no bed/shower at public places for player taps;
+   a free-will nap pays energy in proportion to the ~10 minutes it takes ---------- */
+try{ const _act144=act; act=function(type){ try{ if(S&&inGame){ let fw=false; try{ fw=!!fwNoFast66 }catch(e){} if(type==='sleep'&&fw){ startActivity('💤',2600,charX,charY,{energy:10,health:1},function(){ try{ log('😴 A quick free-will nap — roughly ten minutes on the clock, energy +10. Naps pay out in proportion to the time they actually take.') }catch(e){} save(); render() }); return } if((type==='sleep'||type==='shower')&&!fw&&PUB144.indexOf(S.location)>=0){ toast(type==='sleep'?'🛏️ No bed here — beds live at home':'🚿 No shower here — showers live at home'); return } } }catch(e){} return _act144(type) } }catch(e){}
+
+/* ---------- item 16: autonomy explains itself, never hijacks a modal/shift flow ---------- */
+try{ const _fw144=fwTick; fwTick=function(now){ try{ const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(typeof ff116!=='undefined'&&ff116)return }catch(e){} return _fw144(now) } }catch(e){}
+try{ const _dfw144=doFreeWillRun66; doFreeWillRun66=function(kind){ const before={}; try{ if(S&&S.needs)Object.keys(S.needs).forEach(function(k){ before[k]=Math.round(S.needs[k]) }) }catch(e){} const r=_dfw144(kind); try{ if(S){ const why={hunger:'hunger was down to '+before.hunger,energy:'energy was down to '+before.energy,hygiene:'hygiene was down to '+before.hygiene,health:'health was down to '+before.health,fun:'fun was down to '+before.fun,social:'social was down to '+before.social,impulse:'no need was pressing — pure impulse'}[kind]||'a need ran low'; const what={hunger:'grabbed a bite to eat',energy:'took a nap',hygiene:'took a shower',health:'rested up',fun:'took a play break',social:'found some company',impulse:'followed an impulse'}[kind]||'did their own thing'; log('🤖 FREE WILL — '+S.name+' '+what+' on their own ('+why+'). Autonomy stays on: low needs handle themselves, and they say so here.'); const m=document.getElementById('modal'); if(!(m&&m.classList.contains('open')))toast('🤖 '+S.name+' '+what+' — free will ('+why+')') } }catch(e){} return r } }catch(e){}
+
+/* ---------- item 9: the Daily Wheel shows its result on the wheel screen ---------- */
+try{ const _sw144=spinWheel141; spinWheel141=function(){ const cash0=S?S.money:0; const day0=S?S.day:0; const r=_sw144(); let tries=0; const iv=setInterval(function(){ tries++; const box=document.getElementById('wheelBox141'); const done=box&&box.textContent==='🎡'; if(done||tries>30){ clearInterval(iv); if(done&&S&&S.day===day0){ try{ const V=ensure141(); const j=(S.journal||[]).filter(function(e){ return typeof e==='string'&&e.indexOf('DAILY WHEEL')>=0 })[0]; const msg=j?j.split(' — ').slice(1).join(' — '):'The wheel has spoken.'; const delta=S.money-cash0; const host=box.parentElement; if(host&&!document.getElementById('wheelRes144')){ const d=document.createElement('div'); d.id='wheelRes144'; d.style.cssText='margin-top:10px;border:1.5px solid #ffb70366;border-radius:12px;padding:10px 12px;background:#00000030;text-align:left'; d.innerHTML='<b>🎡 Your result</b><br>'+msg+'<br>💵 Cash change: <b>'+(delta>=0?'+':'−')+'$'+Math.abs(delta)+'</b> (cash now $'+S.money+')<br>🔥 Streak: <b>'+V.wheel.streak+' day'+(V.wheel.streak===1?'':'s')+'</b>'; host.appendChild(d) } }catch(e){} } } },150); return r } }catch(e){}
+
+/* ---------- item 13: fights — fair, readable, taught ----------
+   (a) Early foes scaled to a losable-but-winnable band at Level 1–2.
+   (b) Enemy Power (and HP) rounded to whole numbers at the source.
+   (c) The ambush route explained inside the fight sheet. Ambush math untouched. */
+try{ if(typeof startBattle128==='function'){ const _sb144=startBattle128; startBattle128=function(o){ try{ if(o){ o.power=Math.round(o.power||0); if(o.hp)o.hp=Math.round(o.hp); const lv=(S&&S.level)||1; if(lv<=2&&['person','bar','meet'].indexOf(o.kind)>=0){ o.power=Math.min(o.power,Math.round(13+lv*3+Math.random()*5)); o.hp=Math.min(o.hp,62+lv*4) } } }catch(e){} const r=_sb144(o); try{ const b=window._b128; if(b)b.power=Math.round(b.power||0) }catch(e){} return r } } }catch(e){}
+try{ if(typeof battleSheet128==='function'){ const _bs144=battleSheet128; battleSheet128=function(){ const realOpen=openSheet; openSheet=function(h,o){ try{ if(typeof h==='string'&&h.indexOf('FIGHT —')>=0&&h.indexOf('ambushTip144')<0){ const tip='<div id="ambushTip144" style="border:1.5px dashed #f59e0b;border-radius:12px;padding:9px 11px;margin:10px 0;font-size:12.5px;line-height:1.5"><b>⚡ Ambush — the smart opener:</b> from a person\'s panel, <b>⚡ Jump</b> starts them REELING at 52/80 HP before round 1 — the same fight with half the mountain already climbed. Against anyone stronger than you, ambush first, then fight fair.</div>'; h=h.replace('<button class="btn gold"',tip+'<button class="btn gold"') } }catch(e){} const rr=realOpen(h,o); return rr }; try{ return _bs144() }finally{ openSheet=realOpen } } } }catch(e){}
+
+/* ---------- item 14: a hospital bill is a BILL — never sold, pawned or gifted ---------- */
+try{ const _si144=sellItem; sellItem=function(id){ try{ const it=(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.use==='bill141'){ toast('🧾 A hospital bill is not sellable — pay it from your Bag'); return 0 } }catch(e){} return _si144(id) } }catch(e){}
+try{ const _s91144=sellable91; sellable91=function(it){ if(it&&it.use==='bill141')return false; return _s91144(it) } }catch(e){}
+try{ const _gi144=giveItem110; giveItem110=function(name,id){ try{ const it=(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.use==='bill141'){ toast('🧾 You cannot gift a hospital bill — it is yours to pay'); return } }catch(e){} return _gi144(name,id) } }catch(e){}
+try{ const _br144=bagRows; bagRows=function(){ let h=_br144(); try{ (S.inv||[]).filter(function(it){ return it.use==='bill141' }).forEach(function(it){ h=h.split('onclick="useItem('+it.id+')">Use<').join('onclick="useItem('+it.id+')">💳 Pay $'+(it.amt141||0)+'<') }) }catch(e){} return h } }catch(e){}
+try{ if(typeof battleEnd128==='function'){ const _be144=battleEnd128; battleEnd128=function(){ const r=_be144.apply(null,arguments); try{ if(S)ensure144() }catch(e){} return r } } }catch(e){}
+
+/* ---------- item 15: achievements counter is live; the true total is 29 ---------- */
+try{ if(typeof ACH132!=='undefined'&&!ACH132.topnotch137)ACH132.topnotch137={icon:'🏆',name:'Top-Notch',desc:'Reach the very top of TopNotch.social.'} }catch(e){}
+try{ const _ap144=achPop132; achPop132=function(id){ const r=_ap144(id); try{ const total=Object.keys(ACH132).length; const got=Object.keys(ensure132().ach||{}).length; document.querySelectorAll('#panel .card h3').forEach(function(h){ if(h.textContent.indexOf('🏆 Achievements')>=0)h.textContent='🏆 Achievements — '+got+'/'+total }) }catch(e){} return r } }catch(e){}
+
+/* ---------- item 17: phone & record coherence ---------- */
+function recordPatch144(){ try{ const scr=document.querySelector('#sheet .phoneScreen'); if(!scr)return; const els=scr.querySelectorAll('p,div'); for(let i=0;i<els.length;i++){ const el=els[i]; if(el.dataset&&el.dataset.rec144)continue; const t=el.textContent||''; if(t.indexOf('Record')>=0&&t.indexOf('Wanted')>=0&&el.children.length===0){ el.dataset.rec144='1'; el.innerHTML='📋 <b>Record:</b> '+((S.record||0)===0?'clean — nothing on file':(S.record+' point'+(S.record===1?'':'s')+' on file'))+'<br>🚔 <b>Wanted:</b> '+((S.wanted||0)===0?'not wanted — no stars':(S.wanted+'★ — the police are looking')); break } } }catch(e){} }
+try{ const _rph144=renderPhoneHome; renderPhoneHome=function(){ const r=_rph144(); recordPatch144(); return r } }catch(e){}
+try{ const _pb144=phoneBank; phoneBank=function(){ const r=_pb144(); recordPatch144(); return r } }catch(e){}
+try{ const _ns144=newsStory; newsStory=function(head,body,notoriety){ try{ window._news144={head:head,about:(notoriety===true)||((head+' '+body).indexOf(S?S.name:'')>=0),t:Date.now()} }catch(e){} return _ns144(head,body,notoriety) } }catch(e){}
+try{ const _pm144=pushMsg; pushMsg=function(name,text){ try{ if(S&&typeof text==='string'){ const claimsYou=text.indexOf('that is YOU')>=0||text.indexOf('wrote about you')>=0||text.indexOf('ok celebrity')>=0; if(claimsYou){ const ctx=window._news144; const isYou=ctx&&(Date.now()-ctx.t)<30000&&ctx.about; if(!isYou){ const m=text.match(/“([^”]+)”/); text='📰 Town news is buzzing about “'+(m?m[1]:(ctx?ctx.head:'a big story'))+'” — everybody is talking about it. (Not about you — just a big story.)' } } const seen=window._msgSeen144||(window._msgSeen144={}); const key=S.day+'|'+name+'|'+text; if(seen[key])return; seen[key]=1 } }catch(e){} return _pm144(name,text) } }catch(e){}
+
+/* ---------- item 19 + item 2: Empire — gates say so up front; Sell Business (approved) ---------- */
+function bizSell144(i){ if(!S)return; const V=ensure141(); const b=(V.biz||[])[i]; if(!b){ toast('🏢 That business is already gone — nothing to sell twice'); empire141(); return } const d=BIZ141[b.id]; if(!d){ toast('🏢 That business cannot be sold'); return } const amt=Math.round(d.cost*0.7); V.biz.splice(i,1); /* ownership consumed FIRST — a double-tap finds nothing left to pay out on */
+ bankMoney63(amt,'🏢 Sold '+d.name+' — Empire exit (70% of $'+d.cost+')'); log('🏢 SOLD — '+d.name+' went for <b>$'+amt+'</b> (70% of its $'+d.cost+' price), straight into your 🏦 Bank. The manager, the daily $'+d.inc+' income and the whole operation leave with it.'); try{ celebrate141('🏢 Sold!','+$'+amt+' to your Bank','big') }catch(e){} save(); empire141() }
+try{ const _e144=empire141; empire141=function(){ const r=_e144(); try{ if(!S)return r; const sh=document.getElementById('sheet'); if(!sh)return r; if(!(S.home&&S.home.owned)){ sh.querySelectorAll('button').forEach(function(b){ if((b.getAttribute('onclick')||'').indexOf('decorBuy141')>=0){ b.disabled=true; b.style.opacity=.55; if(b.textContent.indexOf('🔒')<0)b.innerHTML+=' — 🔒 needs a place of your own' } }) } sh.querySelectorAll('button').forEach(function(b){ const oc=b.getAttribute('onclick')||''; const m=oc.match(/bizFix141\((\d+)\)/); if(!m)return; const i=+m[1]; const biz=(ensure141().biz||[])[i]; if(!biz||!BIZ141[biz.id]||b.parentElement.querySelector('.sellBiz144'))return; const sb=document.createElement('button'); sb.className='btn sellBiz144'; sb.style.cssText='background:#065f46;color:#fff;margin-top:6px'; sb.textContent='🏢 Sell '+BIZ141[biz.id].name+' — $'+Math.round(BIZ141[biz.id].cost*0.7)+' to your Bank (70%)'; sb.onclick=function(){ bizSell144(i) }; b.parentElement.appendChild(sb) }) }catch(e){} return r } }catch(e){}
+
+/* ---------- item 21: shift prompts at shift start; job-flavored events; "Bank it" banks ---------- */
+try{ const _msp144=maybeShiftPrompt; maybeShiftPrompt=function(){ try{ if(S&&S.jobInfo&&typeof schedOf57==='function'&&typeof nowMin57==='function'){ const sch=schedOf57(S.jobInfo); if(sch&&nowMin57()<sch.start*60)return } }catch(e){} return _msp144() } }catch(e){}
+try{ const _mwe144=maybeWorldEvent49; maybeWorldEvent49=function(force){ let pulled=null; try{ if(S&&S.jobInfo){ const jf=(S.jobInfo.title+' '+(S.jobInfo.track||'')).toLowerCase(); const customerFacing=/retail|fastfood|food|grocery|chef|hotel|delivery|sales|cashier|barista|server/.test(jf); if(!customerFacing){ pulled=WORLD_EVENTS49.filter(function(e){ return /customer|tip/i.test(e.t) }); if(pulled.length){ const keep=WORLD_EVENTS49.filter(function(e){ return !/customer|tip/i.test(e.t) }); WORLD_EVENTS49.length=0; keep.forEach(function(e){ WORLD_EVENTS49.push(e) }) } else pulled=null } } }catch(e){} const r=_mwe144(force); try{ if(pulled)pulled.forEach(function(e){ WORLD_EVENTS49.push(e) }) }catch(e){} return r } }catch(e){}
+try{ const _wc49x=worldChoice49; worldChoice49=function(i){ try{ const ev=window._worldEv49; if(ev&&/fat tip/i.test(ev.t)&&ev.cs&&ev.cs[i]&&/bank it/i.test(ev.cs[i][0])){ const orig=WORLD_FX49.tip15; WORLD_FX49.tip15=function(){ bankMoney63(15,'💸 Tip — banked') }; const r=_wc49x(i); WORLD_FX49.tip15=orig; log('🏦 The tip went to your BANK — where the button said it would.'); return r } }catch(e){} return _wc49x(i) } }catch(e){}
+
+/* ---------- item 22b: people actually call ----------
+   Audit findings (shipped): the only ambient trigger was the 26s world tick,
+   reaching maybeIncomingCall on ~1/3 of ticks — but it returns false when any
+   modal is open (most of play), within 150s of the last attempt, during quiet
+   hours, and — fatally — when callFriends() is empty: that pool is DATEABLE
+   contacts only, so a player whose contacts aren't dateable got ZERO calls
+   forever. v144 adds a fair ticker: every 15s, ~5% when eligible (≈1 call per
+   ~5 eligible minutes), max 2/day, pool = ANY contact, respecting shipped
+   availability (at work / talked-out / DND / asleep hours all skip). */
+setInterval(function(){ try{ if(!S||!inGame||S.deadFlag||!S.hasPhone||S.dnd)return; const V=ensure144(); if(V.calls.day!==S.day){ V.calls.day=S.day; V.calls.n=0 } if(V.calls.n>=2)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(typeof callState!=='undefined'&&callState)return; if(typeof activity!=='undefined'&&activity)return; if(S.hour<8||S.hour>=22)return; if(Math.random()>0.05)return; const pool=Object.keys(S.contacts||{}).filter(function(n){ return n!=='FBI'&&n!=='School' }); if(!pool.length)return; const T=(ensure141()||{}).talk||{}; const free=pool.filter(function(n){ const t=T[n]; if(t&&t.down&&Date.now()<t.down)return false; if(typeof atWork120==='function'&&atWork120(n))return false; return true }); if(!free.length)return; const from=pickArr(free); V.calls.n++; callState={from:from,kind:pickArr(['chat','plan','gossip']),at:Date.now()}; if(typeof showCallCard==='function')showCallCard(from); save() }catch(e){} },15000);
+</script>
+
+<script>
+/* ================= v144 part 3 — item 1: 🃏 RIP IT =================
+   Canonical numbers (this copy sets them): pack $6 at the Corner Store,
+   5 cards/pack. 40 fictional cards. Pull odds per card: Common 55%,
+   Uncommon 27%, Rare 12%, Holo Rare 4.5%, Ultra Rare 1.5%. Sell values
+   to CASH: $1 / $3 / $10 / $35 / $120. No real Pokémon IP anywhere. */
+const RIP_TIERS144=[{id:'c',name:'Common',icon:'⚪',odds:0.55,value:1,color:'#9ca3af'},{id:'u',name:'Uncommon',icon:'🟢',odds:0.27,value:3,color:'#22c55e'},{id:'r',name:'Rare',icon:'🔵',odds:0.12,value:10,color:'#3b82f6'},{id:'h',name:'Holo Rare',icon:'🟣',odds:0.045,value:35,color:'#a855f7'},{id:'x',name:'Ultra Rare',icon:'🌟',odds:0.015,value:120,color:'#f59e0b'}];
+const RIP_CARDS144=[['Pebblit','🪨','c'],['Mossprout','🌱','c'],['Driplet','💧','c'],['Embercub','🔥','c'],['Puffinch','🐤','c'],['Acornut','🌰','c'],['Bubblit','🫧','c'],['Pebblepup','🐶','c'],['Mudlet','🟤','c'],['Sproutle','🌿','c'],['Cindermole','🐹','c'],['Rainduck','🦆','c'],['Pebblecrab','🦀','c'],['Twigtail','🦎','c'],['Frostfin','🐟','u'],['Voltiq','⚡','u'],['Thornbee','🐝','u'],['Galepup','🌪️','u'],['Lunamoth','🦋','u'],['Cindervix','🦊','u'],['Tidaltoad','🐸','u'],['Quakeworm','🪱','u'],['Mistral','🌫️','u'],['Emberowl','🦉','u'],['Coralisk','🪸','u'],['Stormane','🦄','r'],['Obsidrake','🐉','r'],['Tidewarden','🔱','r'],['Pyrolynx','🐆','r'],['Galehawk','🦅','r'],['Frostmaw','🐺','r'],['Thornback','🦔','r'],['Nebulisk','🌌','r'],['Prismagon','💠','h'],['Aurorath','🦚','h'],['Chronoise','⏳','h'],['Voidmane','🕳️','h'],['Celestigon','🌟','x'],['Eternowl','🦉','x'],['Galaxaur','🪐','x']].map(function(c,i){ return {id:'rip'+i,name:c[0],art:c[1],tier:c[2]} });
+function ripTier144(id){ return RIP_TIERS144.find(function(t){ return t.id===id }) }
+function ripRoll144(){ const r=Math.random(); let acc=0, tier=RIP_TIERS144[0]; for(let i=0;i<RIP_TIERS144.length;i++){ acc+=RIP_TIERS144[i].odds; if(r<acc){ tier=RIP_TIERS144[i]; break } } const pool=RIP_CARDS144.filter(function(c){ return c.tier===tier.id }); return pool[Math.floor(Math.random()*pool.length)] }
+function ripPacks144(){ return (S.inv||[]).filter(function(it){ return it.kind==='ripitpack144' }).length }
+function ripItApp144(){ if(!S)return; const V=ensure144(); const R=V.ripit; const owned=RIP_CARDS144.filter(function(c){ return (R.cards[c.id]||0)>0 }).length; const pct=Math.round(owned/40*100); const packs=ripPacks144();
+ let h='<div style="text-align:center"><div style="font-size:40px">🃏</div><h3 style="margin:2px">Rip It — rip packs, chase the set</h3><p style="font-size:12.5px;opacity:.9;line-height:1.5">Packs are <b>$6</b> at the 🏪 Corner Store — <b>5 cards</b> a pack. Pull odds per card: ⚪ Common 55% • 🟢 Uncommon 27% • 🔵 Rare 12% • 🟣 Holo Rare 4.5% • 🌟 Ultra Rare 1.5%.</p></div>';
+ h+='<div class="kv"><span>🎴 Album</span><b>'+owned+' / 40 — '+pct+'% complete</b></div><div class="progress" style="margin:4px 0 8px"><i style="width:'+pct+'%"></i></div>';
+ h+='<div class="kv"><span>📦 Packs in your Bag</span><b>'+packs+'</b></div>';
+ h+=packs?'<button class="btn gold" onclick="ripOpen144()">🃏 RIP A PACK — 5 cards</button>':'<button class="btn gold" onclick="closeModal()">🏪 Packs live at the Corner Store — $6 (🚗 Travel)</button>';
+ h+='<button class="btn" style="background:#1f2937;color:#fff;margin-top:8px" onclick="ripAlbum144()">🎴 Open the Album — collect & sell</button>';
+ h+='<p class="small" style="margin-top:8px;line-height:1.5">💵 Selling pays <b>CASH</b>, right here in the app: Common $1 • Uncommon $3 • Rare $10 • Holo Rare $35 • Ultra Rare $120.<br>📦 Packs ripped so far: '+R.opened+' • 💵 Card sales earned: $'+R.earned+'</p>';
+ openSheet(phoneShell('🃏 Rip It',h)) }
+let ripQueue144=null;
+function ripOpen144(){ if(!S)return; const V=ensure144(); const ix=(S.inv||[]).findIndex(function(it){ return it.kind==='ripitpack144' }); if(ix<0){ toast('🃏 No packs — the Corner Store sells them for $6'); return } S.inv.splice(ix,1); V.ripit.opened++; const cards=[]; for(let i=0;i<5;i++){ const c=ripRoll144(); cards.push(c); V.ripit.cards[c.id]=(V.ripit.cards[c.id]||0)+1 } ripQueue144={cards:cards,idx:0}; try{ buzz([25,40,25]); snd141([[392,0,0.09,'square'],[523,0.07,0.09,'square'],[659,0.14,0.12,'square']],0.06) }catch(e){} log('🃏 RIPPED a pack — foil everywhere. Five cards, face down, destiny shuffled.'); save(); ripReveal144() }
+function ripReveal144(){ const q=ripQueue144; if(!q){ ripItApp144(); return } let h='<div style="text-align:center"><div style="font-size:15px;opacity:.85">📦 Pack ripped! '+q.idx+' of 5 revealed</div>';
+ if(q.idx<q.cards.length){ h+='<div style="margin:12px auto;max-width:230px;border:2px solid #ffffff33;border-radius:16px;padding:22px 10px;background:#111827"><div style="font-size:52px">❔</div><div style="font-weight:900;margin-top:6px">Card '+(q.idx+1)+' of 5</div><div style="font-size:12px;opacity:.8">Something is in there…</div></div><button class="btn gold" onclick="ripFlip144()">👉 Flip card '+(q.idx+1)+'</button>' }
+ else { h+='<div style="font-size:44px;margin:8px">🎴✨</div><p><b>That is the pack!</b> Five cards are in your album.</p><button class="btn gold" onclick="ripItApp144()">🃏 Back to Rip It</button><button class="btn outline" style="color:#fff;border-color:#fff;margin-top:8px" onclick="ripAlbum144()">🎴 Open the Album</button>' }
+ h+='</div>'; openSheet(phoneShell('🃏 Rip It',h)) }
+function ripFlip144(){ const q=ripQueue144; if(!q||q.idx>=q.cards.length){ ripReveal144(); return } const c=q.cards[q.idx]; const t=ripTier144(c.tier); q.idx++;
+ try{ if(c.tier==='x'){ celebrate141('🌟 ULTRA RARE!!',c.name+' — the $120 chase card!','big'); emojiConfetti() } else if(c.tier==='h'){ casinoFx141(40); hap141('win'); snd141([[523,0,0.1,'square'],[659,0.08,0.1,'square'],[784,0.16,0.14,'square'],[1046,0.24,0.18,'square']],0.07) } else if(c.tier==='r'){ buzz([30,40,30]); snd141([[523,0,0.1,'square'],[784,0.09,0.13,'square']],0.06) } else if(c.tier==='u'){ buzz([18]); snd141([[660,0,0.09,'square']],0.05) } else { buzz([10]); snd141([[523,0,0.07,'square']],0.04) } }catch(e){}
+ const owned=(ensure144().ripit.cards[c.id]||0);
+ let h='<div style="text-align:center"><div style="font-size:15px;opacity:.85">📦 Card '+q.idx+' of 5</div><div style="margin:12px auto;max-width:230px;border:3px solid '+t.color+';border-radius:16px;padding:20px 10px;background:linear-gradient(160deg,#1f2937,#111827)"><div style="font-size:56px">'+c.art+'</div><div style="font-size:19px;font-weight:900;margin-top:4px">'+c.name+'</div><div style="font-weight:800;color:'+t.color+'">'+t.icon+' '+t.name+'</div><div style="font-size:12px;opacity:.85">Sells for $'+t.value+' • You own '+owned+'</div></div>';
+ h+=q.idx<5?'<button class="btn gold" onclick="ripReveal144()">👉 Next card</button>':'<button class="btn gold" onclick="ripReveal144()">🎴 Finish the pack</button>';
+ h+='<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:8px" onclick="ripSell144(\''+c.id+'\');ripReveal144()">💵 Sell this one now — $'+t.value+'</button></div>';
+ openSheet(phoneShell('🃏 Rip It',h)) }
+function ripSell144(id){ if(!S)return; const V=ensure144(); const R=V.ripit; if(!(R.cards[id]>0)){ toast('🃏 None left to sell'); return } const c=RIP_CARDS144.find(function(x){ return x.id===id }); const t=ripTier144(c.tier); R.cards[id]--; R.earned+=t.value; money(t.value,'🃏 Rip It — sold '+c.name); log('🃏💵 Sold '+c.name+' ('+t.name+') for $'+t.value+' cash from the Rip It album.'); save() }
+function ripSellDupes144(){ if(!S)return; const V=ensure144(); const R=V.ripit; let n=0, tot=0; RIP_CARDS144.forEach(function(c){ const have=R.cards[c.id]||0; if(have>1){ n+=have-1; tot+=(have-1)*ripTier144(c.tier).value; R.cards[c.id]=1 } }); if(!n){ toast('🃏 No duplicates to sell'); ripAlbum144(); return } R.earned+=tot; money(tot,'🃏 Rip It — sold '+n+' duplicates'); log('🃏💵 Sold '+n+' duplicate cards for $'+tot+' cash — one of each keeper stays in the album.'); try{ hap141('win') }catch(e){} save(); ripAlbum144() }
+function ripAlbum144(){ if(!S)return; const V=ensure144(); const R=V.ripit; const ownedCt=RIP_CARDS144.filter(function(c){ return (R.cards[c.id]||0)>0 }).length; const pct=Math.round(ownedCt/40*100); let dupes=0, dupeVal=0; RIP_CARDS144.forEach(function(c){ const n=R.cards[c.id]||0; if(n>1){ dupes+=n-1; dupeVal+=(n-1)*ripTier144(c.tier).value } });
+ let h='<div style="text-align:center"><h3 style="margin:2px">🎴 The Album — '+ownedCt+'/40 ('+pct+'%)</h3><div class="progress" style="margin:6px 0"><i style="width:'+pct+'%"></i></div>'+(dupes?'<button class="btn gold" onclick="ripSellDupes144()">💵 Sell all duplicates — '+dupes+' cards for $'+dupeVal+' (keeps 1 of each)</button>':'<p class="small">No duplicates right now — every card you own is a keeper.</p>')+'</div>';
+ RIP_TIERS144.forEach(function(t){ h+='<h4 style="margin:12px 0 4px;color:'+t.color+'">'+t.icon+' '+t.name+' — sells for $'+t.value+'</h4><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:7px">'; RIP_CARDS144.filter(function(c){ return c.tier===t.id }).forEach(function(c){ const n=R.cards[c.id]||0; h+='<div style="border:1.5px solid '+(n?t.color:'#ffffff22')+';border-radius:12px;padding:8px 4px;text-align:center;'+(n?'':'opacity:.45')+'"><div style="font-size:26px">'+(n?c.art:'❔')+'</div><div style="font-size:11.5px;font-weight:800;line-height:1.25">'+(n?c.name:'???')+'</div><div style="font-size:11px;opacity:.85">'+(n?('×'+n):'not owned')+'</div>'+(n?'<button class="btn gold" style="width:auto;padding:4px 10px;font-size:12px;margin-top:4px" onclick="ripSell144(\''+c.id+'\');ripAlbum144()">Sell $'+t.value+'</button>':'')+'</div>' }); h+='</div>' });
+ h+='<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:12px" onclick="ripItApp144()">‹ Rip It</button>';
+ openSheet(phoneShell('🃏 Rip It — Album',h)) }
+function buyRipPack144(){ if(!S)return; if(S.money<6){ toast('🃏 A Rip It Pack is $6 — cash first'); return } const it=addItem('🃏 Rip It Pack','ripitpack144',6,false,'A sealed Rip It pack — 5 fictional cards inside. Rip it from your Bag or in the 🃏 Rip It app.','ripit144'); if(!it){ save(); render(); return } money(-6,'🃏 Rip It Pack — Corner Store'); log('🃏 Bought a Rip It Pack for $6 at the Corner Store — five cards of destiny, sealed in foil.'); try{ snd141([[659,0,0.08,'square']],0.05) }catch(e){} save(); render() }
+try{ const _cs144=cornerStoreCard82; cornerStoreCard82=function(){ let h=_cs144(); try{ if(S&&S.location==='store'&&h.indexOf('buyRipPack144')<0)h=h.replace(/<\/div>$/,'<button class="btn gold" onclick="buyRipPack144()">🃏 Rip It Pack — $6 (5 cards)</button></div>') }catch(e){} return h } }catch(e){}
+try{ const _ui144=useItem; useItem=function(id){ try{ const it=(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.use==='ripit144'){ ripOpen144(); return } }catch(e){} return _ui144(id) } }catch(e){}
+try{ if(typeof STORE_APPS110!=='undefined'&&!STORE_APPS110.ripit)STORE_APPS110.ripit={icon:'🃏',name:'Rip It',price:0,blurb:'Rip packs from the Corner Store, chase all 40 fictional cards, sell the duplicates for cash. Ultra Rares pay $120.'} }catch(e){}
+try{ if(typeof PHONE_APPS!=='undefined'&&!PHONE_APPS.find(function(a){ return a.id==='ripit' }))PHONE_APPS.push({id:'ripit',icon:'🃏',name:'Rip It'}) }catch(e){}
+try{ if(typeof PHONE_LAUNCH!=='undefined')PHONE_LAUNCH.ripit=function(){ ripItApp144() } }catch(e){}
+try{ const _op144=openPhone; openPhone=function(){ try{ ensure144() }catch(e){} return _op144() } }catch(e){}
+
+/* ---------- What's New ---------- */
+try{ const _wn144=openWhatsNew; openWhatsNew=function(){ _wn144(); try{ const sh=document.getElementById('sheet'); if(sh&&!sh.querySelector('.wn144')){ const d=document.createElement('div'); d.className='wn144'; d.innerHTML='<div class="card" style="margin-top:10px"><h3>🆕 v144 — Round 13</h3><p>🃏 <b>Rip It is here</b> — a card game in your phone: $6 packs at the Corner Store, 40 fictional cards to chase, duplicates sell for cash. 🏢 <b>Empire:</b> sell a business for 70% of its price, paid to your Bank. 📱 The phone stays closed when you close it — no more resurrections. 🏦 Travel leads with where you actually are; 💼 switching jobs goes through real applications now; 🧾 hospital bills print their amount and can never be sold; 🎡 the Daily Wheel shows its result; 📞 people actually call sometimes; 💾 updates no longer rewind your clock.</p></div>'; sh.appendChild(d) } }catch(e){} } }catch(e){}
+window.__v144={ensure144:ensure144,ripItApp144:ripItApp144,bizSell144:bizSell144,version:function(){ return GAME_VERSION }};
+console.log('AquaLife v'+GAME_VERSION+' — round 13: Rip It card app, Empire Sell Business, and the 20 real-play corrections');
+
+/* ================= v145: 🛏️ SLEEP POSE RESET (added item, live-repro on v143, cross-checked vs v144) — v144 stilled the figure DURING sleep, but the POSE PERSISTED AFTER WAKE: (a) playerAsleep128() is schedule-only — the moment a 💤 activity ends (e.g. a nap ending 11:10 PM, still inside the night window) it reads true again, so drawRoom's lying-down branch re-fires at whatever spot autonomy walked the figure to (Kitchen, across furniture, snapping as the rival pins fought the walk); (b) sleep start had no single anchor — the v132 pin captured the figure's mid-walk spot racily while the v141 pin used the activity target, so a sleeper could lie displaced from the bed from frame one. FIX: (1) WAKE LATCH — every 💤 activity completion (full sleep, power nap, nap, free-will nap, ×2 fast-flow — all run through startActivity) and every interrupted exit (activity vanishes without completing, caught by the watcher below) sets wakeLatch145 and SNAPS the figure standing at the session's bed anchor (char + target, walkPhase 0, both pin anchors cleared); while the latch holds inside the same night window, the wrapped playerAsleep128() reads FALSE, so the lying pose, the lying name tag and the sleep pins all stay off and the figure stands. The latch clears when the night window ends or a new 💤 activity starts. (2) ONE BED ANCHOR FROM FRAME ONE — at 💤 start the session anchor is the activity's own target (680,200 for every picked sleep/nap) and ensure132's sleepAnchor is pre-seeded to it, so the v132/v141 pins agree and the figure + overlay bed sit ON the bed immediately; on-schedule (activity-less) sleep is likewise snapped onto the bed spot (680,200) instead of lying down wherever the figure happened to stand. (3) AUTONOMY NEVER MOVES A SLEEPING POSE — fwTick/doFreeWill return early while a 💤 activity runs or on-schedule sleep holds without a wake. ================= */
+let sleepSess145=null, wakeLatch145=false;
+const _paOrig145=(typeof playerAsleep128==='function')?playerAsleep128:function(){ return false };
+function wakeSnap145(){ try{ if(sleepSess145){ charX=sleepSess145.x; charY=sleepSess145.y; targetX=sleepSess145.x; targetY=sleepSess145.y; walkPhase=0 } try{ const V=(typeof ensure132==='function')?ensure132():null; if(V)V.sleepAnchor=null }catch(e){} }catch(e){} }
+function noteWake145(){ wakeLatch145=true; wakeSnap145(); sleepSess145=null }
+try{ playerAsleep128=function(){ try{ if(!S)return false; if(wakeLatch145){ const sc=sleepSched119(S.name); const h=(S.hour==null?12:S.hour); if(h>=sc.bed||h<sc.wake)return false; wakeLatch145=false } }catch(e){} return _paOrig145() } }catch(e){}
+try{ const _sa145=startActivity; startActivity=function(icon,dur,x,y,nd,onDone,opts){ if(icon==='💤'){ wakeLatch145=false; sleepSess145={x:x,y:y}; try{ const V=ensure132(); if(V)V.sleepAnchor={x:x,y:y,loc:S?S.location:null} }catch(e){} const _od145=onDone; onDone=function(){ try{ if(_od145)_od145() }catch(e){} noteWake145() } } return _sa145(icon,dur,x,y,nd,onDone,opts) } }catch(e){}
+setInterval(function(){ try{ if(!S||!inGame||S.deadFlag)return; const inAct=(typeof activity!=='undefined'&&activity&&activity.icon==='💤'); if(inAct){ if(!sleepSess145)sleepSess145={x:targetX,y:targetY}; return } if(sleepSess145){ noteWake145(); return } if(!wakeLatch145&&_paOrig145()){ if(charX!==680||charY!==200){ charX=680; charY=200; targetX=680; targetY=200; walkPhase=0 } try{ const V=ensure132(); if(V&&!V.sleepAnchor)V.sleepAnchor={x:680,y:200,loc:S.location} }catch(e){} } }catch(e){} },120);
+try{ const _fw145=fwTick; fwTick=function(now){ try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤')return; if(!wakeLatch145&&_paOrig145())return }catch(e){} return _fw145(now) } }catch(e){}
+try{ if(typeof doFreeWill==='function'){ const _dfw145=doFreeWill; doFreeWill=function(k){ try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤')return; if(!wakeLatch145&&_paOrig145())return }catch(e){} return _dfw145(k) } } }catch(e){}
+window.__v145={noteWake145:noteWake145,wakeSnap145:wakeSnap145,version:function(){ return GAME_VERSION }};
+console.log('AquaLife v'+GAME_VERSION+' — v145: Rip It full-Bag no-charge fix + sleep pose resets to standing at the bed on every wake, autonomy never moves a sleeping figure');
 </script>
 
 </body>
