@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=164;
+const GAME_VERSION=165;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -3026,7 +3026,7 @@ function v16Day(){ if(!S)return; ensure16();
  if(S.addiction>=55){ adj('health',-4); if(Math.random()<0.5)log('🥴 Withdrawal is nibbling at you — addiction at '+S.addiction+'% means your body keeps the score even on quiet days. Rehab (🚨 Crime tab) genuinely helps.') }
  if(S.book&&S.book.published){ const b=S.book; const daily=Math.max(0,Math.round((b.rating-1.5)*2+S.fame*1.2+Math.random()*6-2)); if(daily>0){ const copies=Math.max(1,Math.round(daily/2)); const pay=copies*2; b.sales+=copies; b.earned+=pay; money(pay,'📚 Book royalties — “'+b.title+'”'); if(pay>=6)log('📚 “'+b.title+'” sold '+copies+' more copies — $'+pay+' in royalties landed in your Bank. Total earned: $'+b.earned+'.'); if(Math.random()<0.22){ const rv=pickArr(['“Finished “'+b.title+'” at 2am. No regrets.” — ★'+b.rating,'“The book club picked “'+b.title+'” — chaos, obviously.”','“'+S.name+' really wrote THAT ending?? Respect.” — ★'+b.rating]); b.reviews.unshift(rv); if(b.reviews.length>5)b.reviews.pop(); log('📚 New review for “'+b.title+'”: '+rv) } } }
  checkGoal(); save() }
-function kidsHtml(){ ensure16(); if(!S.kids.length)return '<p class="small" style="margin-top:6px">No kids yet — marry a serious partner (adults), then start the family here.</p>'; return S.kids.map((k,i)=>'<div class="kv"><span>👶 '+k.name+' — age '+k.age+(k.age<2?(k.canWalk?' • 🚶 walking!':' • 🐾 crawling — first steps still to come'):'')+' • '+(k.age<=1?'Baby':k.age<=3?'Toddler':k.age<=5?'Young child':k.age<=12?'School child':k.age<=17?'Teenager':'Adult')+' • 😊 '+k.happy+'%</span><span><button class="btn" style="width:auto;margin:0;padding:7px 10px" onclick="careKid('+i+',\'play\')">🧸 Play</button> <button class="btn" style="width:auto;margin:0;padding:7px 10px" onclick="careKid('+i+',\'feed\')">🍽️ Feed $5</button> <button class="btn" style="width:auto;margin:0;padding:7px 10px" onclick="careKid('+i+',\'teach\')">📖 Teach</button></span></div>').join('') }
+function kidsHtml(){ ensure16(); if(!S.kids.length)return '<p class="small" style="margin-top:6px">No kids yet — marry a serious partner (adults), then start the family here.</p>'; return S.kids.map((k,i)=>'<div class="kv"><span>👶 '+k.name+' — age '+k.age+(k.age<2?(k.canWalk?' • 🚶 walking!':' • 🐾 crawling'):'')+' • '+(k.age<=1?'Baby':k.age<=3?'Toddler':k.age<=5?'Young child':k.age<=12?'School child':k.age<=17?'Teenager':'Adult')+' • 😊 '+k.happy+'%</span><span><button class="btn" style="width:auto;margin:0;padding:7px 10px" onclick="careKid('+i+',\'play\')">🧸 Play</button> <button class="btn" style="width:auto;margin:0;padding:7px 10px" onclick="careKid('+i+',\'feed\')">🍽️ Feed $5</button> <button class="btn" style="width:auto;margin:0;padding:7px 10px" onclick="careKid('+i+',\'teach\')">📖 Teach</button></span></div>').join('') }
 function collegeCardHtml(){ ensure16(); return '<div class="card"><h3>🎓 College</h3><p>'+(S.college.graduated?'🏆 Degree: <b>'+S.college.degree+'</b> — top careers unlocked below.':S.college.enrolled?'Enrolled: <b>'+S.college.major+'</b> — progress '+S.college.progress+'% • '+S.college.classes+' classes in.':'After high school (18+): pick a major. Tuition $240 up front — cash if you hold it, or a $1,200 student loan once you hold at least $60 in funds (2% weekly interest), plus $12/week living costs while enrolled. Graduation unlocks top careers.')+(S.college.loan>0?'<br>🎓 Student loan: <b>$'+S.college.loan+'</b>':'')+'</p>'+(S.college.enrolled?'<button class="btn" onclick="collegeClass()">🎓 Attend Class (+14%)</button><button class="btn" onclick="collegeHomework()">📝 Homework (+8%)</button>':'')+(!S.college.enrolled&&!S.college.graduated?MAJORS.map(m=>'<button class="btn outline" onclick="enrollCollege(\''+m+'\')">🎓 Major in '+m+' — $240</button>').join(''):'')+(S.college.loan>0?'<button class="btn gold" onclick="payLoan(50)">💵 Pay $50 toward loan</button>':'')+(S.college.graduated?'<h4 style="margin:12px 0 4px">👔 Top Careers (graduate pay)</h4><button class="btn" onclick="doTopCareer(\'Senior Developer\',260)">💻 Senior Developer — $260/shift</button><button class="btn" onclick="doTopCareer(\'Doctor\',320)">🏥 Doctor — $320/shift</button><button class="btn" onclick="doTopCareer(\'Police Officer\',240)">🚓 Police Officer — $240/shift (clean record)</button><button class="btn" onclick="doTopCareer(\'FBI Agent\',280)">🕵️ FBI Agent — $280/shift (clean record)</button>':'')+'</div>' }
 function marriageFamilyHtml(){ ensure16(); if(!S.partner&&!S.married&&!(S.kids&&S.kids.length))return ''; return '<div class="card"><h3>💒 Marriage & Family</h3><p>'+(S.married?'💍 Married to <b>'+S.spouse+'</b> since Day '+S.weddingDay+'.':S.partner?'💍 Partner: <b>'+S.partner+'</b> ('+stageName(romOf(S.partner).stage)+', ❤️ '+romOf(S.partner).meter+'/100).':'No partner yet.')+'</p>'+(S.partner&&!S.married?'<button class="btn gold" onclick="propose()">💍 Propose to '+S.partner+'</button>':'')+(S.married?'<button class="btn orange" onclick="haveBaby()">👶 Have a baby with '+S.spouse+' — $40</button>':'')+kidsHtml()+(S.kids.length&&S.age>=60?'<button class="btn gold" onclick="continueAsChild(0)">🌱 Pass the story on — play as '+S.kids[0].name+' (Generation '+(S.generation+1)+')</button>':'')+'</div>' }
 function moreLifeHtml(){ ensure16(); const season=seasonOf(); const hol=holidayOf(); const held=portfolioValue();
@@ -4487,7 +4487,7 @@ function todBar72(label,val,color){ const v=Math.max(0,Math.min(100,Math.round(v
 function todCardHtml72(){ if(!S||S.age<1||S.age>4)return ''; ensure72(); const T=S.tod; const n=S.needs,tn=T.needs; const g=careHelper();
  const nextBday=S.day+(((8-(S.day%8))%8)||8);
  let h='<div class="card" style="border-color:var(--accent2)"><h3>🧸 The Toddler Years — '+todStage72(S.age)+'</h3>'
- +'<div style="display:flex;gap:12px;align-items:flex-start"><canvas class="evPortrait" width="72" height="92" data-person="'+String(S.name).replace(/"/g,'')+'" aria-label="Portrait of '+S.name+'"></canvas><div style="flex:1;min-width:0"><div class="kv"><span>👤 Name</span><b>'+S.name+'</b></div><div class="kv"><span>🎂 Age</span><b>'+S.age+' — turns '+(S.age+1)+' on Day '+nextBday+'</b></div><div class="kv"><span>🌱 Life stage</span><b>'+todStage72(S.age)+'</b></div><div class="kv"><span>😊 Mood</span><b>'+todMood72()+'</b></div><div class="kv"><span>▶️ Doing now</span><b>'+(T.now||'Exploring & playing')+'</b></div>'+(T.favToy?'<div class="kv"><span>💛 Favourite toy</span><b>'+T.favToy+'</b></div>':'')+'<div class="kv"><span>🚶 Movement</span><b>'+(S.canWalk?'Walking'+(todLv72(T.skills.motor)>=2?' — and running!':''):'🐾 Crawling — first steps still to come')+'</b></div></div></div>'
+ +'<div style="display:flex;gap:12px;align-items:flex-start"><canvas class="evPortrait" width="72" height="92" data-person="'+String(S.name).replace(/"/g,'')+'" aria-label="Portrait of '+S.name+'"></canvas><div style="flex:1;min-width:0"><div class="kv"><span>👤 Name</span><b>'+S.name+'</b></div><div class="kv"><span>🎂 Age</span><b>'+S.age+' — turns '+(S.age+1)+' on Day '+nextBday+'</b></div><div class="kv"><span>🌱 Life stage</span><b>'+todStage72(S.age)+'</b></div><div class="kv"><span>😊 Mood</span><b>'+todMood72()+'</b></div><div class="kv"><span>▶️ Doing now</span><b>'+(T.now||'Exploring & playing')+'</b></div>'+(T.favToy?'<div class="kv"><span>💛 Favourite toy</span><b>'+T.favToy+'</b></div>':'')+'<div class="kv"><span>🚶 Movement</span><b>'+(S.canWalk?'Walking'+(todLv72(T.skills.motor)>=2?' — and running!':''):'🐾 Crawling')+'</b></div></div></div>'
  +'<h4 style="margin:12px 0 2px">🌱 Personality'+(T.traits.length?' — '+T.traits.join(' • '):'')+'</h4>'
  +'<p class="small">Personality is chosen when a life is created — then it grows: +1 trait on every FIFTH birthday (5, 10, 15, 20…), plus bonus traits earned out in the world. Ordinary birthdays bring no trait box at all. Traits shape XP, reactions and friendships.</p>'
  +'<h4 style="margin:12px 0 2px">⭐ Toddler Skills — Lv 1–10</h4>'
@@ -8364,7 +8364,7 @@ try{ TUT102[2]=['🕐 Time — right up top','Time runs itself: <b>1 day ≈ 24 
  TUT102.splice(7,0,['🎒 Your Bag — and its lock','All you own: your 🎒 <b>Bag</b> (button under the scene) — loot, gifts, buys, phone. 🔒 Toddlers: <b>locked</b>; a grown-up holds it, opens it with you. New <b>bookbags</b>: Corner Store, mall Bag Shop. Repaint: free.'],['🏥 The doctor is real','People get sick. Kids need checkups + 💉 flu shots. 🏥 <b>Doctor &amp; Health</b> card: 👽 Me + hospital Clinic. Shots tracked; overdue = sick days. Checkup fixes sickness today.'],['💖 People &amp; the ladder','Anyone you like: <b>progress bar</b> in 👽 Me → 💖 Dating &amp; Relationships — <b>Unknown → Friendly → Cool → Interested → Like → Dating → Engaged → Married</b>. Climb it: talk, text, show up. Family, friends, town: ❤️ Social tab.']);
  TUT_HL113[2]='.calRow109'; TUT_HL113.splice(3,0,'#roomBar86'); TUT_HL113.splice(7,0,'bagbtn','travel','home') }catch(e){}
 const _ta123=tutApply113; tutApply113=function(i){ const tgt=(typeof TUT_HL113!=='undefined')?TUT_HL113[i]:null; if(tgt==='travel'||tgt==='home'||tgt==='life'){ tutClear113(); const tabs=document.querySelectorAll('#dockCore100 .dockTab'); for(let k=0;k<tabs.length;k++){ if((tabs[k].getAttribute('onclick')||'').indexOf("dockGo('"+tgt+"')")>=0){ tabs[k].classList.add('tutHi113'); return } } const sh=document.getElementById('sheet'); if(sh&&!sh.querySelector('.tutNote113')){ const note=document.createElement('p'); note.className='small tutNote113'; note.style.marginTop='8px'; note.textContent='👀 That lives in the tray at the bottom — you will see it the moment you are playing.'; sh.appendChild(note) } return } if(tgt==='bagbtn'){ tutClear113(); const b=document.querySelector('button[aria-label="Open your Bag"]'); if(b){ b.classList.add('tutHi113'); return } } return _ta123(i) };
-const _to123=tutOffer102; tutOffer102=function(){ _to123(); try{ const sh=document.getElementById('sheet'); if(sh)sh.innerHTML=sh.innerHTML.replace('Seven short steps over the real screen: needs, actions, time, money, school, the phone, saving.','Eleven short steps over the real screen: needs, actions, time, rooms, money, school, the phone, your bag, the doctor, relationships, saving.') }catch(e){} };
+const _to123=tutOffer102; tutOffer102=function(){ _to123(); try{ const sh=document.getElementById('sheet'); /* v165: this text swap used to rewrite the sheet's whole innerHTML — which recreates every node in whatever sheet is on screen at the time, wiping any painted canvas (proven: the 🎲 "You were born into…" reveal preview, painted once at open, came back blank whenever this fired over it). The swap now edits the text NODE only, and only when the tutorial wording is actually on screen — canvas bitmaps and every other node survive untouched. */ if(sh&&sh.innerHTML.indexOf('Seven short steps')>=0){ const tw=document.createTreeWalker(sh,NodeFilter.SHOW_TEXT); let nd; while((nd=tw.nextNode())){ if(nd.nodeValue.indexOf('Seven short steps over the real screen: needs, actions, time, money, school, the phone, saving.')>=0){ nd.nodeValue=nd.nodeValue.replace('Seven short steps over the real screen: needs, actions, time, money, school, the phone, saving.','Eleven short steps over the real screen: needs, actions, time, rooms, money, school, the phone, your bag, the doctor, relationships, saving.'); break } } } }catch(e){} };
 /* ---------- 🛏️ TODDLER MOVEMENT — crib → stand → crawl → walk ---------- */
 function moveStage123(){ if(!S||S.age>=5||S.canWalk)return 'walk'; const V=ensure123(); return V.stand?'crawl':'crib' }
 const _goRoom123=goRoom86;
@@ -14798,6 +14798,123 @@ window.__v164.lofiTrack164=function(){ return LOFI81.track||'game' };
 window.__v164.lofiBarIntro164=lofiBarIntro164;
 window.__v164.syncMusic164=syncMusic164;
 console.log('🌊 AquaLife v'+GAME_VERSION+' — a new lo-fi beat for the intro & character selection; the normal beat returns in game');
+</script>
+<script>
+/* ================= v165 PART 2: 🎲 THE REVEAL PREVIEW STAYS PAINTED =================
+   Howard (Oct 31, 2026): on the "🎲 You were born into…" reveal card the character preview
+   "keeps glitching out" — a big blank box where the figure should be. REPRODUCED headless
+   and proven by stack trace: drawReveal159 paints the canvas exactly once when the sheet
+   opens, but code that runs later rebuilds the sheet's DOM while the reveal is up —
+   stack-proven: the v123 tutOffer102 wrapper's sheet innerHTML rewrite, fired by
+   tutOfferTry102's retry chain seconds after the reveal opened (that rewrite is now
+   text-node-only — fixed at its source in the v123 layer). Any such rebuild hands the
+   player a fresh canvas node with a blank bitmap, and nothing ever repaints it.
+   THE GUARD: while the reveal sheet is up, watch #sheet; whenever the reveal canvas node
+   is one this guard has not seen painted (a rebuilt / re-presented node), repaint it with
+   the very same recipe drawReveal159 uses — pvBg159's gradient + shadow, then drawAged159
+   via the shipped __v159 export. The original node, painted by drawReveal159 itself, is
+   adopted untouched: the first check finds its bitmap already painted and only marks it.
+   Nothing else about the reveal, the sheet system or the tutorial changes. */
+(function(){ 'use strict';
+ var painted=new WeakSet();
+ function bg165(ctx){ var g=ctx.createLinearGradient(0,0,0,190); g.addColorStop(0,'#fbd9a0'); g.addColorStop(1,'#d08a45'); ctx.fillStyle=g; ctx.fillRect(0,0,150,190); ctx.fillStyle='#0000002a'; ctx.beginPath(); ctx.ellipse(75,168,34,8,0,0,Math.PI*2); ctx.fill() }
+ function isPainted165(cv){ try{ var d=cv.getContext('2d').getImageData(0,0,cv.width,Math.min(24,cv.height)).data; for(var i=3;i<d.length;i+=4){ if(d[i]>0)return true } }catch(e){} return false }
+ function check165(){ try{ var cv=document.getElementById('rvCv159'); if(!cv||painted.has(cv))return; if(isPainted165(cv)){ painted.add(cv); return } if(typeof S==='undefined'||!S||!window.__v159||typeof __v159.drawAged159!=='function'||typeof lookOf!=='function')return; var ctx=cv.getContext('2d'); bg165(ctx); __v159.drawAged159(ctx,75,168,lookOf(S),S.age,S.canWalk!==false,'happy'); painted.add(cv) }catch(e){} }
+ try{ var sh=document.getElementById('sheet'); if(sh){ var mo=new MutationObserver(function(){ check165(); setTimeout(check165,120); setTimeout(check165,450) }); mo.observe(sh,{childList:true,subtree:true}) } }catch(e){}
+ setInterval(check165,1200);
+ window.__v165reveal={check:check165};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — the reveal preview repaints itself if the sheet is rebuilt under it; it cannot come back blank');
+})();
+</script>
+<script>
+/* ================= v165 PART 4: MENU STAYS USABLE WHILE AN ACTION RUNS =================
+   Howard (Oct 31, 2026): "As a action is going I am unable to scroll up and down on the
+   menu it locks the movement." Reproduced and bisected headless: the panel scroller
+   itself is never locked by the action machinery (touch swipes scroll it freely
+   mid-action) — the proven action-linked menu loss is at the TAP: clicking a scene /
+   action card (.actCard101 .furn) fires the v101 capture-phase click listener, which
+   calls setDock(false) on the tap itself, ~360ms BEFORE the delayed click reaches
+   startActivity. The v162 stay-open rescue reads dockOpen at startActivity time,
+   sees a closed dock, and never engages — so the menu is DOWN for the action's whole
+   duration and there is nothing to scroll.
+   THE FIX: timestamp the moment the dock closes after having been open (the tap
+   itself). When an action starts with the dock closed but closed-from-open within
+   the last 700ms (and no modal sheet is up), it IS a menu-started action: arm the
+   very same v162 hold and reopen the dock, exactly as v162 does for actions started
+   with the dock still open. Action timing, effects, scenes and modal surfaces are
+   untouched. (First cut stamped dock-OPEN time instead; the post-fix drive caught
+   it — a menu opened minutes earlier would never qualify. Close-time is the tap.) */
+(function(){
+  try{
+    if(typeof setDock!=='function'||typeof startActivity!=='function')return;
+    var M=window._menu165={lastClosedAt:0};
+    var _sd4=setDock;
+    setDock=function(open){ if(!open){ try{ if(typeof dockOpen!=='undefined'&&dockOpen)M.lastClosedAt=Date.now(); }catch(e){} } return _sd4.apply(this,arguments); };
+    var _sa4=startActivity;
+    startActivity=function(){
+      var wasOpen=false; try{ wasOpen=(typeof dockOpen!=='undefined'&&dockOpen); }catch(e){}
+      var justOpen=!wasOpen&&(Date.now()-M.lastClosedAt<700);
+      var modalOpen=false;
+      try{ var md=document.getElementById('modal'); modalOpen=!!(md&&md.classList.contains('open')); }catch(e){}
+      var r=_sa4.apply(this,arguments);
+      if(justOpen&&!modalOpen){
+        try{
+          var dur=(typeof arguments[1]==='number'&&isFinite(arguments[1]))?arguments[1]:3000;
+          if(window._menu162)window._menu162.holdUntil=Date.now()+dur+2200;
+          setDock(true);
+        }catch(e){}
+      }
+      return r;
+    };
+  }catch(e){}
+})();
+</script>
+<script>
+/* ================= v165 PART 3: 🎵 THE TWO LOFI BEATS ROTATE — EVERYWHERE =================
+   Howard (Oct 31, 2026, 2:14 AM), correcting the v164 rule: "I want the intro song to be in
+   the game too, cross fading to change up the game sound." The v164 context lock is retired:
+   the intro beat (Dmaj9 loop) and the game beat (Fmaj7 loop) now take turns in BOTH places —
+   intro / character selection AND in-game — on one shared rotation, and crossing between the
+   title and a life no longer switches, restarts or locks anything: the beat that is playing
+   simply keeps playing, and the turns keep coming.
+   THE ROTATION: one stretch = 24 bars of the shared 3.6s bar ≈ 86 seconds (~1½ minutes) per
+   beat. When a stretch ends, the shared LOFI81 bus fades down over ~1.4s, the track flips at
+   the bottom of the fade, and the bus fades back up over ~1.4s — the outgoing pads' natural
+   4-second tails ring through the dip, so the change lands as a crossfade, not a cut. The 🎵
+   Music toggle governs the rotation exactly like the single beat before it (off stops
+   everything; on resumes, and the stretch clock re-arms with the engine).
+   HOW THE LOCK IS RETIRED: the v164 wrappers on startGame / renderSetup / renderWelcome set
+   LOFI81.track directly and then call syncMusic164. This layer (a) makes musicTrackWant164
+   report the CURRENT track, so syncMusic164 can never force a context switch again, and
+   (b) wraps those three entry points once more, restoring the pre-call track afterwards —
+   the v164 assignment lands and is undone inside the same synchronous call, so the 240ms
+   scheduler never sees it. Rotation state lives on LOFI81 (rotBar165 / rotFading165); if
+   the engine restarts (bar counter resets), the stretch clock re-arms automatically. */
+(function(){ 'use strict';
+ var ROT_BARS165=24, FADE_S165=1.4;
+ try{ musicTrackWant164=function(){ return LOFI81.track||'intro' } }catch(e){}
+ function keepTrack165(name){ try{ var orig=window[name]; if(typeof orig!=='function'||orig._rot165)return; var w=function(){ var before=LOFI81.track; var r=orig.apply(this,arguments); try{ LOFI81.track=before }catch(e){} return r }; w._rot165=true; window[name]=w }catch(e){} }
+ keepTrack165('startGame'); keepTrack165('renderSetup'); keepTrack165('renderWelcome');
+ function rotTick165(){ try{
+   if(typeof musicOff81==='function'&&musicOff81()){ LOFI81.rotBar165=null; return }
+   if(!LOFI81.started||!LOFI81.bus||typeof AC==='undefined'||!AC)return;
+   var bar=LOFI81.bar||0;
+   if(LOFI81.rotBar165==null||bar<LOFI81.rotBar165){ LOFI81.rotBar165=bar; return }
+   if(LOFI81.rotFading165)return;
+   if(bar-LOFI81.rotBar165<ROT_BARS165)return;
+   LOFI81.rotFading165=true;
+   var bus=LOFI81.bus, t=AC.currentTime;
+   try{ bus.gain.cancelScheduledValues(t); bus.gain.setValueAtTime(Math.max(bus.gain.value,0.0001),t); bus.gain.linearRampToValueAtTime(0.0001,t+FADE_S165) }catch(e){}
+   setTimeout(function(){ try{
+     LOFI81.track=(LOFI81.track==='intro')?'game':'intro';
+     LOFI81.rotBar165=LOFI81.bar||0;
+     if(LOFI81.bus&&typeof AC!=='undefined'&&AC){ var t2=AC.currentTime; LOFI81.bus.gain.cancelScheduledValues(t2); LOFI81.bus.gain.setValueAtTime(0.0001,t2); LOFI81.bus.gain.linearRampToValueAtTime(1.0,t2+FADE_S165) }
+   }catch(e){} setTimeout(function(){ LOFI81.rotFading165=false },FADE_S165*1000) },FADE_S165*1000);
+ }catch(e){ LOFI81.rotFading165=false } }
+ setInterval(rotTick165,500);
+ window.__v165rot={barsPerStretch:ROT_BARS165,barSeconds:3.6,stretchSeconds:ROT_BARS165*3.6,fadeSeconds:FADE_S165,track:function(){ return LOFI81.track },barsIntoStretch:function(){ return (LOFI81.rotBar165==null)?0:((LOFI81.bar||0)-LOFI81.rotBar165) },fading:function(){ return !!LOFI81.rotFading165 }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — the two lo-fi beats rotate everywhere: intro ↔ game beat, a ~86-second stretch each, crossfaded on the shared bus; entering or leaving a life no longer switches the music');
+})();
 </script>
 </body>
 </html>
