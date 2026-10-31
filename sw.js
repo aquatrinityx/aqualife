@@ -1,7 +1,7 @@
 /* AquaLife service worker (hosted build) - root scope: controls the game page.
    Network-first for navigations so updates land immediately; cache is the
    offline fallback. Saves live in localStorage and are never touched. */
-var CACHE = 'aqualife-shell-v161';
+var CACHE = 'aqualife-shell-v162';
 var CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png',
             './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', function (e) {
