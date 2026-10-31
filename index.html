@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=165;
+const GAME_VERSION=166;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -9370,7 +9370,8 @@ phoneDarkWeb117=function(){ const r=_dw131(); try{ if(S&&S.hasPhone){ const sc=d
 
 /* ---------- item 8: cross the line — ONLY an up-front choice in the spend-the-night sheet ---------- */
 const _na131=nightAsk128;
-nightAsk128=function(nm,ctx){ if(!S||S.age<18)return; _na131(nm,ctx); try{ const sh=document.querySelector('#sheet'); if(!sh||sh.innerHTML.indexOf('nightGo128')<0)return; let adult=true; try{ const a=(typeof charAge79==='function')?charAge79(nm):null; if(a!==null&&a!==undefined&&a<18)adult=false }catch(e){} if(!adult)return; const esc=String(nm).replace(/'/g,"\\'"); const d=document.createElement('div'); d.innerHTML='<p class="small" style="margin-top:12px;color:#fca5a5">🚨 <b>Cross the line</b> — forcing '+nm+' is a serious crime, never romance, and it only exists here as a choice YOU pick up front, before anything happens: everything ends between you forever, the report is a matter of when not if (85% on the spot: wanted 5★, 12 days inside), a restraining order follows, the family finds out — and the pregnancy odds ride on the condom choice, exactly like any other night (2% protected / 30% unprotected).</p><button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="nightForce131(\''+esc+'\',true)">🚨 Force it — with a condom</button><button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="nightForce131(\''+esc+'\',false)">🚨 Force it — no condom</button>'; sh.appendChild(d) }catch(e){} };
+nightAsk128=function(nm,ctx){ if(!S||S.age<18)return; _na131(nm,ctx) };
+/* v166: the Cross the line block that used to be appended to the sheet HERE is GONE - it is no longer an up-front sheet section at all, and nothing force-related is added to the sheet. It exists ONLY as an immediate in-the-moment prompt fired by the SECOND sex-ask rejection inside one encounter (see the v166 layer at the end of this file). nightForce131 below is unchanged and is only ever called from that prompt. */
 function nightForce131(nm,useCondom){ if(!S||S.age<18)return; ensure103(); const V=ensure128(); closeModal();
  let preg=false; try{ const rec=(S.town&&S.town.people)?S.town.people[nm]:null; const girlPartner=rec?(rec.girl===true):(S.gender!=='girl'); const canConceive=(S.gender==='girl'&&!girlPartner)||(S.gender!=='girl'&&girlPartner); if(canConceive&&Math.random()<(useCondom?0.02:0.30))preg=true }catch(e){}
  try{ forceGo103(nm) }catch(e){}
@@ -14914,6 +14915,42 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — a new lo-fi beat for the intro 
  setInterval(rotTick165,500);
  window.__v165rot={barsPerStretch:ROT_BARS165,barSeconds:3.6,stretchSeconds:ROT_BARS165*3.6,fadeSeconds:FADE_S165,track:function(){ return LOFI81.track },barsIntoStretch:function(){ return (LOFI81.rotBar165==null)?0:((LOFI81.bar||0)-LOFI81.rotBar165) },fading:function(){ return !!LOFI81.rotFading165 }};
  console.log('🌊 AquaLife v'+GAME_VERSION+' — the two lo-fi beats rotate everywhere: intro ↔ game beat, a ~86-second stretch each, crossfaded on the shared bus; entering or leaving a life no longer switches the music');
+})();
+</script>
+<script>
+/* ================= v166: CROSS THE LINE LEAVES THE SHEET - Howard (Oct 31, 2026): "let's not show cross the line, lets remove those two and that can only happen if the person rejects the sex protected and sex unprotected. If they say no then you have the choice to force but the crime is the same" + "It's not a manual choice. It's only if you ask and they say no." So: (1) the spend-the-night sheet (nightAsk128, v128 base above) shows ONLY its four shipped choices - Sleep together / Sex - protected / Sex - unprotected / Not tonight - and the v131 wrapper no longer appends any Cross the line paragraph or Force buttons to it; a defensive strip below removes any force UI a stale layer might add. (2) There is NO revealed section and NO standing/manual unlock: each sex ask is still answered by the shipped per-ask roll inside intimacyGo38 (pYes = 0.3 + meter/160, rolled fresh per ask - protected and unprotected can EACH be accepted or refused; neither is ever automatic). This layer watches the answer to each sex ask in THIS encounter: a FIRST refusal (either ask) simply re-presents the same night sheet so the other ask can still be made - no force UI appears. Only when BOTH asks have been refused in the same encounter does the SECOND "no" immediately fire forcePrompt166 - an in-the-moment force-or-back-off prompt (the shipped warning wording + the two shipped Force buttons, calling the UNCHANGED nightForce131). (3) Backing off ends it: the prompt is marked fired and locked for that person that day (lock166), the sheet is not re-presented, and re-asking that night cannot re-trigger it. "Just sleep" never counts toward the gate; "Not tonight" never reaches nightGo128 and ends the encounter; the gate is in-memory only (never saved) and resets on a fresh nightAsk128 - a new night starts clean. (4) THE CRIME IS UNCHANGED: nightForce131 / forceGo103 are untouched - 85% report on the spot (wanted 5-star, 12 days inside), the rest reported within days, restraining order, family finds out, pregnancy at the shipped odds for the condom choice (2% protected / 30% unprotected), relationship ends forever. ================= */
+(function(){ 'use strict';
+ var gate166={nm:null,day:-1,prot:false,raw:false,prompted:false};
+ var lock166=null;
+ function stripForce166(){ try{ var sh=document.querySelector('#sheet'); if(!sh)return; var els=sh.querySelectorAll('button,p,div'); for(var i=els.length-1;i>=0;i--){ var t=els[i].textContent||''; if(t.indexOf('Force it')>=0||t.indexOf('Cross the line')>=0)els[i].remove() } }catch(e){} }
+ function sheetOpen166(){ try{ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }catch(e){ return false } }
+ function resetGate166(nm){ if(lock166&&S&&lock166.nm===nm&&lock166.day===S.day){ gate166={nm:nm,day:S.day,prot:true,raw:true,prompted:true}; return } gate166={nm:nm,day:S?S.day:-1,prot:false,raw:false,prompted:false} }
+ function nightSheetHtml166(nm){ var esc=String(nm).replace(/'/g,"\\'"); return '<h2>\uD83C\uDF19 '+nm+' \u2014 spend the night?</h2><p>No more sleepover asks at this age \u2014 grown-ups get invited to <b>spend the night</b>. Everything here is between two consenting adults; what the two of you choose is what happens.</p>'
+ +'<button class="btn gold" style="margin-top:8px" onclick="nightGo128(\''+esc+'\',\'sleep\')">\uD83D\uDE34 Sleep together \u2014 just sleep</button>'
+ +'<button class="btn" style="margin-top:8px" onclick="nightGo128(\''+esc+'\',\'protected\')">\uD83E\uDE79 Sex \u2014 protected</button>'
+ +'<button class="btn" style="margin-top:8px" onclick="nightGo128(\''+esc+'\',\'raw\')">\uD83C\uDF19 Sex \u2014 unprotected</button>'
+ +'<button class="btn outline" style="margin-top:8px" onclick="closeModal()">Not tonight</button>' }
+ function forcePrompt166(nm){ if(!S)return; var esc=String(nm).replace(/'/g,"\\'"); openSheet('<h2>\uD83D\uDEA8 '+nm+' said no</h2><p class="small" style="margin-top:4px;color:#fca5a5">\uD83D\uDEA8 <b>Cross the line</b> \u2014 forcing '+nm+' is a serious crime, never romance, and it only exists here as a choice YOU pick up front, before anything happens: everything ends between you forever, the report is a matter of when not if (85% on the spot: wanted 5\u2605, 12 days inside), a restraining order follows, the family finds out \u2014 and the pregnancy odds ride on the condom choice, exactly like any other night (2% protected / 30% unprotected).</p>'
+ +'<button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="nightForce131(\''+esc+'\',true)">\uD83D\uDEA8 Force it \u2014 with a condom</button>'
+ +'<button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="nightForce131(\''+esc+'\',false)">\uD83D\uDEA8 Force it \u2014 no condom</button>'
+ +'<button class="btn outline" style="margin-top:8px" onclick="nightBackOff166()">Back off \u2014 they said no</button>',{sfx:'bad'}) }
+ window.nightBackOff166=function(){ try{ closeModal() }catch(e){} };
+ var _na166=nightAsk128;
+ nightAsk128=function(nm,ctx){ resetGate166(nm); var r=_na166(nm,ctx); stripForce166(); return r };
+ var _ng166=nightGo128;
+ nightGo128=function(nm,mode){ if(!S||(mode!=='protected'&&mode!=='raw'))return _ng166(nm,mode);
+  if(gate166.nm!==nm||gate166.day!==S.day){ if(lock166&&lock166.nm===nm&&lock166.day===S.day)gate166={nm:nm,day:S.day,prot:true,raw:true,prompted:true}; else gate166={nm:nm,day:S.day,prot:false,raw:false,prompted:false} }
+  var rejected=false; var _log166=log;
+  log=function(t){ try{ if(typeof t==='string'&&t.indexOf('kind, honest')>=0)rejected=true }catch(e){} return _log166.apply(this,arguments) };
+  var r; try{ r=_ng166(nm,mode) } finally { log=_log166 }
+  try{ if(rejected&&!gate166.prompted){
+   if(mode==='protected')gate166.prot=true; else gate166.raw=true;
+   if(gate166.prot&&gate166.raw){ gate166.prompted=true; lock166={nm:nm,day:S.day}; setTimeout(function(){ if(S)forcePrompt166(nm) },450) }
+   else { setTimeout(function(){ if(S&&!sheetOpen166()){ try{ openSheet(nightSheetHtml166(nm)) }catch(e){} } },450) }
+  } }catch(e){}
+  return r };
+ window.__v166={gate:function(){ return {nm:gate166.nm,day:gate166.day,prot:gate166.prot,raw:gate166.raw,prompted:gate166.prompted} },lock:function(){ return lock166 },forcePrompt166:forcePrompt166,stripForce166:stripForce166,version:function(){ return GAME_VERSION }};
+ console.log('\uD83C\uDF0A AquaLife v'+GAME_VERSION+' \u2014 Cross the line is off the night sheet: no section, no standing buttons; it exists only as an in-the-moment prompt after BOTH sex asks are refused in one encounter, with the shipped crime unchanged');
 })();
 </script>
 </body>
