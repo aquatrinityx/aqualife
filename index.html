@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=153;
+const GAME_VERSION=154;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -3975,7 +3975,7 @@ function renderGate71(){ gateShown71=true; inGame=false; applyTheme39(); const a
  +'<p style="margin-top:12px">📍 <b>No install offered on this copy?</b> AquaLife also lives at its own home — <a href="https://aquatrinityx.github.io/aqualife/" target="_blank" rel="noopener" style="color:var(--accent2);font-weight:800">aquatrinityx.github.io/aqualife</a> — open that in Chrome or Safari and install from there; it is the same game, and that copy installs cleanly.</p>'
  +'<p class="small" style="margin-top:10px">Once it is on your home screen, open AquaLife <b>from the icon</b> — that is where the game starts from now on.</p>'
  +'</div>'
- +'<div class="card" style="margin-top:14px"><h3>▶️ No install? No problem.</h3><p>Downloading the app is <b>optional</b>. You can play the whole game right here in your browser — same game, same save, everything works.</p><button class="btn" style="padding:15px;font-size:16px;background:#22c55e;background-image:none;color:#052e0e" onclick="enterGame71()">▶️ Play in browser — tap here</button><p class="small" style="margin-top:8px">Changed your mind later? The 📲 Install button inside the game can still put AquaLife on your home screen any time.</p></div></div>'; }
+ +'<div class="card" style="margin-top:14px"><h3>▶️ No install? No problem.</h3><p>Downloading the app is <b>optional</b>. You can play the whole game right here in your browser — same game, same save, everything works.</p><button class="btn" style="padding:15px;font-size:16px;background:#22c55e;background-image:none;color:#f3e9d2" onclick="enterGame71()">▶️ Play in browser — tap here</button><p class="small" style="margin-top:8px">Changed your mind later? The 📲 Install button inside the game can still put AquaLife on your home screen any time.</p></div></div>'; }
 window.addEventListener('appinstalled',function(){ justInstalled71=true; if(gateShown71)renderGate71(); });
 window.addEventListener('beforeinstallprompt',function(){ if(gateShown71)setTimeout(function(){ if(gateShown71)renderGate71(); },60); });
 try{ const mq71=window.matchMedia('(display-mode: standalone)'); const onMq71=function(e){ if(e.matches&&gateShown71)boot71(); }; if(mq71.addEventListener)mq71.addEventListener('change',onMq71); else if(mq71.addListener)mq71.addListener(onMq71); }catch(e){}
@@ -13680,7 +13680,7 @@ function iosGateCard153(){ return '<h3>🍎 Put AquaLife on your Home Screen</h3
  +'<p>On iPhone, apps are added from Safari’s <b>Share</b> menu — it takes about ten seconds. There is no install button that can do this step for you (that is Apple’s rule, not ours), so here is exactly how, with the real buttons:</p>'
  +iosStepsHtml153()
  +saveNote153()
- +'<button class="btn" style="padding:15px;font-size:16px;background:#22c55e;background-image:none;color:#052e0e;margin-top:14px" onclick="enterGame71()">▶️ Play in browser instead</button>'
+ +'<button class="btn" style="padding:15px;font-size:16px;background:#22c55e;background-image:none;color:#f3e9d2;margin-top:14px" onclick="enterGame71()">▶️ Play in browser instead</button>'
  +'<p class="small" style="margin-top:8px">Changed your mind later? The 📲 Install button inside the game brings these same steps back any time.</p>' }
 function webviewGateCard153(){ return '<h3>⚠️ One quick hop — this browser can’t install apps</h3>'
  +'<div class="warn153">⚠️ <b>You’re reading this inside another app’s built-in browser</b> — the little browser inside Messages, Facebook, Instagram and friends. It has <b>no install option at all</b>, so no button here could ever install AquaLife. <b>Installing needs Safari.</b> The hop takes about ten seconds:</div>'
@@ -13688,7 +13688,7 @@ function webviewGateCard153(){ return '<h3>⚠️ One quick hop — this browser
  +'<div class="stepRow153"><span class="stepNum153">2</span><span class="gly153">'+COMPASS_SVG153+'</span><p>Tap <b>“Open in Safari”</b> (some apps call it <b>“Open in Browser”</b>). This same page opens in Safari.</p></div>'
  +'<div class="stepRow153"><span class="stepNum153">3</span><span class="gly153">'+SHARE_SVG153+'</span><p>In Safari, tap the <b>Share</b> icon, then <b>“Add to Home Screen”</b>, then <b>“Add”</b> — and open AquaLife from your home screen.</p></div>'
  +saveNote153()
- +'<button class="btn" style="padding:15px;font-size:16px;background:#22c55e;background-image:none;color:#052e0e;margin-top:14px" onclick="enterGame71()">▶️ Play right here in this browser instead</button>'
+ +'<button class="btn" style="padding:15px;font-size:16px;background:#22c55e;background-image:none;color:#f3e9d2;margin-top:14px" onclick="enterGame71()">▶️ Play right here in this browser instead</button>'
  +'<p class="small" style="margin-top:8px">Playing here works fully — same game, same save. Installing just needs the Safari hop above.</p>' }
 function gateFix153(){ const p=plat153(); if(p!=='ios-safari'&&p!=='ios-webview')return; const cards=document.querySelectorAll('#app .setup .card'); let card=null; for(let i=0;i<cards.length;i++){ if(/Get the app/.test(cards[i].textContent||'')){ card=cards[i]; break } } if(!card)return; card.innerHTML=(p==='ios-safari')?iosGateCard153():webviewGateCard153() }
 try{ const _rg153=renderGate71; renderGate71=function(){ const r=_rg153.apply(this,arguments); try{ gateFix153() }catch(e){} return r } }catch(e){}
@@ -13703,6 +13703,41 @@ try{ const _wn153=whatsNewHtml124; whatsNewHtml124=function(){ let h=''; try{ h=
 window.__v153={plat153:plat153,isIOS153:isIOS153,gateFix153:gateFix153,iosSheet153:iosSheet153,webviewSheet153:webviewSheet153,vibrateSupported153:function(){ return (typeof navigator!=='undefined'&&'vibrate' in navigator&&typeof navigator.vibrate==='function') },version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — iOS installability: platform-aware install flow (Android prompt untouched • iOS Safari Share steps • in-app browsers routed to Safari • no dead ends) • vibrate funnel is a safe no-op where the API is absent (this browser: '+((typeof navigator!=='undefined'&&'vibrate' in navigator)?'vibrate API present':'vibrate API ABSENT')+') • splash screens for iPhone sizes');
 })();
+
+/* ================= v154: 👀 THE PLAY-IN-BROWSER LABEL IS READABLE =================
+   THE BUG (spotted on a real phone, hosted v153): on the install gate's "▶️ No install?
+   No problem." card, the big "▶️ Play in browser — tap here" button showed its label in a
+   very dark green, nearly invisible on the button's dark face. ROOT CAUSE: the button's
+   markup sets its colours inline — a light-green face (background:#22c55e) with dark-green
+   text (color:#052e0e) meant to sit on that green. But the shipped .btn rainbow-border
+   rules paint every .btn face with background-image:linear-gradient(var(--btnbg),…)
+   !important, which beats the inline background — so the face is actually --btnbg
+   (#241631, dark purple) with the rainbow conic border, exactly as designed — while the
+   inline dark-green color:#052e0e survived untouched. Dark green on dark purple = the
+   camouflaged label in the screenshot.
+   THE FIX IS LABEL COLOUR ONLY: all THREE Play-in-browser buttons in the install flow —
+   (1) the gate's "No install? No problem." fallback card, (2) the v153 iOS Safari gate
+   card ("▶️ Play in browser instead"), (3) the v153 iOS in-app-browser gate card
+   ("▶️ Play right here in this browser instead") — now carry the game's cream #f3e9d2
+   inline (bold already, via .btn's font-weight:800), and the style154 rule below pins
+   that colour with !important in EVERY state (normal, hover, active, focus, visited),
+   so no stylesheet, theme or state rule can darken the label again. All three buttons
+   are plain <button> elements calling enterGame71() — no anchor or inner span carries
+   its own colour, so the button's colour IS the visible label colour. Copy, size,
+   position, border, fill and behaviour are untouched.
+   OTHER GATE BUTTONS CHECKED: the 📲 Install button is .btn.gold — bright gold face
+   (--btnbg:#ffb703) with #111 text: high contrast, NOT affected, left alone. The v153
+   sheets' "Got it" buttons are the same gold style. Nothing else changed.
+   Saves: nothing new is stored; SAVE_KEY and the save format are untouched. */
+(function(){
+'use strict';
+(function(){ try{ const st=document.createElement('style'); st.id='style154'; st.textContent='button[onclick="enterGame71()"]{color:#f3e9d2!important}button[onclick="enterGame71()"]:hover,button[onclick="enterGame71()"]:active,button[onclick="enterGame71()"]:focus,button[onclick="enterGame71()"]:visited{color:#f3e9d2!important}'; document.head.appendChild(st) }catch(e){} })();
+const WN154_CARD='<div class="card" style="border-color:var(--accent2)"><h3>✨ What’s New — v154</h3><p>👀 <b>You can read the button now.</b> On the install screen, the ▶️ <b>Play in browser</b> button’s words were rendering in a very dark green on its dark button — almost invisible (good spot 📸). The label is now <b>bright cream and bold</b> on every install screen — the main gate, the iPhone steps card and the opened-inside-another-app card — so the play-right-here option is impossible to miss. Same button, same place, same tap — just readable. Nothing else changed.</p></div>';
+try{ const _wn154=whatsNewHtml124; whatsNewHtml124=function(){ let h=''; try{ h=_wn154() }catch(e){} return WN154_CARD+h } }catch(e){}
+window.__v154={version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — Play-in-browser label contrast fix: cream #f3e9d2 label pinned with !important in all states on every install-flow Play button (gate card • iOS Safari card • in-app-browser card); the gold Install button was checked — readable, untouched');
+})();
+
 </script>
 </body>
 </html>
