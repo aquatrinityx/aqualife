@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=163;
+const GAME_VERSION=164;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -2200,20 +2200,75 @@ function drawCrawlFigure(ctx,x,y,look,phase,actIcon,nowMs,expr){
  ctx.fillStyle=look.skin; ctx.fillRect(x+13,y+32+pad,7,7); ctx.fillRect(x+3,y+32+pad2,7,7);
  if((look.gloves||'none')!=='none'){ ctx.fillStyle=(GLOVES.find(g=>g.id===look.gloves)||{}).color||'#f8fafc'; ctx.fillRect(x+13,y+34+pad,7,5); ctx.fillRect(x+3,y+34+pad2,7,5) } // v36: little gloves on crawling hands too
  // head up front, looking ahead
- if(girl){ ctx.fillStyle=look.hair; ctx.beginPath(); ctx.roundRect(x+2,y-5,35,34,10); ctx.fill() } // long hair behind the head
+ /* v164: EVERY pickable hairstyle draws distinctly on the crawl figure. Before v164 this
+    renderer painted ONE generic strip (plus boy spikes) and added touches for only ~10 ids,
+    so most picks changed nothing on a toddler — at creation (drawAged159 routes age<3 to
+    here), in the 🎨 style sheet, and for crawling figures in the scene. The block below
+    mirrors drawFigure's per-style geometry, adapted to the crawl head (skin x+6..x+36,
+    y-2..y+26): a style-specific BACK layer behind the head for long styles, then a distinct
+    front/top treatment for all 52 catalog ids. No ids added or removed; gender lock untouched. */
+ const chs=look.hairStyle||'classic'; const HC=look.hair, HD=shadeCol(HC,-26), HL=shadeCol(HC,34);
+ // BACK layer — long hair behind the head, sized per style (short cuts get none)
+ ctx.fillStyle=HC;
+ if(chs==='wavyLong'||chs==='sleeklong'){ ctx.beginPath(); ctx.roundRect(x+1,y-5,40,42,10); ctx.fill() }
+ else if(chs==='longwaves'||chs==='runwaywaves'||chs==='curtainbangs'||chs==='halfup'||chs==='silkpress'){ ctx.beginPath(); ctx.roundRect(x+2,y-5,36,38,10); ctx.fill() }
+ else if(chs==='classic'&&girl||chs==='frenchbraid'||chs==='braids'||chs==='dreadlocks'||chs==='locs'||chs==='boxbraids'||chs==='twistsg'){ ctx.beginPath(); ctx.roundRect(x+2,y-5,35,34,10); ctx.fill() }
+ else if(chs==='bobcut'||chs==='lobcut'||chs==='shagcut'||chs==='curtains'){ ctx.beginPath(); ctx.roundRect(x+3,y-4,33,30,9); ctx.fill() }
  ctx.fillStyle=look.skin; ctx.beginPath(); ctx.roundRect(x+6,y-2,30,28,9); ctx.fill();
- ctx.fillStyle=look.hair; ctx.fillRect(x+6,y-2,30,9); if(!girl){ for(let i=0;i<4;i++)ctx.fillRect(x+8+i*7,y-9,5,8) } // hair / little spikes
- /* v136: the crawl figure wears the picked hairstyle too (toddler-plausible cuts) */
- const chs=look.hairStyle||'classic'; ctx.fillStyle=look.hair;
- if(chs==='curly'||chs==='bigcurls'){ for(let ci=0;ci<5;ci++){ ctx.beginPath(); ctx.arc(x+9+ci*6.4,y-3+(ci%2)*2,4.6,0,7); ctx.fill() } }
- else if(chs==='spiky'||chs==='mohawk'){ for(let si=0;si<4;si++){ ctx.beginPath(); ctx.moveTo(x+8+si*7,y-2); ctx.lineTo(x+11+si*7,y-11); ctx.lineTo(x+14+si*7,y-2); ctx.closePath(); ctx.fill() } }
- else if(chs==='short'||chs==='buzz'||chs==='lowfade'){ ctx.fillRect(x+6,y-2,30,4) }
- else if(chs==='bob'||chs==='bobcut'){ ctx.fillRect(x+4,y-2,5,14); ctx.fillRect(x+33,y-2,5,14) }
- else if(chs==='ponytail'||chs==='highpony'){ ctx.beginPath(); ctx.arc(x+33,y-4,5,0,7); ctx.fill(); ctx.fillRect(x+35,y-4,4,13); ctx.fillStyle='#ef4444'; ctx.fillRect(x+30,y-8,8,3.6); ctx.fillStyle=look.hair }
- else if(chs==='bun'||chs==='topbun'){ ctx.beginPath(); ctx.arc(x+21,y-8,5.6,0,7); ctx.fill() }
- else if(chs==='twintails'||chs==='spacebuns'){ ctx.beginPath(); ctx.arc(x+5,y-3,4.6,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+37,y-3,4.6,0,7); ctx.fill() }
- else if(chs==='afro'||chs==='highafro'){ for(let ci=0;ci<4;ci++){ ctx.beginPath(); ctx.arc(x+10+ci*8,y-5,6,0,7); ctx.fill() } }
- if(girl&&chs!=='ponytail'&&chs!=='highpony'){ ctx.fillStyle='#ef4444'; ctx.fillRect(x+22,y-12,11,6); ctx.fillRect(x+26,y-15,4,11) } // bow
+ ctx.fillStyle=HC; ctx.fillRect(x+6,y-2,30,9); // base cap — every style starts here, then diverges below
+ if(chs==='classic'){ if(girl){ ctx.fillRect(x+3,y-2,6,20); ctx.fillRect(x+33,y-2,6,20) } else { for(let i=0;i<4;i++)ctx.fillRect(x+8+i*7,y-9,5,8) } } // classic girl: hair down the sides · classic boy: tufts
+ else if(chs==='short'){ ctx.fillRect(x+6,y-2,30,3) } // short & neat — a low, tidy cap, no sides, no tufts
+ else if(chs==='curly'){ for(let ci=0;ci<5;ci++){ ctx.beginPath(); ctx.arc(x+9+ci*6.4,y-3+(ci%2)*2,4.6,0,7); ctx.fill() } ctx.beginPath(); ctx.arc(x+4,y+6,4,0,7); ctx.arc(x+38,y+6,4,0,7); ctx.fill() }
+ else if(chs==='bigcurls'){ for(let ci=0;ci<6;ci++){ ctx.beginPath(); ctx.arc(x+6+ci*6,y-4-(ci%2)*3,6.2,0,7); ctx.fill() } ctx.beginPath(); ctx.arc(x+2,y+5,5.8,0,7); ctx.arc(x+40,y+5,5.8,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+3,y+14,4.6,0,7); ctx.arc(x+39,y+14,4.6,0,7); ctx.fill() }
+ else if(chs==='ponytail'){ ctx.fillRect(x+3,y-2,5,14); ctx.beginPath(); ctx.arc(x+33,y-4,5,0,7); ctx.fill(); ctx.fillRect(x+35,y-4,4,13); ctx.fillStyle='#ef4444'; ctx.fillRect(x+30,y-8,8,3.6); ctx.fillStyle=HC }
+ else if(chs==='highpony'){ ctx.beginPath(); ctx.arc(x+21,y-9,4.8,0,7); ctx.fill(); ctx.beginPath(); ctx.roundRect(x+33,y-10,6,24,3); ctx.fill(); ctx.fillStyle='#ec4899'; ctx.fillRect(x+18,y-12,6,3.6); ctx.fillStyle=HC }
+ else if(chs==='bun'){ ctx.beginPath(); ctx.arc(x+21,y-8,5.6,0,7); ctx.fill(); ctx.fillStyle='#ef4444'; ctx.fillRect(x+15,y-6,12,2.6); ctx.fillStyle=HC }
+ else if(chs==='topbun'){ ctx.beginPath(); ctx.arc(x+21,y-9,7,0,7); ctx.fill(); ctx.strokeStyle='#ec4899'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x+21,y-9,7,Math.PI*0.15,Math.PI*0.85); ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle=HC; ctx.fillRect(x+4,y+1,2.8,10); ctx.fillRect(x+35,y+1,2.8,10) }
+ else if(chs==='braids'){ for(let sg=0;sg<4;sg++){ ctx.fillStyle=sg%2?HD:HC; ctx.fillRect(x+2,y+4+sg*6,6,6); ctx.fillRect(x+34,y+4+sg*6,6,6) } ctx.fillStyle='#ef4444'; ctx.fillRect(x+2,y+26,6,3); ctx.fillRect(x+34,y+26,6,3); ctx.fillStyle=HC }
+ else if(chs==='frenchbraid'){ for(let sg=0;sg<4;sg++){ ctx.fillStyle=sg%2?HD:HC; ctx.beginPath(); ctx.roundRect(x+31,y+3+sg*7,7,7,2.4); ctx.fill() } ctx.fillStyle='#ef4444'; ctx.fillRect(x+30,y+29,9,3); ctx.fillStyle=HC }
+ else if(chs==='mohawk'){ ctx.fillRect(x+6,y-2,30,3.6); ctx.fillRect(x+17,y-15,8,14); ctx.fillRect(x+18.5,y-17,5,3) }
+ else if(chs==='spiky'){ for(let si=0;si<4;si++){ ctx.beginPath(); ctx.moveTo(x+7+si*7,y-2); ctx.lineTo(x+10.5+si*7,y-12); ctx.lineTo(x+14+si*7,y-2); ctx.closePath(); ctx.fill() } }
+ else if(chs==='longwaves'){ for(let wi=0;wi<4;wi++){ ctx.beginPath(); ctx.arc(x+9+wi*8,y+5+(wi%2)*2,3.6,0,7); ctx.fill() } ctx.fillRect(x+2,y-2,6,30); ctx.fillRect(x+34,y-2,6,30) }
+ else if(chs==='runwaywaves'){ for(let wi=0;wi<4;wi++){ ctx.beginPath(); ctx.arc(x+9+wi*8,y+4+(wi%2)*3,4.2,0,7); ctx.fill() } ctx.fillRect(x+2,y-2,6,28); ctx.fillRect(x+34,y-2,6,28); ctx.fillStyle='#ffffff30'; ctx.beginPath(); ctx.arc(x+13,y-3,2.2,0,7); ctx.fill(); ctx.fillStyle=HC }
+ else if(chs==='twintails'){ ctx.beginPath(); ctx.arc(x+5,y-3,4.6,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+37,y-3,4.6,0,7); ctx.fill(); ctx.fillRect(x+2,y-1,5,16); ctx.fillRect(x+35,y-1,5,16); ctx.fillStyle='#ef4444'; ctx.fillRect(x+1,y-8,7,3.6); ctx.fillRect(x+34,y-8,7,3.6); ctx.fillStyle=HC }
+ else if(chs==='spacebuns'){ ctx.fillRect(x+6,y-2,30,8); ctx.beginPath(); ctx.arc(x+8,y-6,5.8,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+34,y-6,5.8,0,7); ctx.fill(); ctx.fillStyle='#ec4899'; ctx.beginPath(); ctx.arc(x+8,y-6,2.2,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+34,y-6,2.2,0,7); ctx.fill(); ctx.fillStyle=HC }
+ else if(chs==='cleanfade'){ ctx.fillStyle=HL; ctx.fillRect(x+6,y+3,30,6); ctx.fillStyle=HC; ctx.fillRect(x+10,y-4,22,3) }
+ else if(chs==='celebfade'){ ctx.fillStyle=HL; ctx.fillRect(x+6,y+3,30,6); ctx.fillStyle=HC; ctx.fillRect(x+10,y-4,22,3); ctx.fillStyle='#f59e0b'; ctx.fillRect(x+6,y+7,30,1.6); ctx.fillStyle=HC }
+ else if(chs==='dreadlocks'){ for(let di=0;di<5;di++){ ctx.fillStyle=di%2?HD:HC; const dx=x+1+di*8.6; ctx.beginPath(); ctx.roundRect(dx,y+4,4.6,18+(di%3)*3,2.2); ctx.fill() } ctx.fillStyle='#f59e0b'; ctx.fillRect(x+1,y+18,4.6,2.4); ctx.fillRect(x+36,y+21,4.6,2.4); ctx.fillStyle=HC }
+ else if(chs==='locs'){ for(let li=0;li<4;li++){ ctx.fillStyle=li%2?HD:HC; const lx=x+0+li*11; ctx.beginPath(); ctx.roundRect(lx,y+4,5.6,26+(li%2)*4,2.6); ctx.fill() } ctx.fillStyle='#f59e0b'; ctx.fillRect(x+0,y+24,5.6,2.4); ctx.fillRect(x+33,y+27,5.6,2.4); ctx.fillStyle=HC }
+ else if(chs==='bob'){ ctx.fillRect(x+3,y-2,6,19); ctx.fillRect(x+33,y-2,6,19); ctx.beginPath(); ctx.roundRect(x+3,y+15,6,6,2.4); ctx.fill(); ctx.beginPath(); ctx.roundRect(x+33,y+15,6,6,2.4); ctx.fill() }
+ else if(chs==='bobcut'){ ctx.fillRect(x+3,y-2,6,23); ctx.fillRect(x+33,y-2,6,23); ctx.fillRect(x+3,y+19,6,2.4); ctx.fillRect(x+33,y+19,6,2.4); ctx.fillStyle=look.skin; ctx.fillRect(x+20,y-2,1.8,6); ctx.fillStyle=HC }
+ else if(chs==='lobcut'){ ctx.beginPath(); ctx.moveTo(x+4,y-2); ctx.lineTo(x+10,y-2); ctx.lineTo(x+11,y+24); ctx.lineTo(x+2,y+24); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(x+38,y-2); ctx.lineTo(x+32,y-2); ctx.lineTo(x+31,y+24); ctx.lineTo(x+40,y+24); ctx.closePath(); ctx.fill(); ctx.fillStyle=look.skin; ctx.fillRect(x+27,y-2,1.8,6); ctx.fillStyle=HC }
+ else if(chs==='sidepart'){ ctx.fillRect(x+6,y-4,22,2.6); ctx.fillStyle=look.skin; ctx.fillRect(x+13,y-2,2,7); ctx.fillStyle=HC }
+ else if(chs==='afro'){ for(let ci=0;ci<5;ci++){ ctx.beginPath(); ctx.arc(x+8+ci*6.6,y-4-(ci%2)*3,6.4,0,7); ctx.fill() } ctx.beginPath(); ctx.arc(x+21,y-10,7.6,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+3,y+4,5,0,7); ctx.arc(x+39,y+4,5,0,7); ctx.fill() }
+ else if(chs==='highafro'){ for(let ci=0;ci<4;ci++){ ctx.beginPath(); ctx.arc(x+11+ci*6.6,y-9-(ci%2)*3,6.4,0,7); ctx.fill() } ctx.beginPath(); ctx.arc(x+21,y-16,8,0,7); ctx.fill(); ctx.fillRect(x+6,y-4,30,4) }
+ else if(chs==='curtains'){ ctx.fillRect(x+4,y-2,5,17); ctx.fillRect(x+33,y-2,5,17); ctx.fillStyle=look.skin; ctx.fillRect(x+20,y-2,2,6); ctx.fillStyle=HC }
+ else if(chs==='curtainbangs'){ ctx.fillRect(x+2,y-2,6,38); ctx.fillRect(x+34,y-2,6,38); ctx.beginPath(); ctx.arc(x+13,y+3,6.4,Math.PI,Math.PI*1.75); ctx.fill(); ctx.beginPath(); ctx.arc(x+29,y+3,6.4,Math.PI*1.25,Math.PI*2); ctx.fill(); ctx.fillStyle=look.skin; ctx.fillRect(x+20,y-2,2,5); ctx.fillStyle=HC }
+ else if(chs==='buzz'){ ctx.fillStyle=HD; ctx.fillRect(x+6,y-2,30,4.4); ctx.fillStyle=HC; ctx.fillRect(x+6,y-2,30,1.8) }
+ else if(chs==='buzzdesign'){ ctx.fillStyle=HD; ctx.fillRect(x+6,y-2,30,5); ctx.fillStyle=HC; ctx.fillRect(x+6,y-2,30,1.8); ctx.strokeStyle=look.skin; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(x+27,y+0); ctx.lineTo(x+31,y+4); ctx.lineTo(x+28,y+4); ctx.lineTo(x+32,y+9); ctx.stroke(); ctx.lineWidth=1 }
+ else if(chs==='undercut'){ ctx.fillStyle=HD; ctx.fillRect(x+6,y+3,4,8); ctx.fillRect(x+32,y+3,4,8); ctx.fillStyle=HC; ctx.beginPath(); ctx.roundRect(x+6,y-4,26,6,2.4); ctx.fill() }
+ else if(chs==='longtop'){ ctx.fillStyle=HD; ctx.fillRect(x+6,y+2,4,7); ctx.fillRect(x+32,y+2,4,7); ctx.fillStyle=HC; ctx.beginPath(); ctx.roundRect(x+6,y-4,27,7,3); ctx.fill(); ctx.beginPath(); ctx.roundRect(x+22,y+1,13,4.6,2.2); ctx.fill() }
+ else if(chs==='wolfcut'){ for(let wi=0;wi<5;wi++){ ctx.beginPath(); ctx.moveTo(x+6+wi*6,y+5); ctx.lineTo(x+9+wi*6,y+10+(wi%2)*2); ctx.lineTo(x+12+wi*6,y+5); ctx.closePath(); ctx.fill() } ctx.fillRect(x+3,y+1,4,13); ctx.fillRect(x+35,y+1,4,13) }
+ else if(chs==='shagcut'){ for(let si=0;si<5;si++){ ctx.beginPath(); ctx.moveTo(x+6+si*6,y+5); ctx.lineTo(x+9+si*6,y+11-(si%2)*2); ctx.lineTo(x+12+si*6,y+5); ctx.closePath(); ctx.fill() } ctx.fillRect(x+2,y+1,5,21); ctx.fillRect(x+35,y+1,5,21); for(let si=0;si<2;si++){ ctx.beginPath(); ctx.moveTo(x+2+si*2,y+20); ctx.lineTo(x+4.5+si*2,y+25); ctx.lineTo(x+7+si*2,y+20); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(x+35+si*2,y+20); ctx.lineTo(x+37.5+si*2,y+25); ctx.lineTo(x+40+si*2,y+20); ctx.closePath(); ctx.fill() } }
+ else if(chs==='silkpress'){ ctx.fillRect(x+3,y-2,5,28); ctx.fillRect(x+34,y-2,5,28); ctx.fillStyle='#ffffff38'; ctx.fillRect(x+12,y-1,2.2,11); ctx.fillStyle=HC }
+ else if(chs==='galacrown'){ for(let gi=0;gi<4;gi++){ ctx.fillStyle=gi%2?HD:HC; ctx.beginPath(); ctx.arc(x+10+gi*7.4,y-3,3.6,0,7); ctx.fill() } ctx.fillStyle='#f59e0b'; ctx.fillRect(x+8,y-6,26,1.8); ctx.fillStyle=HC; ctx.fillRect(x+4,y-2,4,12); ctx.fillRect(x+34,y-2,4,12) }
+ else if(chs==='lowfade'){ ctx.fillStyle=shadeCol(HC,-40); ctx.fillRect(x+6,y+4,30,5.6); ctx.fillStyle=HC; ctx.fillRect(x+11,y-4,20,2.4) }
+ else if(chs==='shadowfade'){ ctx.fillStyle=shadeCol(HC,-44); ctx.fillRect(x+6,y+6,30,3.6); ctx.fillStyle=shadeCol(HC,-20); ctx.fillRect(x+6,y+2.4,30,3.6); ctx.fillStyle=HC; ctx.beginPath(); ctx.roundRect(x+12,y-4,18,3,1.4); ctx.fill() }
+ else if(chs==='texturedcrop'){ for(let ti=0;ti<5;ti++){ ctx.beginPath(); ctx.moveTo(x+6+ti*6,y+6); ctx.lineTo(x+9+ti*6,y+11-(ti%2)*1.6); ctx.lineTo(x+12+ti*6,y+6); ctx.closePath(); ctx.fill() } ctx.fillStyle=HD; ctx.fillRect(x+6,y+4,3.2,6); ctx.fillRect(x+33,y+4,3.2,6); ctx.fillStyle=HC }
+ else if(chs==='slickback'){ ctx.beginPath(); ctx.roundRect(x+6,y-6,30,12,6); ctx.fill(); ctx.fillStyle=HD; ctx.fillRect(x+12,y-3,18,1.6); ctx.fillRect(x+12,y+0,18,1.6); ctx.fillStyle=HC; ctx.fillRect(x+6,y+5,30,2.2) }
+ else if(chs==='hardpart'){ ctx.beginPath(); ctx.roundRect(x+6,y-4,24,4,1.8); ctx.fill(); ctx.fillStyle=look.skin; ctx.fillRect(x+14,y-2,3.4,8); ctx.fillStyle=HD; ctx.fillRect(x+30,y+2,6,6); ctx.fillStyle=HC }
+ else if(chs==='burstfade'){ ctx.beginPath(); ctx.roundRect(x+10,y-4,22,4.6,2.2); ctx.fill(); ctx.fillStyle=shadeCol(HC,-40); ctx.beginPath(); ctx.arc(x+5,y+9,4.6,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+37,y+9,4.6,0,7); ctx.fill(); ctx.fillStyle=HC }
+ else if(chs==='twists'){ for(let tw=0;tw<6;tw++){ ctx.fillStyle=tw%2?HD:HC; ctx.beginPath(); ctx.roundRect(x+7+tw*4.8,y-3,3.8,11+(tw%3)*1.6,1.8); ctx.fill() } ctx.fillStyle=HC }
+ else if(chs==='waves360'){ ctx.fillStyle=HD; ctx.fillRect(x+6,y-2,30,6.4); ctx.strokeStyle=HL; ctx.lineWidth=1.3; for(let wi=0;wi<2;wi++){ ctx.beginPath(); ctx.arc(x+21,y+3+wi,11-wi*3.6,Math.PI*1.12,Math.PI*1.88); ctx.stroke() } ctx.lineWidth=1; ctx.fillStyle=HC }
+ else if(chs==='caesarcut'){ ctx.fillRect(x+6,y+5,30,2.6); ctx.fillStyle=HD; ctx.fillRect(x+6,y+1,2.6,6); ctx.fillRect(x+33.4,y+1,2.6,6); ctx.fillStyle=HC }
+ else if(chs==='frenchcrop'){ ctx.fillRect(x+6,y+5,30,3.2); ctx.fillStyle=HD; ctx.fillRect(x+6,y+1,4,7); ctx.fillRect(x+32,y+1,4,7); ctx.fillStyle=HC; ctx.fillRect(x+15,y+7,2.2,3); ctx.fillRect(x+25,y+7,2.2,3) }
+ else if(chs==='pixiecut'){ for(let pi=0;pi<4;pi++){ ctx.beginPath(); ctx.moveTo(x+7+pi*7,y+5); ctx.lineTo(x+10.5+pi*7,y+9.6); ctx.lineTo(x+14+pi*7,y+5); ctx.closePath(); ctx.fill() } ctx.fillStyle='#f59e0b'; ctx.fillRect(x+29,y+0,1.8,3); ctx.fillStyle=HC }
+ else if(chs==='boxbraids'){ for(let bi=0;bi<7;bi++){ ctx.fillStyle=bi%2?HD:HC; const bxx=x+1+bi*5.6; ctx.beginPath(); ctx.roundRect(bxx,y+4,3.8,24+(bi%3)*3,1.8); ctx.fill() } ctx.fillStyle='#38bdf8'; for(let bi=0;bi<7;bi++){ ctx.beginPath(); ctx.arc(x+2.9+bi*5.6,y+29+(bi%3)*3,1.4,0,7); ctx.fill() } ctx.fillStyle=HC }
+ else if(chs==='twistsg'){ for(let ti=0;ti<3;ti++){ const txx=x+2+ti*12; for(let sg=0;sg<3;sg++){ ctx.fillStyle=sg%2?HD:HC; ctx.beginPath(); ctx.roundRect(txx,y+3+sg*7,6.4,7,2.4); ctx.fill() } } ctx.fillStyle=HC }
+ else if(chs==='wavyLong'){ ctx.fillRect(x+1,y-2,7,52); ctx.fillRect(x+34,y-2,7,52); for(let wi=0;wi<3;wi++){ ctx.beginPath(); ctx.arc(x+4,y+12+wi*13,4,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+38,y+18+wi*13,4,0,7); ctx.fill() } }
+ else if(chs==='sleeklong'){ ctx.fillRect(x+3,y-2,6,50); ctx.fillRect(x+33,y-2,6,50); ctx.beginPath(); ctx.moveTo(x+3,y+48); ctx.lineTo(x+9,y+42); ctx.lineTo(x+9,y+48); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.moveTo(x+39,y+48); ctx.lineTo(x+33,y+42); ctx.lineTo(x+33,y+48); ctx.closePath(); ctx.fill(); ctx.fillStyle=look.skin; ctx.fillRect(x+20,y-2,1.8,7); ctx.fillStyle=HC }
+ else if(chs==='halfup'){ ctx.fillRect(x+2,y-2,6,34); ctx.fillRect(x+34,y-2,6,34); ctx.beginPath(); ctx.arc(x+21,y-8,5.2,0,7); ctx.fill(); ctx.fillStyle='#f59e0b'; ctx.fillRect(x+16,y-7,9,2.2); ctx.fillStyle=HC }
+ if(girl&&(chs==='classic'||chs==='short'||chs==='bob'||chs==='bobcut'||chs==='lobcut'||chs==='longwaves'||chs==='runwaywaves'||chs==='sleeklong'||chs==='wavyLong'||chs==='silkpress'||chs==='curtains'||chs==='curtainbangs'||chs==='sidepart'||chs==='curly')){ ctx.fillStyle='#ef4444'; ctx.fillRect(x+22,y-12,11,6); ctx.fillRect(x+26,y-15,4,11) } // bow — classic-family styles only, so it never fights a bun/pony/afro silhouette
  drawFace(ctx,x+21,y+12,(actIcon==='💤'?'sleep':(expr||'neutral')),0.78,4.5,look.face,look.skin);
  const gl=look.glasses||'none'; if(gl==='shades'){ ctx.fillStyle='#111827'; ctx.fillRect(x+9,y+7,24,8) }
  const hat=look.hat||'none'; const hc=(HATS.find(h=>h.id===hat)||{}).color||'#e2543e';
@@ -6179,10 +6234,10 @@ body.rgbOff .ticker101{animation:none!important}
 function ensure101(){ if(!S)return null; if(!S.v101)S.v101={}; return S.v101 }
 let lastRealTab101='home', qSig101=null;
 function qSigOf101(){ if(!S)return ''; return (S.queue84||[]).join(',')+'|'+qLeft99() }
-function fixNav101(){ try{ const db=document.querySelector('#dockCore100 .dockBtns56'); if(!db)return; let b=db.querySelector('.actBtn101'); if(!b){ b=document.createElement('button'); b.type='button'; b.className='dockTab actBtn101'; b.setAttribute('aria-label','Folder: Actions — your room actions'); b.innerHTML='<span class="dtE">⚡</span><span class="dtL">Actions</span>'; b.onclick=function(){ dockGo101() }; db.insertBefore(b,db.firstChild) } const on=(typeof curTab!=='undefined'&&curTab==='actions101'); b.classList.toggle('on',!!on); if(on)db.querySelectorAll('.dockTab').forEach(function(x){ if(x!==b)x.classList.remove('on') }) }catch(e){} }
+function fixNav101(){ try{ const db=document.querySelector('#dockCore100 .dockBtns56'); if(!db)return; let b=db.querySelector('.actBtn101'); if(!b){ b=document.createElement('button'); b.type='button'; b.className='dockTab actBtn101'; b.setAttribute('aria-label','Folder: Actions'); b.innerHTML='<span class="dtE">⚡</span><span class="dtL">Actions</span>'; b.onclick=function(){ dockGo101() }; db.insertBefore(b,db.firstChild) } const on=(typeof curTab!=='undefined'&&curTab==='actions101'); b.classList.toggle('on',!!on); if(on)db.querySelectorAll('.dockTab').forEach(function(x){ if(x!==b)x.classList.remove('on') }) }catch(e){} }
 function actionsFolderHtml101(){ if(!S)return ''; ensure84(); ensure93(); const tmp=document.createElement('div'); tmp.innerHTML=furnBtns82(); let cards='';
  tmp.querySelectorAll('button.furn').forEach(function(btn){ cards+='<div class="card actCard101">'+btn.outerHTML+'</div>' });
- return '<p class="small" style="margin:2px 2px 8px">⚡ Your room actions</p><div class="grid actGrid101">'+cards+'</div>' }
+ return '<div class="grid actGrid101">'+cards+'</div>' }
 function paintActions101(){ const p=document.getElementById('panel'); if(!p||!S)return; p.innerHTML=actionsFolderHtml101(); const t=document.getElementById('dsTitle'); if(t)t.textContent='⚡ Actions'; qSig101=qSigOf101() }
 function paintQCards101(){ if(!S||curTab!=='actions101'||!dockOpen)return; const sig=qSigOf101(); if(sig===qSig101)return; qSig101=sig; const p=document.getElementById('panel'); if(p)p.innerHTML=actionsFolderHtml101() }
 /* the queue painters now repaint the ⚡ cards (position + cooldown live there) — the scene chip is retired */
@@ -9456,7 +9511,7 @@ function actCardOf132(panel,type){ const cards=panel.querySelectorAll('.actCard1
 function buildActionDropdowns132(panel){ /* Eat — the actual fridge & Bag food (item 16) */
  const eat=actCardOf132(panel,'eat'); if(eat){ const fr=S.fridge||{groceries:0,leftovers:0,snacks:0,drinks:0}; const foods=(S.inv||[]).filter(function(it){ return /food|snack|drink|meal/i.test(it.kind||'')||/^[🍔🍕🍎🍪🥤🍩🍗🌮🍜🍞🧀🍇🍓🥪🌯🍟]/.test(it.name||'') });
   let h='<div class="acT">🍽️ Eat</div>'; let any=false;
-  if(fr.leftovers>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'leftovers\')">🍱 Leftovers ×'+fr.leftovers+' — a real meal (+22 hunger)</button>' }
+  if(fr.leftovers>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'leftovers\')">🍱 Leftovers ×'+fr.leftovers+' (+22 hunger)</button>' }
   if(fr.groceries>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'groceries\')">🥦 Cook from groceries ×'+fr.groceries+' (+28 hunger, +health)</button>' }
   if(fr.snacks>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'snacks\')">🍪 Snack ×'+fr.snacks+' (+10 hunger)</button>' }
   if(fr.drinks>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'drinks\')">🥤 Drink ×'+fr.drinks+' (+6 hunger)</button>' }
@@ -9464,15 +9519,15 @@ function buildActionDropdowns132(panel){ /* Eat — the actual fridge & Bag food
   if(!any)h+='<p class="small">🧊 The fridge is empty and there\'s no food in your Bag — stock up with groceries at 🛒 FreshMart (Travel).</p>';
   eat.innerHTML=h }
  const sh=actCardOf132(panel,'shower'); if(sh)sh.innerHTML='<div class="acT">🚿 Shower</div>'
-  +'<button class="btn" onclick="shower132(\'quick\')">⚡ Quick — a fast rinse (+25 hygiene)</button>'
-  +'<button class="btn" onclick="shower132(\'brisk\')">💪 Brisk — scrubbed & awake (+40 hygiene, +4 energy)</button>'
+  +'<button class="btn" onclick="shower132(\'quick\')">⚡ Quick (+25 hygiene)</button>'
+  +'<button class="btn" onclick="shower132(\'brisk\')">💪 Brisk (+40 hygiene, +4 energy)</button>'
   +'<button class="btn" onclick="shower132(\'bubble\')">🫧 Bubble bath — (+55 hygiene, +8 fun)</button>'
   +'<button class="btn" onclick="shower132(\'long\')">🛁 Long — the full reset (+70 hygiene, +4 fun)</button>';
  const sl=actCardOf132(panel,'sleep'); if(sl)sl.innerHTML='<div class="acT">😴 Sleep</div>'
-  +'<button class="btn" onclick="sleep132(\'power\')">⚡ Power nap — 20 minutes of magic (+18 energy)</button>'
-  +'<button class="btn" onclick="sleep132(\'nap\')">💤 Nap — a proper lie-down (+32 energy)</button>'
-  +'<button class="btn" onclick="act(\'sleep\')">🛏️ Sleep — the full sleep, in your bed</button>'
-  +'<button class="btn gold" onclick="sleep132(\'nextday\')">🌅 Sleep until next day — through to the Morning Briefing</button>';
+  +'<button class="btn" onclick="sleep132(\'power\')">⚡ Power nap (+18 energy)</button>'
+  +'<button class="btn" onclick="sleep132(\'nap\')">💤 Nap (+32 energy)</button>'
+  +'<button class="btn" onclick="act(\'sleep\')">🛏️ Sleep</button>'
+  +'<button class="btn gold" onclick="sleep132(\'nextday\')">🌅 Sleep until next day</button>';
  const st=actCardOf132(panel,'study'); if(st)st.innerHTML='<div class="acT">📚 Study</div>'
   +'<button class="btn" onclick="study132(\'school\',\'light\')">📖 Light review — schoolwork, easy does it</button>'
   +'<button class="btn" onclick="study132(\'school\',\'cram\')">📝 Cram session — grades hard, costs energy</button>'
@@ -9940,7 +9995,7 @@ function wrapAll133(panel){ try{ wrapDropdowns132(panel) }catch(e){}
 function eatRebuild133(panel){ try{ const cards=panel.querySelectorAll('.actCard101,.card'); let eat=null; for(let i=0;i<cards.length;i++){ if(cards[i].innerHTML.indexOf('eatInv132')>=0||cards[i].innerHTML.indexOf('eatItem132')>=0||cards[i].innerHTML.indexOf('🍽️ Eat')>=0){ eat=cards[i]; break } } if(!eat)return;
  const fr=S.fridge||{groceries:0,leftovers:0,snacks:0,drinks:0}; const foods=(S.inv||[]).filter(bagFood133);
  let h='<div class="acT">🍽️ Eat</div>'; let any=false;
- if(fr.leftovers>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'leftovers\')">🍱 Leftovers ×'+fr.leftovers+' — a real meal (+22 hunger)</button>' }
+ if(fr.leftovers>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'leftovers\')">🍱 Leftovers ×'+fr.leftovers+' (+22 hunger)</button>' }
  if(fr.groceries>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'groceries\')">🥦 Cook from groceries ×'+fr.groceries+' (+28 hunger, +health)</button>' }
  if(fr.snacks>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'snacks\')">🍪 Snack ×'+fr.snacks+' (+10 hunger)</button>' }
  if(fr.drinks>0){ any=true; h+='<button class="btn" onclick="eatItem132(\'drinks\')">🥤 Drink ×'+fr.drinks+' (+6 hunger)</button>' }
@@ -11454,7 +11509,7 @@ renderTabs=function(active){ const r=_rt138(active); try{ if(!S||!inGame)return 
  if(cur==='work'&&S.jobInfo&&!(S.jail&&S.jail.in)&&otDone138()&&!panel.querySelector('.otCard138')){ const d=document.createElement('div'); if(V&&V.otDay===S.day){ d.innerHTML='<div class="card otCard138"><h3>⏰ Overtime</h3><p>Already banked today — overtime is once a day, after the shift.</p></div>' } else { d.innerHTML='<div class="card otCard138"><h3>⏰ Overtime — today\'s shift is in</h3><p>Stay <b>2 more hours</b> at '+S.jobInfo.title+' at <b>time-and-a-half</b>: <b>$'+otPay138()+'</b> gross, taxed like a shift, −12 energy. Once a day.</p><button class="btn gold" onclick="workOvertime138()">⏰ Work overtime — 2h at 1.5×</button></div>' } if(d.firstChild)panel.appendChild(d.firstChild) }
  /* items 1 + 2: in jail the panel IS the Me view — the Assistant never shows in it, and the cell sleep card does */
  if(S.jail&&S.jail.in){ panel.querySelectorAll('.card').forEach(function(card){ const h=card.querySelector('h3'); if(h&&/Assistant/.test(h.textContent||'')){ const dd=card.closest('details.dd132'); if(dd)dd.remove(); else card.remove() } });
-  if(!panel.querySelector('.jailSleep138')){ const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.innerHTML='<div class="card jailSleep138"><h3>😴 Sleep — your cell</h3><p>Your bunk, your hours — sleep in here follows the same rules as anywhere else: pick your rest. (⏩ Serve the day, on the jail panel, is still how a full day rolls.)</p><button class="btn" onclick="sleep132(\'power\')">⚡ Power nap — 20 minutes of magic (+18 energy)</button><button class="btn" style="margin-top:8px" onclick="sleep132(\'nap\')">💤 Nap — a proper lie-down (+32 energy)</button></div>'; if(d.firstChild)grid.appendChild(d.firstChild) } }
+  if(!panel.querySelector('.jailSleep138')){ const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.innerHTML='<div class="card jailSleep138"><h3>😴 Sleep — your cell</h3><p>Your bunk, your hours — sleep in here follows the same rules as anywhere else: pick your rest. (⏩ Serve the day, on the jail panel, is still how a full day rolls.)</p><button class="btn" onclick="sleep132(\'power\')">⚡ Power nap (+18 energy)</button><button class="btn" style="margin-top:8px" onclick="sleep132(\'nap\')">💤 Nap (+32 energy)</button></div>'; if(d.firstChild)grid.appendChild(d.firstChild) } }
  }catch(e){} return r };
 /* version-note wrapper (same pattern as v137): the label reads the LIVE version constant */
 if(typeof openWhatsNew==='function'){ const _own138=openWhatsNew; openWhatsNew=function(){ _own138(); try{ const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.wn138'))return; const d=document.createElement('div'); d.className='wn138'; d.innerHTML=''; const body=sh.querySelector('.sheetCard')||sh; body.insertBefore(d,body.children[1]||null) }catch(e){} } }
@@ -14703,6 +14758,46 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — Your Own Place & Furniture live
 function ageOk162(){ try{ localStorage.setItem('miniLifeSimShareable_age18ok','1') }catch(e){} var ov=document.getElementById('ageGate162'); if(ov)ov.remove() }
 function ageNo162(){ var ov=document.getElementById('ageGate162'); if(ov)ov.innerHTML='<div style="max-width:420px;text-align:center"><div style="font-size:34px;font-weight:900">18+ only</div><p style="font-size:15px;line-height:1.5;margin-top:8px">AquaLife is for players 18 and older.</p></div>' }
 try{ if(localStorage.getItem('miniLifeSimShareable_age18ok')!=='1'){ var ov162=document.createElement('div'); ov162.id='ageGate162'; ov162.setAttribute('role','dialog'); ov162.setAttribute('aria-label','Age confirmation'); ov162.style.cssText='position:fixed;inset:0;z-index:99999;background:#14100d;color:#f3e9d2;display:flex;align-items:center;justify-content:center;padding:20px'; ov162.innerHTML='<div style="max-width:420px;text-align:center"><div style="font-size:46px;font-weight:900">18+</div><p style="font-size:15px;line-height:1.5;margin-top:6px">This life simulator game includes gambling, crime, drugs and adult themes.</p><button class="btn gold" style="margin-top:12px" onclick="ageOk162()">I’m 18 or older — Enter</button><button class="btn outline" style="margin-top:8px;color:#f3e9d2;border-color:#f3e9d2" onclick="ageNo162()">I’m under 18</button></div>'; document.body.appendChild(ov162) } }catch(e){}
+</script>
+<script>
+/* ================= v164: 💇 TODDLER HAIRSTYLES — drawCrawlFigure now renders every one of the
+   52 catalog hairstyles distinctly (it previously drew one generic strip + touches for ~10
+   ids, so most picks changed nothing on a crawling toddler — creation preview, 🎨 style
+   sheet and the in-game crawl scene all share this renderer). Catalog, gender lock
+   (Girl 24 / Guy 18 / Unisex 10) and save format untouched. */
+window.__v164={version:function(){ return GAME_VERSION },crawlHair164:function(look){ return (look&&look.hairStyle)||'classic' }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — every hairstyle shows on toddlers too (crawl figure draws all 52 styles)');
+/* ================= v164 PART 2: 🎵 A NEW LOFI BEAT FOR THE INTRO — the intro / character-
+   selection flow gets its OWN procedural lo-fi loop, built with the exact same mechanism as
+   the shipped in-game beat (v81/v91: synthesized live through LOFI81's bus, same voices —
+   lofiPad81 / lofiBass81 / lofiKick81 / lofiNoiseHit81 / lofiPluck81 — same vinyl crackle,
+   same 3.6s bar, no audio files). Where the game beat descends Fmaj7 → Em7 → Dm7 → Cmaj7,
+   the intro beat runs a brighter I–vi–IV–V in D (Dmaj9 → Bm7 → Gmaj7 → A9), sparser hats,
+   an extra soft kick and a busier pluck melody with occasional high sparkle notes — same
+   dusty vibe, recognisably a different tune.
+   THE SWITCH: LOFI81.track is 'intro' whenever the player is OUT of a life (install gate,
+   welcome, character creation — anywhere inGame is false) and 'game' the moment a life is
+   entered (startGame, or any path that lands in render() with inGame true). syncMusic164
+   restarts the loop on the new track when the side changes (old bus fades via stopMusic81,
+   new loop starts clean at bar 0); hooks on startGame / renderSetup / renderWelcome flip
+   it immediately, and a 1s watchdog keeps the rule true on every other path (save load,
+   death → welcome, quit to setup). The existing 🎵 Music toggle / mute governs BOTH beats
+   identically — toggleMusic81 stops/starts the same LOFI81 engine, which reads the current
+   track at schedule time — and autoplay behaviour is unchanged (first tap starts the beat,
+   exactly as shipped). */
+LOFI81.track='intro';
+function lofiBarIntro164(t,barIdx){ const CH=[[54,57,61,64],[50,54,57,59],[47,50,54,59],[52,57,59,61]], RT=[38,35,43,45], ci=barIdx%4; lofiPad81(t,CH[ci]); lofiBass81(t,RT[ci]); lofiBass81(t+1.8,RT[ci]); lofiKick81(t); lofiKick81(t+1.8); lofiKick81(t+2.7); lofiNoiseHit81(t+0.9,0.16,'bandpass',1800,0.045); lofiNoiseHit81(t+2.7,0.16,'bandpass',1800,0.045); for(let e=0;e<8;e+=2){ lofiNoiseHit81(t+e*0.45,0.035,'highpass',7600,0.013) } if(Math.random()<0.85){ const slots=[0,2,3,5,6,7]; const n=2+Math.floor(Math.random()*2); for(let k=0;k<n;k++){ const s164=slots[Math.floor(Math.random()*slots.length)]; lofiPluck81(t+s164*0.45,CH[ci][Math.floor(Math.random()*4)]+12) } if(Math.random()<0.25)lofiPluck81(t+3.15,CH[ci][Math.floor(Math.random()*4)]+24) } }
+try{ const _lofiBar81_164=lofiBar81; lofiBar81=function(t,bi){ if(LOFI81.track==='intro')return lofiBarIntro164(t,bi); return _lofiBar81_164(t,bi) } }catch(e){}
+function musicTrackWant164(){ return (typeof inGame!=='undefined'&&inGame)?'game':'intro' }
+function syncMusic164(){ try{ if(typeof musicOff81==='function'&&musicOff81())return; const want=musicTrackWant164(); if(LOFI81.track!==want){ LOFI81.track=want; if(LOFI81.started){ stopMusic81(); startMusic81() } } }catch(e){} }
+try{ const _sg164=startGame; startGame=function(){ const r=_sg164.apply(this,arguments); LOFI81.track='game'; syncMusic164(); return r } }catch(e){}
+try{ const _rs164=renderSetup; renderSetup=function(){ const r=_rs164.apply(this,arguments); LOFI81.track='intro'; syncMusic164(); return r } }catch(e){}
+try{ const _rw164=renderWelcome; renderWelcome=function(){ const r=_rw164.apply(this,arguments); LOFI81.track='intro'; syncMusic164(); return r } }catch(e){}
+setInterval(syncMusic164,1000);
+window.__v164.lofiTrack164=function(){ return LOFI81.track||'game' };
+window.__v164.lofiBarIntro164=lofiBarIntro164;
+window.__v164.syncMusic164=syncMusic164;
+console.log('🌊 AquaLife v'+GAME_VERSION+' — a new lo-fi beat for the intro & character selection; the normal beat returns in game');
 </script>
 </body>
 </html>
