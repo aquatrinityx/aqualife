@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=166;
+const GAME_VERSION=167;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -14748,6 +14748,23 @@ try{ const _pp162=phoneProperty110; phoneProperty110=function(){ const r=_pp162(
 window.__v162part15={ok:true};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — Your Own Place & Furniture lives in the 🏠 Property app now');
 </script>
+<style>
+/* v167: B2 gallery-grid gate skin — drawn gradient feature tiles + highlight rows on the game's own dark panel with the family rainbow border. Presentation only; gate behavior (v162) untouched. */
+.gate167Panel{width:100%;max-width:440px;max-height:94dvh;overflow-y:auto;text-align:center;border-radius:22px;padding:20px 18px;border:3px solid transparent;background-image:linear-gradient(#171020,#171020),conic-gradient(from var(--rgba),#ff004c,#ff8a00,#ffee00,#22ff88,#00cfff,#7a00ff,#ff004c);background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 3.2s linear infinite;box-shadow:0 0 30px #7a00ff4d,0 22px 48px #000000a0}
+.gate167Title{font-size:34px;font-weight:900;line-height:1.1}
+.gate167Pitch{font-size:15px;line-height:1.4;margin:6px 0 0;opacity:.92}
+.gate167Grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.gate167Tile{position:relative;border-radius:14px;min-height:102px;overflow:hidden;border:2px solid #ffffff30;display:flex;align-items:center;justify-content:center}
+.gate167T1{background:radial-gradient(circle at 30% 20%,#b26bff55,transparent 60%),linear-gradient(135deg,#7a00ff,#4c1d95 55%,#2a0a4a)}
+.gate167T2{background:radial-gradient(circle at 30% 20%,#ffd16666,transparent 60%),linear-gradient(135deg,#ff8a00,#e85d2a 55%,#7c2d12)}
+.gate167T3{background:radial-gradient(circle at 30% 20%,#7dd3fc55,transparent 60%),linear-gradient(135deg,#00cfff,#2563eb 55%,#172554)}
+.gate167T4{background:radial-gradient(circle at 30% 20%,#86efac55,transparent 60%),linear-gradient(135deg,#22c55e,#15803d 55%,#052e16)}
+.gate167Glyph{font-size:42px;line-height:1;padding-bottom:22px;filter:drop-shadow(0 3px 6px #00000088)}
+.gate167Cap{position:absolute;left:0;right:0;bottom:0;background:#00000059;color:#fff;font-size:12.5px;font-weight:800;padding:6px}
+.gate167Row{margin-top:10px;text-align:left;background:#241631;border:1.5px solid #ffffff26;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;color:#f3e9d2}
+.gate167Warn{font-size:14.5px;line-height:1.5;margin:14px 0 0}
+.gate167Must{font-size:14px;font-weight:800;color:#ffd166;margin:8px 0 0}
+</style>
 <script>
 /* ================= v162 PART 5: 🔞 18+ AGE CONFIRMATION — once per device =================
    On launch, before the game is usable, a full-screen self-declaration gate: title "18+", one
@@ -14755,10 +14772,14 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — Your Own Place & Furniture live
    a DEVICE-level flag under its own localStorage key (outside the save slot — new lives and
    other saves never re-trigger it; existing players confirm once, their save untouched behind
    the gate). "I'm under 18" shows a plain closed message and never enters; no flag is written,
-   no save is touched. */
+   no save is touched.
+   v167: the gate's PRESENTATION is rebuilt as the B2 gallery grid (title + pitch, a 2x2 grid of
+   drawn gradient feature tiles, two highlight rows, then the same gate sentence, the same
+   "You must be 18 or older to play." line and the same two buttons). Behavior is byte-for-byte
+   the v162 behavior above: same flag key, same handlers, same under-18 block. */
 function ageOk162(){ try{ localStorage.setItem('miniLifeSimShareable_age18ok','1') }catch(e){} var ov=document.getElementById('ageGate162'); if(ov)ov.remove() }
 function ageNo162(){ var ov=document.getElementById('ageGate162'); if(ov)ov.innerHTML='<div style="max-width:420px;text-align:center"><div style="font-size:34px;font-weight:900">18+ only</div><p style="font-size:15px;line-height:1.5;margin-top:8px">AquaLife is for players 18 and older.</p></div>' }
-try{ if(localStorage.getItem('miniLifeSimShareable_age18ok')!=='1'){ var ov162=document.createElement('div'); ov162.id='ageGate162'; ov162.setAttribute('role','dialog'); ov162.setAttribute('aria-label','Age confirmation'); ov162.style.cssText='position:fixed;inset:0;z-index:99999;background:#14100d;color:#f3e9d2;display:flex;align-items:center;justify-content:center;padding:20px'; ov162.innerHTML='<div style="max-width:420px;text-align:center"><div style="font-size:46px;font-weight:900">18+</div><p style="font-size:15px;line-height:1.5;margin-top:6px">This life simulator game includes gambling, crime, drugs and adult themes.</p><button class="btn gold" style="margin-top:12px" onclick="ageOk162()">I’m 18 or older — Enter</button><button class="btn outline" style="margin-top:8px;color:#f3e9d2;border-color:#f3e9d2" onclick="ageNo162()">I’m under 18</button></div>'; document.body.appendChild(ov162) } }catch(e){}
+try{ if(localStorage.getItem('miniLifeSimShareable_age18ok')!=='1'){ var ov162=document.createElement('div'); ov162.id='ageGate162'; ov162.setAttribute('role','dialog'); ov162.setAttribute('aria-label','Age confirmation'); ov162.style.cssText='position:fixed;inset:0;z-index:99999;background:#14100d;color:#f3e9d2;display:flex;align-items:center;justify-content:center;padding:20px'; ov162.innerHTML='<div class="gate167Panel"><div class="gate167Title">🌊 AquaLife</div><p class="gate167Pitch">One life. Endless ways it can go.</p><div class="gate167Grid"><div class="gate167Tile gate167T1"><div class="gate167Glyph">🎰</div><div class="gate167Cap">Casino &amp; Slots</div></div><div class="gate167Tile gate167T2"><div class="gate167Glyph">👨‍👩‍👧</div><div class="gate167Cap">Love &amp; Family</div></div><div class="gate167Tile gate167T3"><div class="gate167Glyph">🏙️</div><div class="gate167Cap">Empire Building</div></div><div class="gate167Tile gate167T4"><div class="gate167Glyph">📱</div><div class="gate167Cap">A Whole Phone Life</div></div></div><div class="gate167Row">🎲 <b>A random family</b> deals your start — rich, poor, or chaos</div><div class="gate167Row">💼 <b>School, jobs, love &amp; family</b> — build your life</div><p class="gate167Warn">This life simulator game includes gambling, crime, drugs and adult themes.</p><p class="gate167Must">You must be 18 or older to play.</p><button class="btn gold" style="margin-top:12px" onclick="ageOk162()">I’m 18 or older — Enter</button><button class="btn outline" style="margin-top:8px;color:#f3e9d2;border-color:#f3e9d2" onclick="ageNo162()">I’m under 18</button></div>'; document.body.appendChild(ov162) } }catch(e){}
 </script>
 <script>
 /* ================= v164: 💇 TODDLER HAIRSTYLES — drawCrawlFigure now renders every one of the
