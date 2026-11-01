@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=171;
+const GAME_VERSION=172;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -2909,14 +2909,20 @@ function drawRoom(){
  const crawling=isCrawling();
  const dx=targetX-charX, dy=targetY-charY; if(Math.abs(dx)>4||Math.abs(dy)>4){ const spd=crawling?0.038:0.08; charX+=dx*spd; charY+=dy*spd; walkPhase+=crawling?0.3:0.35; dir=dx>4?'right':dx<-4?'left':'front' } else walkPhase=0; if(activity&&activity.icon==='💤'){ charX=targetX; charY=targetY; walkPhase=0 } /* v144: sleep is still — no gliding across the room mid-sleep (the sliding sleeper + bed read as glitching) */
  const actP=activity?Math.min(1,(nowMs-activity.start)/activity.dur):1; const actIcon=activity&&actP<1?activity.icon:null;
+ const sleepingTod172=crawling&&(actIcon==='💤'||(typeof playerAsleep128==='function'&&playerAsleep128())); /* v172: a sleeping toddler LIES DOWN (player branch below) instead of keeping the crawl pose under the bed overlay */
  let bob=crawling?Math.abs(Math.sin(walkPhase))*2:Math.abs(Math.sin(walkPhase))*5; if(actIcon==='💤')bob=0; /* v144: a sleeping figure never bobs against its bed/blanket */
  if(actIcon==='🍽️'||actIcon==='🍪'||actIcon==='🍔'||actIcon==='🍦')bob+=Math.abs(Math.sin(nowMs/110))*4;
  if(actIcon==='🏃')bob+=Math.abs(Math.sin(nowMs/85))*7;
  const x=charX; let y=charY-bob; if(actIcon==='🐾')y+=14;
- ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.ellipse(x,y+(crawling?40:58),crawling?22:28,9,0,0,Math.PI*2); ctx.fill();
+ ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.ellipse(x,y+(sleepingTod172?16:(crawling?40:58)),sleepingTod172?34:(crawling?22:28),sleepingTod172?7:9,0,0,Math.PI*2); ctx.fill();
  const seatedNow=!!(activity&&activity.seated&&actIcon&&!crawling);
  if(seatedNow){ ctx.fillStyle='#7c4f1e'; ctx.beginPath(); ctx.roundRect(x-25,y-18,50,36,9); ctx.fill(); ctx.fillStyle='#8a5a24'; ctx.fillRect(x-25,y+10,50,6) } // the chair back, behind the sitter
- if(crawling)drawCrawlFigure(ctx,x,y,lookOf(S),walkPhase,actIcon,nowMs,exprForNeeds());
+ if(sleepingTod172){ /* v172: SLEEPING TODDLER LIES DOWN — before v172 the crawl branch won over the sleep branch, so a toddler mid-nap kept the crawl pose while the v132 bed overlay painted over it: the whole sleeper vanished under a flat white-and-blue rectangle (Howard's dorm screenshot). Same lying recipe as the v136 kids-asleep pose, at toddler scale: figure on its side, blanket over the body, head out. */
+  ctx.save(); ctx.translate(x,y-4); ctx.scale(0.52,0.52); ctx.translate(16,6); ctx.rotate(-Math.PI/2); drawFigure(ctx,0,0,lookOf(S),0,'💤',nowMs,'sleep');
+  ctx.fillStyle=(LOC_THEMES[S.location]||LOC_THEMES.house).blanket; ctx.beginPath(); ctx.roundRect(-21,2,42,54,9); ctx.fill(); ctx.fillStyle='#ffffff2e'; ctx.fillRect(-21,2,42,6); ctx.fillStyle='#00000018'; ctx.fillRect(-21,46,42,5); ctx.restore();
+  ctx.font='15px sans-serif'; ctx.fillText('💤',x-14,y-18+Math.sin(nowMs/600)*2);
+ }
+ else if(crawling)drawCrawlFigure(ctx,x,y,lookOf(S),walkPhase,actIcon,nowMs,exprForNeeds());
  else if(actIcon==='💤'){ // ---- v36: SLEEP IS A PERFORMANCE — climb in, lie down along the bed, blanket over, Zzz up ----
   const lt=actP<0.18?actP/0.18:(actP>0.86?Math.max(0,(1-actP)/0.14):1); const ez=lt*lt*(3-2*lt);
   ctx.save(); ctx.translate(x+50*ez,y+30*ez); ctx.rotate(-Math.PI/2*ez); drawFigure(ctx,0,0,lookOf(S),0,actIcon,nowMs,'sleep');
@@ -9873,10 +9879,12 @@ atWork120=function(name){ if(S&&name&&(name===(S.spouse||S.partner))&&momDuty132
 function playerSleeping132(){ try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤')return true; if(typeof playerAsleep128==='function'&&playerAsleep128())return true }catch(e){} return false }
 setInterval(function(){ try{ if(!S||!inGame)return; const V=ensure132(); if(!V)return; if(playerSleeping132()){ if(!V.sleepAnchor||V.sleepAnchor.loc!==S.location)V.sleepAnchor={x:charX,y:charY,loc:S.location}; else { charX=V.sleepAnchor.x; charY=V.sleepAnchor.y } } else V.sleepAnchor=null }catch(e){} },200);
 const _dr132=drawRoom;
-drawRoom=function(){ const r=_dr132(); try{ if(!S||!inGame)return r; if(playerSleeping132()){ let _skipBed144=false; try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤'&&activity.dur){ const ap=(performance.now()-activity.start)/activity.dur; if(ap<0.14||ap>0.90)_skipBed144=true } }catch(e){} if(_skipBed144)return r; /* v144: no bed painted while the figure is still climbing in or out (ez ease) — the snap-in bed at both ends of a sleep, worst at ×2, read as glitching */ const cv=document.getElementById('cv'); const ctx=cv?cv.getContext('2d'):null; if(ctx){ const x=charX,y=charY; const theme=(typeof LOC_THEMES!=='undefined'&&(LOC_THEMES[S.location]||LOC_THEMES.house))||{}; ctx.save(); /* the BED under the sleeper + covers OVER them: this is real sleep, in a real bed */
-  ctx.fillStyle='#6b4423'; ctx.beginPath(); ctx.roundRect(x-24,y+6,150,52,8); ctx.fill();
-  ctx.fillStyle='#f8fafc'; ctx.beginPath(); ctx.roundRect(x-20,y+10,36,40,7); ctx.fill();
-  ctx.fillStyle=theme.blanket||'#2563eb'; ctx.beginPath(); ctx.roundRect(x+2,y+12,118,42,10); ctx.fill(); ctx.fillStyle='#ffffff30'; ctx.fillRect(x+2,y+12,118,7); ctx.restore() } } }catch(e){} return r };
+drawRoom=function(){ const r=_dr132(); try{ if(!S||!inGame)return r; if(playerSleeping132()){ let _skipBed144=false; try{ if(typeof activity!=='undefined'&&activity&&activity.icon==='💤'&&activity.dur){ const ap=(performance.now()-activity.start)/activity.dur; if(ap<0.14||ap>0.90)_skipBed144=true } }catch(e){} if(_skipBed144)return r; /* v144: no bed painted while the figure is still climbing in or out (ez ease) — the snap-in bed at both ends of a sleep, worst at ×2, read as glitching */ const cv=document.getElementById('cv'); const ctx=cv?cv.getContext('2d'):null; if(ctx){ const x=charX,y=charY; const theme=(typeof LOC_THEMES!=='undefined'&&(LOC_THEMES[S.location]||LOC_THEMES.house))||{}; ctx.save(); /* v172: BED FURNITURE ONLY — drawRoom already draws the sleeper lying down, head out, under its own blanket. The pre-v172 overlay painted a whole second bed ON TOP of the figure (mattress slab + pillow block + blanket block), and the lying head landed exactly under the pillow/blanket blocks — a sleeping character read as a stray white-and-blue rectangle (Howard's dorm screenshot). The overlay now adds only what a bed adds AROUND a sleeper: a base rail below the body line, headboard + footboard posts at the two ends, and a slim pillow edge behind the head. Nothing paints over the head zone. Crawling toddlers skip it entirely: their lying pose (drawRoom v172) is toddler-scale and the full-size slab dwarfed it. */
+  if(!(typeof isCrawling==='function'&&isCrawling())){
+  ctx.fillStyle='#6b4423'; ctx.beginPath(); ctx.roundRect(x-30,y+52,162,11,6); ctx.fill();
+  ctx.fillStyle='#5d3a1e'; ctx.beginPath(); ctx.roundRect(x-34,y+2,10,58,5); ctx.fill(); ctx.beginPath(); ctx.roundRect(x+124,y+14,9,46,5); ctx.fill();
+  ctx.fillStyle='#f8fafc'; ctx.beginPath(); ctx.roundRect(x-26,y+12,16,38,6); ctx.fill(); }
+  ctx.restore() } } }catch(e){} return r };
 /* ---------- update notes (removed in v156) + exports ---------- */
 const _wn132=whatsNewHtml124;
 whatsNewHtml124=function(){ let h=''; try{ h=_wn132() }catch(e){} return '' };
@@ -15069,6 +15077,41 @@ function wrapTrouble171(name){
 ['crewCut63','guardHire63','guardFire63','guardFollow103'].forEach(wrapTrouble171);
 window.__v171={troubleSection171:troubleSection171,crewCard171:crewCard171,version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v171: college pointers → 💼 Work • 🔥 Trouble support (crew / bodyguards / burner) in ⚡ Actions • 🌳 Family Tree + 👨‍👩‍👧 Co-Parents single-homed in ❤️ Social');
+})();
+</script>
+<script>
+/* ================= v172: ONE HEADER PER DROPDOWN SECTION =================
+   The dropdown wrappers (v132 buildActionDropdowns132, wrapAll133, the v136 wrapper,
+   v167) build each section by COPYING the card's own title — its first h3/h2, or the
+   .acT div the v132 builder injects ("🍽️ Eat", "🚿 Shower", "😴 Sleep", "📚 Study") —
+   into the new <summary>, and leave the original title in place inside the card. Every
+   OPEN section therefore showed its header TWICE: once as the section title, once again
+   as a card title at the top of the open section (Howard's screenshot: "🍽️ Eat" doubled;
+   😴 Sleep only looked single because it was closed). eatRebuild133 re-injects the Eat
+   title on later passes, so stripping titles at build time would not hold — this sweep
+   runs after every panel paint and hides the in-card title whose text exactly matches
+   its section's summary. The title element stays in the DOM (other passes locate cards
+   by their h3 text); only its rendering is turned off. Inner headings that differ from
+   the summary (intentional sub-titles) are untouched, and open/closed state is never
+   touched — the settled menu behaviour (sections closed on arrival, stay open while you
+   are in the screen, collapse on leaving) is exactly as v135/v159/v162 left it. */
+(function(){
+ function norm172(t){ return String(t||'').replace(/\s+/g,' ').trim() }
+ function sweep172(){ try{
+   var p=document.getElementById('panel'); if(!p)return;
+   var ds=p.querySelectorAll('details.dd132');
+   for(var i=0;i<ds.length;i++){ var d=ds[i]; var sm=d.querySelector(':scope > summary'); if(!sm)continue;
+     var want=norm172(sm.textContent); if(!want)continue;
+     var heads=d.querySelectorAll('h3,h2,.acT');
+     for(var j=0;j<heads.length;j++){ var h=heads[j]; if(h===sm)continue;
+       if(norm172(h.textContent)===want){ if(h.style.display!=='none')h.style.display='none'; break } }
+   }
+ }catch(e){} }
+ function wrap172(name){ try{ var fn=window[name]; if(typeof fn!=='function'||fn.__v172)return;
+   var w=function(){ var r=fn.apply(this,arguments); sweep172(); return r };
+   w.__v172=true; window[name]=w }catch(e){} }
+ ['renderTabs','render','paintActions101','paintQCards101','eatRebuild133'].forEach(wrap172);
+ sweep172();
 })();
 </script>
 </body>
