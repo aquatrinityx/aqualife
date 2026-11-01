@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=167;
+const GAME_VERSION=168;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -2199,6 +2199,8 @@ function drawCrawlFigure(ctx,x,y,look,phase,actIcon,nowMs,expr){
  ctx.fillStyle=look.shirt; ctx.fillRect(x+12,y+24+pad,9,10); ctx.fillRect(x+2,y+24+pad2,9,10);
  ctx.fillStyle=look.skin; ctx.fillRect(x+13,y+32+pad,7,7); ctx.fillRect(x+3,y+32+pad2,7,7);
  if((look.gloves||'none')!=='none'){ ctx.fillStyle=(GLOVES.find(g=>g.id===look.gloves)||{}).color||'#f8fafc'; ctx.fillRect(x+13,y+34+pad,7,5); ctx.fillRect(x+3,y+34+pad2,7,5) } // v36: little gloves on crawling hands too
+ // ---- v168: WATCH on the front wrist — drawFigure always drew it, the crawl figure never did, so a crawling toddler's watch (incl. the Rich start's diamond watch) vanished. Same recipe as the standing figure, fitted to the reaching arm (sleeve x+12..x+21, hand below y+32). ----
+ const wcw=look.watch||'none'; if(wcw!=='none'){ const wcc=(WATCHES.find(w=>w.id===wcw)||{}).color||'#f59e0b'; ctx.fillStyle='#1f2937'; ctx.fillRect(x+12,y+30.5+pad,9,3.4); if(wcw==='smart'){ ctx.fillStyle='#0ea5e9'; ctx.fillRect(x+14.2,y+29.9+pad,4.6,4.6) } else if(wcw==='sport'){ ctx.fillStyle=wcc; ctx.beginPath(); ctx.roundRect(x+13.6,y+29.7+pad,5.8,5.2,1.8); ctx.fill(); ctx.fillStyle='#a5f3fc'; ctx.fillRect(x+15.1,y+31.2+pad,2.6,2.1) } else { ctx.fillStyle=wcc; ctx.beginPath(); ctx.arc(x+16.5,y+32.2+pad,3,0,7); ctx.fill(); ctx.fillStyle='#fff7ed'; ctx.beginPath(); ctx.arc(x+16.5,y+32.2+pad,1.9,0,7); ctx.fill(); ctx.fillStyle='#1f2937'; ctx.fillRect(x+16,y+30.9+pad,0.9,1.6); if(wcw==='diamond'){ ctx.fillStyle='#ffffff'; ctx.fillRect(x+13.4,y+29.6+pad,1.3,1.3); ctx.fillRect(x+18.6,y+33.6+pad,1.3,1.3) } } }
  // head up front, looking ahead
  /* v164: EVERY pickable hairstyle draws distinctly on the crawl figure. Before v164 this
     renderer painted ONE generic strip (plus boy spikes) and added touches for only ~10 ids,
@@ -2270,7 +2272,36 @@ function drawCrawlFigure(ctx,x,y,look,phase,actIcon,nowMs,expr){
  else if(chs==='halfup'){ ctx.fillRect(x+2,y-2,6,34); ctx.fillRect(x+34,y-2,6,34); ctx.beginPath(); ctx.arc(x+21,y-8,5.2,0,7); ctx.fill(); ctx.fillStyle='#f59e0b'; ctx.fillRect(x+16,y-7,9,2.2); ctx.fillStyle=HC }
  if(girl&&(chs==='classic'||chs==='short'||chs==='bob'||chs==='bobcut'||chs==='lobcut'||chs==='longwaves'||chs==='runwaywaves'||chs==='sleeklong'||chs==='wavyLong'||chs==='silkpress'||chs==='curtains'||chs==='curtainbangs'||chs==='sidepart'||chs==='curly')){ ctx.fillStyle='#ef4444'; ctx.fillRect(x+22,y-12,11,6); ctx.fillRect(x+26,y-15,4,11) } // bow — classic-family styles only, so it never fights a bun/pony/afro silhouette
  drawFace(ctx,x+21,y+12,(actIcon==='💤'?'sleep':(expr||'neutral')),0.78,4.5,look.face,look.skin);
- const gl=look.glasses||'none'; if(gl==='shades'){ ctx.fillStyle='#111827'; ctx.fillRect(x+9,y+7,24,8) }
+ /* v168: THE CRAWL FIGURE'S ACCESSORY PASS — glasses, jewelry, all of it. ROOT CAUSE of
+    "glasses not showing / jewelry isn't working / watch isn't working" (toddler lives):
+    drawFigure (the standing figure) has drawn every glasses style, every jewelry piece
+    and the watch since v36, but drawCrawlFigure — rebuilt in v164 for hairstyles — only
+    ever got a lone 'shades' rect: no other glasses, no jewelry at all, no watch (the
+    watch is added above, on the wrist). Every surface that shows a crawling toddler
+    routes here — the in-game scene (isCrawling), the creation preview, the 🎨 style
+    sheet preview and the born-into reveal (all via drawAged159) — so a toddler's picks
+    silently drew nothing while a standing figure at any older stage showed them fine.
+    The blocks below mirror drawFigure's own recipes, refitted to the crawl head
+    (skin x+6..x+36, y-2..y+26; face centre x+21, eye line y+11, lenses at x+14 / x+28).
+    No ids added or removed; gates, prices and availability untouched. */
+ const gl=look.glasses||'none'; const eL=x+14, eR=x+28, eY=y+11;
+ if(gl==='round'){ ctx.strokeStyle='#111'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(eL,eY,5.2,0,7); ctx.stroke(); ctx.beginPath(); ctx.arc(eR,eY,5.2,0,7); ctx.stroke(); ctx.beginPath(); ctx.moveTo(eL+5,eY); ctx.lineTo(eR-5,eY); ctx.stroke(); ctx.lineWidth=1 }
+ else if(gl==='square'){ ctx.strokeStyle='#111'; ctx.lineWidth=1.4; ctx.strokeRect(eL-5.5,eY-5.5,11,11); ctx.strokeRect(eR-5.5,eY-5.5,11,11); ctx.beginPath(); ctx.moveTo(eL+5.5,eY); ctx.lineTo(eR-5.5,eY); ctx.stroke(); ctx.lineWidth=1 }
+ else if(gl==='shades'){ ctx.fillStyle='#111827'; ctx.fillRect(x+9,y+7,24,8) }
+ else if(gl==='star'){ ctx.fillStyle='#f59e0b'; [eL,eR].forEach(function(cx0){ ctx.beginPath(); for(let i=0;i<10;i++){ const ang=-Math.PI/2+i*Math.PI/5, rad=i%2?2.9:6.4, px=cx0+Math.cos(ang)*rad, py=eY+Math.sin(ang)*rad; if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py) } ctx.closePath(); ctx.fill() }); ctx.fillStyle='#111'; ctx.fillRect(x+19.5,y+10,3,2.2) }
+ else if(gl==='heart'){ ctx.fillStyle='#ec4899'; [eL,eR].forEach(function(cx0){ ctx.beginPath(); ctx.arc(cx0-2.6,eY-1.8,3.1,0,7); ctx.arc(cx0+2.6,eY-1.8,3.1,0,7); ctx.fill(); ctx.beginPath(); ctx.moveTo(cx0-5.5,eY-0.8); ctx.lineTo(cx0+5.5,eY-0.8); ctx.lineTo(cx0,eY+5.2); ctx.closePath(); ctx.fill() }); ctx.fillStyle='#111'; ctx.fillRect(x+19.5,y+10,3,2.2) }
+ else if(gl==='visor'){ const vg=ctx.createLinearGradient(x+8,y+5,x+34,y+5); vg.addColorStop(0,'#f43f5e'); vg.addColorStop(.5,'#f59e0b'); vg.addColorStop(1,'#3b82f6'); ctx.fillStyle=vg; ctx.beginPath(); ctx.roundRect(x+8,y+5.5,26,8,4); ctx.fill(); ctx.fillStyle='#ffffff70'; ctx.fillRect(x+11,y+7,9,2.2) }
+ else if(gl==='aviator'){ ctx.strokeStyle='#b45309'; ctx.lineWidth=1.5; ctx.fillStyle='#11182788'; ctx.beginPath(); ctx.roundRect(eL-5,eY-5.5,10,10,3.5); ctx.fill(); ctx.beginPath(); ctx.roundRect(eR-5,eY-5.5,10,10,3.5); ctx.fill(); ctx.beginPath(); ctx.roundRect(eL-5.8,eY-6.3,11.6,11.6,4); ctx.stroke(); ctx.beginPath(); ctx.roundRect(eR-5.8,eY-6.3,11.6,11.6,4); ctx.stroke(); ctx.beginPath(); ctx.moveTo(eL+5.8,eY-1); ctx.lineTo(eR-5.8,eY-1); ctx.stroke(); ctx.lineWidth=1 }
+ else if(gl==='monocle'){ ctx.strokeStyle='#b45309'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(eR,eY,6,0,7); ctx.stroke(); ctx.beginPath(); ctx.moveTo(eR,eY+6); ctx.quadraticCurveTo(x+33,y+20,x+30,y+28); ctx.stroke(); ctx.lineWidth=1 }
+ else if(gl==='rainbow'){ const rg=ctx.createLinearGradient(x+8,y+5,x+34,y+5); rg.addColorStop(0,'#f43f5e'); rg.addColorStop(.5,'#f59e0b'); rg.addColorStop(1,'#3b82f6'); ctx.strokeStyle=rg; ctx.lineWidth=2.2; ctx.beginPath(); ctx.roundRect(eL-6,eY-5.5,12,11,3.5); ctx.stroke(); ctx.beginPath(); ctx.roundRect(eR-6,eY-5.5,12,11,3.5); ctx.stroke(); ctx.beginPath(); ctx.moveTo(eL+6,eY); ctx.lineTo(eR-6,eY); ctx.stroke(); ctx.lineWidth=1 }
+ // ---- v168: JEWELRY on the crawl figure — necklaces & chains drape under the chin over the body front; earrings sparkle at the head's sides; the choker bands the neck; the anklet rings the back ankle ----
+ const jw=look.jewelry||'none';
+ if(jw==='necklace'||jw==='fullset'){ ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.arc(x+21,y+20,9,Math.PI*0.18,Math.PI*0.82); ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.arc(x+21,y+29.8,2.4,0,7); ctx.fill(); ctx.fillStyle='#ffffff'; ctx.fillRect(x+20.3,y+28.4,1.2,1.2) }
+ if(jw==='chain'){ ctx.strokeStyle='#f59e0b'; ctx.lineWidth=2.8; ctx.beginPath(); ctx.arc(x+21,y+19.5,9.5,Math.PI*0.16,Math.PI*0.84); ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#f59e0b'; ctx.fillRect(x+19,y+29,4,3.6); ctx.fillStyle='#92400e'; ctx.fillRect(x+20.4,y+29.9,1.2,1.8) }
+ if(jw==='earrings'||jw==='fullset'){ ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(x+4.2,y+17,2,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+37.8,y+17,2,0,7); ctx.fill(); ctx.fillStyle='#fff7ed'; ctx.fillRect(x+3.6,y+15.6,1.1,1.1); ctx.fillRect(x+37.2,y+15.6,1.1,1.1); ctx.fillStyle='#38bdf8'; ctx.beginPath(); ctx.arc(x+4.2,y+20.2,1.3,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+37.8,y+20.2,1.3,0,7); ctx.fill() }
+ if(jw==='stud'){ ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(x+4.2,y+17,1.9,0,7); ctx.fill(); ctx.fillStyle='#fff7ed'; ctx.fillRect(x+3.6,y+15.8,1.1,1.1) }
+ if(jw==='choker'){ ctx.fillStyle='#111827'; ctx.fillRect(x+12,y+21.5,18,3.8); ctx.fillStyle='#e879f9'; ctx.beginPath(); ctx.arc(x+21,y+23.4,1.6,0,7); ctx.fill() }
+ if(jw==='anklet'){ ctx.fillStyle='#f59e0b'; ctx.fillRect(x-32,y+28.8+pad,7,2.4); ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.arc(x-28.5,y+30+pad,1.3,0,7); ctx.fill() }
  const hat=look.hat||'none'; const hc=(HATS.find(h=>h.id===hat)||{}).color||'#e2543e';
  if(hat==='cap'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.arc(x+21,y+4,15,Math.PI,0); ctx.fill(); ctx.fillRect(x+22,y+2,20,4) }
  else if(hat==='beanie'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.arc(x+21,y+4,15,Math.PI,0); ctx.fill(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x+21,y-12,4,0,7); ctx.fill() }
