@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=172;
+const GAME_VERSION=173;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -2763,6 +2763,16 @@ function drawRoom(){
   ctx.fillStyle='#fef3c7'; ctx.font='bold 13px sans-serif'; ctx.fillText('📋 MENU',664,66); ctx.font='11px sans-serif'; ctx.fillText('🍔 Burger … $14',664,88); ctx.fillText('🍝 Pasta … $17',664,106); ctx.fillText('🥗 Garden … $12',664,124); ctx.fillText('💕 Date night … $30',664,142); ctx.font='12px sans-serif';
   ctx.fillStyle='#fbbf24'; [[386,150],[470,138],[700,180]].forEach(function(cd){ ctx.beginPath(); ctx.ellipse(cd[0],cd[1],3.4,5.4,0,0,7); ctx.fill(); ctx.fillStyle='#fef3c7'; ctx.fillRect(cd[0]-1.4,cd[1]+4,2.8,9); ctx.fillStyle='#fbbf24' });
   clockDraw(ctx,560,120);
+ } else if(loc==='warehouse'){ // v173: 🏭 THE ENTERPRISE WAREHOUSE — your own HQ: roller door, stacked crates, shelving, and one computer desk per computer owned (S.v173.computers)
+  ctx.fillStyle='#00000030'; ctx.fillRect(336,42,250,44); ctx.fillStyle='#334155'; ctx.fillRect(330,36,250,44); ctx.strokeStyle='#94a3b8'; ctx.lineWidth=2; ctx.strokeRect(332,38,246,40); ctx.lineWidth=1;
+  ctx.fillStyle='#e2e8f0'; ctx.font='bold 17px sans-serif'; ctx.fillText('🏭 ENTERPRISE HQ',356,65); ctx.font='12px sans-serif';
+  ctx.fillStyle='#64748b'; ctx.fillRect(58,44,150,124); ctx.fillStyle='#475569'; for(let rd=0;rd<6;rd++)ctx.fillRect(58,58+rd*20,150,4); ctx.strokeStyle='#334155'; ctx.lineWidth=2; ctx.strokeRect(58,44,150,124); ctx.lineWidth=1;
+  ctx.fillStyle='#8a5a24'; [[664,120],[724,120],[664,158],[724,158],[694,82]].forEach(function(cr){ ctx.fillRect(cr[0],cr[1],52,36); ctx.strokeStyle='#5f3c15'; ctx.strokeRect(cr[0],cr[1],52,36); ctx.beginPath(); ctx.moveTo(cr[0],cr[1]); ctx.lineTo(cr[0]+52,cr[1]+36); ctx.moveTo(cr[0]+52,cr[1]); ctx.lineTo(cr[0],cr[1]+36); ctx.stroke() });
+  shelfDraw(ctx,446,96,140);
+  var nc173=0; try{ if(S&&S.v173)nc173=S.v173.computers||0 }catch(e){}
+  if(nc173<=0){ ctx.fillStyle='#475569'; ctx.fillRect(96,196,300,10); ctx.fillStyle='#e2e8f0'; ctx.font='bold 12px sans-serif'; ctx.fillText('🖥️ No computers yet — the desks are empty',96,190); ctx.font='12px sans-serif' }
+  for(let dk=0;dk<nc173;dk++){ const dx=96+dk*230; ctx.fillStyle='#5b3a17'; ctx.fillRect(dx,196,190,10); ctx.fillRect(dx+8,206,10,26); ctx.fillRect(dx+172,206,10,26); ctx.fillStyle='#111827'; ctx.fillRect(dx+55,148,80,48); ctx.fillStyle='#38bdf8'; ctx.fillRect(dx+60,153,70,34); ctx.fillStyle='#22c55e'; ctx.fillRect(dx+63,157,30,4); ctx.fillRect(dx+63,165,44,4); ctx.fillStyle='#e2e8f0'; ctx.fillRect(dx+63,173,24,4); ctx.fillStyle='#374151'; ctx.fillRect(dx+88,196,14,6); ctx.fillStyle='#1f2937'; ctx.fillRect(dx+130,186,52,8) }
+  clockDraw(ctx,640,120);
  }
 // ---- FLOOR (v81): REAL surfaces — wood planks with grain runs, end seams, knots & a walked-on sheen; tile with grout shadow, stone speckle & a light sweep across it ----
  if(th.tiles){ ctx.fillStyle=th.floor[0]; ctx.fillRect(0,232,W,228) } /* v141: SOLID FLOOR — one flat colour (Howard: the bottom floor is solid colours — no checker, grout, speckle or sheen) */
@@ -2848,7 +2858,7 @@ function drawRoom(){
  /* v141: solid */
  /* v141: solid */
  } else if(loc==='beach'){ ctx.fillStyle='#38bdf8'; ctx.fillRect(0,414,W,8); ctx.fillStyle='#f2ddab'; ctx.fillRect(0,422,W,38); /* v141: SOLID FLOOR — flat sand, no speckles */
- } else if(loc==='jail'||loc==='city'||loc==='work'||loc==='pawn'||loc==='store'||loc==='arcade'||loc==='cinema'||loc==='mall'||loc==='concert'||loc==='grocery'||loc==='hospital'||loc==='restaurant'||loc==='music'){ ctx.fillStyle='#9aa0a6'; ctx.fillRect(0,418,W,42); ctx.fillStyle='#6b7280'; ctx.fillRect(0,414,W,6); /* v141: SOLID FLOOR — flat concrete, no seam lines */
+ } else if(loc==='jail'||loc==='city'||loc==='work'||loc==='pawn'||loc==='store'||loc==='arcade'||loc==='cinema'||loc==='mall'||loc==='concert'||loc==='grocery'||loc==='hospital'||loc==='restaurant'||loc==='music'||loc==='warehouse'){ ctx.fillStyle='#9aa0a6'; ctx.fillRect(0,418,W,42); ctx.fillStyle='#6b7280'; ctx.fillRect(0,414,W,6); /* v141: SOLID FLOOR — flat concrete, no seam lines */
  } else { ctx.fillStyle='#33a34a'; ctx.fillRect(0,418,W,42); ctx.fillStyle='#8a5a24'; ctx.fillRect(0,414,W,6); } /* v141: SOLID FLOOR — flat grass, no path, no flower specks */
  /* v141: solid */
  // ---- DAY/NIGHT LIGHT + WEATHER, painted over the scene: light follows the clock; rain, puddles, snow & lightning follow the forecast ----
@@ -8709,7 +8719,7 @@ function phoneAppDock127(){ if(!S)return ''; try{ const c=phoneAppById('calls'),
 (function(){ try{ const st=document.createElement('style'); st.id='style127'; st.textContent='.phoneDock127{display:flex;gap:12px;justify-content:center;margin-top:12px;padding:10px 12px;border-radius:20px;background:#ffffff14;border:1.5px solid #ffffff2c}.phoneDock127 .appCell{min-width:78px}'; document.head.appendChild(st) }catch(e){} })();
 /* ---------- 🚨 CRIME: CONTEXT-AWARE + THE BURNER RUNS ALL OF IT ---------- */
 function hasBurner127(){ try{ return (typeof burnerOn63==='function')&&burnerOn63() }catch(e){ return false } }
-function crimeLockMsg127(){ toast('📟 No crime without a burner — the 🌑 Dark Web app sells the phone & the app'); log('📟 NO BURNER, NO CRIME — every job on the Crime tab runs through a line that is not yours: no burner phone and no Burner app means no crime, full stop. The 🌑 Dark Web app (on your phone) sells both — that is the door, and it is the only one.') }
+function crimeLockMsg127(){ toast('📟 No crime without a burner — 🏢 Enterprise → 🛒 Market sells the burner app'); log('📟 NO BURNER, NO CRIME — every job on the Crime tab runs through a line that is not yours: no burner app means no crime, full stop. 🏢 Enterprise → 🛒 Market (on your phone) sells it — that is the door, and it is the only one.') }
 const STORE_LOCS127=['store','grocery','mall','pawn','liquor','city'];
 function atStore127(){ return !!(S&&STORE_LOCS127.indexOf(S.location)>=0) }
 function nearSomeone127(){ if(!S)return false;
@@ -8733,10 +8743,10 @@ const _sb53_127=streetBuy53; streetBuy53=function(){ if(S&&typeof dealerStarted1
 function crimeTabFix127(p){ if(!S||!p)return; const burner=hasBurner127(); const started=(typeof dealerStarted117==='function')?dealerStarted117():burner;
  p.querySelectorAll('.card').forEach(function(card){ const h=card.querySelector('h3'); if(!h)return; const t=h.textContent||'';
   const lockBtn=function(note){ const b=card.querySelector('button'); if(b){ const d=document.createElement('p'); d.className='small'; d.style.marginTop='8px'; d.textContent='🔒 '+note; b.replaceWith(d) } };
-  if(/Shoplift/.test(t)){ if(!atStore127()){ card.remove(); return } if(!burner)lockBtn('Crime runs on a burner line — get a 📟 burner phone or the Burner app from the 🌑 Dark Web app first.'); return }
-  if(/Pickpocket/.test(t)){ if(!nearSomeone127()){ card.remove(); return } if(!burner)lockBtn('Crime runs on a burner line — get a 📟 burner phone or the Burner app from the 🌑 Dark Web app first.'); return }
-  if(/Pick a Lock|Dumpster Dive|Rob a House|Rob a Bank/.test(t)){ if(!burner)lockBtn('Crime runs on a burner line — get a 📟 burner phone or the Burner app from the 🌑 Dark Web app first.'); return }
-  if(/Drug Market/.test(t)){ if(!started)lockBtn('The drug game starts at the 📟 burner — dealing and moving product run through it. Get the burner phone or the Burner app from the 🌑 Dark Web app.'); return }
+  if(/Shoplift/.test(t)){ if(!atStore127()){ card.remove(); return } if(!burner)lockBtn('Crime runs on a burner line — get the 📟 burner app from 🏢 Enterprise → 🛒 Market first.'); return }
+  if(/Pickpocket/.test(t)){ if(!nearSomeone127()){ card.remove(); return } if(!burner)lockBtn('Crime runs on a burner line — get the 📟 burner app from 🏢 Enterprise → 🛒 Market first.'); return }
+  if(/Pick a Lock|Dumpster Dive|Rob a House|Rob a Bank/.test(t)){ if(!burner)lockBtn('Crime runs on a burner line — get the 📟 burner app from 🏢 Enterprise → 🛒 Market first.'); return }
+  if(/Drug Market/.test(t)){ if(!started)lockBtn('The drug game starts at the 📟 burner — dealing and moving product run through it. Get the 📟 burner app from 🏢 Enterprise → 🛒 Market.'); return }
   if(/The Streets — people sell to YOU/.test(t)){ if(!started){ card.querySelectorAll('button').forEach(function(b){ b.disabled=true; b.style.opacity='.5' }); const d=document.createElement('p'); d.className='small'; d.style.marginTop='8px'; d.textContent='🔒 Locked until the 📟 burner — the street does not sell to a clean phone. Burner phone / Burner app: the 🌑 Dark Web app.'; card.appendChild(d) } return }
  }) }
 /* ---------- 🏠 EVENTS NEED SOMEONE HOME (+ none at all in jail) ---------- */
@@ -9016,11 +9026,11 @@ function streetLife128(){ if(!S)return; if(typeof troubleGate55==='function'&&tr
  +crimeBtn('Dumpster Dive','😈 Dumpster Dive — junk, sometimes treasure',true)
  +crimeBtn('Rob a House','😈 Rob a House — +$120 & loot, high heat',true)
  +crimeBtn('Rob a Bank','😈 Rob a Bank — +$600, FBI heat',true)
- +(started?'<button class="btn" data-bad="1" style="background:#14532d;color:#fff;margin-top:8px" onclick="dealMenu()">💊 The Drug Market</button>':'<p style="font-size:12px;opacity:.75;margin-top:8px">💊 The drug game starts at the burner — dealing unlocks once your line is set up in the 🌑 Dark Web app.</p>')
+ +(started?'<button class="btn" data-bad="1" style="background:#14532d;color:#fff;margin-top:8px" onclick="dealMenu()">💊 The Drug Market</button>':'<p style="font-size:12px;opacity:.75;margin-top:8px">💊 The drug game starts at the burner — dealing unlocks once your line is set up in 🏢 Enterprise → 🛒 Market.</p>')
  +'<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:10px" onclick="phoneBurner63()">📟 Burner — orders & contacts</button>')) }
 const _rt128b=renderTabs;
 renderTabs=function(active){ const r=_rt128b(active); try{ if(!S||!inGame||active!=='trouble'||jailed128())return r; const p=document.getElementById('panel'); if(!p)return r;
-  if(!p.querySelector('.burnerTop128')){ const d=document.createElement('div'); d.className='card burnerTop128'; d.style.borderColor='#14532d'; d.innerHTML='<h3>📟 The Burner Phone</h3>'+(hasBurner127()?'<button class="btn" data-bad="1" style="background:#14532d;color:#fff" onclick="streetLife128()">🔥 Open Street Life — in the Burner app</button>':'<p>🔒 <b>Street life is locked.</b> Every crime and all drug selling run through a burner line that is not yours — no burner, no street life. The 🌑 Dark Web app sells the burner phone and the Burner app.</p><button class="btn" style="background:#14532d;color:#fff" onclick="phoneBurner63()">📟 Get the burner</button>'); const grid=p.querySelector('.grid'); if(grid)grid.insertBefore(d,grid.firstChild); else p.insertBefore(d,p.firstChild) }
+  if(!p.querySelector('.burnerTop128')){ const d=document.createElement('div'); d.className='card burnerTop128'; d.style.borderColor='#14532d'; d.innerHTML='<h3>📟 The Burner App</h3>'+(hasBurner127()?'<button class="btn" data-bad="1" style="background:#14532d;color:#fff" onclick="streetLife128()">🔥 Open Street Life — in the Burner app</button>':'<p>🔒 <b>Street life is locked.</b> Every crime and all drug selling run through a burner line that is not yours — no burner, no street life. 🏢 Enterprise → 🛒 Market sells the burner app.</p><button class="btn" style="background:#14532d;color:#fff" onclick="phoneBurner63()">📟 Get the burner</button>'); const grid=p.querySelector('.grid'); if(grid)grid.insertBefore(d,grid.firstChild); else p.insertBefore(d,p.firstChild) }
   p.querySelectorAll('.card').forEach(function(card){ const h=card.querySelector('h3'); if(!h)return; if(/Shoplift|Pickpocket|Pick a Lock|Dumpster Dive|Rob a House|Rob a Bank|Drug Market|people sell to YOU/.test(h.textContent||''))card.remove() });
  }catch(e){} return r };
 
@@ -12576,12 +12586,12 @@ phoneDarkWeb117=function(){ const r=_phoneDarkWeb146(); try{ if(!S)return r; con
  scr.appendChild(d) }catch(e){} return r };
 const _prodStart146=prodStart133;
 prodStart133=function(key){ if(!S)return; const V=ensure146(); const eq=EQUIP146[key];
- if(eq&&!V.equip[key]){ toast('🧪 Needs '+eq.name+' — Dark Market'); log('🧪 PRODUCTION BLOCKED — the '+(PROD133[key]?PROD133[key].label:key)+' line needs the '+eq.name+' ($'+eq.price+', one-time) — buy it on the 🌐 Dark Web Market first. No equipment, no run.'); try{ prodSheet133() }catch(e){} return }
+ if(eq&&!V.equip[key]){ toast('🧪 Needs '+eq.name+' — 🏢 Enterprise → 🛒 Market'); log('🧪 PRODUCTION BLOCKED — the '+(PROD133[key]?PROD133[key].label:key)+' line needs the '+eq.name+' ($'+eq.price+', one-time) — buy it in 🏢 Enterprise → 🛒 Market first. No equipment, no run.'); try{ prodSheet133() }catch(e){} return }
  return _prodStart146(key) };
 const _prodSheet146=prodSheet133;
 prodSheet133=function(){ const r=_prodSheet146(); try{ if(!S)return r; const V=ensure146(); const sheetEl=document.getElementById('sheet'); if(!sheetEl||sheetEl.querySelector('.prodEq146'))return r;
  const d=document.createElement('div'); d.className='prodEq146';
- d.innerHTML=Object.keys(EQUIP146).map(function(k){ const eq=EQUIP146[k]; return '<div style="font-size:12.5px;margin-top:4px">'+(V.equip[k]?('✅ '+eq.name+' — owned'):('🔒 '+eq.line+' needs <b>'+eq.name+'</b> — 🌐 Dark Market, $'+eq.price))+'</div>' }).join('');
+ d.innerHTML=Object.keys(EQUIP146).map(function(k){ const eq=EQUIP146[k]; return '<div style="font-size:12.5px;margin-top:4px">'+(V.equip[k]?('✅ '+eq.name+' — owned'):('🔒 '+eq.line+' needs <b>'+eq.name+'</b> — 🏢 Enterprise → 🛒 Market, $'+eq.price))+'</div>' }).join('');
  const host=sheetEl.querySelector('.phoneScreen')||sheetEl; const h2=host.querySelector('h2'); if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling); else host.appendChild(d) }catch(e){} return r };
 
 /* ================= ITEM 6 — TRAVEL: COLLAPSED, CURRENT AREA ON TOP ================= */
@@ -15040,11 +15050,22 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — a new lo-fi beat for the intro 
 function crewCard171(){ try{ if(typeof _ccg135==='function')return _ccg135() }catch(e){} try{ return crewCard63() }catch(e){ return '' } }
 function troubleSection171(){
  if(!S)return '';
+ /* v173 (Part A): the section is 😈 Bad Actions now. HONEST LOCK: until the street life is unlocked —
+    the existing burner gate, dealerStarted117() exactly as the crew/guard cards define it (burner in
+    hand, or grandfathered as started) — the section shows ONE line instead of the locked cards. */
+ var started=false;
+ try{ started=(typeof dealerStarted117==='function')?dealerStarted117():((typeof burnerOn63==='function')&&burnerOn63()) }catch(e){}
+ if(!started)return '<details class="dd132 trouble171"><summary>😈 Bad Actions</summary><button class="btn" style="background:#14532d;color:#fff;margin:12px 14px;width:calc(100% - 28px)" onclick="dealerGateSheet117()">📟 Get a Burner to start</button></details>';
+ /* status chips: live wanted / crew / guards from existing state */
+ var crewN=0,guardN=0;
+ try{ crewN=((S.crew63&&S.crew63.members)||[]).filter(function(m){ return !m.gone }).length }catch(e){}
+ try{ guardN=(typeof guardsOnDuty63==='function')?guardsOnDuty63():((S.guards63&&S.guards63.count)||0) }catch(e){}
+ var chips='<div style="display:flex;gap:6px;flex-wrap:wrap;padding:12px 14px 2px"><span style="background:#111827;color:#fff;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800">⭐ Wanted '+(S.wanted||0)+'★</span><span style="background:#111827;color:#fff;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800">👥 Crew '+crewN+'</span><span style="background:#111827;color:#fff;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800">🛡️ Guards '+guardN+'</span></div>';
  var crew='',guard='';
  try{ crew=crewCard171() }catch(e){}
  try{ guard=guardCard63() }catch(e){}
  var burner='<div class="card" style="border-color:#14532d"><h3>📟 The Burner — app or phone</h3><p>A line for <b>regulars and buyers only</b>. Orders land there — close them on the phone for a bank transfer, or meet in person.</p><button class="btn" data-bad="1" style="background:#14532d;color:#fff" onclick="phoneBurner63()">📟 Open the Burner</button></div>';
- return '<details class="dd132 trouble171"><summary>🔥 Trouble</summary>'+crew+guard+burner+'</details>';
+ return '<details class="dd132 trouble171"><summary>😈 Bad Actions</summary>'+chips+crew+guard+burner+'</details>';
 }
 try{
  var _afh171=actionsFolderHtml101;
@@ -15113,6 +15134,162 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v171: college pointers → 💼
  ['renderTabs','render','paintActions101','paintQCards101','eatRebuild133'].forEach(wrap172);
  sweep172();
 })();
+</script>
+<script>
+/* ================= v173: THE CONVENIENCE BUILD — 😈 BAD ACTIONS (Part A lives in the v171 layer above: the
+   section is renamed, carries ⭐ Wanted · 👥 Crew · 🛡️ Guards chips, and shows ONE honest line — "📟 Get a
+   Burner to start" — until the existing burner gate, dealerStarted117(), says the street life is unlocked) •
+   🍽️ EAT DOORS (Part B, below) • 🏢 ENTERPRISE (Part C, below): a legit business with the crime life on the
+   side, consolidating the 📟 Burner app, the 🌑 Dark Web app and the 🕶️ Deep Market into ONE app.
+   LABELED DEFAULTS (Howard judges them in the run test): license fee $250 • warehouse $5,000 (buy once,
+   yours forever) • computers $600 each, max 3 • legit revenue $15/day + $35/day per computer, to the bank.
+   RECONCILIATIONS, stated once, here: (1) The brief's progression (license → warehouse → full sections)
+   collides with the shipped burner gate — dealing, crew and guards are burner-gated TODAY and open to
+   16-year-olds, while the license is 18+ — so the street sections (💸 Sell · 🌆 Streets · 👥 Crew ·
+   🛡️ Guards · 🛒 Market) keep the BURNER as their key, exactly as the game defines it now, and the
+   license → warehouse progression gates only the legit side (😇 Business, 💻 Computers). No existing
+   player loses anything: every state variable, balance, handler and unlock carries over untouched.
+   (2) The retired apps leave the phone home screen and the App Store; their launchers still exist and
+   every function is reachable inside Enterprise (phoneDarkWeb117 itself now lands on the 🛒 Market
+   section, so every shipped pointer — the gate sheets, the Hack app, the wipe, the gun shelf — arrives
+   at its new home instead of a dead door). (3) "burner phone" → "burner app" swept through the reachable
+   player-visible strings (the physical handset purchase was already retired in v137; S.burner63.phone
+   from older saves still counts as a live burner, untouched). Saves carry over: S.v173 defaults lazily;
+   SAVE_KEY and the save format are untouched. ================= */
+/* ---------- state & numbers ---------- */
+const LIC_FEE173=250, WAREHOUSE_PRICE173=5000, COMPUTER_PRICE173=600, COMPUTER_MAX173=3;
+function ensure173(){ if(!S)return null; if(!S.v173)S.v173={}; const V=S.v173; if(V.license===undefined)V.license=false; if(V.warehouse===undefined)V.warehouse=false; if(V.computers===undefined)V.computers=0; if(V.revDay===undefined)V.revDay=0; return V }
+function entStarted173(){ try{ if(typeof dealerStarted117==='function')return dealerStarted117() }catch(e){} try{ return burnerOn63() }catch(e){ return false } }
+function entCrewN173(){ try{ return ((S.crew63&&S.crew63.members)||[]).filter(function(m){ return !m.gone }).length }catch(e){ return 0 } }
+function entGuardN173(){ try{ return (S.guards63&&S.guards63.count)||0 }catch(e){ return 0 } }
+function entBack173(){ return '<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:12px" onclick="phoneEnterprise173()">‹ 🏢 Enterprise</button>' }
+function entTravelSync173(){ try{ const V=ensure173(); if(V&&V.warehouse&&typeof TRAVEL_OPTS!=='undefined'&&!TRAVEL_OPTS.some(function(o){ return o[0]==='warehouse' }))TRAVEL_OPTS.push(['warehouse','🏭 Warehouse — your Enterprise HQ']) }catch(e){} }
+try{ if(typeof LOC_THEMES!=='undefined'&&!LOC_THEMES.warehouse)LOC_THEMES.warehouse={wall:['#cbd5e1','#dbe3ec','#bcc9d8'],wains:'#475569',wainsTop:'#5b6b80',wainsLine:'#334155',floor:['#9aa7b8','#8f9cae','#a5b1c1','#87939f'],floorLine:'#33415555',tiles:true,rug:'rect',rugA:'#475569',rugB:'#5b6b80',rugRing:'#f59e0b',fridge:['#eef1f5','#d9dee6','#aeb6c2'],couch:['#b6c2d2','#a3b2c6','#7e93ad'],bedCol:'#334155',blanket:'#f2c14e'} }catch(e){}
+try{ if(typeof LOC_LABELS92!=='undefined'&&!LOC_LABELS92.warehouse)LOC_LABELS92.warehouse='🏭 the warehouse' }catch(e){}
+/* ---------- the app joins the phone + the App Store (free, like the other special apps) ---------- */
+try{ if(typeof PHONE_APPS!=='undefined'&&!PHONE_APPS.some(function(a){ return a.id==='enterprise' }))PHONE_APPS.push({id:'enterprise',icon:'🏢',name:'Enterprise'}); if(typeof PHONE_LAUNCH!=='undefined')PHONE_LAUNCH.enterprise=function(){ phoneEnterprise173() } }catch(e){}
+try{ if(typeof STORE_APPS110!=='undefined'&&!STORE_APPS110.enterprise)STORE_APPS110.enterprise={icon:'🏢',name:'Enterprise',price:0,blurb:'Your business: a legit front out front — crew, guards, the market and the whole side operation under one roof. Free.'} }catch(e){}
+try{ if(typeof STORE_CAT_OF151!=='undefined')STORE_CAT_OF151.enterprise='money' }catch(e){}
+try{ const _appSub173=appSub; appSub=function(id){ if(id==='enterprise'){ const V=S?ensure173():null; if(!V||!V.license)return 'license first'; if(!V.warehouse)return 'needs a warehouse'; return '⭐ '+(S.wanted||0)+'★ • 💻 '+V.computers+'/3' } return _appSub173(id) } }catch(e){}
+/* ---------- the retired apps leave the phone + the App Store (functions re-homed below) ---------- */
+try{ ['darkweb','deepmarket','burner'].forEach(function(id){ const ix=PHONE_APPS.findIndex(function(a){ return a.id===id }); if(ix>=0)PHONE_APPS.splice(ix,1) }) }catch(e){}
+try{ if(typeof STORE_APPS110!=='undefined'){ delete STORE_APPS110.darkweb; delete STORE_APPS110.deepmarket } }catch(e){}
+/* ---------- 🏢 ENTERPRISE — home: the progression, then the sections ---------- */
+function phoneEnterprise173(){ if(!S)return; if(!S.hasPhone){ noPhoneSheet(); return } const V=ensure173(); entTravelSync173();
+ const chip=function(t){ return '<span style="background:#1f2937;border:1.5px solid #ffffff2a;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800">'+t+'</span>' };
+ const chips='<div style="display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 10px">'+chip('⭐ Wanted '+(S.wanted||0)+'★')+chip(V.license?'📄 Licensed':'📄 No license')+chip(V.warehouse?'🏭 Warehouse owned':'🏭 No warehouse')+chip('💻 '+V.computers+'/3 computers')+'</div>';
+ let prog='';
+ if(!V.license)prog=entLicenseCard173();
+ else if(!V.warehouse)prog='<div style="border:1.5px solid #80808035;border-radius:12px;padding:11px 12px;text-align:left"><b>🏭 The Warehouse — $'+WAREHOUSE_PRICE173+'</b><br><span style="font-size:12.5px;opacity:.9">One big payment, yours forever — no rent, no landlord. A real place (🚗 Travel) with desks for the 💻 computers that run the whole operation.</span>'+(entCanPay173(WAREHOUSE_PRICE173)?'<br><button class="btn gold" style="width:auto;margin-top:8px;padding:8px 14px" onclick="entBuyWarehouse173()">🏭 Buy Warehouse — $'+WAREHOUSE_PRICE173+'</button>':'<br><span style="font-size:13px;font-weight:800;color:#fca5a5">💵 Need $'+WAREHOUSE_PRICE173+' — the price is the blocker</span>')+'</div>';
+ else prog='<div style="border:1.5px solid #14532d;border-radius:12px;padding:11px 12px;text-align:left"><b>🏭 Warehouse — yours</b><br><span style="font-size:12.5px;opacity:.9">🚗 Travel → 🏭 Warehouse. 💻 Computers: <b>'+V.computers+'/3</b> • 😇 Storefront: <b>'+(V.computers>=1?('earning $'+(15+35*V.computers)+'/day, to your bank'):'🚫 No computer yet')+'</b></span></div>';
+ const started=entStarted173();
+ const sec=function(id,icon,label,note){ return '<button class="btn" style="margin-top:8px;text-align:left" onclick="entSection173(\''+id+'\')">'+icon+' '+label+(note?' — <span style="font-size:12px;opacity:.85">'+note+'</span>':'')+'</button>' };
+ const secs='<h4 style="margin:14px 0 2px">The operation</h4>'
+  +sec('business','😇','Business',V.warehouse?(V.computers>=1?('earning $'+(15+35*V.computers)+'/day'):'🚫 No computer yet'):'the legit front — needs the warehouse')
+  +sec('sell','💸','Sell',started?'the drug market, both sides of the counter':'📟 needs a burner app')
+  +sec('streets','🌆','Streets',started?'sellers, production & plugs':'📟 needs a burner app')
+  +sec('crew','👥','Crew',started?(entCrewN173()+' runner(s) on the books'):'📟 needs a burner app')
+  +sec('guards','🛡️','Guards',started?(entGuardN173()+' on duty'):'📟 needs a burner app')
+  +sec('market','🛒','Market','the burner app, tools & quiet services')
+  +sec('computers','💻','Computers',V.warehouse?(V.computers+'/3 — they run all of it'):'🚫 No warehouse yet');
+ openSheet(phoneShell('🏢 Enterprise','<p style="font-size:12.5px;opacity:.9;margin-top:0">A legit business out front — and the drugs and everything else on the side, under its cover. The better the front, the safer the side.</p>'+chips+prog+secs,true)) }
+function entCanPay173(n){ try{ if(typeof canPay63==='function')return canPay63(n) }catch(e){} try{ return totalMoney132()>=n }catch(e){ return (S?S.money:0)>=n } }
+function entSection173(id){ if(!S)return; if((id==='sell'||id==='streets'||id==='crew'||id==='guards')&&!entStarted173()){ entGate173(); return }
+ if(id==='business')entBusiness173(); else if(id==='sell')entSell173(); else if(id==='streets')entStreets173(); else if(id==='crew')entCrew173(); else if(id==='guards')entGuards173(); else if(id==='market')entMarket173(); else if(id==='computers')entComputers173(); else phoneEnterprise173() }
+function entGate173(){ if(!S)return; openSheet(phoneShell('📟 It starts with a burner','<p style="font-size:13px;opacity:.92;line-height:1.55">That side of the business runs on the <b>📟 burner app</b> — no burner app, no selling, no crew, no guards. It lives on one shelf: <b>🛒 Market</b>, right here in Enterprise.</p><button class="btn gold" onclick="entMarket173()">🛒 Open the Market</button>'+entBack173(),true)) }
+/* ---------- 📄 the license: 18+ and the fee — that is all (ruled) ---------- */
+function entLicenseCard173(){ const V=ensure173(); if(!V)return ''; let inner='<b>📄 Business License — $'+LIC_FEE173+'</b><br><span style="font-size:12.5px;opacity:.9">The application has exactly TWO checks: you are <b>18+</b>, and you pay the <b>$'+LIC_FEE173+' fee</b>. No record check, no waiting — granted on the spot.</span>';
+ if(S.age<18)inner+='<br><span style="font-size:13px;font-weight:800;color:#fca5a5">🚫 18+ only</span>';
+ else if(!entCanPay173(LIC_FEE173))inner+='<br><span style="font-size:13px;font-weight:800;color:#fca5a5">💵 Need $'+LIC_FEE173+' — the fee is the blocker</span>';
+ else inner+='<br><button class="btn gold" style="width:auto;margin-top:8px;padding:8px 14px" onclick="entApplyLicense173()">📄 Apply — $'+LIC_FEE173+'</button>';
+ return '<div style="border:1.5px solid #80808035;border-radius:12px;padding:11px 12px;text-align:left">'+inner+'</div>' }
+function entApplyLicense173(){ if(!S)return; const V=ensure173(); if(!V||V.license){ phoneEnterprise173(); return } if(S.age<18){ toast('🚫 18+ only'); return } if(typeof pay63!=='function'||!pay63(LIC_FEE173,'📄 Business license — 🏢 Enterprise')){ toast('💵 Need $'+LIC_FEE173+' for the license fee'); return } V.license=true; log('📄🏢 LICENSED — $'+LIC_FEE173+' at the counter, two checks (18+, the fee), stamped on the spot. 🏢 Enterprise is a real business now — on paper, anyway. Next: a 🏭 warehouse to run it from.'); toast('📄 Business license — granted'); save(); phoneEnterprise173() }
+function entBuyWarehouse173(){ if(!S)return; const V=ensure173(); if(!V||!V.license||V.warehouse){ phoneEnterprise173(); return } if(typeof pay63!=='function'||!pay63(WAREHOUSE_PRICE173,'🏭 Warehouse — 🏢 Enterprise HQ')){ toast('💵 Need $'+WAREHOUSE_PRICE173); return } V.warehouse=true; entTravelSync173(); log('🏭 WAREHOUSE — $'+WAREHOUSE_PRICE173+', one payment, yours forever: a quiet building with your lock on it. It is a place now (🚗 Travel → 🏭 Warehouse) — and it is where the 💻 computers go. The desks are waiting.'); toast('🏭 Warehouse — yours'); save(); phoneEnterprise173() }
+/* ---------- 😇 Business: the legit front ---------- */
+function entBusiness173(){ if(!S)return; const V=ensure173(); let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">The legit front: a storefront selling ordinary things to ordinary people, paying clean money into your 🏦 bank every day. No stock to manage — the front runs itself.</p>';
+ if(!V.license)h+='<p style="font-size:13px"><b>🚫 No license yet</b> — the business starts with the 📄 license (back on the Enterprise home).</p>';
+ else if(!V.warehouse)h+='<p style="font-size:13px"><b>🚫 No warehouse yet</b> — the storefront needs its building first.</p>';
+ else if(V.computers<1)h+='<p style="font-size:13px;font-weight:800;color:#fca5a5">🚫 No computer yet</p><p style="font-size:12.5px;opacity:.9">The storefront sells ONLINE — no computer, no sales. The first desk goes in 💻 Computers ($'+COMPUTER_PRICE173+').</p>';
+ else h+='<div class="kv" style="color:#fff;border-color:#ffffff2a"><span>🏪 Base storefront</span><b>$15/day</b></div><div class="kv" style="color:#fff;border-color:#ffffff2a"><span>💻 Online sales — '+V.computers+' computer(s) × $35</span><b>$'+(35*V.computers)+'/day</b></div><div class="kv" style="color:#fff;border-color:#ffffff2a"><span>😇 Total revenue</span><b style="color:#4ade80">$'+(15+35*V.computers)+'/day → your bank</b></div><p style="font-size:12px;opacity:.85;margin-top:8px">Paid on the day tick, with a headline line in your journal: “🏢 Enterprise revenue +$…”.</p>';
+ h+=entBack173(); openSheet(phoneShell('😇 Business',h,true)) }
+/* ---------- 💻 Computers: they do all of it, in order ---------- */
+function entComputers173(){ if(!S)return; const V=ensure173(); let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">From the warehouse desks you run everything: the storefront, the people, the production. One desk at a time — each one switches on the next layer.</p>';
+ if(!V.warehouse){ h+='<p style="font-size:13px;font-weight:800;color:#fca5a5">🚫 No warehouse yet</p><p style="font-size:12.5px;opacity:.9">Computers live at the warehouse. License → warehouse → desks.</p>' }
+ else { const what=['🛒 <b>Online storefront sales ON</b> — 😇 Business revenue starts ($15/day + $35/day per computer)','📡 <b>Remote management ON</b> — crew, guards & runners managed from the app, anywhere — not only at the crew spot','⚙️ <b>Production boost</b> — +50% output on every production run'];
+  for(let i=0;i<COMPUTER_MAX173;i++){ const owned=V.computers>i, next=V.computers===i;
+   h+='<div class="kv" style="color:#fff;border-color:#ffffff2a"><span>💻 Computer '+(i+1)+'<br><span style="font-size:11.5px;opacity:.85">'+what[i]+'</span></span>'+(owned?'<b style="color:#4ade80;flex:none">✓ LIVE</b>':(next?(entCanPay173(COMPUTER_PRICE173)?'<button class="btn gold" style="width:auto;margin:0;padding:8px 12px;flex:none" onclick="entBuyComputer173()">Buy — $'+COMPUTER_PRICE173+'</button>':'<b style="flex:none;color:#fca5a5">💵 $'+COMPUTER_PRICE173+'</b>'):'<b style="flex:none;opacity:.7">🔒 desk '+(i+1)+' first</b>'))+'</div>' } }
+ h+=entBack173(); openSheet(phoneShell('💻 Computers',h,true)) }
+function entBuyComputer173(){ if(!S)return; const V=ensure173(); if(!V||!V.warehouse){ entComputers173(); return } if(V.computers>=COMPUTER_MAX173){ toast('💻 All 3 desks are live'); return } if(typeof pay63!=='function'||!pay63(COMPUTER_PRICE173,'💻 Warehouse computer — 🏢 Enterprise')){ toast('💵 Need $'+COMPUTER_PRICE173); return } V.computers++; const n=V.computers;
+ log(n===1?'💻🛒 FIRST COMPUTER — the desk is live and the online storefront is OPEN: 😇 Business revenue starts with the next day ($15/day + $35/day per computer, straight to your bank).':n===2?'💻📡 SECOND COMPUTER — remote management is ON: crew, guards and runners answer to the app from anywhere now, not just the crew spot on Maple Street.':'💻⚙️ THIRD COMPUTER — production boost ON: every production run yields +50% more. The warehouse hums like a real operation.');
+ toast('💻 Computer '+n+'/3 — live'); save(); entComputers173() }
+/* ---------- 💸 Sell · 🌆 Streets · 👥 Crew · 🛡️ Guards (the burner-gated side) ---------- */
+function entSell173(){ if(!S)return; const st=S.stash||{}; const tot=Object.keys(st).reduce(function(a,k){ return a+(st[k]||0) },0);
+ let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">One market, both sides of the counter, never split up: buy stock in, sell it on the street, or use your own.</p><div class="kv" style="color:#fff;border-color:#ffffff2a"><span>📦 Your stash</span><b>'+tot+' unit(s)</b></div><div class="kv" style="color:#fff;border-color:#ffffff2a"><span>💊 Dealing</span><b>Lv '+(typeof dealingLv==='function'?dealingLv():1)+'</b></div><button class="btn gold" style="margin-top:10px" onclick="dealMenu()">💊 Open the market — buy & sell together</button><button class="btn" style="background:#14532d;color:#fff;margin-top:8px" onclick="phoneBurner63()">📟 Orders & regulars — the burner app</button>'+entBack173();
+ openSheet(phoneShell('💸 Sell',h,true)) }
+function entStreets173(){ if(!S)return; let card=''; try{ card=streetCard53() }catch(e){}
+ let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">The other side of the counter — and the supply chain behind it.</p>'+(card||'')+'<button class="btn" style="margin-top:10px" onclick="prodSheet133()">🌿 Production — make your own supply</button><button class="btn gold" style="margin-top:8px" onclick="kingSheet133()">👑 Plugs & Takeover</button>'+entBack173();
+ openSheet(phoneShell('🌆 Streets',h,true)) }
+function entCrew173(){ if(!S)return; const V=ensure173(); let card=''; try{ card=(window.__v171&&window.__v171.crewCard171)?window.__v171.crewCard171():crewCard63() }catch(e){}
+ let h=(card||'')+'<p style="font-size:12px;opacity:.85;margin-top:8px">'+(V.computers>=2?'💻📡 Remote management is ON — squad orders, fronting and runner money work from the app, from anywhere.':'Squad orders live with your orders on the burner app — and they need the crew near (🌳 Maple Street), until a 2nd warehouse computer turns remote management on.')+'</p><button class="btn" style="background:#14532d;color:#fff;margin-top:6px" onclick="phoneBurner63()">📟 Orders, squad & runners</button>'+entBack173();
+ openSheet(phoneShell('👥 Crew',h,true)) }
+function entGuards173(){ if(!S)return; const V=ensure173(); let card=''; try{ card=guardCard63() }catch(e){}
+ let h=(card||'')+'<p style="font-size:12px;opacity:.85;margin-top:8px">'+(V.computers>=2?'💻📡 Remote management is ON — guard orders work from the app, from anywhere.':'Guard orders (follow / posted, names) live with your orders on the burner app, until a 2nd warehouse computer turns remote management on.')+'</p><button class="btn" style="background:#14532d;color:#fff;margin-top:6px" onclick="phoneBurner63()">📟 Orders & guard postings</button>'+entBack173();
+ openSheet(phoneShell('🛡️ Guards',h,true)) }
+/* ---------- 🛒 Market: the consolidated shelf — burner app, Hack app, Black Market guns, the wipe, delivered dealing ---------- */
+function entMarket173(){ if(!S)return; if(!S.hasPhone){ noPhoneSheet(); return } const bOn=(typeof burnerOn63==='function')&&burnerOn63(); const hackOn=(typeof dwHack117==='function')&&dwHack117();
+ let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">No storefront. No receipts. Everything the scattered apps used to hold, on one shelf.</p>';
+ h+='<div style="border:1.5px solid #80808035;border-radius:12px;padding:11px 12px;text-align:left"><b>📟 The Burner App</b> — the dealing line: your regulars and buyers, nobody else. '+(bOn?'<b style="color:#4ade80">✓ Live — dealing is open to you.</b>':'This is the ONLY door into dealing now: no burner app, no selling, no crew, no guards.')+(bOn?'<br><button class="btn" style="width:auto;margin-top:8px;padding:8px 14px;background:#14532d;color:#fff" onclick="phoneBurner63()">📟 Orders & regulars</button>':'<br><button class="btn gold" style="width:auto;margin-top:8px;padding:8px 14px" onclick="burnerGet63(\'app\')">📥 Burner app — $15</button>')+'</div>';
+ h+='<div style="border:1.5px solid #80808035;border-radius:12px;padding:11px 12px;margin-top:10px;text-align:left"><b>💻 The Hack App</b> — the phone-as-a-weapon toolkit. '+(hackOn?'<b style="color:#4ade80">✓ Installed on this phone.</b> It runs once both classes are done: 🛡️ Security Fundamentals + 💻 Hacker Methods (🎓 Training & Certificates, 💼 Work).':'Not installed.')+(hackOn?'<br><button class="btn" style="width:auto;margin-top:8px;padding:8px 14px" onclick="phoneHack()">💻 Open the Hack app</button>':'<br><button class="btn gold" style="width:auto;margin-top:8px;padding:8px 14px" onclick="dwGetHack117()">🌑 Get the Hack app — $20</button>')+'</div>';
+ if(S.age<18)h+='<div style="border:1.5px solid #80808035;border-radius:12px;padding:11px 12px;margin-top:10px;text-align:left"><b>🔫 Black Market — guns</b><br><span style="font-size:12.5px;opacity:.85">🔒 18+ only — even this market checks, and yours says no.</span></div>';
+ else h+='<div style="border:1.5px solid #80808035;border-radius:12px;padding:11px 12px;margin-top:10px;text-align:left"><b>🔫 Black Market — guns, online</b><br><span style="font-size:12.5px;opacity:.85">The other place guns sell: no storefront, no license counter — the same iron, the same prices, posted to your ledger. Carrying unlicensed is still a weapons case if the law finds it.</span>'+GUNS.map(function(g,i){ if(S.level<g.lv)return '<div class="kv" style="color:#fff;border-color:#ffffff2a"><span>'+g.name+'<br><span style="font-size:11.5px;opacity:.8">'+g.d+'</span></span><b style="flex:none;opacity:.7">🔒 Lv '+g.lv+'</b></div>'; return '<div class="kv" style="color:#fff;border-color:#ffffff2a"><span>'+g.name+'<br><span style="font-size:11.5px;opacity:.8">'+g.d+'</span></span><button class="btn gold" style="width:auto;margin:0;padding:7px 11px;flex:none" onclick="buyGunBM131('+i+')">Buy $'+lvlPrice(g.price)+'</button></div>' }).join('')+'</div>';
+ try{ h+=wipeSection133d('dw') }catch(e){}
+ try{ if(typeof EQUIP146!=='undefined'&&typeof ensure146==='function'){ const V=ensure146(); h+='<div style="border-top:1px dashed #ffffff2a;margin-top:12px;padding-top:10px;text-align:left"><b>🧪 Production Equipment</b><div style="font-size:12.5px;opacity:.88;margin:3px 0 8px">No equipment, no production — each rig opens its line for good.</div>'+Object.keys(EQUIP146).map(function(k){ const eq=EQUIP146[k]; return V.equip[k]?'<div class="msg" style="margin-top:6px">'+eq.name+' — <b>OWNED</b> · the '+eq.line+' line is open</div>':'<button class="btn" style="background:#14532d;color:#fff" onclick="buyEquip146(\''+k+'\')">'+eq.name+' — $'+eq.price+' (opens the '+eq.line+' line)</button>' }).join('')+'</div>' } }catch(e){}
+ h+='<button class="btn" style="margin-top:12px;background:#1f2937;color:#fff" onclick="phoneDeepMarket110()">🕶️ Delivered dealing — buy & sell at street prices, packages to your door</button>';
+ h+=entBack173(); openSheet(phoneShell('🛒 Market',h,true)) }
+/* the Dark Web's old door now lands on its new home — every shipped pointer arrives at the Market */
+try{ const _dwPrev173=phoneDarkWeb117; phoneDarkWeb117=function(){ if(!S||!S.hasPhone)return _dwPrev173.apply(null,arguments); entMarket173() } }catch(e){}
+/* the burner gate sheet + the Burner's own no-burner sheet now point at the Market, in burner-app words */
+try{ dealerGateSheet117=function(){ if(!S)return; openSheet('<h2>📟 It starts with a burner</h2><p>Nobody sells drugs, recruits a crew, or hires a bodyguard cold — the whole dealing life runs through the <b>📟 burner app</b>, and it lives in exactly one place now: <b>🏢 Enterprise → 🛒 Market</b>. Get the burner app, get started, and then selling works <b>at any location</b> — street, phone, pawn counter, any of it.</p>'+(S.hasPhone?'<button class="btn gold" style="margin-top:8px" onclick="entMarket173()">🛒 Open the Market — 🏢 Enterprise</button>':'<p class="small" style="margin-top:8px">You need a phone first — Enterprise lives on it.</p>')+'<button class="btn outline" style="margin-top:8px" onclick="closeModal()">Understood</button>') } }catch(e){}
+try{ const _pbPrev173=phoneBurner63; phoneBurner63=function(){ if(S&&!(typeof burnerOn63==='function'&&burnerOn63())){ openSheet(phoneShell('📟 The Burner','<p style="font-size:13px;opacity:.92;line-height:1.55">There is no burner app on this phone — and the burner app is not sold in any store with a sign over it. It lives in one place now: <b>🏢 Enterprise → 🛒 Market</b>. The burner app ($15) opens the dealing life: your regulars, your buyers, your orders — and nobody from your real life, ever.</p><button class="btn gold" onclick="entMarket173()">🛒 Open the Market</button>',true)); return } return _pbPrev173.apply(null,arguments) } }catch(e){}
+/* ---------- daily revenue: $15 base + $35 per computer, to the bank, with the headline line ---------- */
+try{ const _nd173=nextDay; nextDay=function(skip){ const r=_nd173(skip); try{ if(S&&!S.deadFlag){ const V=ensure173(); if(V&&V.license&&V.warehouse&&V.computers>=1&&V.revDay!==S.day){ V.revDay=S.day; const rev=15+35*V.computers; bankMoney63(rev,'🏢 Enterprise revenue'); log('🏢 Enterprise revenue +$'+rev+' — the storefront sold while you lived your life. Clean money, banked.'); save() } } }catch(e){} return r } }catch(e){}
+/* ---------- computer tier 2: remote management (squad orders no longer need the crew spot) ---------- */
+try{ const _cn173=crewNear131; crewNear131=function(){ if(_cn173())return true; try{ const V=ensure173(); return !!(V&&V.computers>=2) }catch(e){ return false } } }catch(e){}
+/* ---------- computer tier 3: production +50% (the yield is boosted at the harvest, and says so) ---------- */
+try{ const _ph173=prodHarvest133; prodHarvest133=function(i){ let boosted=null; try{ const V=ensure173(); const b=(S&&S.v133&&S.v133.prod)?S.v133.prod[i]:null; if(V&&V.computers>=3&&b&&typeof PROD133!=='undefined'&&PROD133[b.type]){ PROD133[b.type].yieldN=Math.round(PROD133[b.type].yieldN*1.5); boosted=b.type } }catch(e){}
+  try{ return _ph173.apply(null,arguments) } finally { if(boosted){ try{ PROD133[boosted].yieldN=Math.round(PROD133[boosted].yieldN/1.5) }catch(e){} } } } }catch(e){}
+try{ const _ps173=prodSheet133; prodSheet133=function(){ const r=_ps173.apply(null,arguments); try{ const V=ensure173(); if(V&&V.computers>=3){ const sc=document.querySelector('#sheet .phoneScreen'); if(sc&&!sc.querySelector('.boost173')){ const d=document.createElement('div'); d.className='boost173'; d.innerHTML='<p style="font-size:12px;opacity:.85;margin-top:8px">💻⚙️ Warehouse computers: production output +50%.</p>'; sc.appendChild(d) } } }catch(e){} return r } }catch(e){}
+/* ---------- the warehouse as a Travel place ---------- */
+try{ const _tt173=travelTabHtml; travelTabHtml=function(){ let h=_tt173(); try{ if(S&&S.location==='warehouse'){ const V=ensure173(); const n=V?V.computers:0; h=h.replace('You are here: 🏠 Home','You are here: 🏭 Warehouse'); h='<div class="card" style="border:2px solid #334155"><h3>🏭 Warehouse — your Enterprise HQ</h3><p>Your building: roller door, stacked crates, shelving — and the computer desks that run the whole operation.</p><div class="kv"><span>💻 Computers</span><b>'+n+' / 3</b></div><div class="kv"><span>😇 Storefront</span><b>'+(n>=1?('earning $'+(15+35*n)+'/day'):'🚫 No computer yet')+'</b></div>'+(S.hasPhone?'<button class="btn gold" style="margin-top:8px" onclick="phoneEnterprise173()">🏢 Open Enterprise</button>':'')+'</div>'+h } }catch(e){} return h } }catch(e){}
+try{ const _r173sync=render; render=function(){ const r=_r173sync.apply(null,arguments); try{ entTravelSync173() }catch(e){} return r } }catch(e){}
+/* ================= v173 Part B: 🍽️ EAT DOORS — doors, not copies, appended below the shipped Eat options
+   after every Actions paint (the Eat card is rebuilt by eatRebuild133 on the same paints; this pass runs
+   after it, outermost, and never duplicates itself). Locked doors are ALWAYS visible, with the reason. */
+function hasRide173(){ if(!S)return false; if(S.car&&S.car.owned&&S.car.license)return true; if(S.age<18)return true; /* minors: the game's own caregiver-escort travel model — goLoc runs it */ if(S.escort)return true; return false }
+function restockSheet173(){ if(!S)return; const ride=hasRide173();
+ let h='<h2>🛒 Restock Fridge</h2><p>Two ways to fill the fridge — both end at 🛒 FreshMart, the same shelves and prices either way.</p>';
+ if(ride)h+='<button class="btn gold" onclick="closeModal();goLoc(\'grocery\')">🚗 Go to FreshMart</button>';
+ else h+='<button class="btn" style="opacity:.55" onclick="toast(\'🚫 No ride — FreshMart takes wheels (your own car + license) or a grown-up to take you\')">🚗 Go to FreshMart · 🚫 No ride</button>';
+ if(S.hasPhone)h+='<button class="btn" style="margin-top:8px" onclick="groceryDeliverySheet162()">📦 Delivery +$4</button>';
+ else h+='<button class="btn" style="margin-top:8px;opacity:.55" onclick="toast(\'🚫 No phone yet — delivery is ordered on your phone\')">📦 Delivery +$4 · 🚫 No phone yet</button>';
+ h+='<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Not now</button>';
+ openSheet(h) }
+function eatDoors173(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='actions101')return; const panel=document.getElementById('panel'); if(!panel)return; const cards=panel.querySelectorAll('.actCard101,.card'); let eat=null; for(let i=0;i<cards.length;i++){ if(cards[i].innerHTML.indexOf('eatInv132')>=0||cards[i].innerHTML.indexOf('eatItem132')>=0||cards[i].innerHTML.indexOf('🍽️ Eat')>=0){ eat=cards[i]; break } } if(!eat||eat.querySelector('.eatDoors173'))return;
+ const d=document.createElement('div'); d.className='eatDoors173';
+ let h='<button class="btn" onclick="restockSheet173()">🛒 Restock Fridge</button>';
+ if(S.hasPhone)h+='<button class="btn" onclick="phoneServices()">📱 Order Out — food delivered to you</button>';
+ else h+='<button class="btn" style="opacity:.55" onclick="toast(\'🚫 No phone yet — ordering out runs on your phone\')">📱 Order Out · 🚫 No phone yet</button>';
+ d.innerHTML=h; eat.appendChild(d) }catch(e){} }
+['renderTabs','render','paintActions101','paintQCards101'].forEach(function(nm){ try{ const fn=window[nm]; if(typeof fn!=='function'||fn.__v173doors)return; const w=function(){ const r=fn.apply(this,arguments); eatDoors173(); return r }; w.__v173doors=true; window[nm]=w }catch(e){} });
+/* ---------- help text that pointed at the retired apps now points at the new home ---------- */
+try{ if(typeof TIPS!=='undefined'){
+ if(TIPS['darkweb117'])TIPS['darkweb117']={t:'🏢 Enterprise → 🛒 Market',b:'The shady shelf lives in the 🏢 Enterprise app now, under 🛒 Market: the 📟 burner app and the 💻 Hack app are gotten THERE. And dealing itself starts at the burner app: no burner, no selling, no crew, no guards.'};
+ if(TIPS['record133d'])TIPS['record133d']={t:'⚖️ Two ways off the record',b:'A criminal record clears two ways: EARN it at 🏛️ Town Hall — community service, 4 hours a session, 1 record point each, up to 2 sessions a day (and never while you are wanted) — or BUY it in 🏢 Enterprise → 🛒 Market: the record wipe at $400 a point: instant, but ~10% of fixers scam and ~15% of wipes leave a trace (+1★).'};
+ if(TIPS['heat-cool'])TIPS['heat-cool'].b='Your wanted level is not forever: lay low and live clean — no new crimes — and the stars melt away on their own, about one per six quiet hours, with a journal line when one drops. Any crime that raises your stars restarts the clock. In a hurry? 🏢 Enterprise → 🛒 Market sells a record wipe — pricey, instant and risky.';
+ if(TIPS['appstore110'])TIPS['appstore110']={t:'🛍️ The App Store',b:'Your phone has an App Store: a free 🧮 Calculator, a free 🏠 Property app (the town listings in your pocket), the 🏢 Enterprise app (your business — and, under 🛒 Market, the 📟 burner app and the delivered dealing that used to be separate apps) and, once you are enrolled, the free 🎒 School app with your grades, teacher, classmates and teacher comments.'};
+} }catch(e){}
+window.__v173={ensure173:ensure173,phoneEnterprise173:phoneEnterprise173,entSection173:entSection173,entMarket173:entMarket173,entApplyLicense173:entApplyLicense173,entBuyWarehouse173:entBuyWarehouse173,entBuyComputer173:entBuyComputer173,restockSheet173:restockSheet173,hasRide173:hasRide173,LIC_FEE173:LIC_FEE173,WAREHOUSE_PRICE173:WAREHOUSE_PRICE173,COMPUTER_PRICE173:COMPUTER_PRICE173,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v173: 😈 Bad Actions (chips + honest burner lock) • 🍽️ Eat doors (Restock Fridge / Order Out, locks say why) • 🏢 Enterprise — license → warehouse → computers, with the Burner, Dark Web & Deep Market consolidated into 🛒 Market');
 </script>
 </body>
 </html>
