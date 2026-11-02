@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=176;
+const GAME_VERSION=183;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -717,7 +717,7 @@ function defState(name,originId,age,gender,skin,hair,shirt,hat,glasses,shoes,goa
  fridge:{groceries:5,leftovers:1,snacks:3,drinks:3}, profile:{created:false,handle:'',bio:''}, book:{active:false,title:'',genre:'',progress:0,sessions:0,published:false,pubDay:0,rating:0,sales:0,earned:0,reviews:[]}, jobInfo:null, lifePath:null, pathAsked:false, attend:{schoolSkips:0,schoolWarn:0,attendDay:0,shiftDay:0}, stash:{thc:0,lsd:0,shrooms:0}, term:{endDay:0,attended:0,skipped:0,report:'',breakDay:0}, bully:{name:'',calmUntil:0,day:0}, recentEvents:[], drugCrash:false, lastChainDay:0, town:{people:{}}, dms:[], dmDay:0, inv:[], npcPets:{}, hackHeat:0, streetClean:0, sfxOff:false, pinTabs:false, place:pl, enroll:{stage:(originId==='orphan'||originId==='boarding')?sk0:null,promptDay:0}, dnd:false, datingMet:{}, dating:{deck:[],matches:[]}, guest:null, heatCool:0, lastWantedSeen:0, fixerReadyDay:0, phoneFolders:null, tapFxOff:false, theme:'classic', face:'classic', hairStyle:'classic', gloves:'none', watch:'none', jewelry:'none', tvChannel:0, wallpaper:'midnight', tama:null, gunLic:null, regulars:{}, usedLines:{}, buyerDay:0, pregDue:0, pregPartner:'', phone40:null}
 }
 function save(){try{if(S)S.ver=GAME_VERSION; localStorage.setItem(SAVE_KEY,JSON.stringify(S))}catch(e){}}
-function load(){try{const r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null}catch(e){return null}}
+function load(){try{const r=localStorage.getItem(SAVE_KEY);if(!r)return null;const o=JSON.parse(r);try{if(o&&Array.isArray(o.inv))o.inv=o.inv.filter(function(it){return !(it&&(it.kind==='toyphone'||it.use==='toyphone'||it.kind==='kidtab162'||it.use==='kidtab162'))})}catch(e){} try{if(o&&Array.isArray(o.kids))o.kids.forEach(function(k){if(k)delete k.kidTab162})}catch(e){} return o}catch(e){return null}}
 function fameName(l){return ['','Unknown','Noticed','Local Buzz','Rising Star','Influencer','Celebrity'][l]||'Celebrity'}
 // ---- v31: SCHOOL IS STAGED — 🧸 Preschool 3–4 · 📚 Elementary 5–10 · 🎒 Middle School 11–13 · 🏫 High School 14–17 — and each stage must be ENROLLED before attending ----
 const SCHOOL_STAGES={pre:{icon:'🧸',label:'Preschool',min:3,max:4},elem:{icon:'📚',label:'Elementary School',min:5,max:10},middle:{icon:'🎒',label:'Middle School',min:11,max:13},high:{icon:'🏫',label:'High School',min:14,max:17}};
@@ -4468,7 +4468,7 @@ function todEventGo72(ci){ if(!S)return; const ev=window._todEv72; window._todEv
  bug:[['Twenty full minutes of beetle observation. Science has rarely been this focused.',{xp:['intel',7],fx:{fun:6}}],['The beetle is named Biscuit now. Biscuit has been discussed at length ever since.',{xp:['comm',6],fx:{fun:6}}],['Biscuit was moved outside gently, with a full farewell ceremony at the door.',{xp:['emot',6],fx:{fun:4}}]],
  puddle:[['Everyone splashed. The laundry doubled; so did the joy in the house.',{fx:{fun:9,hygiene:-8},tfx:{wellbeing:5}}],['Bath time — the sanctioned splash zone, with significantly more bubbles than strictly needed.',{fx:{hygiene:20,fun:6}}],['Dry clothes, warm towel, calm chat — the puddle era ends in comfort.',{tfx:{comfort:7},fx:{hygiene:8}}]],
  nightmare:[['Cuddles until the breathing slowed — the shadow never stood a chance.',{tfx:{comfort:12,wellbeing:6},rel:['caregiver',3]}],['The room was checked, officially, item by item: monster-free, certificate issued by '+careHelper()+'.',{tfx:{comfort:9},xp:['emot',6]}],['The dream got a new ending — the shadow is a friendly giant now, and he shares his sandwiches.',{xp:['imag',7],tfx:{comfort:8}}]],
- newWord:[['APPLAUSE. The word was said six more times to an adoring house.',{xp:['comm',9],fx:{social:5,fun:5}}],['One more word taught on the spot — the vocabulary is compounding.',{xp:['comm',10]}],['Written into the family record — this is the stuff Life History is made of.',{xp:['comm',7],mem:1}]],
+ newWord:[['APPLAUSE. The word was said six more times to an adoring house.',{xp:['comm',9],fx:{social:5,fun:5}}],['One more word taught on the spot — the vocabulary is compounding.',{xp:['comm',10]}],['Written into the family record — this is the stuff the family record is made of.',{xp:['comm',7],mem:1}]],
  share:[['Praised warmly — and watched it happen again within the hour. Kindness compounds.',{xp:['social',9],tfx:{wellbeing:5}}],['Everyone joined the play — the shared toy became a group project.',{fx:{social:7,fun:8},xp:['social',6]}],['A quiet, proud moment, witnessed and kept. Some parenting is just this.',{tfx:{wellbeing:6},xp:['emot',5]}]],
  cupboard:[['One full saucepan song — then the band helped tidy its own stage.',{fx:{fun:7},xp:['imag',5]}],['Tidied together, pot by pot — independence quietly levelling up.',{xp:['indep',8],fx:{fun:3}}],['The kitchen band played on. Dinner was late. Morale was incredible.',{fx:{fun:8},xp:['imag',6]}]],
  gate:[['Two more minutes, honoured to the second — leaving on a deal feels better than leaving on a drag.',{xp:['emot',6],tfx:{comfort:4}}],['The masterpiece came home in state and is now fridge-door famous.',{xp:['creativity',6],fx:{fun:5}}],['Goodbyes were said all round — tomorrow exists, and that makes today endable.',{xp:['social',7],tfx:{comfort:5}}]]};
@@ -4521,7 +4521,7 @@ function todDay72(){ if(!S)return; ensure72(); const T=S.tod; if(S.age>=5){ if(!
  save() }
 function todGraduate72(){ if(!S||!S.tod||S.tod.carried)return; const T=S.tod; T.carried=S.day; const L=function(k){ return todLv72(T.skills[k]||0) };
  S.skills.fitness=(S.skills.fitness||0)+L('motor')*4; S.skills.study=(S.skills.study||0)+(L('intel')+L('comm'))*3; S.skills.social=(S.skills.social||0)+L('social')*4+L('comm')*2; S.skills.cooking=(S.skills.cooking||0)+(L('creativity')+L('indep'))*2;
- log('🌱 TODDLER YEARS COMPLETE — '+S.name+' turns 5, and childhood carries forward: 🏃 Motor Lv '+L('motor')+' → Fitness, 🧩 Intelligence & 🗣️ Communication → Study, 🤝 Social → Social, 🎨 Creativity & 🎒 Independence → life skills. Every block tower, tantrum, drawing and first word is in the Life History now — it all counted.'); todMem72('Turned 5 — toddler skills carried forward into childhood.'); save() }
+ log('🌱 TODDLER YEARS COMPLETE — '+S.name+' turns 5, and childhood carries forward: 🏃 Motor Lv '+L('motor')+' → Fitness, 🧩 Intelligence & 🗣️ Communication → Study, 🤝 Social → Social, 🎨 Creativity & 🎒 Independence → life skills. Every block tower, tantrum, drawing and first word is in the journal now — it all counted.'); todMem72('Turned 5 — toddler skills carried forward into childhood.'); save() }
 // ---- TRAITS, AUTONOMY, VISITS ----
 function todPickTrait72(t){ if(!S)return; ensure72(); const T=S.tod; if(T.traits.indexOf(t)>=0||T.traits.length>=2)return; T.traits.push(t); log('🌱 PERSONALITY — '+S.name+' is showing a distinctly <b>'+t+'</b> streak. Traits shape what comes easily, what gets practised, and how the toddler years feel.'); save(); render() }
 function todLean72(skill){ ensure72(); const map={motor:'Energetic',comm:'Curious',social:'Outgoing',creativity:'Creative',intel:'Curious',indep:'Independent',emot:'Calm',imag:'Playful'}; const tr=map[skill]; if(tr)S.tod.lean[tr]=(S.tod.lean[tr]||0)+1 }
@@ -4770,7 +4770,7 @@ function startHomeLine80(){ if(!S||!S.startHome80)return ''; return '<br>🏠 Fa
 function rollStartHome80(){ if(!S)return; ensure80(); if(FAMILY_ORIGINS80.indexOf(S.origin)<0)return; let pool; if(S.origin==='rich')pool=[['house',55],['condo',25],['townhouse',20]]; else if(S.origin==='crackden')pool=[['house',45],['apartment',25],['townhouse',15],['condo',15]]; else pool=[['house',32],['apartment',26],['townhouse',15],['condo',12],['homeless',15]]; let tot=0; pool.forEach(function(p){ tot+=p[1] }); let r=Math.random()*tot, type='house'; for(let i=0;i<pool.length;i++){ r-=pool[i][1]; if(r<=0){ type=pool[i][0]; break } } const def=START_HOMES80[type]; S.startHome80={type:type,icon:def.icon,label:def.label}; S.famFunds80=Math.round((def.funds[0]+Math.floor(Math.random()*(def.funds[1]-def.funds[0]+1)))*(S.origin==='rich'?3:1)); if(type==='homeless'){ S.homeless80=true; S.broke80.cause='family'; S.location='street'; S.journal.push('📦 THE ROLL: no house, no apartment — this family starts with NO home at all: a corner of '+placeOf().city+', a cardboard box, and each other. Sometimes parents have a house. Sometimes they are just getting by. This time the dice said street.') } else { S.journal.push(def.icon+' THE ROLL: this family starts in a '+def.label.toLowerCase()+' in '+placeOf().city+' — rolled by the dice, not picked. Sometimes parents have a house; sometimes they are just getting by.') } }
 /* ---- 🔒 TODDLERS (1–4) CAN'T TRAVEL — locked until age 5, when the ask-a-parent rule takes over ---- */
 function toddlerTravelLock80(label){ if(!S)return; ensure80(); const cg=caregiverName()||giverName()||'a grown-up'; openSheet('<h2>🔒 Travel is locked for little ones</h2><p>You are <b>'+S.age+'</b> — toddlers (1–4) can\'t travel'+(label?' to <b>'+label+'</b>':'')+' on their own. Not the park, not the mall, not anywhere. The lock lifts at <b>age 5</b>, when you are old enough to <b>ask '+cg+' to take you</b> — and a parent comes with you, every time.</p><p>Until then, the only trips are the ones a grown-up starts: sometimes '+cg+' is heading somewhere and <b>asks if you want to come along</b>. Random, and always a question — never a grab-and-go.</p><button class="btn gold" onclick="closeModal()">Okay — home is fine for now</button>',{buzz:[60,40,60]}); showTip('travel-toddler80') }
-function toddlerTravelTab80(){ const hl=homeLoc(); const cg=caregiverDisplay82(); return '<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>🔒 Travel — locked until you can ask</h3><p>You are <b>'+S.age+'</b>. Toddlers (1–4) don\'t travel on their own — every destination is locked. At <b>age 5</b> the lock lifts into the ask-a-parent rule: you pick a place, '+cg+' comes with you and stays close.</p><p>For now, trips only happen when a grown-up is going somewhere and <b>asks if you want to come</b> — random, and always your choice.</p>'+(S.location!==hl?'<button class="btn orange" onclick="goLoc(\''+hl+'\')">🏠 Head home</button>':'<p class="small">📍 You are home — '+(S.homeless80?'your corner of the street, box and all.':'safe, where your people are.')+'</p>')+'</div>'+outingCardHtml68()+(S.location==='grandparents'?gpCardHtml77():'')+'</div>' }
+function toddlerTravelTab80(){ const hl=homeLoc(); const cg=caregiverDisplay82(); return '<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>🔒 Travel — locked until you can ask</h3><p>You are <b>'+S.age+'</b>. Toddlers (1–4) don\'t travel on their own — every destination is locked. At <b>age 5</b> the lock lifts into the ask-a-parent rule: you pick a place, '+cg+' comes with you and stays close.</p><p>For now, trips only happen when a grown-up is going somewhere and <b>asks if you want to come</b> — random, and always your choice.</p>'+(S.location!==hl?'<button class="btn orange" onclick="goLoc(\''+hl+'\')">🏠 Head home</button>':'<p class="small">📍 You are home — '+(S.homeless80?'your corner of the street, box and all.':'safe, where your people are.')+'</p>')+'</div>'+daysOutLockedHtml182()+(S.location==='grandparents'?gpCardHtml77():'')+'</div>' }
 const _goLoc80=goLoc; goLoc=function(id){ if(S&&S.homeless80&&id==='house')id='street'; if(S&&S.age<=4&&id!==homeLoc()){ const opt=TRAVEL_OPTS.find(function(o){ return o[0]===id }); toddlerTravelLock80(opt?opt[1]:null); return } _goLoc80(id) };
 const _travel80=travel; travel=function(){ if(S&&S.age<=4){ toddlerTravelLock80(null); return } _travel80() };
 const _tth80=travelTabHtml; travelTabHtml=function(){ if(S&&S.age<=4)return toddlerTravelTab80(); return _tth80() };
@@ -5333,24 +5333,11 @@ function phoneCalendar89(){ if(!S)return; ensure89(); if(!calSel89)calSel89=S.da
  for(let d=0;d<28&&shown<8;d++){ const D=S.day+d; const evs=calEvents89(D); if(!evs.length)continue; shown++; agenda+='<div style="color:#fff;font-size:12.5px;margin-top:6px"><b>'+(d===0?'Today':d===1?'Tomorrow':'Day '+D)+' • '+dowShort[(D-1)%7]+' '+(((D-1)%28)+1)+'</b> — '+evs.slice(0,3).map(function(e){ return e.i+' '+e.t }).join(' · ')+'</div>' }
  const head='<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px"><button class="btn outline" style="width:auto;margin:0;padding:7px 12px;color:#fff;border-color:#ffffff88" onclick="calNav89(-1)">‹ Prev</button><b style="color:#fff;font-size:14.5px">🗓️ Year '+(yr+1)+' — Days '+yStart+'–'+(yStart+27)+'</b><button class="btn outline" style="width:auto;margin:0;padding:7px 12px;color:#fff;border-color:#ffffff88" onclick="calNav89(1)">Next ›</button></div><p style="color:#ffffffbb;font-size:12px;margin:0 0 10px">The game’s real calendar: a 28-day year, four season-weeks, today ringed in gold (day '+doyNow+' of the year). Every event here is computed from your actual life — birthdays, holidays, school, shifts, bills — nothing made up. Tap a day to see it.</p>';
  openSheet(phoneShell('📅 Calendar',head+grid+selHtml+'<div style="margin-top:12px;border-top:1.5px dashed #ffffff30;padding-top:10px"><b style="color:#fff">⏭️ Coming up</b>'+(agenda||'<div style="color:#ffffffaa;font-size:12.5px;margin-top:5px">A quiet stretch — nothing scheduled in the next 28 days.</div>')+'</div>',true)) }
-// ---- 🧸 THE TOY PHONE — the toddler exception: all beep, no phone ----
-function hasToy89(){ return !!(S&&(S.inv||[]).some(function(it){ return it.kind==='toyphone' })) }
-const TOY_DESC89='A chunky pretend phone: it beeps, it rings, it makes pretend calls. No apps, no real calls or texts, no plan, no bill — a toy, until a real phone is earned.';
-function giveToy89(how){ if(!S||hasToy89())return false; const it=addItem('🧸 Toy Phone','toyphone',8,false,TOY_DESC89,'toyphone'); if(!it)return false; log('🧸 TOY PHONE — '+how+'. It beeps, it rings, it makes pretend calls to pretend people — and that is ALL it does: no apps, no texts to real people, no plan, no bill. A toy, until a real phone is earned years from now.'); return true }
-function buyToy89(){ if(!S||hasToy89())return; const it=addItem('🧸 Toy Phone','toyphone',8,false,TOY_DESC89,'toyphone'); if(!it)return; if(S.money>=8){ money(-8,'🧸 Toy phone — the Corner Store'); log('🧸 TOY PHONE — bought at the 🏪 Corner Store for $8 and straight into the 🎒 Bag. It beeps, it rings, it makes pretend calls — no apps, no real calls or texts, no plan, no bill.'); toast('🧸 Toy phone in the Bag!') } else { const cg=(typeof todCare82==='function')?todCare82():null; if(cg&&S.famFunds80!==undefined&&S.famFunds80>=8){ S.famFunds80-=8; log('🧸 TOY PHONE — '+cg+' paid the $8 at the Corner Store till (family money — toddlers do not pay for their own toys) and it went straight into the 🎒 Bag. It beeps, it rings, it makes pretend calls — no apps, no real calls or texts, no plan, no bill.'); toast('🧸 '+cg+' bought the toy phone!') } else { S.inv.splice(S.inv.indexOf(it),1); toast('🧸 The toy phone is $8 — not enough money yet'); return } } save(); render() }
-function toyAsk89(){ if(!S)return; ensure89(); const cg=(typeof todCare82==='function')?todCare82():null; const g=giverName(); if(S.v89.toyAskDay===S.day){ toast('🧸 Already asked today — tomorrow is another day'); return } S.v89.toyAskDay=S.day; if(!cg){ openSheet('<h2>🧸 A toy phone?</h2><p>There is no grown-up here to ask — but the 🏪 Corner Store sells toy phones for $8, when there is money for one.</p><button class="btn" onclick="closeModal()">Okay</button>'); save(); return } const p=0.35+(S.bond||50)/200; if(Math.random()<p){ giveToy89(g+' said yes — and came home from the Corner Store with it'); openSheet('<h2>🧸 “Okay — a TOY one.”</h2><p>'+g+' is firm about one thing: a <b>real</b> phone is for bigger kids. But a toy phone? Beeps, pretend calls, zero bills — that, '+S.name+' can have. It is in the 🎒 Bag now.</p><button class="btn orange" onclick="closeModal();toyPlay89()">🧸 Play with it now</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Later</button>') } else { openSheet('<h2>🧸 “Not today, little one.”</h2><p>'+g+' shakes their head — gently. Maybe at the 🏪 Corner Store ($8), maybe another day. Toddlers and real phones still do not mix — but toys have a way of turning up.</p><button class="btn outline" onclick="closeModal()">Okay</button>') } save() }
-function toyPlay89(){ if(!S||!hasToy89()){ toast('🧸 No toy phone in the Bag'); return } const cg=(S.age>=1&&S.age<=4&&typeof todCare82==='function')?todCare82():null; const lines=['“Ring ring! Hello? Yes, this is '+S.name+'. I am very busy. I am a toddler.”','“Beep boop beep — calling Grandma! (Pretend Grandma is thrilled.)”','“Hello, pizza? One pizza, please. Extra everything.”','“Brrr-ing! It is for you — it is the cat.”']; adj('fun',7); if(cg)adj('social',3); try{ sfx('pop'); setTimeout(function(){ try{ sfx('pop') }catch(e){} },350) }catch(e){} try{ playerSay={text:'📞🧸 Ring ring!',until:performance.now()+2600} }catch(e){} if(typeof todMem72==='function'&&S.age>=1&&S.age<=4)try{ todMem72('Played with the toy phone — a very important pretend call.') }catch(e){} log('🧸 TOY PHONE TIME — '+(cg?(cg+' hands '+S.name+' the toy phone, and the most important call of the day happens: '):(S.name+' makes a very important call: '))+pickArr(lines)+' Fun up'+(cg?' — and playing together lifts Social too.':'.')); toast('🧸 Beep boop — Fun up!'); save(); render() }
-const _use89=useItem;
-useItem=function(id){ if(S){ const it=(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.use==='toyphone'){ toyPlay89(); try{ if(document.getElementById('modal').classList.contains('open')){ if(window._bagPhone)phoneBag(); else openBag() } }catch(e){} return } } _use89(id) };
-const _tod89=todCardHtml72;
-todCardHtml72=function(){ let h=_tod89(); try{ if(S&&S.age>=1&&S.age<=4){ const cg=(typeof todCare82==='function')?todCare82():null; if(hasToy89())h+='<div class="card" style="border-color:var(--accent2)"><h3>🧸 Toy Phone</h3><p>It lives in the 🎒 Bag — it beeps, it rings, it makes pretend calls to pretend people. <b>No real apps, no real calls, no plan, no bill</b> — a toy, and it stays a toy even when a real phone is earned years from now.</p><button class="btn orange" onclick="toyPlay89()">🧸 Play with the toy phone'+(cg?' — '+cg+' hands it over':'')+'</button></div>'; else h+='<div class="card" style="border-color:var(--accent2)"><h3>🧸 A phone of their own?</h3><p>Real phones are <b>not for toddlers</b> — that rule does not bend: no gifts, no asks, no birthdays change it. But a <b>toy phone</b> is made for exactly this age — beeps, pretend calls, pure play. '+(cg?cg+' can pick one up at the 🏪 Corner Store ($8) — or be asked nicely.':'The 🏪 Corner Store sells them for $8.')+'</p>'+(cg?'<button class="btn orange" onclick="toyAsk89()">🙏 Ask '+cg+' for a toy phone</button>':'')+'</div>' } }catch(e){} return h };
-const _cs89=cornerStoreCard82;
-cornerStoreCard82=function(){ let h=_cs89(); try{ if(S&&S.age>=1&&S.age<=4&&!hasToy89()){ const cg=(typeof todCare82==='function')?todCare82():null; h=h.replace(/<\/div>$/,'')+'<button class="btn" style="margin-top:8px" onclick="buyToy89()">🧸 Toy Phone — $8</button><p class="small" style="margin-top:6px">🧸 The toddler exception, on the shelf by the till: real phones are never for ages 1–4, but a toy phone — beeps, pretend calls, no apps, no bill — absolutely is.'+(cg?' '+cg+' handles the buying, like everything at this age.':'')+'</p></div>' } }catch(e){} return h };
 const _ask89=askPhone;
-askPhone=function(){ if(S&&S.age<5){ const cg=(typeof todCare82==='function')?todCare82():null; openSheet('<h2>📵 Real phones are not for toddlers</h2><p>'+S.name+' is '+S.age+' — in this town, ages 1–4 do not get real phones. Not as gifts, not by asking, not on birthdays. That rule does not bend.</p><p>What a toddler CAN have is a <b>🧸 toy phone</b>: it beeps, it rings, it makes pretend calls — no apps, no real calls or texts, no plan, no bill. '+(cg?cg+' can pick one up at the 🏪 Corner Store ($8), or be asked nicely.':'The 🏪 Corner Store sells them for $8.')+'</p>'+(cg?'<button class="btn orange" onclick="toyAsk89()">🧸 Ask '+cg+' for a toy phone instead</button>':'')+'<button class="btn outline" style="margin-top:8px" onclick="closeModal()">Fair enough</button>'); return } _ask89() };
+askPhone=function(){ if(S&&S.age<5){ openSheet('<h2>📵 Real phones are not for toddlers</h2><p>'+S.name+' is '+S.age+' — in this town, ages 1–4 do not get real phones. Not as gifts, not by asking, not on birthdays. That rule does not bend — real phones start at age 5.</p><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Fair enough</button>'); return } _ask89() };
 const _grant89=grantPhone;
-grantPhone=function(how){ if(S&&S.age<5){ toast('📵 Too little for a real phone — toddlers get the 🧸 toy kind'); return } _grant89(how) };
-if(typeof TIPS!=='undefined'){ if(!TIPS['calendar89'])TIPS['calendar89']={t:'📅 The Calendar app',b:'Your phone has a Calendar now: a month view over the game’s real 28-day year (four season-weeks, today ringed in gold) plus a Coming Up agenda. Everything on it is REAL — your birthday and your people’s birthdays (the true days, the same ones people remember and the game observes), holidays, the seasonal town days, school days & term end, your job’s actual shift days, college class days, the weekly bills day with rent/phone/child support on it, and your wedding anniversary. Tap any day to see what is on it. No phone, no Calendar — and a toy phone is not a phone.'}; if(!TIPS['toyphone89'])TIPS['toyphone89']={t:'🧸 The toy phone',b:'Toddlers (1–4) still cannot get a REAL phone — not by asking, not as a gift, not on a birthday; the ask now ends at the toy counter instead. A caregiver can buy the 🧸 Toy Phone at the Corner Store ($8) or be asked for one. Playing with it is parent-led like everything at this age: Fun up, a little Social when a caregiver plays along, cute beeps and pretend calls through the speakers — and zero apps, zero real calls, zero plan, zero bill. When a real phone finally arrives years later, the toy just stays a toy in the Bag.'} }
+grantPhone=function(how){ if(S&&S.age<5){ toast('📵 Too little for a real phone — real phones start at age 5'); return } _grant89(how) };
+if(typeof TIPS!=='undefined'){ if(!TIPS['calendar89'])TIPS['calendar89']={t:'📅 The Calendar app',b:'Your phone has a Calendar now: a month view over the game’s real 28-day year (four season-weeks, today ringed in gold) plus a Coming Up agenda. Everything on it is REAL — your birthday and your people’s birthdays (the true days, the same ones people remember and the game observes), holidays, the seasonal town days, school days & term end, your job’s actual shift days, college class days, the weekly bills day with rent/phone/child support on it, and your wedding anniversary. Tap any day to see what is on it. No phone, no Calendar.'} }
 </script>
 <script>
 /* ================= v91: 🚪 KNOCKING — random people can't come into the family home without knocking: non-household people (townsfolk, roster, acquaintances) never materialise inside the home's rooms through wandering; visitors stop at the door, KNOCK (sound + queued card), and the house decides — Let in (a proper guest visit) or Send away / left waiting too long (they leave politely). For a toddler/child player a parent or caregiver answers the door. Household members, family who live there, the co-parent pickup flow, invited guests and party guests on the guest list keep entering as before. • ⏱️ FAST-FLOW IS SLEEP ONLY — the ×2 action fast-flow is removed (startActivity only fast-flows for sleep, opts.sleep91), and the school/college location fast-flow branches are gone from rtTick/fastState54: actions, school, college, work, dates, travel, events and the queue all play at ×1; sleep alone skips the night at ×2, picked or queued (the queue runs act('sleep') through the same stamp); free-will acts keep the v66 no-fast stamp, so even a free-will nap stays ×1. (The old Settings aging-pace preference is NOT untouched — it is removed entirely; see item 7.) • 🎵 THE LOFI, AUDIBLY FIXED — see the music section below for the diagnosis and the numeric proof hook. • 🎒 THE BAG, UP FRONT — a permanent 🎒 Bag + 📸 Scrapbook quick bar on the main screen (one tap from anywhere in normal play, scrapbook right beside the bag); Sell straight from the Bag at the shown pawn price (money SFX + Bank ledger via the existing sellItem; phone & toy phone & keepsakes show "not for sale" instead of a Sell button); NEW badges on newly gained items and new scrapbook moments until viewed, with counts on the quick-bar buttons, persisted in the save (it.new91 / m.new91). • 🎥 ACTION ZOOM + SAME-MENU RETURN — tapping an action in a folder panel pulses the camera onto your character while it performs (timed activities already zoom-held), and the folder tab + panel scroll you were in is restored after actions instead of bouncing to another tab. • 🖥️ PC LAYOUT — at ≥900px wide the stage keeps the wide screen while the dock, the folder sheet and modal panels cap at a phone-width (~430px) column; phone widths are untouched. Saves carry over: everything new defaults lazily (S.v91) or as optional item/moment flags. ================= */
@@ -5391,7 +5378,7 @@ toggleMusic81=function(){ const off=!musicOff81(); if(S){ ensure81(); S.musicOff
 document.addEventListener('visibilitychange',function(){ try{ if(!document.hidden&&!musicOff81()){ if(AC&&AC.state==='suspended')AC.resume(); startMusic81() } }catch(e){} });
 window.__lofiProbe91=function(){ const out={ctxState:(typeof AC!=='undefined'&&AC)?AC.state:'none',started:!!LOFI81.started,bar:LOFI81.bar||0,musicOff:(typeof musicOff81==='function')?musicOff81():'?',rms:0,peak:0}; try{ if(LOFI81.analyser){ const buf=new Float32Array(LOFI81.analyser.fftSize); LOFI81.analyser.getFloatTimeDomainData(buf); let sum=0,pk=0; for(let i=0;i<buf.length;i++){ const v=Math.abs(buf[i]); sum+=buf[i]*buf[i]; if(v>pk)pk=v } out.rms=Math.sqrt(sum/buf.length); out.peak=pk } }catch(e){ out.err=String(e) } return out };
 /* ---------- 🎒 4) THE BAG, UP FRONT + SELL + NEW BADGES ---------- */
-function sellable91(it){ if(!it)return false; if(it.kind==='phone'||it.kind==='toyphone')return false; if(it.keep91||it.quest)return false; return true }
+function sellable91(it){ if(!it)return false; if(it.kind==='phone')return false; if(it.keep91||it.quest)return false; return true }
 function bagNew91(){ if(!S)return 0; try{ ensure27() }catch(e){} return (S.inv||[]).filter(function(it){ return !!it.new91 }).length }
 function scrapNew91(){ if(!S)return 0; try{ ensure84() }catch(e){} return (S.scrap84||[]).filter(function(m){ return !!m.new91 }).length }
 const _addItem91=addItem;
@@ -6315,13 +6302,13 @@ function ensure102(){ if(!S)return; if(!S.v102||typeof S.v102!=='object')S.v102=
  if(v.confDoneAge===undefined)v.confDoneAge=-1; if(v.danceDoneAge===undefined)v.danceDoneAge=-1; if(v.promDoneAge===undefined)v.promDoneAge=-1;
  if(!v.announced||typeof v.announced!=='object')v.announced={};
  if(!v.abuse||typeof v.abuse!=='object')v.abuse={on:false,level:0,since:0,calm:0};
- if(v.tutAsked===undefined)v.tutAsked=false; if(v.mealDay===undefined)v.mealDay=-1; if(v.restDay===undefined)v.restDay=-1 }
+ if(v.tutAsked===undefined)v.tutAsked=false }
 if(S)ensure102();
 
 /* ---------- 🧹 CHORES GATE ---------- */
 const FAM_ORIGINS102=['two','mom','dad','step','rich','crackden'];
 function choresOK102(){ if(!S)return false; return S.age>=5&&S.age<=18&&!S.movedOut&&!S.homeless80&&FAM_ORIGINS102.indexOf(S.origin)>=0 }
-function choresWhy102(){ if(!S)return ''; if(S.age<5)return 'Babies and toddlers can\'t do chores yet — they unlock at age 5.'; if(S.age>18)return 'You are past 18 — chores are for kids living at home. Time to find a job.'; if(S.movedOut)return 'You moved out — there is no family home paying for chores anymore. Time to find a job.'; if(S.homeless80)return 'There is no home to do chores in right now — the shelter floor and the job board are the way back.'; return 'Chores are for kids living at home — time to find a job.' }
+function choresWhy102(){ if(!S)return ''; if(S.age<5)return 'Babies and toddlers can\'t do chores yet — they unlock at age 5.'; if(S.age>18)return 'You are past 18 — chores are for kids living at home. Time to find a job.'; if(S.movedOut)return 'You moved out — there is no family home paying for chores anymore. Time to find a job.'; if(S.homeless80)return 'There is no home to do chores in right now — the street corner and the job board are the way back.'; return 'Chores are for kids living at home — time to find a job.' }
 const _doWork102=doWork;
 doWork=function(label,pay){ if(label==='Chores'&&S&&S.age>=5&&!choresOK102()){ toast('🧹 '+choresWhy102()); log('🧹 CHORES CLOSED — '+choresWhy102()+' The 💼 Work tab has the job board and the kid jobs; that is where money comes from now.'); return } _doWork102(label,pay) };
 
@@ -6390,19 +6377,17 @@ function abuseFight102(){ if(!S)return; ensure102(); const a=S.v102.abuse; if(!a
   else { addXp(8,'fighting'); addXp(4,'strength'); adj('health',-12); S.bond=clamp((S.bond||0)-7); out='It ended UGLY and even — shouting, a broken plate, both of you breathing hard and hurt (health -12). Nothing settled. The house is quieter tonight the way a held breath is quiet. Bond '+S.bond+'%.' }
   if(cops){ S.wanted=Math.min(5,(S.wanted||0)+1); if(a.level>=3){ S.record=(S.record||0)+1; out+=' 🚔 A neighbour called it in — police at the door, statements taken, and at this level of chaos YOUR name went in the file too: record +1, wanted +1★.' } else out+=' 🚔 A neighbour called it in — the police came, looked around a house with too many broken things in it, and left warnings all round: wanted +1★.'; showTip('wanted') }
   log('🥊🏠 YOU FOUGHT BACK AT HOME — '+out); noteEvent('family','fought back at home'); snap84('fightback102-'+S.day,'🥊','The night you fought back','Things at home came to a head and you stood your ground. '+out,'🥊 🏠 🌧️'); save(); render(); openSheet('<h2>🥊 It\'s over — for tonight</h2><p>'+out+'</p><button class="btn" onclick="closeModal();render()">Back to life</button>') }) }
-function abuseRun102(){ if(!S)return; ensure102(); openSheet('<h2>🏃 Run away?</h2><p>This is real: you leave the household tonight, as a minor, with what you can carry. Home becomes <b>the street</b> — a cardboard corner on Maple Street, the Hope House shelter floor for meals and sleep — and the systems notice: <b>school marks you absent</b>, a <b>caseworker</b> opens a file, and the family bond takes the hit of its life.</p><p>It is also, sometimes, the safest door in the house. Nobody will drag you back in this game — what happens next is the street\'s story, and yours.</p><button class="btn orange" style="margin-top:8px" onclick="abuseRunGo102()">🏃 Go — tonight</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Not yet</button>',{sfx:'pop'}) }
+function abuseRun102(){ if(!S)return; ensure102(); openSheet('<h2>🏃 Run away?</h2><p>This is real: you leave the household tonight, as a minor, with what you can carry. Home becomes <b>the street</b> — a cardboard corner on Maple Street — and the systems notice: <b>school marks you absent</b>, a <b>caseworker</b> opens a file, and the family bond takes the hit of its life.</p><p>It is also, sometimes, the safest door in the house. Nobody will drag you back in this game — what happens next is the street\'s story, and yours.</p><button class="btn orange" style="margin-top:8px" onclick="abuseRunGo102()">🏃 Go — tonight</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Not yet</button>',{sfx:'pop'}) }
 function abuseRunGo102(){ if(!S)return; ensure102(); const a=S.v102.abuse; a.on=false; a.level=0; S.movedOut=true; S.homeless80=true; if(typeof ensure80==='function')ensure80(); if(S.broke80)S.broke80.cause='self'; S.location='street'; S.escort=null; S.grades=clamp((S.grades||0)-3); S.bond=clamp((S.bond||0)-10); adj('energy',-10); adj('hunger',-8);
- log('🏃🌃 YOU RAN — bag over one shoulder, door closing soft behind you so nobody woke. By midnight the family house was a lit window getting smaller. Home is a cardboard corner on Maple Street now, and Hope House has a meal and a floor with your name on neither — which, tonight, feels like freedom. School will mark the absences; a caseworker already has a file with your name on it.');
- snap84('runaway102','🏃','The night you ran','You left the house for good and landed on Maple Street — a cardboard corner, a shelter floor, and a caseworker\'s new file. The street chapter starts here.','🏃 🌃 📦');
- try{ pushMsg('Caseworker','{n}, this is Ms. Osei from family services. I know tonight was bad. Hope House has a bed and a meal — no questions at the door. Come in when you can.') }catch(e){}
+ log('🏃🌃 YOU RAN — bag over one shoulder, door closing soft behind you so nobody woke. By midnight the family house was a lit window getting smaller. Home is a cardboard corner on Maple Street now — no roof, no door with your name on it — which, tonight, feels like freedom. School will mark the absences; a caseworker already has a file with your name on it.');
+ snap84('runaway102','🏃','The night you ran','You left the house for good and landed on Maple Street — a cardboard corner, and a caseworker\'s new file. The street chapter starts here.','🏃 🌃 📦');
+ try{ pushMsg('Caseworker','{n}, this is Ms. Osei from family services. I know tonight was bad. You are not invisible out there — eat, stay warm, and when you are ready, come talk to me. My door is open.') }catch(e){}
  try{ pushMsg('School','Attendance notice: {n} was marked absent today. A counsellor will be reaching out — the door here stays open.') }catch(e){}
  noteEvent('family','ran away'); closeModal(); save(); render();
- openSheet('<h2>🌃 You\'re out</h2><p>The street is home now — your corner is on <b>Maple Street</b>, and the <b>🛖 shelter card in 👽 Me</b> has a hot meal and a safe sleep, once a day each, no questions. Money comes from the 💼 Work tab the way it does out here. School is still yours if you go — and the caseworker\'s file means help exists, when you want it.</p><button class="btn gold" onclick="closeModal();render()">Face the street</button>',{sfx:'pop'}) }
+ openSheet('<h2>🌃 You\'re out</h2><p>The street is home now — your corner is on <b>Maple Street</b>. Money comes from the 💼 Work tab the way it does out here. School is still yours if you go — and the caseworker\'s file means help exists, when you want it.</p><button class="btn gold" onclick="closeModal();render()">Face the street</button>',{sfx:'pop'}) }
 function abuseCard102(){ if(!S)return ''; ensure102(); const a=S.v102.abuse; if(!a.on)return '';
  return '<div class="card abuseCard102"><h3>🏠💔 Home doesn\'t feel safe right now</h3><p>The household has tipped into abuse — level <b>'+a.level+'</b> of 3, day '+a.since+' it started. It rides on the house: heal the bond and the pressure and it eases; let it rot and it worsens. Your moves are real ones:</p><button class="btn" onclick="abuseTalk102()">🕊️ Try to talk it through</button><button class="btn" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="abuseFight102()">🥊 Fight back — strength & fighting decide it</button><button class="btn orange" style="margin-top:8px" onclick="abuseRun102()">🏃 Run away — the street, Hope House, a caseworker</button><p class="small" style="margin-top:6px">Or endure — needs and mood take the daily hit while it lasts. None of these are the \"right\" answer; they\'re the ones that exist.</p></div>' }
-function shelterCard102(){ if(!S||!S.homeless80)return ''; ensure102(); const v=S.v102;
- return '<div class="card"><h3>🛖 Shelter & Street Help — Hope House</h3><p>No roof right now — but not no help. Hope House keeps a meal and a floor for anyone who walks in, adults included. Once a day each, no questions, no cost.</p><button class="btn" '+(v.mealDay===S.day?'disabled style="opacity:.5"':'onclick="shelterGo102(\'meal\')"')+'>🍲 Hot meal'+(v.mealDay===S.day?' — had today\'s':' — refills hunger')+'</button><button class="btn" style="margin-top:8px" '+(v.restDay===S.day?'disabled style="opacity:.5"':'onclick="shelterGo102(\'rest\')"')+'>🛏️ Sleep at the shelter'+(v.restDay===S.day?' — rested today':' — safe, warm, energy back')+'</button><p class="small" style="margin-top:6px">The way back up is the way it always was: 💼 Work for income, $250 for a deposit, and the box becomes a story you tell.</p></div>' }
-function shelterGo102(kind){ if(!S)return; ensure102(); const v=S.v102; if(kind==='meal'){ if(v.mealDay===S.day)return; v.mealDay=S.day; adj('hunger',32); adj('health',3); log('🍲 HOPE HOUSE MEAL — hot, plain, enormous. Nobody asked a single question, which is its own kind of kindness. Hunger +32.') } else { if(v.restDay===S.day)return; v.restDay=S.day; adj('energy',30); adj('health',2); log('🛏️ SHELTER SLEEP — a real mattress behind a real door, one night at a time. Energy +30, and you slept the sleep of the safe.') } save(); render(); if(curTab==='home')renderTabs('home') }
+/* v178: 🛖 SHELTER & STREET HELP REMOVED — the Hope House shelter card (once-a-day 🍲 Hot meal / 🛏️ Sleep at the shelter for homeless players, shelterCard102/shelterGo102 + the v102 mealDay/restDay state) is gone entirely, along with every referral to it. Hope House itself stays: it is the orphanage / foster-care home with its own rooms, residents and story. Existing saves keep any stale mealDay/restDay fields inert — nothing reads them. */
 
 /* ---------- 🎓 TUTORIAL ---------- */
 const TUT102=[
@@ -6411,7 +6396,7 @@ const TUT102=[
  ['🕐 Time — and the one speedup','Time runs itself: <b>1 day ≈ 24 real minutes</b> (10 game-min per 10 real sec). <b>No pause.</b> Clock: top bar — 📅 Day &amp; Calendar pill, 🕐 beside it; also 📱 phone + clocks in town. Only <b>sleep</b> speeds time.'],
  ['💵 Money starts at $0','<b>Money starts at $0.</b> Kids: weekly allowance · <b>🧹 chores</b> (5+, living at home) · 🧒 kid jobs. 14: teen jobs. Adults: <b>💼 Job Board</b> — apply, wait, hired, shifts. All in the 💼 Work folder.'],
  ['🎓 School & growing up','School: preschool → high school. <b>Enroll</b>: 🎓 School folder. Attend, study, grades up. Conferences, dances, prom (date: brother or sister). Each birthday: +1 year, new stage, new unlocks.'],
- ['📱 The phone is earned','<b>Phones are earned</b> — nobody starts with one. Kids: bought for them (birthdays, good grades, asking right). Adults: phone store. Before that: toy phone (little ones); talking is face-to-face.'],
+ ['📱 The phone is earned','<b>Phones are earned</b> — nobody starts with one. Kids: bought for them (birthdays, good grades, asking right). Adults: phone store. Before that: talking is face-to-face.'],
  ['💾 Saving & you\'re set','Your life <b>auto-saves in this browser</b> — close it, come back, it\'s here. ⚙️ Settings (in 🌟 More Life): exports, music, this tutorial on replay.']];
 function tutOffer102(){ if(!S)return; ensure102(); if(S.v102.tutAsked)return; S.v102.tutAsked=true; save();
  openSheet('<h2>🎓 New life — want the basics?</h2><p>Seven short steps over the real screen: needs, actions, time, money, school, the phone, saving. A minute, tops — and you can skip out at any step. Or dive straight in; plenty of lives did.</p><button class="btn gold" style="margin-top:8px" onclick="tutStep102(0)">🎓 Show me the basics</button><button class="btn outline" style="margin-top:8px" onclick="closeModal();render()">Skip — I know my way around</button>',{sfx:'pop'}) }
@@ -6453,11 +6438,11 @@ nextDay=function(skip){ _nextDay102(skip); try{ v102Day() }catch(e){} };
 const _renderTabs102=renderTabs;
 renderTabs=function(tab){ _renderTabs102(tab); try{ if(!S)return; ensure102(); const p=document.getElementById('panel'); if(!p)return;
  if(tab==='school'){ const c=schoolCard102(); if(c)p.innerHTML+=c }
- if(tab==='home'){ const ab=abuseCard102(); if(ab)p.innerHTML+=ab; const sh=shelterCard102(); if(sh)p.innerHTML+=sh }
+ if(tab==='home'){ const ab=abuseCard102(); if(ab)p.innerHTML+=ab }
  if(tab==='work'){ const btns=p.querySelectorAll('button'); for(let i=0;i<btns.length;i++){ const oc=btns[i].getAttribute('onclick')||''; if(oc.indexOf("doWork('Chores'")>=0&&S.age>=5&&!choresOK102()){ btns[i].disabled=true; btns[i].style.opacity='.55'; btns[i].textContent='🔒 Chores — '+choresWhy102(); const card=btns[i].closest('.card'); if(card&&!card.querySelector('.choresWhy102')){ const pp=document.createElement('p'); pp.className='small choresWhy102'; pp.style.marginTop='6px'; pp.textContent='🧹 '+choresWhy102()+' Kid jobs (under 18) and the job board below are where money comes from now.'; card.appendChild(pp) } } }
-  if(S.age>=5&&!choresOK102()){ const grid=p.querySelector('.grid'); if(grid&&!p.querySelector('.afterChores102')){ const d=document.createElement('div'); d.className='card afterChores102'; d.innerHTML='<h3>💼 Life after chores</h3><p>'+choresWhy102()+'</p><p class="small">'+(S.homeless80?'No home and no income lands you exactly where the safety net is: Hope House has a meal and a floor (the 🛖 card in 👽 Me), and the street corner is home base until $250 buys a deposit. It is a floor, not a dead end.':'The job board above is the real path now — apply, wait for word, work shifts. Under 18 and at school age? Kid jobs and teen jobs still pay today.')+'</p>'; grid.appendChild(d) } } }
+  if(S.age>=5&&!choresOK102()){ const grid=p.querySelector('.grid'); if(grid&&!p.querySelector('.afterChores102')){ const d=document.createElement('div'); d.className='card afterChores102'; d.innerHTML='<h3>💼 Life after chores</h3><p>'+choresWhy102()+'</p><p class="small">'+(S.homeless80?'No home and no income means the street corner is home base until $250 buys a deposit. It is a floor, not a dead end.':'The job board above is the real path now — apply, wait for word, work shifts. Under 18 and at school age? Kid jobs and teen jobs still pay today.')+'</p>'; grid.appendChild(d) } } }
  }catch(e){} };
-if(typeof TIPS!=='undefined'){ if(!TIPS['chores102'])TIPS['chores102']={t:'🧹 Chores are a kid-at-home thing',b:'Chores pay only while you live with your parents AND are 18 or under. Past that — moved out, or grown — the chore money closes and the job board is the way. No home and no income? Hope House and the street systems are a floor, not a dead end.'};
+if(typeof TIPS!=='undefined'){ if(!TIPS['chores102'])TIPS['chores102']={t:'🧹 Chores are a kid-at-home thing',b:'Chores pay only while you live with your parents AND are 18 or under. Past that — moved out, or grown — the chore money closes and the job board is the way. No home and no income? The street systems are a floor, not a dead end.'};
  if(!TIPS['school-events102'])TIPS['school-events102']={t:'🗓️ School has a calendar now',b:'A teacher conference every school year (the tone is your real grades talking), dances at middle and high school, and prom at 16–17. The school announces them ahead — attend from the 🎓 School folder. And yes: your brother or sister is a legitimate prom date. Iconic, even.'};
  if(!TIPS['abuse102'])TIPS['abuse102']={t:'🏠 When home turns hostile',b:'Strained households — thin bond, no money, the wrong kind of house — can tip into abuse. It is a state: it worsens or heals with the house. Talk, fight back, run away, or endure — all four are modelled, none are free.'};
  if(!TIPS['tutorial102'])TIPS['tutorial102']={t:'🎓 The basics, on tap',b:'New lives get offered a one-minute guided tour of the real screen — needs, actions, time, money, school, the phone, saving. Skippable any time, and replayable from ⚙️ Settings.'} }
@@ -6678,7 +6663,7 @@ window.__v104={ensure104:ensure104,openCarShop104:openCarShop104,setupLockPick10
 <script>
 /* ================= v105: 👽 THE "ME" TAB — the 🏠 Home & Care tab is renamed end to end: FOLDERS entry + DOCK_SHORT now say 👽 / "Me" (dock button, panel title dsTitle, and every text reference renamed at the source), and the tab is slimmed to the person: (1) the 🚪 Move Out & Rent card is OUT of the panel — the moveOut()/rent systems are untouched (rent still auto-deducts $190 on the weekly bill cycle; parents' board $20/2 days unchanged) and the Move Out ENTRY now lives in the 🚗 Travel tab's new Housing card below, alongside the cleaning buttons; (2) the 🧊 Fridge section is OUT of the panel — the fridge mechanic is untouched: eating at home (⚡ Actions → Eat, fridgeEatAct) still draws the home stock, and stocking still happens by grocery shopping at 🛒 FreshMart (running out = no home meals until you shop); fridgeCardHtml() simply has no panel surface anymore; (3) the 🧹 Home Cleanliness section is OUT of the panel — the dirt system (dirtDay81, cleanBand81, Fun/Hygiene drag) is untouched, and the cleaning ACTIONS (cleanAct81 tidy/mop/deep + maidBook81) ride along in the Travel Housing card, with the maid also still in the phone's Services; (4) "📖 Your Story" is renamed "📖 My Story" (its only occurrence); (5) the 🚶 Travel button inside the story card is removed — travel lives in the 🚗 Travel tab, full stop. Everything else in the tab stays: toddler card, Kid Money, Marriage & Family, family card, Skills, plus the v102 abuse/shelter cards and the v103 pregnancy card that append here. ================= */
 function housingCard105(){ if(!S)return ''; const canClean=(!S.homeless80&&S.age>=5&&typeof cleanAct81==='function'); if(S.age<18&&!canClean)return ''; let h='<div class="card housingCard105"><h3>🏠 Housing</h3>';
- if(S.age>=18){ if(S.homeless80){ h+='<p>No roof right now — home is the street, and the 🛖 shelter card in the 👽 Me tab has the meal and the safe sleep. The way back is the way it always was: save <b>$250</b> for a deposit and move out of street life for good.</p><button class="btn gold" onclick="moveOut()">🚪 Move Out — $250 deposit</button>' }
+ if(S.age>=18){ if(S.homeless80){ h+='<p>No roof right now — home is the street. The way back is the way it always was: save <b>$250</b> for a deposit and move out of street life for good.</p><button class="btn gold" onclick="moveOut()">🚪 Move Out — $250 deposit</button>' }
   else if(!S.movedOut){ h+='<p>You live at the family home. Your own place: <b>$250 down</b>, then rent <b>$190/week</b> — taken automatically on bill day, nothing to pay by hand. Staying put as an adult costs board instead: your parents take <b>$20 every two days</b>.</p><button class="btn gold" onclick="moveOut()">🚪 Move Out ($250 down)</button>' }
   else { h+='<p>Your own place — rent <b>$190/week</b>, taken automatically on bill day. Nothing to pay by hand; it is part of the weekly economy, same as it ever was.</p><button class="btn outline" onclick="moveOut()">🏠 Rent: $190/week — automatic</button>' } }
  if(canClean){ ensure81(); const lv=Math.round(S.clean81.level); const label=lv>=85?'✨ Sparkling':lv>=65?'🧹 Pretty tidy':lv>=45?'🧺 Lived-in':lv>=25?'🗑️ Messy':'🤢 Filthy'; h+='<p style="margin-top:10px"><b>🧹 Home cleanliness — '+label+' ('+lv+'%).</b> Living dirties a home a little every day — you can see it in the room — and a filthy home drags Fun (then Hygiene) down.</p><button class="btn" onclick="cleanAct81(\'tidy\')">🧹 Tidy up — a quick reset</button><button class="btn" onclick="cleanAct81(\'mop\')">🪣 Mop & vacuum — the real work</button><button class="btn" onclick="cleanAct81(\'deep\')">🧽 Deep clean — back to sparkling</button><button class="btn gold" onclick="maidBook81(\'once\')">🧹 Book a maid — $25, done for you</button>' }
@@ -6842,7 +6827,7 @@ function syncQueueActs108(){ try{ if(typeof QUEUE_ACTS84==='undefined')return; c
 const _rt108=renderTabs; renderTabs=function(active){ const r=_rt108(active); try{ if(S&&inGame&&active==='work'&&S.age>=18){ const p=document.getElementById('panel'); if(p){ p.querySelectorAll('.card').forEach(function(c){ const h=c.querySelector('h3'); if(h&&(h.textContent.indexOf('Chores')===0||c.classList.contains('afterChores102')))c.remove() }) } } syncQueueActs108() }catch(e){} return r };
 /* ---------- 🚪 board: arrears, warnings, a grace window — then the locks change ---------- */
 function boardWho108(){ return S.origin==='two'?'Mom & Dad':S.origin==='mom'?'Mom':S.origin==='dad'?'Dad':'your parents' }
-function kickOut108(who){ if(!S)return; const v=S.v108; v.kicked=true; const due=v.boardDue||0; S.movedOut=true; S.homeless80=true; if(typeof ensure80==='function')ensure80(); if(S.broke80)S.broke80.cause='self'; S.escort=null; S.location='street'; if(S.housemates&&S.housemates.length)S.housemates=[]; log('🚪🏠 KICKED OUT — the grace window closed with $'+due+' of board still owed and no job in sight, and '+who+' changed the locks. Everything you own is in bags on the pavement. Home, for now, is a corner of Maple Street and the Hope House floor: a hot meal and a safe sleep are in your ⚡ Actions, and $250 of deposit money (🚗 Travel → 🏠 Housing) is the way back under a roof.'); openSheet('<h2>🚪 Kicked out</h2><p>It did not happen all at once. It happened $20 at a time: board missed, warnings given, a grace window that ran out. '+who+' changed the locks — <b>$'+due+' still owed</b>, and no job to show them.</p><p>What now is what the street offers: <b>Hope House</b> has a meal and a floor (⚡ Actions / 👽 Me), the job board is still hiring, and $250 buys a deposit on a place of your own. People climb back from exactly here.</p><button class="btn gold" onclick="closeModal()">📦 Start over from the street</button>',{sfx:'bad',buzz:[200,80,200]}); toast('🚪 Kicked out — Hope House has a floor'); save(); render() }
+function kickOut108(who){ if(!S)return; const v=S.v108; v.kicked=true; const due=v.boardDue||0; S.movedOut=true; S.homeless80=true; if(typeof ensure80==='function')ensure80(); if(S.broke80)S.broke80.cause='self'; S.escort=null; S.location='street'; if(S.housemates&&S.housemates.length)S.housemates=[]; log('🚪🏠 KICKED OUT — the grace window closed with $'+due+' of board still owed and no job in sight, and '+who+' changed the locks. Everything you own is in bags on the pavement. Home, for now, is a corner of Maple Street: your cardboard box is where you sleep, the job board is how you eat, and $250 of deposit money (🚗 Travel → 🏠 Housing) is the way back under a roof.'); openSheet('<h2>🚪 Kicked out</h2><p>It did not happen all at once. It happened $20 at a time: board missed, warnings given, a grace window that ran out. '+who+' changed the locks — <b>$'+due+' still owed</b>, and no job to show them.</p><p>What now is what the street offers: a cardboard corner on Maple Street that is yours to sleep in, the job board still hiring, and $250 buys a deposit on a place of your own. People climb back from exactly here.</p><button class="btn gold" onclick="closeModal()">📦 Start over from the street</button>',{sfx:'bad',buzz:[200,80,200]}); toast('🚪 Kicked out — the street is home for now'); save(); render() }
 parentsBoard77=function(){ if(!S)return; ensure77(); ensure108(); if(!livingAtHome77())return; if(S.day%2!==0)return; if(S.jail&&S.jail.in)return; const v=S.v108; const who=boardWho108(); const b=S.bank63; const funds=S.money+((b&&b.debit&&b.bank>0)?b.bank:0); const due=20+(v.boardDue||0); const pay=Math.min(Math.max(funds,0),due); if(pay>0)money(-pay,pay>=due?'🏠 Parents — board (living at home)':'🏠 Parents — board (part-paid)'); v.boardDue=due-pay;
  if(v.boardDue<=0){ if(due>20)log('🏠 BOARD PAID — AND THE ARREARS WITH IT: '+who+' took $'+pay+' ($20 board + $'+(due-20)+' owed). Square again — nobody is changing any locks.'); else { log('🏠 BOARD — '+who+' took $20 for board today. The deal while you live at home as an adult: $20 every two days — food, roof, laundry, the lot.'); showTip('parents-board') } v.warnStage=0; v.graceUntil=0; return }
  if(!v.graceUntil)v.graceUntil=S.day+6;
@@ -6859,7 +6844,7 @@ const _nd108=nextDay; nextDay=function(skip){ _nd108(skip); try{ if(!S)return; e
 /* ---------- tips & the render hook (negative paint + queue sync) ---------- */
 if(typeof TIPS!=='undefined'){ TIPS['bank108']={t:'🏦 The bank, the card & the check',b:'Bank money needs a 💳 DEBIT CARD to spend — and cards are issued at the 🏦 BANK (the Bank app\'s Visit button takes you), where they also walk you through the 📱 banking app. 18+ = your own account; 5–17 = a parent or guardian can set you up with a linked kid card (it becomes your own at 18, balance and history carried over); under 5, no card. Pay is either 💼 DIRECT DEPOSIT (sign up at hiring or in the Bank app — lands in the bank) or a 🧾 PAPER CHECK in your Bag: deposit it at the bank (clears on the spot) or by 📸 photo in the app (clears next morning) before it spends. Money can go 🔴 negative now — and unpaid board at home builds arrears that can end with you kicked out.'};
  TIPS['first-job']={t:'💼 First shift!',b:'Work pays through the bank now: sign up for 💼 direct deposit (asked when you are hired; needs your 💳 debit card) and payday lands in your 🏦 Bank — or take 🧾 paper checks and deposit each one at the bank, or by 📸 photo in the Bank app, before it spends. Chores are for under-18s living at home only — they vanish entirely at 18. Teen jobs unlock at 14, careers at 18.'};
- if(TIPS['parents-board'])TIPS['parents-board'].b='Adults (18+) who live at home pay board: $20 every two days — food, roof and laundry included. It posts in your 🏦 Bank ledger like every dollar. NEW TEETH: board that cannot be covered is NOT forgiven any more — it stands as arrears, warnings follow, a grace window runs (about six days), and if you neither find a job nor pay up, you can be KICKED OUT to the street and the Hope House floor. A hired job or a payment stops the whole thing cold. Move out on your own terms and it ends the day you leave; a place of your own runs $190/week rent instead.' }
+ if(TIPS['parents-board'])TIPS['parents-board'].b='Adults (18+) who live at home pay board: $20 every two days — food, roof and laundry included. It posts in your 🏦 Bank ledger like every dollar. NEW TEETH: board that cannot be covered is NOT forgiven any more — it stands as arrears, warnings follow, a grace window runs (about six days), and if you neither find a job nor pay up, you can be KICKED OUT to the street — a cardboard corner on Maple Street. A hired job or a payment stops the whole thing cold. Move out on your own terms and it ends the day you leave; a place of your own runs $190/week rent instead.' }
 const _r108=render; render=function(){ _r108(); try{ negPaint108(); syncQueueActs108() }catch(e){} };
 if(S)ensure108();
 window.__v108={ensure108:ensure108,bankVisit108:bankVisit108,issueCard108:issueCard108,askCard108:askCard108,depositCheck108:depositCheck108,ddSet108:ddSet108,kickOut108:kickOut108};
@@ -7197,7 +7182,7 @@ function restoreSpot110(){ try{ if(!spot110||!spotRestore110)return; if(Date.now
 
 /* ---------- 🎁 REAL GIFTS + 🎂 SINGING ---------- */
 function isBdayToday110(name){ try{ return trueBday89(name)===(((S.day-1)%28)+1) }catch(e){ return false } }
-function giftSheet110(name){ if(!S)return; ensure110(); const first=name.split(' ')[0]; const esc=name.replace(/'/g,"\\'"); const items=(S.inv||[]).filter(function(it){ return it.kind!=='phone'&&it.kind!=='toyphone' }); openSheet('<h2>🎁 A gift for '+name+'</h2><p>A <b>gift card</b> always lands — or give something real from your 🎒 Bag: you bought it at an actual shop, you carried it here, and the reaction scales with the gift. '+(isBdayToday110(name)?'🎂 <b>It is '+first+'\'s birthday today</b> — a gift today lands extra warm.':'')+'</p><button class="btn gold" style="margin-top:8px" onclick="giftGo84(\''+esc+'\')">🎁 Gift card — $10</button>'+(items.length?items.map(function(it){ return '<button class="btn outline" style="margin-top:8px" onclick="giveItem110(\''+esc+'\','+it.id+')">'+it.name+' — worth $'+it.value+'</button>' }).join(''):'<p class="small" style="margin-top:8px">🎒 Nothing giftable in the Bag right now — the shops around town sell the real stuff (the 🏪 Corner Store watch counter is a good start).</p>')+'<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Not now</button>') }
+function giftSheet110(name){ if(!S)return; ensure110(); const first=name.split(' ')[0]; const esc=name.replace(/'/g,"\\'"); const items=(S.inv||[]).filter(function(it){ return it.kind!=='phone' }); openSheet('<h2>🎁 A gift for '+name+'</h2><p>A <b>gift card</b> always lands — or give something real from your 🎒 Bag: you bought it at an actual shop, you carried it here, and the reaction scales with the gift. '+(isBdayToday110(name)?'🎂 <b>It is '+first+'\'s birthday today</b> — a gift today lands extra warm.':'')+'</p><button class="btn gold" style="margin-top:8px" onclick="giftGo84(\''+esc+'\')">🎁 Gift card — $10</button>'+(items.length?items.map(function(it){ return '<button class="btn outline" style="margin-top:8px" onclick="giveItem110(\''+esc+'\','+it.id+')">'+it.name+' — worth $'+it.value+'</button>' }).join(''):'<p class="small" style="margin-top:8px">🎒 Nothing giftable in the Bag right now — the shops around town sell the real stuff (the 🏪 Corner Store watch counter is a good start).</p>')+'<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Not now</button>') }
 function giveItem110(name,id){ if(!S)return; ensure110(); const ix=(S.inv||[]).findIndex(function(it){ return it.id===id }); if(ix<0){ toast('🎒 That item is gone'); return } const it=S.inv[ix]; const first=name.split(' ')[0]; if(it.hot&&Math.random()<0.4){ log('🎁😬 You tried to gift '+name+' the '+it.name+' — '+first+' looked at it, looked at YOU, and handed it back: “I do not want to know where that came from.” Some gifts are evidence.'); toast('🎁 Refused — too hot to gift'); closeModal(); save(); render(); return } S.inv.splice(ix,1); const m=mem84Of(name); m.gifts++; const bday=isBdayToday110(name); let pts=2, line='polite and pleased'; if(it.value>=200){ pts=10; line='absolutely floored — the good kind of speechless' } else if(it.value>=50){ pts=7; line='genuinely delighted' } else if(it.value>=10){ pts=4; line='properly happy' } if(bday)pts+=3; mem84Log(name,'🎁 You gave '+first+' '+it.name+' (worth $'+it.value+')'+(bday?' — on their BIRTHDAY':'')+' (Day '+S.day+')'); if(S.romance&&S.romance[name])S.romance[name].meter=Math.min(100,(S.romance[name].meter||0)+Math.ceil(pts/1.5)); if((typeof isParent70==='function'&&isParent70(name))||name==='Family')S.bond=clamp(S.bond+Math.ceil(pts/2)); adj('social',4); emojiConfetti(['🎁','💛','✨'],10); log('🎁 GIFT — '+name+' got the '+it.name+' from your Bag and was '+line+'. That is gift #'+m.gifts+' to '+first+' — and yes, they will remember this one.'); toast('🎁 '+first+' loved it'); if(S.hasPhone&&S.contacts&&S.contacts[name])setTimeout(function(){ if(S)pushMsg(name,pickArr(['the gift?? 🎁 you did NOT have to. thank you, {n} 💛','ok the gift made my whole week btw 🎁💛'])) },6000); save(); closeModal(); render() }
 function singBday110(name){ if(!S)return; ensure110(); if(typeof sungBday116==='function'&&sungBday116(name)){ toast('🎂 Already sung for this birthday — once is the magic'); return } if(typeof markSungBday116==='function')markSungBday116(name); const first=name.split(' ')[0]; adj('social',6); adj('fun',4); if((typeof isParent70==='function'&&isParent70(name))||name==='Family')S.bond=clamp(S.bond+3); mem84Log(name,'🎂 You sang Happy Birthday to '+first+' — full volume, slightly off-key, perfect (Day '+S.day+')'); snap84('sing110-'+name+'-'+Math.floor((S.day-1)/28),'🎂','Happy Birthday, '+first+'!','You sang Happy Birthday to '+name+' on their day — Day '+S.day+'. Once per birthday — that is what makes it count. Off-key. Full heart.','🎂 🎶 🎉'); emojiConfetti(['🎂','🎶','🎉'],12); log('🎂🎶 HAPPY BIRTHDAY — you sang to '+name+' at full volume. The bond warmed, Fun went up, and it is in their memory now: people remember who sings.'); toast('🎂🎶 Sang to '+first+'!'); save(); closeModal(); render() }
 
@@ -8337,7 +8322,7 @@ function folderLock121(id){ if(!S)return null; const a=S.age;
  if(id==='trouble'&&a<5)return {id:id,icon:'🚨',name:'Crime',age:5,why:'Kids under 5 cannot get into trouble — no crimes, no stealing, no lock-picking, no dumpster dives, no dealing. The street can wait.'};
  return null }
 function lockSheet121(lk){ if(!S||!lk)return; let extra='';
- if(lk.id==='travel'){ try{ extra=outingCardHtml68() }catch(e){ extra='' } try{ if(S.location!==homeLoc())extra='<button class="btn orange" onclick="closeModal();goLoc(\''+homeLoc()+'\')">🏠 Head home</button>'+extra }catch(e){} }
+ if(lk.id==='travel'){ try{ extra=(S&&S.age<=4&&typeof daysOutLockedHtml182==='function')?daysOutLockedHtml182():outingCardHtml68() }catch(e){ extra='' } try{ if(S.location!==homeLoc())extra='<button class="btn orange" onclick="closeModal();goLoc(\''+homeLoc()+'\')">🏠 Head home</button>'+extra }catch(e){} }
  openSheet('<div style="text-align:center;padding:6px"><div style="font-size:44px;line-height:1.1">🔒</div><h3>'+lk.icon+' '+lk.name+' is locked</h3><p style="line-height:1.5">'+lk.why+'</p><p><b>Unlocks at age '+lk.age+'</b> — '+S.name+' is '+S.age+' right now. The moment that birthday lands, this opens by itself: nothing to buy, nothing to switch on.</p></div>'+extra+'<button class="btn gold" onclick="closeModal()">Okay</button>',{buzz:[60,40,60]}); if(lk.id==='travel')showTip('travel-toddler80') }
 function paintDockLocks121(){ if(!S)return; const dock=document.getElementById('dockCore100')||document.getElementById('menuDock'); if(!dock)return; const btns=dock.querySelectorAll('.dockTab'); btns.forEach(function(b){ const oc=b.getAttribute('onclick')||''; const m=oc.match(/dockGo\('([a-z]+)'\)/); if(!m)return; const lk=folderLock121(m[1]); if(!lk)return; b.classList.add('locked55'); b.classList.add('lock121'); const e=b.querySelector('.dtE'),l=b.querySelector('.dtL'); if(e)e.textContent='🔒'; if(l)l.textContent='Locked'; b.setAttribute('aria-label','Folder: '+lk.name+' — locked until age '+lk.age) }) }
 const _rtTabs121=renderTabs;
@@ -8376,7 +8361,7 @@ function helpHtml122(){ return '<h2>❓ Help</h2>'
 +'<div class="card"><h3>🌱 The basics</h3><p>Time runs on its own — <b>1 real second = 1 game minute</b>. The only faster time is <b>sleep (×2)</b>.</p></div>'
 +'<div class="card"><h3>❤️ Your needs</h3><p>Six bars: <b>Hunger, Energy, Hygiene, Fun, Mood, Social</b>. ⚡ Actions fix them — eat, sleep, bathe, play. A low bar makes its fix <b>✨ sparkle</b> in the menu — a hint only.</p></div>'
 +'<div class="card"><h3>🗂️ Folders & age locks</h3><p>Dock folders: <b>Actions, Me, Work, People, Travel, Crime, More Life</b> (🎓 School once enrolled). Some folders are <b>🔒 locked</b> while you are too young — tap one to see the age it opens at; locks lift on that birthday. Toddlers (1–4) act through a caregiver.</p></div>'
-+'<div class="card"><h3>📱 The phone</h3><p>Real phones start at <b>age 5</b>, bought for you by a grown-up. Calls, texts, apps — and a <b>battery</b> to charge at home. Toddlers get the 🧸 toy phone: no apps, no bill.</p></div>'
++'<div class="card"><h3>📱 The phone</h3><p>Real phones start at <b>age 5</b>, bought for you by a grown-up. Calls, texts, apps — and a <b>battery</b> to charge at home. Little kids get the no-service kid phone instead.</p></div>'
 +'<div class="card"><h3>💵 Cash vs the Bank</h3><p><b>Cash</b> is in hand — tills take cash. <b>Jobs, gigs and sales pay into your 🏦 Bank</b>; spending Bank money needs your bank card. The 🏪 Pawn Shop buys almost anything in your 🎒 Bag. Kid jobs start at 4.</p></div>'
 +'<div class="card"><h3>🎒 The Bag & the fridge</h3><p>What you carry lives in the 🎒 Bag. Food from home lives in the 🧊 fridge — home eating actions use it.</p></div>'
 +'<div class="card"><h3>😴 Sleep, people & growing up</h3><p>Asleep people cannot be called or texted. Parents and caregivers have <b>jobs and shifts</b>; if no grown-up can watch a toddler, a babysitter or daycare covers. Birthdays are on the 📅 Calendar.</p></div>'
@@ -11163,7 +11148,7 @@ function entHeal136(){ try{ const panel=document.getElementById('panel'); if(!pa
 const _rt136=renderTabs;
 renderTabs=function(active){ const r=_rt136(active); try{ if(!S||!inGame)return r; const panel=document.getElementById('panel'); if(!panel)return r; const cur=(typeof curTab!=='undefined'&&curTab)?curTab:active;
  if(cur==='home'){ const pb=panel.querySelector('.petsBack134'); if(pb)pb.remove();
-  stripCards136(panel,function(t){ const x=t.trim(); return /Your Pets/.test(x)||/Pets Around You/.test(x)||x==='🐾 Pets'||/Dating & Relationships/.test(x)||/Family Tree/.test(x)||/Toy Phone/.test(x)||/A phone of their own/.test(x)||/^📚\s*Study\b/.test(x)||/^Study\b/.test(x) }) }
+  stripCards136(panel,function(t){ const x=t.trim(); return /Your Pets/.test(x)||/Pets Around You/.test(x)||x==='🐾 Pets'||/Dating & Relationships/.test(x)||/Family Tree/.test(x)||/^📚\s*Study\b/.test(x)||/^Study\b/.test(x) }) }
  if(cur==='life')socialHub136(panel);
  if(cur==='travel'&&S.location==='vet')petStorePets136(panel);
  if(cur==='actions101'){ entMerge136(panel); setTimeout(entHeal136,80); setTimeout(entHeal136,450) }
@@ -11173,12 +11158,6 @@ paintActions101=function(){ const r=_pa136(); try{ entMerge136(document.getEleme
 const _pq136=paintQCards101;
 paintQCards101=function(){ const r=_pq136(); try{ entMerge136(document.getElementById('panel')) }catch(e){} return r };
 
-/* ================= item 10: toy phone out of the Me toddler card; buyable at the Mall too ================= */
-const _tod136=todCardHtml72;
-todCardHtml72=function(){ let h=_tod136(); try{ const m1=h.indexOf('<h3>🧸 Toy Phone</h3>'); const m2=h.indexOf('<h3>🧸 A phone of their own?</h3>'); let m=-1; if(m1>=0)m=m1; if(m2>=0&&(m<0||m2<m))m=m2; if(m>=0){ const start=h.lastIndexOf('<div class="card"',m); if(start>=0)h=h.slice(0,start) } }catch(e){} return h };
-const _ms136=mallSheet123;
-mallSheet123=function(){ const r=_ms136(); try{ if(S&&S.age>=1&&S.age<=4&&!hasToy89()){ const V=ensure123(); if((V.mallRoom||'atrium')==='games'){ const sh=document.getElementById('sheet'); if(sh&&!sh.querySelector('.toyMall136')){ const d=document.createElement('div'); d.className='toyMall136'; d.style.cssText='text-align:left;margin-top:14px;border-top:2px solid #80808030;padding-top:10px'; d.innerHTML='<h3>🧸 Toy Phone — $8</h3><p class="small">The toddler exception, on the mall shelf too: real phones are never for ages 1–4, but a toy phone — beeps, pretend calls, no apps, no real calls, no plan, no bill — absolutely is. A caregiver handles the buying, like everything at this age.</p><button class="btn" onclick="toyBuyMall136()">🧸 Toy Phone — $8</button>'; sh.appendChild(d) } } } }catch(e){} return r };
-function toyBuyMall136(){ buyToy89(); try{ mallSheet123() }catch(e){} }
 
 /* ================= item 3: Normal Life — the style-box preview names the worn style, refreshed on every render ================= */
 function pvCap136(){ const cap=document.getElementById('pvCap'); if(!cap)return; const st=(HAIRSTYLES.find(function(h){ return h.id===selHairStyle })||{}); cap.textContent=(selGender==='girl'?'👧 Girl':'👦 Boy')+' · Age '+selAge+' · '+(st.emoji||'💇')+' '+(st.label||'Classic')+' — 👇 live preview, right here in the style box' }
@@ -11188,7 +11167,7 @@ const _rs136=randomStyle123;
 randomStyle123=function(q,g){ const r=_rs136(q,g); try{ if(!q){ pvCap136(); if(typeof drawPreview==='function')drawPreview() } }catch(e){} return r };
 
 if(typeof TIPS!=='undefined'){ TIPS['ql136']={t:'⚡ Quick Life asks now',b:'Quick Life is a five-question questionnaire: kids, single-or-taken, rich-or-broke, job, and starting age (the age question is the builder\u2019s addition). The life is BUILT from your answers — taken starts with a partner, rich starts with the shipped rich-family money ($500 and the fancy kit), a job answer starts you hired off the job board, and a parent answer starts you with kids in the family system. Anything skipped rolls random.'};
- TIPS['hub136']={t:'❤️ Social is the hub now',b:'💖 Dating & Relationships, 🐾 Pets Around You and the 🌳 Family Tree all live in ❤️ Social. Your own pets left 👽 Me entirely — see, feed and manage them at the 🐾 Pet Store & Vet in 🚗 Travel. The 🧸 toy phone left Me too: it is buyable at the 🏪 Corner Store and the 🛍️ Mall (Games & Movies). In ⚡ Actions, 🎮 Play and 📺 Watch TV share one 🎬 Entertainment dropdown.'};
+ TIPS['hub136']={t:'❤️ Social is the hub now',b:'💖 Dating & Relationships, 🐾 Pets Around You and the 🌳 Family Tree all live in ❤️ Social. Your own pets left 👽 Me entirely — see, feed and manage them at the 🐾 Pet Store & Vet in 🚗 Travel. In ⚡ Actions, 🎮 Play and 📺 Watch TV share one 🎬 Entertainment dropdown.'};
  TIPS['sleep136']={t:'💤 Toddlers sleep STILL',b:'Little kids have real sleep now: 🌙 Put to bed from the kids card and a toddler stays in the crib/bed — asleep, still, not moving — until the 7 AM wake. They also sleep at night on their own schedule (bedtime 7 PM under 2, 8 PM at 2–4). Nobody picks up, carries or crawls a sleeping toddler.'};
  TIPS['traits136']={t:'🎂 Traits on fifth birthdays only',b:'The 🌱 traits box appears ONLY on fifth birthdays — ages 5, 10, 15, 20… Ordinary birthdays bank nothing and pop nothing. Bonus trait offers from real accomplishments still arrive whenever they are earned.'} }
 const _wn136=whatsNewHtml124;
@@ -12986,9 +12965,14 @@ function openAreaPick123(){ navIntent91=true; try{ if(curTab==='areas123'&&dockO
 function pickArea123(id){ navIntent91=true; try{ const fb=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='areas123')?lastRealTab101:'home'; if(curTab==='areas123')curTab=fb; setDock(false); goArea123(id) } finally{ navIntent91=false; try{ noteMenuCtx91() }catch(e){} } }
 const _rt148=renderTabs;
 renderTabs=function(active){ if(active==='areas123'){ const fb=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='rooms106')?lastRealTab101:'home'; const r=_rt148(fb); curTab='areas123'; paintAreaPick123(); return r } return _rt148(active) };
-/* ---------- (B) Milestones & Life History live in the 🏆 Achievements card now ---------- */
+/* ---------- (B) v183: the 🏆 Milestones — Life History sub-section is REMOVED — every toddler
+   milestone is a real 🏆 Achievement now (see the v183 block at the end of this file):
+   todMile72 earns the matching ACH132 entry when a milestone fires, and milestones already
+   recorded in a save's S.tod.miles migrate into S.v132.ach as earned achievements.
+   This wrapper stays only as a pass-through so the shipped achCardHtml132 runs exactly
+   as before, with no Milestones section appended. ---------- */
 const _ach148=achCardHtml132;
-achCardHtml132=function(){ let h=_ach148(); try{ if(h&&S&&S.age>=1&&S.age<=4&&S.tod&&S.tod.miles&&typeof TOD_MILES72!=='undefined'&&h.slice(-6)==='</div>'){ const T=S.tod; const rows=TOD_MILES72.map(function(m){ const d=T.miles[m[0]]; return '<div class="kv"><span>'+(d?'✅':'⬜')+' '+m[1]+' '+m[2].charAt(0)+m[2].slice(1).toLowerCase()+'</span><b>'+(d?'Day '+d:'—')+'</b></div>' }).join(''); h=h.slice(0,-6)+'<h4 style="margin:12px 0 4px">🏆 Milestones — Life History</h4>'+rows+'<p class="small">Milestones land in the 📣 Headlines and the journal.</p></div>' } }catch(e){} return h };
+achCardHtml132=function(){ return _ach148() };
 
 /* ---------- (A) toddler Me: grouped under Character / The Toddler Years / Growing Up ---------- */
 function groupHead148(txt){ const d=document.createElement('div'); d.className='todGroup148'; d.textContent=txt; d.style.cssText='grid-column:1/-1;font-weight:900;font-size:15px;letter-spacing:.2px;margin:12px 2px 0'; return d }
@@ -14408,14 +14392,17 @@ console.log('🌊 AquaLife v159 addendum 4 — 🎒 bag colour+print identity ev
 </script>
 <script>
 /* ================= v162: 🧒 TODDLER DEVICES • 📂 MENU STAY-UP + ARRIVAL RESET • 🔞 18+ GATE =================
-   PART 1 — TODDLER DEVICES. A toddler (1–4) can be given a 🧒 Kid Tablet ($25) and a 📱 Kid Phone
+   PART 1 — TODDLER DEVICE. A toddler (1–4) can be given a 📱 Kid Phone
    ($15) by their caregiver — bought at the 📱 phone shop or asked for, on the shipped toy-phone
-   payment pattern (your money first, family money second, a gift ask once a day). Both live in
+   payment pattern (your money first, family money second, a gift ask once a day). It lives in
    the 🎒 Bag like the toy phone (which stays, untouched). The kid phone has NO SERVICE: 💬
    Messages and 📞 Calls are present but locked with a plain "No service" note; what runs is
    kid apps + the shipped offline phone games (Snake, Blockfall, Chomp, Memory, Flappy,
-   PocketPal) — no parallel app economy. The tablet opens its own kid screen from the Bag:
-   the shipped toddler activities + PocketPal + Memory. At age 5+ the caregiver can ADD
+   PocketPal) — no parallel app economy. (v182: the 🧒 Kid Tablet was REMOVED entirely —
+   store listing, buy/ask/gift paths, its Bag screen and every player-visible reference;
+   saves that owned one shed it on load, filtered beside the toy phone in load(), and a
+   kid's kidTab162 flag is deleted on load too. The kid phone below is untouched.)
+   At age 5+ the caregiver can ADD
    SERVICE from the phone shop or the kid phone itself: pick any shipped plan (minors ride
    the household, as shipped) and the kid phone becomes a real phone through the shipped
    setup — S.hasPhone / S.phone40 / startSetup40, the serviced-phone gate untouched.
@@ -14436,14 +14423,12 @@ console.log('🌊 AquaLife v159 addendum 4 — 🎒 bag colour+print identity ev
 'use strict';
 /* ---------------- Part 1: toddler devices ---------------- */
 function ensure162(){ if(!S)return null; if(!S.v162||typeof S.v162!=='object')S.v162={}; return S.v162 }
-function hasKidTab162(){ return !!(S&&(S.inv||[]).some(function(it){ return it.kind==='kidtab162' })) }
 function hasKidPhone162(){ return !!(S&&(S.inv||[]).some(function(it){ return it.kind==='kidphone162' })) }
-var KIDDEV162={ tab:{name:'🧒 Kid Tablet',kind:'kidtab162',price:25,desc:'A kid tablet — toddler apps and games. No service, no calls, no texts.'},
- phone:{name:'📱 Kid Phone',kind:'kidphone162',price:15,desc:'A phone with no service — kid apps & games only. Service can be added at age 5.'} };
+var KIDDEV162={ phone:{name:'📱 Kid Phone',kind:'kidphone162',price:15,desc:'A phone with no service — kid apps & games only. Service can be added at age 5.'} };
 function kidDevPay162(price,label){ if(!S)return false; if(S.money>=price){ money(-price,label); return true } if(S.famFunds80!==undefined&&S.famFunds80>=price){ S.famFunds80-=price; log('🧒 '+label+' — '+(typeof giverName==='function'?giverName():'your caregiver')+' paid the $'+price+' (family money — little kids do not pay for their own devices).'); return true } return false }
-function kidDevGive162(which,how){ if(!S)return false; const d=KIDDEV162[which]; if(!d)return false; if(which==='tab'&&hasKidTab162())return false; if(which==='phone'&&hasKidPhone162())return false; const it=addItem(d.name,d.kind,Math.round(d.price*0.6),false,d.desc,which==='tab'?'kidtab162':'kidphone162'); if(!it){ toast('🎒 Bag is FULL'); return false } log('🧒 '+(which==='tab'?'KID TABLET':'KID PHONE')+' — '+how+'. It lives in the 🎒 Bag now.'); return true }
-function kidDevBuy162(which){ if(!S)return; const d=KIDDEV162[which]; if((which==='tab'&&hasKidTab162())||(which==='phone'&&hasKidPhone162())){ toast('🧒 Already in the Bag'); return } if(!kidDevPay162(d.price,d.name+' — 📱 Phones & Plans')){ toast('🧒 The '+d.name+' is $'+d.price+' — not enough money yet'); return } if(kidDevGive162(which,'bought at the 📱 phone shop for $'+d.price)){ toast('🧒 '+d.name+' — in the Bag!'); save(); render(); try{ openPhoneShop40() }catch(e){} } }
-function kidDevAsk162(which){ if(!S)return; const V=ensure162(); const g=giverName(); if(V.askDay===S.day){ toast('🧒 Already asked today — tomorrow is another day'); return } V.askDay=S.day; const d=KIDDEV162[which]; const p=0.35+(S.bond||50)/200; if(Math.random()<p){ kidDevGive162(which,g+' said yes — and came home from the 📱 phone shop with it'); openSheet('<h2>🧒 “Okay — a kid one.”</h2><p>'+g+' is firm about one thing: a <b>real</b> phone needs service, and service starts at 5. But a <b>'+d.name+'</b>? '+(which==='phone'?'Kid apps and games, no service, no bill':'Made for exactly this age')+' — that, '+S.name+' can have. It is in the 🎒 Bag now.</p><button class="btn orange" onclick="closeModal();'+(which==='phone'?'openKidPhone162()':'openKidTab162()')+'">🧒 Open it now</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Later</button>') } else { openSheet('<h2>🧒 “Not today, little one.”</h2><p>'+g+' shakes their head — gently. Maybe at the 📱 phone shop ($'+d.price+'), maybe another day.</p><button class="btn outline" onclick="closeModal()">Okay</button>') } save() }
+function kidDevGive162(which,how){ if(!S)return false; const d=KIDDEV162[which]; if(!d)return false; if(which==='phone'&&hasKidPhone162())return false; const it=addItem(d.name,d.kind,Math.round(d.price*0.6),false,d.desc,'kidphone162'); if(!it){ toast('🎒 Bag is FULL'); return false } log('🧒 KID PHONE — '+how+'. It lives in the 🎒 Bag now.'); return true }
+function kidDevBuy162(which){ if(!S)return; const d=KIDDEV162[which]; if(which==='phone'&&hasKidPhone162()){ toast('🧒 Already in the Bag'); return } if(!kidDevPay162(d.price,d.name+' — 📱 Phones & Plans')){ toast('🧒 The '+d.name+' is $'+d.price+' — not enough money yet'); return } if(kidDevGive162(which,'bought at the 📱 phone shop for $'+d.price)){ toast('🧒 '+d.name+' — in the Bag!'); save(); render(); try{ openPhoneShop40() }catch(e){} } }
+function kidDevAsk162(which){ if(!S)return; const V=ensure162(); const g=giverName(); if(V.askDay===S.day){ toast('🧒 Already asked today — tomorrow is another day'); return } V.askDay=S.day; const d=KIDDEV162[which]; const p=0.35+(S.bond||50)/200; if(Math.random()<p){ kidDevGive162(which,g+' said yes — and came home from the 📱 phone shop with it'); openSheet('<h2>🧒 “Okay — a kid one.”</h2><p>'+g+' is firm about one thing: a <b>real</b> phone needs service, and service starts at 5. But a <b>'+d.name+'</b>? Kid apps and games, no service, no bill — that, '+S.name+' can have. It is in the 🎒 Bag now.</p><button class="btn orange" onclick="closeModal();openKidPhone162()">🧒 Open it now</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Later</button>') } else { openSheet('<h2>🧒 “Not today, little one.”</h2><p>'+g+' shakes their head — gently. Maybe at the 📱 phone shop ($'+d.price+'), maybe another day.</p><button class="btn outline" onclick="closeModal()">Okay</button>') } save() }
 function kidAppCell162(icon,name,fn,locked){ return '<div class="appCell" '+(locked?'style="opacity:.45"':'onclick="'+fn+'"')+'><div class="appIcon">'+icon+'</div>'+name+(locked?'<div style="color:#ffb703;font-weight:800;font-size:10px">No service</div>':'')+'</div>' }
 function openKidPhone162(){ if(!S||!hasKidPhone162()){ toast('📱 No kid phone in the Bag'); return } const svc=S.age>=5;
  let cells='';
@@ -14453,36 +14438,32 @@ function openKidPhone162(){ if(!S||!hasKidPhone162()){ toast('📱 No kid phone 
  cells+=kidAppCell162('🃏','Memory','phoneMemory()');
  cells+=kidAppCell162('🐤','Flappy','phoneFlappy()');
  cells+=kidAppCell162('🥚','PocketPal','phoneTama()');
- if(hasToy89())cells+=kidAppCell162('🧸','Toy Phone','toyPlay89()');
  cells+=kidAppCell162('💬','Messages','',true);
  cells+=kidAppCell162('📞','Calls','',true);
  openSheet('<div class="phone"><div style="display:flex;justify-content:space-between;font-size:12px"><span>📵 No service</span></div><h3 style="margin:10px 0">📱 Kid Phone</h3><div class="phoneScreen"><p style="font-size:12.5px;opacity:.9;margin-top:0">Kid apps &amp; games only — no calls, no texts, no service.</p><div class="appGrid">'+cells+'</div>'+(svc?'<button class="btn gold" style="margin-top:12px" onclick="kidSvcSheet162()">📶 Add service — make it a real phone</button><p style="font-size:12px;opacity:.8;margin-top:6px">'+giverName()+' can add service now that you are '+S.age+' — pick a plan, and this becomes a real phone.</p>':'<p style="font-size:12px;opacity:.8;margin-top:10px">📶 Service can be added at age 5, if '+giverName()+' adds it.</p>')+'</div><button class="btn gold" onclick="closeModal()" style="margin-top:10px">Put it away</button></div>') }
-function openKidTab162(){ if(!S||!hasKidTab162()){ toast('🧒 No kid tablet in the Bag'); return } let acts=''; try{ acts=TOD_ACTS72.filter(function(a){ return S.age>=(a.age||1) }).slice(0,10).map(function(a){ return '<button class="btn" style="margin-top:8px" onclick="closeModal();todAct72(\''+a.id+'\')">'+a.icon+' '+a.label+'</button>' }).join('') }catch(e){}
- openSheet('<h2>🧒 Kid Tablet</h2><p class="small" style="margin-top:0">Play &amp; learn apps — the same toddler play as always, on the tablet.</p>'+acts+'<button class="btn" style="margin-top:8px" onclick="phoneTama()">🥚 PocketPal</button><button class="btn" style="margin-top:8px" onclick="phoneMemory()">🃏 Memory</button><button class="btn outline" style="margin-top:10px" onclick="closeModal()">Put it away</button>') }
 function kidSvcSheet162(){ if(!S)return; if(S.age<5){ toast('📶 Service unlocks at age 5.'); return } if(!hasKidPhone162()||S.hasPhone)return; const plans=PHONE_PLANS40.map(function(p){ return '<button class="btn" style="margin-top:8px;text-align:left" onclick="kidPhoneService162(\''+p.id+'\')">'+p.icon+' <b>'+p.name+'</b>'+(p.cost?' — $'+p.cost+'/week':' — $0/week')+'<br><span style="font-weight:600;font-size:12px;opacity:.85">'+p.blurb+'</span></button>' }).join(''); openSheet('<h2>📶 Add service</h2><p>'+giverName()+' adds the service — pick the plan. Kid plans ride the household while you are a minor: no bill for you.</p>'+plans+'<button class="btn outline" style="margin-top:10px" onclick="openKidPhone162()">‹ Back</button>') }
 function kidPhoneService162(planId){ if(!S||S.age<5||S.hasPhone||!hasKidPhone162())return; const ix=S.inv.findIndex(function(it){ return it.kind==='kidphone162' }); if(ix>=0)S.inv.splice(ix,1); S.hasPhone=true; S.phone40={model:'free',devName:'',plan:planId,lapsed:false,pin:null}; syncPhoneItem40(); if(!S.phoneMsgs||!S.phoneMsgs.length)S.phoneMsgs=seedThreads(S.origin,S.age,S.name); log('📶 SERVICE ADDED — '+giverName()+' put your kid phone on the '+phonePlan40(planId).icon+' '+phonePlan40(planId).name+' plan. It is a real phone now — the 📟 AquaBasic, in your 🎒 Bag.'); toast('📶 Service added — it is a real phone!'); save(); render(); startSetup40('free',planId,'service added by '+giverName()) }
-/* the toddler Me card gains the two devices, right beside the toy phone's home ground */
-try{ const _tod162=todCardHtml72; todCardHtml72=function(){ let h=_tod162(); try{ if(S&&S.age>=1&&S.age<=4){ const cg=(typeof todCare82==='function')?todCare82():null; let c='<div class="card" style="border-color:var(--accent2)"><h3>🧒 Kid Tablet &amp; Kid Phone</h3><p>A <b>kid tablet</b> ($25) and a <b>kid phone</b> ($15) — the phone has <b>no service</b>: kid apps &amp; games only, no calls, no texts. At 5, '+giverName()+' can add service and it becomes a real phone. '+(cg?cg+' buys them at the 📱 phone shop — or can be asked.':'They are sold at the 📱 phone shop.')+'</p>';
-  if(hasKidTab162())c+='<button class="btn orange" onclick="openKidTab162()">🧒 Open the Kid Tablet</button>'; else if(cg)c+='<button class="btn orange" onclick="kidDevAsk162(\'tab\')">🙏 Ask '+cg+' for a Kid Tablet — $25</button>';
+/* the toddler Me card gains the kid phone, right beside the toy phone's home ground */
+try{ const _tod162=todCardHtml72; todCardHtml72=function(){ let h=_tod162(); try{ if(S&&S.age>=1&&S.age<=4){ const cg=(typeof todCare82==='function')?todCare82():null; let c='<div class="card" style="border-color:var(--accent2)"><h3>🧒 Kid Phone</h3><p>A <b>kid phone</b> ($15) — it has <b>no service</b>: kid apps &amp; games only, no calls, no texts. At 5, '+giverName()+' can add service and it becomes a real phone. '+(cg?cg+' buys it at the 📱 phone shop — or can be asked.':'It is sold at the 📱 phone shop.')+'</p>';
   if(hasKidPhone162())c+='<button class="btn orange" style="margin-top:8px" onclick="openKidPhone162()">📱 Open the Kid Phone</button>'; else if(cg)c+='<button class="btn orange" style="margin-top:8px" onclick="kidDevAsk162(\'phone\')">🙏 Ask '+cg+' for a Kid Phone — $15</button>';
   h+=c+'</div>' } }catch(e){} return h } }catch(e){}
 /* the phone shop sells them (caregiver at the till), and hosts Add Service at 5+ */
 try{ const _shop162=openPhoneShop40; openPhoneShop40=function(){ const r=_shop162(); try{ if(!S)return r; const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.kidDev162'))return r; let html=''; const g=giverName();
   if(S.age<5&&!S.hasPhone){ html='<div class="kidDev162" style="border:1.5px solid #80808035;border-radius:12px;padding:10px 12px;margin-top:14px;text-align:left"><b>🧒 For little kids — '+g+' buys these</b><p class="small" style="margin:4px 0 8px">No service, no calls, no texts — kid apps &amp; games only. Service can be added at age 5.</p>'
    +(hasKidPhone162()?'<div class="kv"><span><b>📱 Kid Phone</b></span><b>✓ IN THE BAG</b></div>':'<div class="kv"><span><b>📱 Kid Phone</b> — $15<br><span class="small">Kid apps &amp; games only.</span></span><button class="btn gold" style="width:auto;margin:0;padding:8px 13px;flex:none" onclick="kidDevBuy162(\'phone\')">Buy — $15</button></div>')
-   +(hasKidTab162()?'<div class="kv"><span><b>🧒 Kid Tablet</b></span><b>✓ IN THE BAG</b></div>':'<div class="kv"><span><b>🧒 Kid Tablet</b> — $25<br><span class="small">Toddler play &amp; learn apps.</span></span><button class="btn gold" style="width:auto;margin:0;padding:8px 13px;flex:none" onclick="kidDevBuy162(\'tab\')">Buy — $25</button></div>')+'</div>' }
+   +'</div>' }
   else if(S.age>=5&&!S.hasPhone&&hasKidPhone162()){ html='<div class="kidDev162" style="border:1.5px solid #80808035;border-radius:12px;padding:10px 12px;margin-top:14px;text-align:left"><b>📶 Your Kid Phone can get service now</b><p class="small" style="margin:4px 0 8px">'+g+' adds it — pick a plan and it becomes a real phone.</p><button class="btn gold" onclick="kidSvcSheet162()">📶 Add service</button></div>' }
   if(html){ const d=document.createElement('div'); d.innerHTML=html; const done=Array.prototype.slice.call(sh.querySelectorAll('button')).filter(function(b){ return b.textContent.trim()==='Done' })[0]; if(done&&done.parentNode)done.parentNode.insertBefore(d.firstChild||d,done); else sh.appendChild(d.firstChild||d) } }catch(e){} return r } }catch(e){}
 /* Bag Use buttons + the phone doors route to the kid phone while it is the only phone */
-try{ const _ui162=useItem; useItem=function(id){ try{ const it=S&&(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.use==='kidphone162'){ openKidPhone162(); return } if(it&&it.use==='kidtab162'){ openKidTab162(); return } }catch(e){} return _ui162(id) } }catch(e){}
+try{ const _ui162=useItem; useItem=function(id){ try{ const it=S&&(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.use==='kidphone162'){ openKidPhone162(); return } }catch(e){} return _ui162(id) } }catch(e){}
 try{ const _op162=openPhone; openPhone=function(){ if(S&&!S.hasPhone&&hasKidPhone162()){ openKidPhone162(); return } return _op162() } }catch(e){}
 try{ const _nps162=noPhoneSheet; noPhoneSheet=function(){ if(S&&!S.hasPhone&&hasKidPhone162()){ openKidPhone162(); return } return _nps162() } }catch(e){}
 /* an adult player's toddler kids can be given the same devices; service at 5, household plan */
-function kidGiftDev162(i,which){ if(!S)return; const k=(S.kids||[])[i]; if(!k||k.age>=5)return; const d=KIDDEV162[which]; if(which==='tab'&&k.kidTab162){ toast('🧒 '+k.name+' has the tablet'); return } if(which==='phone'&&k.kidPhone162){ toast('🧒 '+k.name+' has the kid phone'); return } if(S.money<d.price){ toast('🧒 Need $'+d.price); return } money(-d.price,'🧒 '+d.name+' for '+k.name); if(which==='tab')k.kidTab162=true; else k.kidPhone162=true; k.happy=Math.min(100,(k.happy==null?70:k.happy)+10); log('🧒 YOU GAVE '+k.name.toUpperCase()+' THE '+d.name.toUpperCase()+' — $'+d.price+'. '+(which==='phone'?'No service: kid apps & games only. Service can be added at 5.':'Tablet apps, toddler-speed.')+' Happy +10.'); toast('🧒 '+d.name+' — '+k.name+' loves it'); save(); render() }
+function kidGiftDev162(i,which){ if(!S)return; const k=(S.kids||[])[i]; if(!k||k.age>=5)return; const d=KIDDEV162[which]; if(which==='phone'&&k.kidPhone162){ toast('🧒 '+k.name+' has the kid phone'); return } if(S.money<d.price){ toast('🧒 Need $'+d.price); return } money(-d.price,'🧒 '+d.name+' for '+k.name); k.kidPhone162=true; k.happy=Math.min(100,(k.happy==null?70:k.happy)+10); log('🧒 YOU GAVE '+k.name.toUpperCase()+' THE '+d.name.toUpperCase()+' — $'+d.price+'. No service: kid apps & games only. Service can be added at 5. Happy +10.'); toast('🧒 '+d.name+' — '+k.name+' loves it'); save(); render() }
 function kidSvcKid162(i,planId){ if(!S)return; const k=(S.kids||[])[i]; if(!k||k.age<5||!k.kidPhone162||k.kidSvc162)return; k.kidSvc162=planId; log('📶 SERVICE ADDED — '+k.name+'’s kid phone is on the '+phonePlan40(planId).icon+' '+phonePlan40(planId).name+' plan now — a real phone, riding the household like every minor plan.'); toast('📶 '+k.name+'’s phone has service'); save(); render() }
 function kidSvcKidSheet162(i){ if(!S)return; const k=(S.kids||[])[i]; if(!k)return; openSheet('<h2>📶 Add service — '+k.name+'</h2><p>Pick the plan. Minor plans ride the household — no bill.</p>'+PHONE_PLANS40.map(function(p){ return '<button class="btn" style="margin-top:8px;text-align:left" onclick="kidSvcKid162('+i+',\''+p.id+'\')">'+p.icon+' <b>'+p.name+'</b>'+(p.cost?' — $'+p.cost+'/week':' — $0/week')+'</button>' }).join('')+'<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Not yet</button>') }
 try{ const _kh162=kidsHtml; kidsHtml=function(){ let h=_kh162(); try{ if(S&&(S.kids||[]).length){ const rows=S.kids.map(function(k,i){ if(k.age>=5){ if(k.kidPhone162&&!k.kidSvc162)return '<div class="kv"><span>📶 <b>'+k.name+'</b> — kid phone, no service yet</span><button class="btn gold" style="width:auto;margin:0;padding:6px 10px" onclick="kidSvcKidSheet162('+i+')">📶 Add service</button></div>'; if(k.kidSvc162)return '<div class="kv"><span>📶 <b>'+k.name+'</b> — phone on '+phonePlan40(k.kidSvc162).name+'</span><b>✓</b></div>'; return '' }
-   return '<div class="kv"><span>🧒 <b>'+k.name+'</b> — '+(k.kidPhone162?'kid phone ✓':'no kid phone')+' · '+(k.kidTab162?'tablet ✓':'no tablet')+'</span><span style="flex:none">'+(k.kidPhone162?'':'<button class="btn" style="width:auto;margin:0 4px 0 0;padding:6px 10px" onclick="kidGiftDev162('+i+',\'phone\')">📱 Phone $15</button>')+(k.kidTab162?'':'<button class="btn" style="width:auto;margin:0;padding:6px 10px" onclick="kidGiftDev162('+i+',\'tab\')">🧒 Tablet $25</button>')+'</span></div>' }).join(''); if(rows)h+='<div style="margin-top:8px;border-top:1px dashed #80808040;padding-top:8px"><b>🧒 Kid devices</b><p class="small" style="margin:2px 0 6px">Kid phone = no service, kid apps &amp; games only. Service can be added at 5.</p>'+rows+'</div>' } }catch(e){} return h } }catch(e){}
+   return '<div class="kv"><span>🧒 <b>'+k.name+'</b> — '+(k.kidPhone162?'kid phone ✓':'no kid phone')+'</span><span style="flex:none">'+(k.kidPhone162?'':'<button class="btn" style="width:auto;margin:0;padding:6px 10px" onclick="kidGiftDev162('+i+',\'phone\')">📱 Phone $15</button>')+'</span></div>' }).join(''); if(rows)h+='<div style="margin-top:8px;border-top:1px dashed #80808040;padding-top:8px"><b>🧒 Kid devices</b><p class="small" style="margin:2px 0 6px">Kid phone = no service, kid apps &amp; games only. Service can be added at 5.</p>'+rows+'</div>' } }catch(e){} return h } }catch(e){}
 /* ---------------- Parts 3+4: the menu guard ---------------- */
 window._menu162={tab:null,open:{},gen:0,holdUntil:0,playerDockAt:0};
 function sig162(d){ try{ var parts=[]; var btns=d.querySelectorAll('button'); for(var i=0;i<btns.length&&parts.length<4;i++){ var oc=btns[i].getAttribute('onclick')||''; if(oc)parts.push(oc) } var base=parts.join('|'); if(!base){ var t=''; var kids=d.children; for(var j=0;j<kids.length;j++){ if(kids[j].tagName!=='SUMMARY')t+=(kids[j].textContent||'') } base=t.replace(/[0-9]/g,'').replace(/\s+/g,' ').slice(0,90) } var h=0; for(var k=0;k<base.length;k++){ h=((h*31)+base.charCodeAt(k))|0 } return 'm'+h }catch(e){ return null } }
@@ -14506,8 +14487,8 @@ function wrapRender162(name){ var orig=window[name]; if(typeof orig!=='function'
   applyMenus162(); var gen=++M.gen; setTimeout(function(){ if(window._menu162.gen===gen)applyMenus162() },150); setTimeout(function(){ if(window._menu162.gen===gen)applyMenus162() },600) }catch(e){} return r } }
 try{ wrapRender162('renderTabs') }catch(e){}
 try{ wrapRender162('render') }catch(e){}
-window.__v162={ensure162:ensure162,hasKidTab162:hasKidTab162,hasKidPhone162:hasKidPhone162,openKidPhone162:openKidPhone162,openKidTab162:openKidTab162,kidDevBuy162:kidDevBuy162,kidDevAsk162:kidDevAsk162,kidSvcSheet162:kidSvcSheet162,kidPhoneService162:kidPhoneService162,sig162:sig162,applyMenus162:applyMenus162,arrivalMenus162:arrivalMenus162,version:function(){ return GAME_VERSION }};
-console.log('🌊 AquaLife v'+GAME_VERSION+' — kid tablet & no-service kid phone for toddlers (service addable at 5) • menus stay up while you are in them, closed on arrival • 18+ gate, once per device');
+window.__v162={ensure162:ensure162,hasKidPhone162:hasKidPhone162,openKidPhone162:openKidPhone162,kidDevBuy162:kidDevBuy162,kidDevAsk162:kidDevAsk162,kidSvcSheet162:kidSvcSheet162,kidPhoneService162:kidPhoneService162,sig162:sig162,applyMenus162:applyMenus162,arrivalMenus162:arrivalMenus162,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — no-service kid phone for toddlers (service addable at 5) • menus stay up while you are in them, closed on arrival • 18+ gate, once per device');
 </script>
 <script>
 /* ================= v162 PART 6: 📱 NO PHONE-NAMING IN SETUP — naming lives in phone ⚙️ Settings =================
@@ -15684,6 +15665,479 @@ try{ var mo176=new MutationObserver(function(){ try{ var sh=sheetEl176(); if(!sh
 try{ if(typeof adoptSheet==='function'){ var _ad176=adoptSheet; adoptSheet=function(){ var a=arguments; return post176(_ad176,a,function(){ try{ var sh=sheetEl176(); if(sh){ var d=document.createElement('div'); d.style.cssText='text-align:center;font-size:44px'; d.innerHTML='<span class="tamaPet">🐾</span>'; sh.insertBefore(d,sh.children[1]||null) } }catch(e){} }) } } }catch(e){}
 window.__v176={version:function(){ return GAME_VERSION },driveSheet:driveSheet176,banner:banner176,flash:flash176};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v176: ⚡ Animation Quick Wins — every car trip drives, handshake sales, delivery knocks, casino card flips, Rip It tears, vacation departure/homecoming, envelope flights, camera flash, cap toss, sunrise, clinic staging, romance micro-moments, cage count-out, police-car turn-in, creation dice moments, bully walk-up, lay-low pose + table-QUICK extras (presentation only)');
+})();
+</script>
+<script>
+/* ================= v180: ✨ TOUCH SPARKLES — a presentation-only layer that lives on top of the whole game.
+   A tap blooms a small burst of tiny gold/white 4-point stars at the exact touch point (~half a second);
+   a swipe/drag leaves a fading trail behind the finger. One fixed canvas covers the main scene AND every
+   sheet/menu, so it feels like a single living layer. The canvas is pointer-events:none and every listener
+   is passive — it never intercepts, delays or alters a tap, scroll or any gameplay state; haptics are not
+   touched. Performance: live particles are hard-capped, each particle self-removes at the end of its life,
+   the render loop stops when no particles are alive, and the layer pauses/clears while the page is hidden. */
+(function(){
+'use strict';
+try{
+var MAXP=90, DPR=Math.min(window.devicePixelRatio||1,2);
+var REDUCED=false; try{ REDUCED=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){}
+var cv=document.createElement('canvas'); cv.id='sparkLayer180'; cv.setAttribute('aria-hidden','true');
+cv.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:100001;';
+document.body.appendChild(cv);
+var ctx=cv.getContext('2d');
+var W=0,H=0;
+function size180(){ W=window.innerWidth; H=window.innerHeight; cv.width=Math.max(1,Math.round(W*DPR)); cv.height=Math.max(1,Math.round(H*DPR)); cv.style.width=W+'px'; cv.style.height=H+'px'; ctx.setTransform(DPR,0,0,DPR,0,0); }
+size180(); window.addEventListener('resize',size180,{passive:true});
+var COLS=['#ffd94d','#ffe98a','#ffffff','#f7b733','#fff3c4'];
+var parts=[], rafId=0, lastT=0;
+function spawn180(x,y,vx,vy,life,r){
+  if(document.hidden)return;
+  if(parts.length>=MAXP)parts.splice(0,parts.length-MAXP+1);
+  parts.push({x:x,y:y,vx:vx,vy:vy,life:life,max:life,r:r,rot:Math.random()*Math.PI,vr:(Math.random()-0.5)*3.2,col:COLS[(Math.random()*COLS.length)|0]});
+  run180();
+}
+function burst180(x,y){
+  var n=REDUCED?4:8;
+  spawn180(x,y,0,0,REDUCED?320:430,3.4);
+  spawn180(x,y,0,0,REDUCED?380:520,2.4);
+  for(var i=0;i<n;i++){ var a=Math.random()*Math.PI*2, sp=18+Math.random()*52;
+    spawn180(x+(Math.random()-0.5)*3,y+(Math.random()-0.5)*3,Math.cos(a)*sp,Math.sin(a)*sp-9,(REDUCED?300:400)+Math.random()*160,2.2+Math.random()*3.4); }
+}
+function trail180(x,y){
+  var n=REDUCED?1:2;
+  for(var i=0;i<n;i++) spawn180(x+(Math.random()-0.5)*7,y+(Math.random()-0.5)*7,(Math.random()-0.5)*14,(Math.random()-0.5)*14-6,(REDUCED?240:320)+Math.random()*120,1.7+Math.random()*2.3);
+}
+function star180(p,alpha,scale){
+  var r=p.r*scale; if(r<=0.1)return;
+  ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.globalAlpha=alpha; ctx.fillStyle=p.col;
+  ctx.beginPath(); ctx.moveTo(0,-r);
+  ctx.quadraticCurveTo(0,0,r,0); ctx.quadraticCurveTo(0,0,0,r); ctx.quadraticCurveTo(0,0,-r,0); ctx.quadraticCurveTo(0,0,0,-r);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function frame180(t){
+  rafId=0;
+  var dt=lastT?Math.min(0.05,(t-lastT)/1000):0.016; lastT=t;
+  ctx.clearRect(0,0,W,H);
+  var damp=Math.max(0,1-2.4*dt);
+  for(var i=parts.length-1;i>=0;i--){ var p=parts[i]; p.life-=dt*1000;
+    if(p.life<=0){ parts.splice(i,1); continue }
+    p.vx*=damp; p.vy=p.vy*damp-4*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.rot+=p.vr*dt;
+    var pr=1-p.life/p.max; star180(p,Math.sin(Math.PI*Math.min(1,pr))*0.95,0.55+0.65*Math.sin(Math.PI*Math.min(1,pr))); }
+  if(parts.length){ rafId=requestAnimationFrame(frame180) } else { lastT=0; ctx.clearRect(0,0,W,H) }
+}
+function run180(){ if(!rafId&&parts.length)rafId=requestAnimationFrame(frame180) }
+var down180={};
+window.addEventListener('pointerdown',function(e){ try{ down180[e.pointerId]={x:e.clientX,y:e.clientY}; burst180(e.clientX,e.clientY) }catch(err){} },{passive:true});
+window.addEventListener('pointermove',function(e){ try{ var d=down180[e.pointerId]; if(!d)return; var dx=e.clientX-d.x, dy=e.clientY-d.y;
+  if(dx*dx+dy*dy>=81){ d.x=e.clientX; d.y=e.clientY; trail180(e.clientX,e.clientY) } }catch(err){} },{passive:true});
+function end180(e){ try{ delete down180[e.pointerId] }catch(err){} }
+window.addEventListener('pointerup',end180,{passive:true});
+window.addEventListener('pointercancel',end180,{passive:true});
+document.addEventListener('visibilitychange',function(){ if(document.hidden){ parts.length=0; down180={}; if(rafId){ cancelAnimationFrame(rafId); rafId=0 } lastT=0; try{ ctx.clearRect(0,0,W,H) }catch(e){} } });
+window.__spark180={count:function(){ return parts.length },cap:MAXP,burst:burst180,trail:trail180,canvas:function(){ return cv },version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v180: ✨ touch sparkles (tap burst + swipe trail, pass-through, capped, presentation only)');
+}catch(e){}
+})();
+</script>
+<style id="style181">
+/* ===== v181: XBOX CONTROLLER FOCUS RING — only ever applied while a gamepad is connected and the player is navigating with it; with no controller the class is never added and nothing on screen changes ===== */
+.gpFocus181{outline:3px solid #fff!important;outline-offset:2px;animation:gpPulse181 1.05s ease-in-out infinite,rgbSpin 3.2s linear infinite!important}
+@keyframes gpPulse181{0%,100%{box-shadow:0 0 0 5px #ffb703,0 0 0 7px #ff004c,0 0 20px 5px #ffb703aa,0 0 30px 8px #00cfff55}50%{box-shadow:0 0 0 6px #ffb703,0 0 0 9px #7a00ff,0 0 28px 9px #ffb703cc,0 0 40px 12px #ff004c55}}
+@media(prefers-reduced-motion:reduce){.gpFocus181{animation:none!important;box-shadow:0 0 0 5px #ffb703,0 0 0 7px #ff004c,0 0 20px 5px #ffb703aa!important}}
+</style>
+<script>
+/* ================= v181: 🎮 XBOX CONTROLLER SUPPORT — a purely additive Gamepad-API input layer.
+   Standard mapping (navigator.getGamepads, "standard" layout):
+     D-pad (12–15) / Left stick (axes 0,1)  move a visible rainbow focus ring across the tappable
+                                            controls of the topmost surface (sheet/modal first,
+                                            then the open folder panel + dock, then the main screen)
+     A (0)        activate the focused control — a full tap equivalent (pointerdown → pointerup → click,
+                  so it fires the exact same handlers a finger tap fires, incl. pointer-only controls)
+     B (1)        back — dismiss the topmost dismissible surface (day card / tip / banner / sheet /
+                  folder panel); a no-op where there is nothing to go back from, never an error
+     LB (4)/RB(5) previous / next folder tab (the dock tabs), where the surface has them; skips
+                  cleanly where it doesn't. Age-locked folders are passed over by LB/RB (tapping
+                  one opens its "locked" sheet rather than switching, so it isn't a switch target)
+     Start (9)    open the phone — or close it if the phone is the open sheet
+     X (2), Y (3), LT (6), RT (7)  unmapped
+   Direct-control surfaces: while Snake (snakeCv), Blockfall (bfCv), Chomp (chCv) or the driving
+   test (driveCv158) is on screen, D-pad/stick feed that game synthetic Arrow keydown/keyup events —
+   the exact input those games already accept from a keyboard — instead of moving focus; A keeps its
+   role, except in Flappy (flapCv) where A flaps (the game's own flapTap). No new gameplay is added
+   and nothing is steered that the game itself does not already steer.
+   Detection: gamepadconnected / gamepaddisconnected listeners; the "🎮 Controller connected" toast
+   fires once per connection. The rAF poll loop runs ONLY while a gamepad is connected — no busy
+   polling, and with no controller connected there is no visual or behavioural change at all: touch,
+   mouse and keyboard paths are untouched, and no gameplay/math/cost state is read or written. */
+(function(){
+'use strict';
+try{
+var CAND='button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[onclick],[role="button"]';
+var connected=false, gpIndex=-1, rafId=0;
+var focusEl=null, focusSig='', lastIndex=0, lastKey='';
+var prevBtn=[], activeDir=null, repeatAt=0, sentKey=null, lastValidate=0;
+
+function $(id){ return document.getElementById(id) }
+function modalOpen(){ var m=$('modal'); return !!(m&&m.classList.contains('open')) }
+function curTabSafe(){ try{ return (typeof curTab!=='undefined'&&curTab)?String(curTab):'' }catch(e){ return '' } }
+
+/* ---------- surfaces: the topmost layer owns the focus ---------- */
+function surface(){
+  var ag=$('ageGate162'); if(ag)return{key:'agegate',roots:[ag]};
+  var w=document.querySelector('.welcomeOv'); if(w)return{key:'welcome',roots:[w]};
+  var cc=$('callCard'); if(cc&&cc.classList.contains('show'))return{key:'call',roots:[cc]};
+  if(modalOpen())return{key:'sheet',roots:[$('sheet')]};
+  var dc=$('dayCard'); if(dc&&dc.classList.contains('show'))return{key:'day',roots:[$('dayInner')]};
+  var tc=$('tipCard'); if(tc&&tc.classList.contains('show'))return{key:'tip',roots:[tc]};
+  var th=$('thoughtCard'); if(th&&th.classList.contains('show'))return{key:'thought',roots:[th]};
+  var tn=$('textNotif'); if(tn&&tn.classList.contains('show'))return{key:'notif',roots:[tn]};
+  var sc=$('spotCard'); if(sc&&sc.classList.contains('show'))return{key:'spot',roots:[sc]};
+  var ds=$('dockSheet'),dock=$('menuDock');
+  if(ds&&ds.classList.contains('open'))return{key:'dock:'+curTabSafe(),roots:[ds,dock]};
+  return{key:'main:'+curTabSafe(),roots:[$('app'),dock]};
+}
+function visibleChain(el){
+  var n=el;
+  while(n&&n!==document.body){
+    if(n.nodeType===1){
+      if(n.hidden)return false;
+      var cs=getComputedStyle(n);
+      if(cs.display==='none'||cs.visibility==='hidden')return false;
+    }
+    n=n.parentNode;
+  }
+  return true;
+}
+function okCandidate(el){
+  if(!el||el.tagName==='CANVAS')return false;
+  if(el.disabled)return false;
+  if(el.tagName==='INPUT'&&el.type==='hidden')return false;
+  if(el.closest&&el.closest('#sparkLayer180'))return false;
+  var r=el.getBoundingClientRect(); if(r.width<3||r.height<3)return false;
+  return visibleChain(el);
+}
+function sigOf(el){
+  if(!el)return '';
+  var oc=''; try{ oc=el.getAttribute&&el.getAttribute('onclick')||'' }catch(e){}
+  return el.tagName+'|'+oc+'|'+((el.textContent||'').replace(/\s+/g,' ').trim().slice(0,42));
+}
+function collect(){
+  var sf=surface(), out=[], seen=[];
+  sf.roots.forEach(function(root){
+    if(!root)return;
+    if((root.id==='textNotif'||root.id==='spotCard')&&okCandidate(root)&&seen.indexOf(root)<0){ seen.push(root); out.push(root) }
+    var els=root.querySelectorAll?root.querySelectorAll(CAND):[];
+    for(var i=0;i<els.length;i++){ var el=els[i]; if(seen.indexOf(el)>=0)continue; seen.push(el); if(okCandidate(el))out.push(el) }
+  });
+  out=out.filter(function(el){ for(var i=0;i<out.length;i++){ if(out[i]!==el&&el.contains&&el.contains(out[i]))return false } return true });
+  out.sort(function(a,b){ var ra=a.getBoundingClientRect(),rb=b.getBoundingClientRect(); var dy=ra.top-rb.top; if(Math.abs(dy)>14)return dy; return ra.left-rb.left });
+  return out;
+}
+
+/* ---------- focus ---------- */
+function clearFocus(){
+  if(focusEl)try{ focusEl.classList.remove('gpFocus181') }catch(e){}
+  focusEl=null; focusSig='';
+}
+function setFocus(el,list){
+  if(!el)return;
+  if(focusEl&&focusEl!==el)try{ focusEl.classList.remove('gpFocus181') }catch(e){}
+  focusEl=el; focusSig=sigOf(el);
+  if(list)lastIndex=list.indexOf(el);
+  try{ el.classList.add('gpFocus181') }catch(e){}
+  try{
+    var r=el.getBoundingClientRect();
+    if(r.top<0||r.bottom>window.innerHeight||r.left<0||r.right>window.innerWidth){
+      var rm=false; try{ rm=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){}
+      el.scrollIntoView({block:'nearest',inline:'nearest',behavior:rm?'auto':'smooth'});
+    }
+  }catch(e){}
+}
+function ensureFocus(reset){
+  if(!connected)return;
+  var list=collect();
+  var key=surface().key;
+  if(key!==lastKey){ lastKey=key; reset=true; lastIndex=0 }
+  if(!list.length){ clearFocus(); return }
+  if(!reset&&focusEl&&document.contains(focusEl)&&list.indexOf(focusEl)>=0){ lastIndex=list.indexOf(focusEl); return }
+  if(!reset&&focusSig){
+    for(var i=0;i<list.length;i++){ if(sigOf(list[i])===focusSig){ setFocus(list[i],list); return } }
+  }
+  var idx=reset?0:Math.min(lastIndex,list.length-1); if(idx<0)idx=0;
+  setFocus(list[idx],list);
+}
+function validateFocus(){
+  if(!connected)return;
+  var now=Date.now(); if(now-lastValidate<200)return; lastValidate=now;
+  var key=surface().key;
+  if(key!==lastKey){ ensureFocus(true); return }
+  if(!focusEl||!document.contains(focusEl)){ ensureFocus(false); return }
+  if(!okCandidate(focusEl))ensureFocus(false);
+}
+try{
+  var mo181=new MutationObserver(function(){ validateFocus() });
+  mo181.observe(document.body,{childList:true,subtree:true});
+}catch(e){}
+
+/* ---------- directional movement (geometric, grid-aware) ---------- */
+function move(dir){
+  var list=collect(); if(!list.length){ clearFocus(); return }
+  var cur=list.indexOf(focusEl);
+  if(cur<0){ setFocus(list[0],list); return }
+  var el=focusEl;
+  if(el.tagName==='INPUT'&&el.type==='range'&&(dir==='left'||dir==='right')){
+    try{
+      var step=parseFloat(el.step)||1, v=parseFloat(el.value)||0;
+      el.value=(dir==='right'?v+step:v-step);
+      el.dispatchEvent(new Event('input',{bubbles:true}));
+      el.dispatchEvent(new Event('change',{bubbles:true}));
+    }catch(e){}
+    return;
+  }
+  var rc=el.getBoundingClientRect(), cx=rc.left+rc.width/2, cy=rc.top+rc.height/2;
+  var best=null, bestScore=Infinity, i, r, x, y, dx, dy, p, q;
+  for(i=0;i<list.length;i++){
+    if(i===cur)continue;
+    r=list[i].getBoundingClientRect(); x=r.left+r.width/2; y=r.top+r.height/2; dx=x-cx; dy=y-cy;
+    if(dir==='right'){ p=dx; q=dy } else if(dir==='left'){ p=-dx; q=dy } else if(dir==='down'){ p=dy; q=dx } else { p=-dy; q=dx }
+    if(p<=6)continue;
+    var score=p+Math.abs(q)*2.4;
+    if(score<bestScore){ bestScore=score; best=list[i] }
+  }
+  if(!best){
+    if(dir==='right'&&cur<list.length-1)best=list[cur+1];
+    else if(dir==='left'&&cur>0)best=list[cur-1];
+    else if(dir==='down'||dir==='up'){
+      var bd=Infinity;
+      for(i=0;i<list.length;i++){
+        if(i===cur)continue;
+        r=list[i].getBoundingClientRect(); y=r.top+r.height/2; x=r.left+r.width/2; dy=y-cy;
+        if(dir==='down'&&dy>6&&dy+Math.abs(x-cx)*0.5<bd){ bd=dy+Math.abs(x-cx)*0.5; best=list[i] }
+        if(dir==='up'&&dy<-6&&-dy+Math.abs(x-cx)*0.5<bd){ bd=-dy+Math.abs(x-cx)*0.5; best=list[i] }
+      }
+    }
+  }
+  if(best)setFocus(best,list);
+}
+
+/* ---------- direct-control games (they already take Arrow keys) ---------- */
+function directGame(){
+  return !!($('snakeCv')||$('bfCv')||$('chCv')||$('driveCv158'));
+}
+var KEYNAME={up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'};
+function sendKey(dir,down){
+  try{
+    var ev=new KeyboardEvent(down?'keydown':'keyup',{key:KEYNAME[dir],code:KEYNAME[dir],bubbles:true,cancelable:true});
+    document.dispatchEvent(ev);
+  }catch(e){}
+}
+function releaseKey(){
+  if(sentKey){ sendKey(sentKey,false); sentKey=null }
+}
+function fireDir(dir){
+  if(directGame()){
+    if(sentKey&&sentKey!==dir)sendKey(sentKey,false);
+    sentKey=dir; sendKey(dir,true);
+  } else {
+    move(dir);
+  }
+}
+
+/* ---------- buttons ---------- */
+function tapEl(el){
+  if(!el)return;
+  try{ el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:181,pointerType:'touch',isPrimary:true})) }catch(e){}
+  try{ el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:181,pointerType:'touch',isPrimary:true})) }catch(e){}
+  try{ el.click() }catch(e){}
+}
+function activate(){
+  try{
+    var fc=$('flapCv');
+    if(fc){ var fs=null; try{ fs=(typeof flapState!=='undefined')?flapState:null }catch(e){}
+      if(fs&&!fs.over&&typeof flapTap==='function'){ flapTap(); return } }
+    if(!focusEl||!document.contains(focusEl)||!okCandidate(focusEl))ensureFocus(false);
+    var el=focusEl; if(!el)return;
+    var tag=el.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'){
+      if(el.type==='checkbox'||el.type==='radio'){ el.click(); return }
+      try{ el.focus() }catch(e){}
+      return;
+    }
+    tapEl(el);
+    setTimeout(function(){ validateFocus() },70);
+  }catch(e){}
+}
+function back(){
+  try{
+    releaseKey();
+    if($('ageGate162'))return;
+    if(document.querySelector('.welcomeOv'))return;
+    var cc=$('callCard'); if(cc&&cc.classList.contains('show'))return;
+    if(modalOpen()){ if(typeof closeModal==='function')closeModal(); setTimeout(function(){ ensureFocus(true) },70); return }
+    var dc=$('dayCard'); if(dc&&dc.classList.contains('show')){ if(typeof dismissDayCard==='function')dismissDayCard(); setTimeout(function(){ ensureFocus(true) },70); return }
+    var tc=$('tipCard'); if(tc&&tc.classList.contains('show')){ if(typeof dismissTip==='function')dismissTip(); return }
+    var th=$('thoughtCard'); if(th&&th.classList.contains('show')){ var b=th.querySelector('button'); if(b){ tapEl(b); return } th.classList.remove('show'); return }
+    var tn=$('textNotif'); if(tn&&tn.classList.contains('show')){ if(typeof hideTextNotif==='function')hideTextNotif(); return }
+    var sc=$('spotCard'); if(sc&&sc.classList.contains('show')){ if(typeof hideSpotlight==='function')hideSpotlight(); return }
+    var ds=$('dockSheet'); if(ds&&ds.classList.contains('open')){ if(typeof setDock==='function')setDock(false); setTimeout(function(){ ensureFocus(true) },70); return }
+  }catch(e){}
+}
+function tabSwitch(d){
+  try{
+    var tabs=[];
+    if(modalOpen()){
+      var sh=$('sheet'); if(sh)tabs=Array.prototype.slice.call(sh.querySelectorAll('.tab'));
+    } else {
+      var dock=$('menuDock'); if(dock)tabs=Array.prototype.slice.call(dock.querySelectorAll('.dockTab'));
+    }
+    tabs=tabs.filter(function(t){ return okCandidate(t) });
+    if(tabs.length<2)return;
+    /* folder tabs that are age-locked open a "locked" sheet instead of switching (their natural
+       tap behaviour) — LB/RB is a SWITCH gesture, so it cycles the switchable tabs when there
+       are at least two of them, and only falls back to all tabs when there aren't. */
+    var free=tabs.filter(function(t){ return !t.classList.contains('locked55')&&!t.classList.contains('lock121') });
+    var pool=free.length>=2?free:tabs;
+    var idx=-1;
+    for(var i=0;i<pool.length;i++){ if(pool[i].classList.contains('on'))idx=i }
+    if(idx<0){ for(var j=0;j<pool.length;j++){ if(focusEl&&(pool[j]===focusEl||pool[j].contains(focusEl)))idx=j } }
+    var next=idx<0?(d>0?0:pool.length-1):(idx+d+pool.length)%pool.length;
+    tapEl(pool[next]);
+    lastKey=''; setTimeout(function(){ ensureFocus(true) },80);
+  }catch(e){}
+}
+function togglePhone(){
+  try{
+    if($('ageGate162'))return;
+    if(document.querySelector('.welcomeOv'))return;
+    var dc=$('dayCard'); if(dc&&dc.classList.contains('show')){ if(typeof dismissDayCard==='function')dismissDayCard(); setTimeout(function(){ ensureFocus(true) },70); return }
+    var hasLife=false; try{ hasLife=(typeof S!=='undefined'&&!!S) }catch(e){}
+    if(!hasLife)return;
+    var sheet=$('sheet');
+    var phoneOpen=modalOpen()&&sheet&&!!sheet.querySelector('.phone');
+    if(phoneOpen){ if(typeof closeModal==='function')closeModal(); setTimeout(function(){ ensureFocus(true) },70); return }
+    if(!modalOpen()){
+      if(typeof openPhone==='function')openPhone();
+      else if(typeof openSettings121==='function')openSettings121();
+      setTimeout(function(){ ensureFocus(true) },80);
+      return;
+    }
+    if(typeof closeModal==='function')closeModal();
+    setTimeout(function(){ try{ if(!modalOpen()&&typeof openPhone==='function'){ openPhone(); ensureFocus(true) } }catch(e){} },100);
+  }catch(e){}
+}
+function onButtonDown(i){
+  if(i===0)activate();
+  else if(i===1)back();
+  else if(i===4)tabSwitch(-1);
+  else if(i===5)tabSwitch(1);
+  else if(i===9)togglePhone();
+  /* 2 (X), 3 (Y), 6 (LT), 7 (RT): intentionally unmapped */
+}
+
+/* ---------- poll loop (runs only while a gamepad is connected) ---------- */
+function readPad(){
+  try{
+    if(!navigator.getGamepads)return null;
+    var gps=navigator.getGamepads(); if(!gps)return null;
+    if(gpIndex>=0&&gps[gpIndex])return gps[gpIndex];
+    for(var i=0;i<gps.length;i++){ if(gps[i]){ gpIndex=gps[i].index; return gps[i] } }
+  }catch(e){}
+  return null;
+}
+function desiredDir(gp){
+  var b=gp.buttons||[];
+  if(b[14]&&b[14].pressed)return 'left';
+  if(b[15]&&b[15].pressed)return 'right';
+  if(b[12]&&b[12].pressed)return 'up';
+  if(b[13]&&b[13].pressed)return 'down';
+  var ax=gp.axes||[], x=ax[0]||0, y=ax[1]||0, dz=0.38;
+  if(Math.abs(x)<dz&&Math.abs(y)<dz)return null;
+  if(Math.abs(x)>=Math.abs(y))return x>0?'right':'left';
+  return y>0?'down':'up';
+}
+function loop(t){
+  if(!connected){ rafId=0; return }
+  rafId=requestAnimationFrame(loop);
+  var gp=readPad(); if(!gp)return;
+  var btns=gp.buttons||[];
+  for(var i=0;i<btns.length;i++){
+    var p=!!btns[i].pressed, was=!!prevBtn[i];
+    if(p&&!was&&i!==12&&i!==13&&i!==14&&i!==15)onButtonDown(i);
+    prevBtn[i]=p;
+  }
+  var dir=desiredDir(gp);
+  if(dir!==activeDir){
+    if(!directGame())releaseKey();
+    activeDir=dir;
+    if(dir){ fireDir(dir); repeatAt=t+380 }
+    else releaseKey();
+  } else if(dir&&t>=repeatAt){
+    fireDir(dir); repeatAt=t+145;
+  }
+  if(!dir)releaseKey();
+}
+function startLoop(){ if(!rafId)rafId=requestAnimationFrame(loop) }
+function onConnect(idx){
+  if(typeof idx==='number'&&idx>=0)gpIndex=idx;
+  if(connected){ startLoop(); return }
+  connected=true; prevBtn=[]; activeDir=null; sentKey=null; lastKey='';
+  try{ if(typeof toast==='function')toast('🎮 Controller connected') }catch(e){}
+  startLoop();
+  setTimeout(function(){ ensureFocus(true) },60);
+}
+function onDisconnect(){
+  var any=false;
+  try{ var gps=navigator.getGamepads(); if(gps)for(var i=0;i<gps.length;i++){ if(gps[i])any=true } }catch(e){}
+  if(any)return;
+  connected=false; gpIndex=-1; releaseKey(); activeDir=null; clearFocus();
+  if(rafId){ cancelAnimationFrame(rafId); rafId=0 }
+}
+window.addEventListener('gamepadconnected',function(e){ try{ onConnect(e&&e.gamepad?e.gamepad.index:-1) }catch(err){} });
+window.addEventListener('gamepaddisconnected',function(e){ try{ onDisconnect() }catch(err){} });
+
+window.__pad181={
+  connected:function(){ return connected },
+  surface:function(){ return surface().key },
+  focus:function(){ return focusEl?sigOf(focusEl):null },
+  focusEl:function(){ return focusEl },
+  list:function(){ return collect().map(sigOf) },
+  move:move, activate:activate, back:back, tabs:tabSwitch, start:togglePhone,
+  connect:onConnect, disconnect:onDisconnect,
+  mapping:{dpad:'move focus (or steer the on-screen mini-game / driving test)',stick:'move focus (or steer)',A:'activate focused control',B:'back / close top surface',LB:'previous folder tab',RB:'next folder tab',Start:'open / close the phone',X:'unmapped',Y:'unmapped',LT:'unmapped',RT:'unmapped'},
+  version:function(){ return GAME_VERSION }
+};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v181: 🎮 Xbox controller support (Gamepad API: D-pad/stick focus ring, A tap, B back, LB/RB folder tabs, Start phone, mini-game steering via the games\' own Arrow-key input; poll loop only while connected, presentation/input only)');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v182: 🔒 TODDLERS (1–4) DON'T START DAYS OUT — the Travel lock sheet (v121) appended the LIVE 🎉 Days Out card (outingCardHtml68) under its own lock text: six enabled-looking destination buttons directly below "not the park, not the mall, not anywhere", and the toddler Travel tab (toddlerTravelTab80) embedded the same live card. Tapping a destination button from home only bounced off the shipped v80 goLoc gate into another lock sheet — but the outing handler itself (doFun, reached from the card's "— you are here / 🎉 Do it" half whenever a little one is standing at an outing spot) had NO age gate at all: a 2-year-old at the Arcade could tap Do it and be charged $8 for a solo outing. FIX, at the presentation AND at the handlers (defense in depth, the game's own law: toddlers do not travel on their own, full stop): (1) the Travel lock sheet and the toddler Travel tab now render daysOutLockedHtml182() — the game's established locked-with-reason pattern (disabled, dimmed .55, 🔒, "unlocks at age 5" on every destination); the 🏠 Head home button on both surfaces is untouched and keeps working. (2) goLoc gains an outermost under-5 gate identical in effect to the shipped v80 gate (home always allowed), so no later travel wrapper (car/road animation included) can carry a toddler anywhere first. (3) doFun refuses every Days Out outing title (the OUTING_SPOTS68 set + the Arcade tournament) for ages 1–4 before any charge or activity starts. NOT touched: Days Out for ages 5+ (outingCardHtml68 itself is unchanged), and the grown-up-led toddler trips (maybeParentTrip80 / parentTripGo80 — a grown-up invites, the toddler just comes along; that system never calls doFun or the Days Out card). ================= */
+function daysOutLockedHtml182(){ if(!S)return ''; return '<div class="card"><h3>🎉 Days Out — 🔒 locked</h3><p>Days Out are trips — toddlers don\'t travel on their own. They unlock at <b>age 5</b>, when you can ask a grown-up to take you.</p>'+OUTING_SPOTS68.map(function(o){ return '<button class="btn outline" disabled style="opacity:.55">🔒 '+o[1]+' — '+o[3]+' • unlocks at age 5</button>' }).join('')+'</div>' }
+(function(){
+try{
+ var _goLoc182=goLoc;
+ goLoc=function(id){ if(S&&S.age<=4&&id&&id!==S.location){ var hl=null; try{ hl=homeLoc() }catch(e){} if(id!==hl){ var opt=(typeof TRAVEL_OPTS!=='undefined')?TRAVEL_OPTS.find(function(o){ return o[0]===id }):null; if(typeof toddlerTravelLock80==='function')toddlerTravelLock80(opt?opt[1]:null); else if(typeof toast==='function')toast('🔒 Travel is locked at '+S.age+' — unlocks at age 5'); return } } return _goLoc182.apply(this,arguments) };
+ var OUTING_TITLES182=OUTING_SPOTS68.map(function(o){ return o[5] }).concat(['Game Tournament $15 entry']);
+ var _doFun182=doFun;
+ doFun=function(t,cost){ if(S&&S.age<=4&&OUTING_TITLES182.indexOf(t)>=0){ if(typeof toast==='function')toast('🔒 Days Out are locked at '+S.age+' — toddlers don\'t go on outings on their own. Unlocks at age 5'); if(typeof log==='function')log('🔒 A Days Out start was refused — '+S.name+' is '+S.age+', and toddlers (1–4) don\'t start outings on their own. No charge.'); return } return _doFun182.apply(this,arguments) };
+ window.__v182={daysOutLockedHtml182:daysOutLockedHtml182,outingTitles:OUTING_TITLES182,version:function(){ return GAME_VERSION }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — v182: 🔒 toddlers (1–4) cannot start Days Out — locked presentation on the Travel lock sheet + toddler Travel tab, and the goLoc / doFun outing handlers refuse under-5 solo starts (no travel, no charge)');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v183: 🏆 EVERY MILESTONE IS AN ACHIEVEMENT — the "🏆 Milestones — Life History" section is GONE. The 14 toddler milestones (TOD_MILES72 — the life-history list that used to render as its own section, most recently as a sub-section inside the 🏆 Achievements card) are now real achievements in the ACH132 system: same names, same triggers (todMile72 still fires exactly as shipped, with its journal entry, memory, scrapbook snap, XP bonus, toast and celebration sheet all untouched). When a milestone fires, the matching achievement pops and records through achPop132 — the achievements system's own earned display, no new rewards (achievements grant none). MIGRATION: milestones already recorded in a save's life history (S.tod.miles, id → day earned) are copied into S.v132.ach as EARNED achievements with their original day, silently — no pops, no log spam, nobody's earned past is wiped; S.tod.miles itself is left in place because the journal/headline/scrapbook systems still read it, but no section renders it anymore (the v148 achCardHtml132 wrapper that appended the section is now a pass-through). The 📸 Scrapbook is a different feature and is untouched. Money milestones (MILESTONES54) are a popup-only celebration with no section or list anywhere — untouched. SAVE_KEY and the save format are untouched. ================= */
+(function(){
+try{
+ var MILE_ACH183={steps:'todSteps',word:'todWord',meal:'todMeal',drawing:'todDrawing',friend:'todFriend',birthday:'todBirthday',potty:'todPotty',preschool:'todPreschool',group:'todGroup',sentence:'todSentence',trike:'todTrike',puzzle:'todPuzzle',bestfriend:'todBestfriend',outfit:'todOutfit'};
+ Object.assign(ACH132,{ todSteps:{e:'👣',t:'First Steps',d:'Took their very first steps — the crawling era is over!'}, todWord:{e:'🗣️',t:'First Word',d:'Said a first real word out loud — and meant it!'}, todMeal:{e:'🍽️',t:'First Independent Meal',d:'Fed themselves a whole meal, start to finish!'}, todDrawing:{e:'🎨',t:'First Drawing',d:'Completed a first real drawing!'}, todFriend:{e:'🤝',t:'First Friend',d:'Made a first friend!'}, todBirthday:{e:'🎂',t:'First Toddler Birthday',d:'Celebrated a birthday in the toddler years!'}, todPotty:{e:'🚽',t:'First Successful Potty Use',d:'Used the potty successfully for the first time!'}, todPreschool:{e:'🧸',t:'First Day at Preschool',d:'Had a first day at preschool!'}, todGroup:{e:'👫',t:'First Group Activity',d:'Joined in a first group activity!'}, todSentence:{e:'💬',t:'First Complete Sentence',d:'Said a first complete sentence!'}, todTrike:{e:'🚲',t:'First Tricycle Ride',d:'Rode a tricycle for the first time!'}, todPuzzle:{e:'🧩',t:'First Completed Puzzle',d:'Completed a whole puzzle, every piece!'}, todBestfriend:{e:'💛',t:'First Best Friend',d:'Has a first best friend!'}, todOutfit:{e:'👕',t:'First Independent Outfit',d:'Got dressed in an outfit all by themselves!'} });
+ function migrateMiles183(){ if(!S||!S.tod||!S.tod.miles)return; var V=ensure132(); if(!V)return; var changed=false; Object.keys(MILE_ACH183).forEach(function(k){ var d=S.tod.miles[k]; var aid=MILE_ACH183[k]; if(d&&!V.ach[aid]){ V.ach[aid]=d; changed=true } }); if(changed){ try{ save() }catch(e){} } }
+ var _todMile183=todMile72;
+ todMile72=function(id,silent){ var had=false; try{ had=!!(S&&S.tod&&S.tod.miles&&S.tod.miles[id]) }catch(e){} var r=_todMile183.apply(this,arguments); try{ if(!had&&S&&S.tod&&S.tod.miles&&S.tod.miles[id]){ var aid=MILE_ACH183[id]; if(aid)achPop132(aid) } }catch(e){} return r };
+ var _render183=render;
+ render=function(){ try{ migrateMiles183() }catch(e){} return _render183.apply(this,arguments) };
+ window.__v183={map:MILE_ACH183,migrate:migrateMiles183,version:function(){ return GAME_VERSION }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — v183: 🏆 every toddler milestone is an Achievement now — the Milestones — Life History section is removed, milestones fire their matching achievement through achPop132, and milestones already in a save\u2019s life history migrate in as earned achievements with their original day');
+}catch(e){}
 })();
 </script>
 
