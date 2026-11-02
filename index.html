@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=183;
+const GAME_VERSION=184;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -15767,11 +15767,20 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v180: ✨ touch sparkles (tap b
    Detection: gamepadconnected / gamepaddisconnected listeners; the "🎮 Controller connected" toast
    fires once per connection. The rAF poll loop runs ONLY while a gamepad is connected — no busy
    polling, and with no controller connected there is no visual or behavioural change at all: touch,
-   mouse and keyboard paths are untouched, and no gameplay/math/cost state is read or written. */
+   mouse and keyboard paths are untouched, and no gameplay/math/cost state is read or written.
+   v184 FIX (focus stuck at the bottom on the phone layout): candidates now require a real
+   on-screen region — geometry uses the VISIBLE rect (element rect ∩ viewport ∩ every clipping
+   ancestor), so clipped below-the-fold panel buttons are never focused; <summary> section
+   headers are focus candidates (A toggles them via native click, exactly like a finger tap);
+   focusing reveals the target inside EVERY scrollable ancestor instantly; vertical travel
+   stays in the current scroll container first, paging it ~55% when visible rows run out and
+   exiting to the dock/other surface only at the container's end; and a re-render between
+   presses no longer swallows the press — focus is restored by element signature inside the
+   move handler (validator throttle 200 ms → 70 ms). Mapping unchanged. */
 (function(){
 'use strict';
 try{
-var CAND='button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[onclick],[role="button"]';
+var CAND='button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[onclick],[role="button"],summary';
 var connected=false, gpIndex=-1, rafId=0;
 var focusEl=null, focusSig='', lastIndex=0, lastKey='';
 var prevBtn=[], activeDir=null, repeatAt=0, sentKey=null, lastValidate=0;
@@ -15807,13 +15816,105 @@ function visibleChain(el){
   }
   return true;
 }
+/* ---------- v184: visible-rect geometry — a candidate must own a real on-screen region.
+   The raw rect of a button inside a scrolled panel spills past the panel and the dock, so
+   v181's raw-rect focus could land on invisible, clipped buttons at the bottom and stick.
+   visRect intersects the element's rect with the viewport and every clipping ancestor
+   (panel, sheet, any overflow box); ALL focus geometry and sorting uses the visible rect. */
+function isClipper(n){
+  if(!n||n.nodeType!==1)return false;
+  var cs; try{ cs=getComputedStyle(n) }catch(e){ return false }
+  var ox=cs.overflowX, oy=cs.overflowY;
+  return oy==='auto'||oy==='scroll'||oy==='hidden'||ox==='auto'||ox==='scroll'||ox==='hidden';
+}
+/* a TRAVEL container must actually scroll (auto/scroll). overflow:hidden boxes — the
+   <details class="dd132"> sections, the #app frame — only clip: counting them as scroll
+   contexts would strand every section's contents in its own one-element context and send
+   vertical travel straight past the panel to the dock. */
+function isScroller(n){
+  if(!n||n.nodeType!==1)return false;
+  var cs; try{ cs=getComputedStyle(n) }catch(e){ return false }
+  var ox=cs.overflowX, oy=cs.overflowY;
+  return oy==='auto'||oy==='scroll'||ox==='auto'||ox==='scroll';
+}
+function scrollChain(el){
+  var out=[], n=el?el.parentNode:null;
+  while(n&&n!==document.body&&n!==document.documentElement){
+    if(isScroller(n))out.push(n);
+    n=n.parentNode;
+  }
+  return out;
+}
+function contextOf(el){
+  var ch=scrollChain(el);
+  if(ch.length)return ch[0];
+  var ds=el&&el.closest?el.closest('#dockSheet'):null;
+  if(ds){ var p=ds.querySelector('.panel'); if(p&&isScroller(p))return p }
+  return null;
+}
+function visRect(el){
+  if(!el||!el.getBoundingClientRect)return null;
+  var r=el.getBoundingClientRect();
+  var L=r.left, T=r.top, R=r.right, B=r.bottom;
+  L=Math.max(L,0); T=Math.max(T,0); R=Math.min(R,window.innerWidth); B=Math.min(B,window.innerHeight);
+  var n=el.parentNode;
+  while(n&&n!==document.body&&n!==document.documentElement){
+    if(isClipper(n)){
+      var cr=n.getBoundingClientRect();
+      var cs; try{ cs=getComputedStyle(n) }catch(e){ cs=null }
+      var bl=cs?(parseFloat(cs.borderLeftWidth)||0):0, br=cs?(parseFloat(cs.borderRightWidth)||0):0,
+          bt=cs?(parseFloat(cs.borderTopWidth)||0):0, bb=cs?(parseFloat(cs.borderBottomWidth)||0):0;
+      L=Math.max(L,cr.left+bl); T=Math.max(T,cr.top+bt); R=Math.min(R,cr.right-br); B=Math.min(B,cr.bottom-bb);
+    }
+    n=n.parentNode;
+  }
+  if(R-L<0.5||B-T<0.5)return null;
+  return {left:L,top:T,right:R,bottom:B,width:R-L,height:B-T};
+}
+function revealInScrollers(el){
+  if(!el)return;
+  var n=el.parentNode;
+  while(n&&n!==document.body&&n!==document.documentElement){
+    if(n.nodeType===1){
+      var cs; try{ cs=getComputedStyle(n) }catch(e){ cs=null }
+      if(cs&&(cs.overflowY==='auto'||cs.overflowY==='scroll')){
+        var r=el.getBoundingClientRect(), cr=n.getBoundingClientRect();
+        var bt=parseFloat(cs.borderTopWidth)||0, bb=parseFloat(cs.borderBottomWidth)||0;
+        var cTop=cr.top+bt, cBot=cr.bottom-bb;
+        if(r.height>=cBot-cTop){ if(r.top!==cTop)n.scrollTop+=r.top-cTop }
+        else if(r.top<cTop)n.scrollTop-=cTop-r.top;
+        else if(r.bottom>cBot)n.scrollTop+=r.bottom-cBot;
+      }
+      if(cs&&(cs.overflowX==='auto'||cs.overflowX==='scroll')){
+        var r2=el.getBoundingClientRect(), cr2=n.getBoundingClientRect();
+        var bl=parseFloat(cs.borderLeftWidth)||0, br=parseFloat(cs.borderRightWidth)||0;
+        var cL=cr2.left+bl, cR=cr2.right-br;
+        if(r2.width>=cR-cL){ if(r2.left!==cL)n.scrollLeft+=r2.left-cL }
+        else if(r2.left<cL)n.scrollLeft-=cL-r2.left;
+        else if(r2.right>cR)n.scrollLeft+=r2.right-cR;
+      }
+    }
+    n=n.parentNode;
+  }
+  var wr=el.getBoundingClientRect();
+  var dx=0, dy=0;
+  if(wr.height>=window.innerHeight)dy=wr.top;
+  else if(wr.top<0)dy=wr.top;
+  else if(wr.bottom>window.innerHeight)dy=wr.bottom-window.innerHeight;
+  if(wr.width>=window.innerWidth)dx=wr.left;
+  else if(wr.left<0)dx=wr.left;
+  else if(wr.right>window.innerWidth)dx=wr.right-window.innerWidth;
+  if(dx||dy){ try{ window.scrollBy(dx,dy) }catch(e){} }
+}
 function okCandidate(el){
   if(!el||el.tagName==='CANVAS')return false;
   if(el.disabled)return false;
   if(el.tagName==='INPUT'&&el.type==='hidden')return false;
   if(el.closest&&el.closest('#sparkLayer180'))return false;
+  if(!visibleChain(el))return false;
   var r=el.getBoundingClientRect(); if(r.width<3||r.height<3)return false;
-  return visibleChain(el);
+  var vr=visRect(el); if(!vr||vr.width<3||vr.height<3)return false;
+  return true;
 }
 function sigOf(el){
   if(!el)return '';
@@ -15829,7 +15930,7 @@ function collect(){
     for(var i=0;i<els.length;i++){ var el=els[i]; if(seen.indexOf(el)>=0)continue; seen.push(el); if(okCandidate(el))out.push(el) }
   });
   out=out.filter(function(el){ for(var i=0;i<out.length;i++){ if(out[i]!==el&&el.contains&&el.contains(out[i]))return false } return true });
-  out.sort(function(a,b){ var ra=a.getBoundingClientRect(),rb=b.getBoundingClientRect(); var dy=ra.top-rb.top; if(Math.abs(dy)>14)return dy; return ra.left-rb.left });
+  out.sort(function(a,b){ var ra=visRect(a)||a.getBoundingClientRect(),rb=visRect(b)||b.getBoundingClientRect(); var dy=ra.top-rb.top; if(Math.abs(dy)>14)return dy; return ra.left-rb.left });
   return out;
 }
 
@@ -15844,13 +15945,9 @@ function setFocus(el,list){
   focusEl=el; focusSig=sigOf(el);
   if(list)lastIndex=list.indexOf(el);
   try{ el.classList.add('gpFocus181') }catch(e){}
-  try{
-    var r=el.getBoundingClientRect();
-    if(r.top<0||r.bottom>window.innerHeight||r.left<0||r.right>window.innerWidth){
-      var rm=false; try{ rm=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){}
-      el.scrollIntoView({block:'nearest',inline:'nearest',behavior:rm?'auto':'smooth'});
-    }
-  }catch(e){}
+  /* v184: reveal the target inside EVERY scrollable ancestor (instant), not just the window —
+     the old window-only scrollIntoView never scrolled the Actions panel, so focus sat clipped. */
+  try{ revealInScrollers(el) }catch(e){}
 }
 function ensureFocus(reset){
   if(!connected)return;
@@ -15867,7 +15964,7 @@ function ensureFocus(reset){
 }
 function validateFocus(){
   if(!connected)return;
-  var now=Date.now(); if(now-lastValidate<200)return; lastValidate=now;
+  var now=Date.now(); if(now-lastValidate<70)return; lastValidate=now;
   var key=surface().key;
   if(key!==lastKey){ ensureFocus(true); return }
   if(!focusEl||!document.contains(focusEl)){ ensureFocus(false); return }
@@ -15878,11 +15975,91 @@ try{
   mo181.observe(document.body,{childList:true,subtree:true});
 }catch(e){}
 
-/* ---------- directional movement (geometric, grid-aware) ---------- */
+/* ---------- directional movement (geometric, grid-aware, visible-rect based) ---------- */
+/* v184: vertical travel stays inside the current scroll container first — nearest visible row
+   in the same container; when visible rows run out it pages the container (~55%) and lands on
+   the first newly-revealed row; only at the container's very end does the press exit to the
+   dock / other surface (the caller's global geometric search). Returns true when handled. */
+function moveVertical(dir,list,cur){
+  var el=focusEl, sc=contextOf(el);
+  var rc=visRect(el)||el.getBoundingClientRect();
+  var cx=rc.left+rc.width/2, cy=rc.top+rc.height/2;
+  var i, r, x, y, p;
+  var best=null, bestScore=Infinity;
+  for(i=0;i<list.length;i++){
+    if(i===cur)continue;
+    if(contextOf(list[i])!==sc)continue;
+    r=visRect(list[i])||list[i].getBoundingClientRect();
+    x=r.left+r.width/2; y=r.top+r.height/2; p=(dir==='down')?(y-cy):(cy-y);
+    if(p<=6)continue;
+    var score=p+Math.abs(x-cx)*2.4;
+    if(score<bestScore){ bestScore=score; best=list[i] }
+  }
+  if(best){ setFocus(best,list); return true }
+  if(!sc)return false;
+  var maxTop=sc.scrollHeight-sc.clientHeight;
+  var canScroll=(dir==='down')?(sc.scrollTop<maxTop-1):(sc.scrollTop>1);
+  if(!canScroll)return false;
+  /* anchor and picks are rows INSIDE the scroller itself — chrome that merely shares the
+     travel context (the panel's ▾ Hide bar) must never anchor or receive a scroll-step pick,
+     or the step wraps focus back to the top instead of exiting at the container's end. */
+  var anchor=null, anchorY=(dir==='down')?-Infinity:Infinity;
+  if(sc.contains(el)){ anchor=el; anchorY=cy }
+  for(i=0;i<list.length;i++){
+    if(contextOf(list[i])!==sc||!sc.contains(list[i]))continue;
+    r=visRect(list[i]); if(!r)continue;
+    y=r.top+r.height/2;
+    if(dir==='down'&&y>anchorY){ anchorY=y; anchor=list[i] }
+    if(dir==='up'&&y<anchorY){ anchorY=y; anchor=list[i] }
+  }
+  if(!anchor)return false;
+  var anchorSig=sigOf(anchor), before=sc.scrollTop;
+  sc.scrollTop=before+(dir==='down'?1:-1)*Math.round(sc.clientHeight*0.55);
+  if(sc.scrollTop===before)return false;
+  var list2=collect(), aEl=null;
+  for(i=0;i<list2.length;i++){ if(sigOf(list2[i])===anchorSig){ aEl=list2[i]; break } }
+  var pick=null;
+  if(aEl){
+    var ar=visRect(aEl)||aEl.getBoundingClientRect(), acx=ar.left+ar.width/2, acy=ar.top+ar.height/2, bs=Infinity;
+    for(i=0;i<list2.length;i++){
+      if(list2[i]===aEl)continue;
+      if(contextOf(list2[i])!==sc||!sc.contains(list2[i]))continue;
+      r=visRect(list2[i]); if(!r)continue;
+      x=r.left+r.width/2; y=r.top+r.height/2; p=(dir==='down')?(y-acy):(acy-y);
+      if(p<=6)continue;
+      var s2=p+Math.abs(x-acx)*2.4;
+      if(s2<bs){ bs=s2; pick=list2[i] }
+    }
+    /* the anchor is still on screen and nothing lies beyond it: the scroll revealed no new
+       row — this press exits the container (caller's global search), it must not wrap. */
+    if(pick){ setFocus(pick,list2); return true }
+    return false;
+  }
+  /* the anchor scrolled clean out of view: every row now visible inside the container is
+     newly revealed — land on the far edge row in the direction of travel. */
+  var ext=(dir==='down')?Infinity:-Infinity;
+  for(i=0;i<list2.length;i++){
+    if(contextOf(list2[i])!==sc||!sc.contains(list2[i]))continue;
+    r=visRect(list2[i]); if(!r)continue;
+    y=r.top+r.height/2;
+    if(dir==='down'?(y<ext):(y>ext)){ ext=y; pick=list2[i] }
+  }
+  if(pick){ setFocus(pick,list2); return true }
+  return false;
+}
 function move(dir){
   var list=collect(); if(!list.length){ clearFocus(); return }
   var cur=list.indexOf(focusEl);
-  if(cur<0){ setFocus(list[0],list); return }
+  if(cur<0){
+    /* v184: the game rebuilds the surface DOM on re-render, destroying the focused node between
+       presses — restore focus by element signature (falling back to the clamped last index) so
+       this press still moves from where the player was, instead of being swallowed into a
+       reset to the first element. */
+    var ri=-1;
+    if(focusSig){ for(var k=0;k<list.length;k++){ if(sigOf(list[k])===focusSig){ ri=k; break } } }
+    if(ri<0)ri=Math.min(Math.max(lastIndex,0),list.length-1);
+    cur=ri; setFocus(list[cur],list);
+  }
   var el=focusEl;
   if(el.tagName==='INPUT'&&el.type==='range'&&(dir==='left'||dir==='right')){
     try{
@@ -15893,11 +16070,12 @@ function move(dir){
     }catch(e){}
     return;
   }
-  var rc=el.getBoundingClientRect(), cx=rc.left+rc.width/2, cy=rc.top+rc.height/2;
+  if((dir==='up'||dir==='down')&&moveVertical(dir,list,cur))return;
+  var rc=visRect(el)||el.getBoundingClientRect(), cx=rc.left+rc.width/2, cy=rc.top+rc.height/2;
   var best=null, bestScore=Infinity, i, r, x, y, dx, dy, p, q;
   for(i=0;i<list.length;i++){
     if(i===cur)continue;
-    r=list[i].getBoundingClientRect(); x=r.left+r.width/2; y=r.top+r.height/2; dx=x-cx; dy=y-cy;
+    r=visRect(list[i])||list[i].getBoundingClientRect(); x=r.left+r.width/2; y=r.top+r.height/2; dx=x-cx; dy=y-cy;
     if(dir==='right'){ p=dx; q=dy } else if(dir==='left'){ p=-dx; q=dy } else if(dir==='down'){ p=dy; q=dx } else { p=-dy; q=dx }
     if(p<=6)continue;
     var score=p+Math.abs(q)*2.4;
@@ -15910,7 +16088,7 @@ function move(dir){
       var bd=Infinity;
       for(i=0;i<list.length;i++){
         if(i===cur)continue;
-        r=list[i].getBoundingClientRect(); y=r.top+r.height/2; x=r.left+r.width/2; dy=y-cy;
+        r=visRect(list[i])||list[i].getBoundingClientRect(); y=r.top+r.height/2; x=r.left+r.width/2; dy=y-cy;
         if(dir==='down'&&dy>6&&dy+Math.abs(x-cx)*0.5<bd){ bd=dy+Math.abs(x-cx)*0.5; best=list[i] }
         if(dir==='up'&&dy<-6&&-dy+Math.abs(x-cx)*0.5<bd){ bd=-dy+Math.abs(x-cx)*0.5; best=list[i] }
       }
