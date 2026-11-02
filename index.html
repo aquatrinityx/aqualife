@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=184;
+const GAME_VERSION=185;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -16237,6 +16237,13 @@ function loop(t){
   rafId=requestAnimationFrame(loop);
   var gp=readPad(); if(!gp)return;
   var btns=gp.buttons||[];
+  /* v185: while the 🎮 Controller Test panel is open, presses feed ONLY its readout —
+     keep prevBtn current (so nothing fires on close) and swallow every input here. */
+  if(window.__ctlTest185&&window.__ctlTest185.open){
+    for(var gi=0;gi<btns.length;gi++)prevBtn[gi]=!!btns[gi].pressed;
+    if(activeDir){ activeDir=null; releaseKey() }
+    return;
+  }
   for(var i=0;i<btns.length;i++){
     var p=!!btns[i].pressed, was=!!prevBtn[i];
     if(p&&!was&&i!==12&&i!==13&&i!==14&&i!==15)onButtonDown(i);
@@ -16317,6 +16324,90 @@ try{
  console.log('🌊 AquaLife v'+GAME_VERSION+' — v183: 🏆 every toddler milestone is an Achievement now — the Milestones — Life History section is removed, milestones fire their matching achievement through achPop132, and milestones already in a save\u2019s life history migrate in as earned achievements with their original day');
 }catch(e){}
 })();
+</script>
+
+<script>
+/* ================= v185: 🎮 CONTROLLER TEST — a permanent Settings diagnostic. Howard's real Xbox controller (paired to his Android phone) does not navigate correctly — the D-pad "still goes to the bottom" even after the v184 focus fix, which passed its mocked tour 22/22. Hypothesis (unverified): his pad reports the D-pad on a different channel than the mocked standard buttons 12–15 (e.g. a hat axis). This build ADDS a test screen where HE presses and the screen shows what his controller actually reports, then he screenshots it. Entry: a "🎮 Controller Test" button inside the ⚙️ Settings sheet (injected into settingsCardHtml121's card, so it rides along every time the sheet renders). The panel reads navigator.getGamepads() DIRECTLY, independent of the v181 focus layer: connection line (id + mapping), a buttons grid (every index, live pressed highlight + analog value), an axes list (EVERY axis index, live value to 2 decimals — hat axes live at higher indices like 6/7/9, so nothing is capped), a large Last-input line, and an input log (last 8 distinct inputs: button presses + significant axis changes past ~0.5). While the panel is open, the v181 poll loop checks window.__ctlTest185.open and feeds NOTHING to the game (it only keeps its prevBtn snapshot current, so a press — B included — can never leak into the game on close); B or the Close button exits, and the focus layer resumes exactly as before. Polling: requestAnimationFrame only while a pad is actually reporting; with no gamepad the panel re-checks on a slow ~400 ms timer and says so plainly. The tick also waits out the game's own anti-clobber sheet queues (v115/v132 can hold an openSheet call ~2.6 s after a hard close), so a queued panel still comes up live and suspended instead of rendering dead. No gameplay, math, mapping or save changes: SAVE_KEY and the save format are untouched. ================= */
+function esc185(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+var CT185={raf:0,timer:0,prev:[],zones:[],padKey:'',hasPad:false,noneShown:false,closing:false,waitUntil:0};
+var ctlApi185={open:false,last:'',log:[],padId:'',mapping:''};
+window.__ctlTest185=ctlApi185;
+(function(){ try{ var st=document.createElement('style'); st.textContent='.ctlGrid185{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 2px}.ctlBtn185{border:1.5px solid var(--line);border-radius:10px;padding:7px 2px;text-align:center;font-size:11.5px;font-weight:800;background:#00000010;line-height:1.35;word-break:break-word}.ctlBtn185 b{display:block;font-size:15px}.ctlBtn185.on{background:#ffb703!important;color:#111!important;border-color:#111;box-shadow:0 0 0 2px #111,0 0 16px #ffb703}.ctlAx185{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;border-bottom:1px dashed var(--line);font-size:13.5px;font-weight:700}.ctlAx185.on{background:#ffb703;color:#111;border-radius:8px;font-weight:900}.ctlLast185{font-size:21px;font-weight:900;line-height:1.3;background:#111;color:#ffb703;border-radius:12px;padding:12px 10px;text-align:center;margin:10px 0;min-height:30px;word-break:break-word}.ctlLog185{font-size:14.5px;font-weight:800;line-height:1.7}.ctlConn185{font-size:13.5px;font-weight:700;line-height:1.5;word-break:break-word;background:#00000010;border:1px solid var(--line);border-radius:10px;padding:9px 10px}'; document.head.appendChild(st) }catch(e){} })();
+function ctlEl185(id){ return document.getElementById(id) }
+function ctlFmt185(v){ var n=(typeof v==='number'&&isFinite(v))?v:0; return n.toFixed(2) }
+function ctlSetLast185(txt){ ctlApi185.last=txt; var el=ctlEl185('ctlLast185'); if(el)el.textContent='Last: '+txt }
+function ctlPushLog185(txt){ ctlApi185.log.push(txt); while(ctlApi185.log.length>8)ctlApi185.log.shift(); var el=ctlEl185('ctlLog185'); if(el){ el.innerHTML=ctlApi185.log.map(function(s,i){ return (i+1)+'. '+esc185(s) }).join('<br>') } }
+function ctlReadPad185(){ try{ if(!navigator.getGamepads)return null; var gps=navigator.getGamepads(); if(!gps)return null; for(var i=0;i<gps.length;i++){ if(gps[i])return gps[i] } }catch(e){} return null }
+function ctlStop185(){ ctlApi185.open=false; CT185.closing=false; CT185.waitUntil=0; if(CT185.raf){ try{ cancelAnimationFrame(CT185.raf) }catch(e){} CT185.raf=0 } if(CT185.timer){ clearTimeout(CT185.timer); CT185.timer=0 } }
+function closeCtlTest185(){ ctlStop185(); if(typeof closeModal==='function')closeModal() }
+function ctlRequestClose185(){ if(CT185.closing)return; CT185.closing=true; setTimeout(function(){ if(ctlApi185.open)closeCtlTest185() },180) }
+function ctlNoPad185(){ CT185.hasPad=false; CT185.noneShown=true; CT185.padKey=''; ctlApi185.padId=''; ctlApi185.mapping=''; var c=ctlEl185('ctlConn185'); if(c)c.innerHTML='🎮 <b>No controller connected</b> — pair it and press any button.'; var b=ctlEl185('ctlBtns185'); if(b)b.innerHTML='<p class="small" style="margin:4px 0">Buttons will appear here the moment a controller shows up.</p>'; var a=ctlEl185('ctlAxes185'); if(a)a.innerHTML='<p class="small" style="margin:4px 0">Axes will appear here too — every single one, not just the sticks.</p>' }
+function ctlUpdate185(gp){
+ var btns=gp.buttons||[], axes=gp.axes||[];
+ var key=String(gp.id)+'|'+btns.length+'|'+axes.length;
+ if(key!==CT185.padKey){
+  CT185.padKey=key; CT185.prev=[]; CT185.zones=[];
+  ctlApi185.padId=String(gp.id||''); ctlApi185.mapping=String(gp.mapping||'');
+  var c=ctlEl185('ctlConn185'); if(c)c.innerHTML='🎮 <b>Connected:</b> '+esc185(gp.id)+'<br>mapping: <b>'+esc185(gp.mapping||'(none reported)')+'</b> • index '+gp.index+' • '+btns.length+' buttons • '+axes.length+' axes';
+  var bg=ctlEl185('ctlBtns185'); if(bg){ var bh=''; for(var i=0;i<btns.length;i++)bh+='<div class="ctlBtn185" id="ctlB185-'+i+'">B'+i+'<b>0.00</b></div>'; bg.innerHTML=bh||'<p class="small">This controller reports no buttons.</p>' }
+  var ag=ctlEl185('ctlAxes185'); if(ag){ var ah=''; for(var j=0;j<axes.length;j++)ah+='<div class="ctlAx185" id="ctlA185-'+j+'"><span>Axis '+j+'</span><span>0.00</span></div>'; ag.innerHTML=ah||'<p class="small">This controller reports no axes.</p>' }
+ }
+ for(var i=0;i<btns.length;i++){
+  var b=btns[i]||{}, p=!!b.pressed, was=!!CT185.prev[i];
+  if(p&&!was){ var t='Button '+i+' PRESSED'; ctlSetLast185(t); ctlPushLog185(t); if(i===1)ctlRequestClose185() }
+  else if(!p&&was){ ctlSetLast185('Button '+i+' RELEASED') }
+  CT185.prev[i]=p;
+  var cell=ctlEl185('ctlB185-'+i); if(cell){ if(p&&!cell.classList.contains('on'))cell.classList.add('on'); if(!p&&cell.classList.contains('on'))cell.classList.remove('on'); var v=cell.querySelector('b'); if(v)v.textContent=ctlFmt185(b.value) }
+ }
+ for(var k=0;k<axes.length;k++){
+  var val=(typeof axes[k]==='number'&&isFinite(axes[k]))?axes[k]:0;
+  var zone=val>=0.5?1:(val<=-0.5?-1:0), pz=CT185.zones[k]||0;
+  if(zone!==0&&zone!==pz){ var at='Axis '+k+' → '+ctlFmt185(val); ctlSetLast185(at); ctlPushLog185(at) }
+  CT185.zones[k]=zone;
+  var row=ctlEl185('ctlA185-'+k); if(row){ var rv=row.querySelectorAll('span')[1]; if(rv)rv.textContent=ctlFmt185(val); var on=Math.abs(val)>=0.5; if(on&&!row.classList.contains('on'))row.classList.add('on'); if(!on&&row.classList.contains('on'))row.classList.remove('on') }
+ }
+}
+function ctlTick185(){
+ if(!ctlApi185.open)return;
+ var m185=document.getElementById('modal');
+ if(!m185||!m185.classList.contains('open')||!ctlEl185('ctlRoot185')){
+  /* the game's own anti-clobber sheet queues (v115/v132) can hold an openSheet call for a
+     couple of seconds after a hard close — wait out that window for the panel to render
+     instead of giving up (and unsuspending) instantly. */
+  if(Date.now()<(CT185.waitUntil||0)){ CT185.timer=setTimeout(ctlTick185,350); return }
+  ctlStop185(); return;
+ }
+ CT185.waitUntil=0;
+ var gp=ctlReadPad185();
+ if(!gp){
+  if(CT185.hasPad||!CT185.noneShown)ctlNoPad185();
+  CT185.timer=setTimeout(ctlTick185,400); return;
+ }
+ CT185.hasPad=true; CT185.noneShown=false;
+ ctlUpdate185(gp);
+ CT185.raf=requestAnimationFrame(ctlTick185);
+}
+function ctlTestHtml185(){ return '<div id="ctlRoot185"><h2>🎮 Controller Test</h2>'
+ +'<p class="small" style="margin-top:0">Press each thing on your controller <b>one at a time</b> — D-pad Up, Down, Left, Right, then A — and watch what shows up here. When you have pressed them all, <b>screenshot this screen</b> and send it in. While this test is open, your presses go <b>only</b> to this readout — the game behind it will not move.</p>'
+ +'<div class="ctlConn185" id="ctlConn185">🎮 Checking for a controller…</div>'
+ +'<div class="ctlLast185" id="ctlLast185">Last: — press something</div>'
+ +'<h3 style="margin:12px 0 2px">🎛️ Buttons</h3><div class="ctlGrid185" id="ctlBtns185"></div>'
+ +'<h3 style="margin:12px 0 2px">🕹️ Axes — all of them</h3><div id="ctlAxes185"></div>'
+ +'<h3 style="margin:12px 0 2px">📜 Input log — last 8</h3><div class="ctlLog185" id="ctlLog185"><span class="small">Nothing yet — press something on the controller.</span></div>'
+ +'<button class="btn gold" style="margin-top:14px" onclick="closeCtlTest185()">Close</button>'
+ +'<p class="small" style="margin-top:6px">Tip: pressing <b>B</b> on the controller also closes this test.</p></div>' }
+function openCtlTest185(){
+ CT185.prev=[]; CT185.zones=[]; CT185.padKey=''; CT185.hasPad=false; CT185.noneShown=false; CT185.closing=false;
+ ctlApi185.log=[]; ctlApi185.last=''; ctlApi185.padId=''; ctlApi185.mapping='';
+ ctlApi185.open=true; CT185.waitUntil=Date.now()+3500;
+ if(typeof openSheet==='function')openSheet(ctlTestHtml185());
+ ctlTick185();
+}
+window.openCtlTest185=openCtlTest185; window.closeCtlTest185=closeCtlTest185;
+var _settingsCardHtml185=settingsCardHtml121;
+settingsCardHtml121=function(){ var c=_settingsCardHtml185.apply(this,arguments); try{ if(c&&c.indexOf('openCtlTest185')<0){ var btn='<button class="btn outline" style="margin-top:8px" onclick="openCtlTest185()">🎮 Controller Test</button>'; var ix=c.lastIndexOf('</div>'); if(ix>0)c=c.slice(0,ix)+btn+c.slice(ix) } }catch(e){} return c };
+window.__v185={open:openCtlTest185,close:closeCtlTest185,api:ctlApi185,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v185: 🎮 Controller Test in ⚙️ Settings — a live gamepad readout (id + mapping, every button, every axis, last-input line + 8-entry log) that reads navigator.getGamepads() directly while the focus layer is suspended, so Howard can screenshot what his real controller actually reports');
 </script>
 
 </body>
