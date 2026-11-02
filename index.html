@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=197;
+const GAME_VERSION=198;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -18257,3 +18257,280 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v197 repair build: 🌈 RGB hol
 }catch(e){}
 })();
 </script>
+
+<script>
+/* ================= v198: 🌙 NIGHT OUT — Howard's order (Nov 2, 2026). Three parts, one law underneath: everything is PHYSICAL, like daycare (v195) — nobody vanishes, nobody teleports, and the world shows it instead of narrating it.
+   PART 1 — SLEEPOVERS, ARRANGED PARENT-TO-PARENT: a parent arranges with another parent (the player as parent, or the player's own parent when the player is a kid/toddler, ages 1–12). Talking to the other parent comes FIRST — the shipped conversation ledger (convoDone93) is what registers them in the ❤️ Social roster (the v196 rule), and only then can a sleepover be asked. The child goes to THEIR house, or their child comes to YOURS: drop-off and pickup are real trips on the ONE canonical 🚗 On the road sheet (a 🚕 ride when the collecting parent is in no shape to drive — the pickup always completes). Overnight the child is actually AT the host house: a kid away is not drawn at home (kidHere86 gate, same as daycare), their location reads "at {friend}'s house" everywhere it is shown, the host household tends their needs on the same rules as home (happiness held up, the v149 neglect/CPS ladder explicitly zeroed for arranged nights — a sleepover is care, never neglect), and the fun they have scales with their bond with the friend. Player-as-kid: your parent arranges and drives you; you spend the night AT the friend's house (a real 'friendhouse' location — host parent and friend drawn there, sleepover acts, sleep there) and you are collected in the morning; you cannot wander off alone. Sleepovers are also PROPOSED by other parents: an offer arrives by text (pushMsg, the normal channel) and as a sheet/card — accept or decline.
+   PART 2 — THE FREE NIGHT: with the kids away at a sleepover (or covered by the sitter/daycare), the evening opens up: a 🌙 Free Night card (home, Travel tab, from 5 PM) offers 🌃 CLUB NOVA — a new nightlife location on the Travel map, open 5 PM–3 AM, 18+ at the door — the 🍸 Velvet Fox, or a 🎉 party at home with other parents. The night is PLAYED: the club has a real crowd (other parents first on a free night, roster adults, townsfolk — drawn in the scene, talking, dancing, drinking), a dance floor, a bar, conversation through the shipped ledger; a home party fills your living room with guests who stay, sip and chat until the night ends or you leave.
+   PART 3 — SUBSTANCE LIFE + DYNAMIC STATUS LABELS (ADULTS 18+ ONLY — a hard gate, not a flavour): adults drink (beer/wine/shots) and smoke (their own 🌿 stash) at clubs, parties and home social settings, as active choices; other adults at clubs/parties partake ambiently and visibly. Intoxication rides the shipped v117 system (one level, hourly fade) for the player, and a parallel per-NPC state (S.v198.npc) for everyone else. The STATUS shows above the name in the same rainbow label family (rainTag193, at the v197 +2px size), live while true and gone when it fades: 🍺 Buzzed → 🥴 Tipsy → 🤪 Wasted; 🌿 Hazy → 🌿 Floating → 🌿 Zooted. Effects are real but safe-bounded: mood/social boosts, the shipped drunk visuals, looser speech bubbles at high levels, a real morning-after at heavy levels (low energy, a knock to health, no lecture — the journal just records the night). SAFETY RAILS: at 🤪 Wasted the game BLOCKS driving and offers a 🚕 ride instead; a sleepover pickup by a wasted parent completes by ride, never by impaired driving; and under-18s get NOTHING — no statuses (statusOf198 age-gates every label), no offers, no access (club door, and subUse198 hard-blocks any direct call). One voice: no lecture toasts, no moral narration — labels, animation and the next morning tell the story. Saves carry over: everything new lives in S.v198, defaulted lazily; SAVE_KEY untouched. ================= */
+(function(){
+try{
+/* ---------- state ---------- */
+function ensure198(){ if(!S)return null; if(!S.v198||typeof S.v198!=='object')S.v198={}; const V=S.v198;
+ if(!Array.isArray(V.awayKids))V.awayKids=[];
+ if(V.plan===undefined)V.plan=null; if(V.offer===undefined)V.offer=null; if(V.guest===undefined)V.guest=null;
+ if(!V.npc||typeof V.npc!=='object')V.npc={}; if(!V.sayMap||typeof V.sayMap!=='object')V.sayMap={};
+ if(V.playerAway===undefined)V.playerAway=false; if(V.peak===undefined)V.peak=0;
+ if(V.offerDay===undefined)V.offerDay=0; if(V.rainDay===undefined)V.rainDay=0; if(!V.talked||typeof V.talked!=='object')V.talked={};
+ if(V.crowdDay===undefined)V.crowdDay=0; if(!Array.isArray(V.crowd))V.crowd=[];
+ if(V.party===undefined)V.party=null; if(V.busy===undefined)V.busy=false; if(V.rideDest===undefined)V.rideDest=null;
+ return V }
+if(typeof S!=='undefined'&&S)ensure198();
+function hash198(s){ let h=7; s=String(s||''); for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0; return h }
+function intoxLvl198(){ try{ const v=(typeof ensure117==='function')?ensure117():null; return (v&&v.intox)?(v.intox.lvl||0):0 }catch(e){ return 0 } }
+function esc198(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;') }
+/* ---------- the other families: deterministic — the same friend always has the same parent ---------- */
+const KIDPOOL198=['Milo','Zoe','Ezra','Nora','Leo','Ivy','Sam','Ruby','Owen','Maya','Eli','Luna','Noah','Ava','Finn','Isla','Hugo','Cora','Jude','Wren'];
+function famFor198(child,friend){ const h=hash198(child+'>'+friend); const pg=(h%2===0); const pool=pg?GIRL_NAMES:BOY_NAMES; const parent=pool[h%pool.length]+' '+TOWN_LAST[Math.floor(h/16)%TOWN_LAST.length]; return {child:child,friend:friend,parent:parent,parentGirl:pg,bond:40+(h%56),key:child+'>'+friend} }
+function fams198(){ const out=[]; if(!S)return out;
+ if(S.age>=18){ (S.kids||[]).forEach(function(k){ if(k&&k.age>=1&&k.age<=12){ for(let i=0;i<2;i++){ const fr=KIDPOOL198[hash198(k.name+'#'+i)%KIDPOOL198.length]; if(fr!==k.name)out.push(famFor198(k.name,fr)) } } }) }
+ else if(S.age>=1&&S.age<=12&&!S.movedOut){ const mine=[]; try{ if(S.tod&&S.tod.friends)S.tod.friends.forEach(function(f){ if(f&&f.name)mine.push(f.name) }) }catch(e){}
+  for(let i=0;i<2;i++)mine.push(KIDPOOL198[hash198(S.name+'#pal'+i)%KIDPOOL198.length]);
+  const seen={}; mine.forEach(function(fr){ if(fr&&fr!==S.name&&!seen[fr]){ seen[fr]=1; out.push(famFor198(S.name,fr)) } }) }
+ return out }
+function mode198(){ if(!S)return null; if(S.age>=18)return (S.kids||[]).some(function(k){ return k&&k.age>=1&&k.age<=12 })?'parent':null; if(S.age>=1&&S.age<=12&&!S.movedOut)return 'kid'; return null }
+function arranger198(){ try{ if(mode198()==='parent')return S.name; const cg=(typeof caregiverName==='function')?caregiverName():null; if(!cg)return 'Your parent'; try{ if(typeof parentName47==='function'){ const pn=parentName47(cg); if(pn)return pn } }catch(e){} return cg }catch(e){ return 'Your parent' } }
+/* ---------- places: the club + the friend's house ---------- */
+try{ if(typeof TRAVEL_OPTS!=='undefined'&&!TRAVEL_OPTS.some(function(o){ return o[0]==='club' }))TRAVEL_OPTS.push(['club','🌃 Club Nova — dancing, drinks & the night crowd (5 PM–3 AM, 18+)']) }catch(e){}
+try{ if(typeof LOC_LABELS92!=='undefined'&&!LOC_LABELS92.club)LOC_LABELS92.club='🌃 Club Nova' }catch(e){}
+try{ if(typeof AREA_ROOMS123!=='undefined'){ if(!AREA_ROOMS123.club)AREA_ROOMS123.club=[['floor','💃','Dance Floor'],['bar','🍸','The Bar'],['booth','🛋️','Booths']]; if(!AREA_ROOMS123.friendhouse)AREA_ROOMS123.friendhouse=[['living','🛋️','Living Room'],['bags','🌙','Sleeping Bags'],['yums','🍕','Snack Table']] } }catch(e){}
+try{ if(typeof LOC_THEMES!=='undefined'){ if(!LOC_THEMES.club)LOC_THEMES.club={wall:['#1e1b3a','#251f4d','#171430'],wains:'#3b2d6e',wainsTop:'#5b4a9e',wainsLine:'#120e26',floor:['#241d47','#2b2356','#1d183c','#2e2760'],floorLine:'#00000055',tiles:false,rug:'oval',rugA:'#7c3aed',rugB:'#db2777',rugRing:'#f59e0b',fridge:['#2a2456','#3a3170','#171230'],couch:['#4c1d95','#5b21b6','#3b1478'],bedCol:'#7c3aed',blanket:'#f59e0b'};
+ if(!LOC_THEMES.friendhouse)LOC_THEMES.friendhouse={wall:['#ffe9d6','#fff1e0','#ffd9b0'],wains:'#c2703d',wainsTop:'#dda06a',wainsLine:'#96603a',floor:['#f3d9b8','#ecd2ac','#f7e2c2','#e6c89e'],floorLine:'#96603a55',tiles:false,rug:'oval',rugA:'#fbcfe8',rugB:'#fde7f3',rugRing:'#e2547a',fridge:['#f4f6f8','#dde3e8','#aeb8c0'],couch:['#fde9c8','#f7dcab','#e0bd7d'],bedCol:'#e2547a',blanket:'#fde68a'} } }catch(e){}
+function clubOpen198(){ const h=(S&&S.hour)||0; return h>=17||h<3 }
+/* ---------- dynamic status labels: live state above the name, same rainbow family ---------- */
+function statusOf198(name){ if(!S||!name)return null; let a=null; try{ a=(typeof charAge79==='function')?charAge79(name):null }catch(e){}
+ if(name===S.name){ if(S.age<18)return null; const v=(typeof ensure117==='function')?ensure117():null; if(!v||!v.intox||!(v.intox.lvl>0))return null; return statusTxt198(v.intox.lvl,v.intox.kind) }
+ if(a!==null&&a<18)return null;
+ const V=ensure198(); if(!V)return null; const e=V.npc[name]; if(!e||e.day!==S.day||!(e.lvl>0))return null; return statusTxt198(e.lvl,e.kind) }
+function statusTxt198(lvl,kind){ if(kind==='drug')return {txt:lvl<3?'🌿 Hazy':lvl<6?'🌿 Floating':'🌿 Zooted',lvl:lvl}; return {txt:lvl<3?'🍺 Buzzed':lvl<6?'🥴 Tipsy':'🤪 Wasted',lvl:lvl} }
+function setSay198(key,text,dur){ try{ const V=ensure198(); if(V)V.sayMap[key]={text:text,until:performance.now()+(dur||4200)} }catch(e){} }
+function sayFor198(key){ try{ const V=ensure198(); if(!V)return ''; const s=V.sayMap[key]; return (s&&performance.now()<s.until)?s.text:'' }catch(e){ return '' } }
+/* ---------- substances: ONE gate, every v198 surface (18+ — hard) ---------- */
+window.subUse198=function(kind,str,label,price){ if(!S||S.deadFlag)return;
+ if(S.age<18){ toast('🔞 18+ only — that door does not bend'); return }
+ if(price){ if(S.money<price){ toast('💸 Need $'+price); return } money(-price,label) }
+ if(kind==='drug'){ if(!((S.stash&&S.stash.thc)>0)){ toast('🌿 Nothing to smoke — no 🌿 THC in your stash'); return } S.stash.thc--; try{ useSubstance117('drug',str||2,label+' — the smoke curls up, and the room goes soft at the edges.') }catch(e){} }
+ else { try{ useSubstance117('alcohol',str||2,label) }catch(e){} }
+ try{ adj('fun',4+(str||2)*2); adj('social',3) }catch(e){}
+ try{ const V=ensure198(); const l=intoxLvl198(); if(V&&l>(V.peak||0))V.peak=l }catch(e){}
+ save(); render() };
+/* ---------- PART 1: arranging, parent to parent ---------- */
+window.arrange198=function(){ if(!S)return; const V=ensure198(); const md=mode198(); if(!md){ toast('🌙 Sleepovers are for kids & toddlers — arranged by their parents'); return }
+ const fams=fams198(); const arr=arranger198();
+ let h='<h2>🌙 Arrange a sleepover</h2><p>Sleepovers are arranged <b>parent to parent</b> — '+(md==='parent'?('you talk to the other parent first, then ask. No talk, no sleepover: that is the rule of the roster.'):('<b>'+esc198(arr)+'</b> talks to the other parent first, then asks. No talk, no sleepover.'))+'</p>';
+ if(V.plan)h+='<div class="msg" style="text-align:left">🌙 <b>Tonight is already spoken for:</b> '+esc198(V.plan.child)+(V.plan.dir==='out'?(' → '+esc198(V.plan.friend)+'’s house'):(' ← '+esc198(V.plan.friend)+' comes to yours'))+'.</div>';
+ if(V.rainDay===S.day)h+='<p class="small">One family already rain-checked today — tomorrow is a new ask.</p>';
+ fams.forEach(function(f,i){ const talked=!!V.talked[f.parent];
+  h+='<div class="msg" style="text-align:left"><b>'+esc198(f.friend)+'</b> — friend of <b>'+esc198(f.child)+'</b> (bond '+f.bond+')<br><span style="font-size:12px;opacity:.85">'+(f.parentGirl?'Mom':'Dad')+': <b>'+esc198(f.parent)+'</b>'+(talked?' — you two have talked ✓':' — you have not talked yet')+'</span><br>'
+  +(!talked?'<button class="btn gold" style="width:auto;margin-top:6px;padding:8px 14px" onclick="talkParent198('+i+')">💬 Talk to '+esc198(f.parent.split(' ')[0])+'</button>'
+   :V.plan?'':'<button class="btn gold" style="width:auto;margin-top:6px;padding:8px 14px" onclick="askSleep198('+i+',\'out\')">🌙 '+esc198(f.child)+' sleeps at '+esc198(f.friend)+'’s</button> <button class="btn outline" style="width:auto;margin-top:6px;padding:8px 14px" onclick="askSleep198('+i+',\'in\')">🏠 '+esc198(f.friend)+' sleeps at yours</button>')
+  +'</div>' });
+ h+='<button class="btn outline" style="margin-top:8px" onclick="closeModal()">Close</button>';
+ openSheet(h,{sfx:'pop'}) };
+window.talkParent198=function(i){ const fams=fams198(); const f=fams[i]; if(!f||!S)return; const V=ensure198(); const md=mode198(); const arr=arranger198();
+ try{ if(typeof convoDone93==='function')convoDone93(f.parent) }catch(e){}
+ try{ if(window.__v196b&&window.__v196b.register)window.__v196b.register(f.parent) }catch(e){}
+ V.talked[f.parent]=S.day; save();
+ const lines=md==='parent'?['“So — the kids have been inseparable lately.”','“'+f.friend+' talks about '+f.child+' nonstop. It is sweet, honestly.”','“A sleepover could be fun. They would love it.”']:['“'+arr.split(' ')[0]+'! Good to finally put a voice to the name.”','“The kids get on so well — '+f.friend+' mentions '+f.child+' every day.”','“We should do a sleepover sometime. They would love it.”'];
+ openSheet('<h2>💬 Parent to parent</h2><p>'+(md==='parent'?('<b>You</b> and <b>'+esc198(f.parent)+'</b>'):('<b>'+esc198(arr)+'</b> and <b>'+esc198(f.parent)+'</b>'))+' — an actual conversation, the way these things start:</p>'+lines.map(function(l){ return '<div class="msg" style="text-align:left">'+l+'</div>' }).join('')+'<p class="small">'+esc198(f.parent)+' is in your ❤️ Social roster now — people land there by talking.</p><button class="btn gold" onclick="askSleep198('+i+',\'out\')">🌙 Ask: '+esc198(f.child)+' at '+esc198(f.friend)+'’s tonight</button><button class="btn outline" style="margin-top:8px" onclick="askSleep198('+i+',\'in\')">🏠 Ask: '+esc198(f.friend)+' at yours tonight</button><button class="btn outline" style="margin-top:8px" onclick="arrange198()">‹ Back to the families</button>',{person:f.parent,sfx:'pop'}) };
+window.askSleep198=function(i,dir){ const fams=fams198(); const f=fams[i]; if(!f||!S)return; const V=ensure198(); if(V.plan){ toast('🌙 Tonight is already spoken for'); return }
+ if(V.rainDay===S.day){ openSheet('<h2>🌙 Rain check</h2><p>'+esc198(f.parent)+' already passed on tonight — “another night, honestly, we would love to.” Tomorrow is a new ask.</p><button class="btn" onclick="closeModal()">Fair enough</button>'); return }
+ const yes=f.bond>=45||Math.random()<0.7;
+ if(!yes){ V.rainDay=S.day; save(); log('🌙 RAIN CHECK — '+f.parent+' passed on a sleepover tonight (“another night — this week is a lot”). The ask was real; so is a no.'); openSheet('<h2>🌙 Not tonight</h2><p><b>'+esc198(f.parent)+'</b>: “Can we rain-check? This week is a LOT. Another night — the kids would love it.”</p><button class="btn" onclick="closeModal()">Another night, then</button>'); return }
+ V.plan={mode:mode198(),dir:dir,child:f.child,friend:f.friend,parent:f.parent,arranger:arranger198(),bond:f.bond,day:S.day,state:'planned',nightDay:0,dropNow:(S.hour||0)>=17};
+ log('🌙 SLEEPOVER SET — parent to parent, '+f.parent+' said yes: <b>'+f.child+'</b> '+(dir==='out'?('sleeps at <b>'+f.friend+'’s house</b> tonight'):('hosts <b>'+f.friend+'</b> at yours tonight'))+'. Drop-off at 6 PM — a real drive, a real night away, pickup in the morning.');
+ toast('🌙 Sleepover set for tonight — drop-off at 6 PM');
+ save(); closeModal(); render() };
+/* ---------- the drives: drop-off & pickup on the ONE canonical road sheet ---------- */
+function driveSafe198(opts,apply){ let finished=false; const finish=function(){ if(finished)return; finished=true; try{ apply() }catch(e){} }; try{ setTimeout(finish,3200) }catch(e){} try{ driveSheet176(opts,finish) }catch(e){ finish() } }
+function dropOff198(){ const V=ensure198(); const p=V.plan; if(!p||p.state!=='planned')return; if(V.busy&&(Date.now()-(V.busyAt||0)>15000))V.busy=false; if(V.busy)return; V.busy=true; V.busyAt=Date.now();
+ const done=function(){ V.busy=false; save(); render() };
+ if(p.dir==='out'&&p.mode==='parent'){ driveSafe198({icon:'🚗',title:'On the road — sleepover drop-off',sub:'<b>'+esc198(S.name)+'</b> is driving <b>'+esc198(p.child)+'</b> to <b>'+esc198(p.friend)+'’s house</b> — bag packed, pillow under one arm. '+esc198(p.parent)+' is hosting tonight: that is where '+esc198(p.child)+' sleeps, and where pickup happens in the morning.'},function(){ V.awayKids=[p.child]; p.state='away'; p.nightDay=S.day; log('🌙🚗 DROP-OFF — '+p.child+' is at <b>'+p.friend+'’s house</b> now, with '+p.parent+' hosting. Fed, playing, looked after — at THEIR house, all night, until pickup.'); done() }) }
+ else if(p.dir==='out'&&p.mode==='kid'){ try{ if(typeof LOC_LABELS92!=='undefined')LOC_LABELS92.friendhouse='🏠 '+p.friend+'’s house' }catch(e){}
+  driveSafe198({icon:'🚗',title:'On the road — to '+esc198(p.friend)+'’s house',sub:'<b>'+esc198(p.arranger)+'</b> is driving you to <b>'+esc198(p.friend)+'’s house</b> for the sleepover — '+esc198(p.parent)+' is hosting, and '+esc198(p.arranger)+' collects you in the morning. This is where you sleep tonight.'},function(){ S.location='friendhouse'; S.room86=null; V.playerAway=true; p.state='away'; p.nightDay=S.day; log('🌙🚗 DROP-OFF — you are at <b>'+p.friend+'’s house</b>, sleeping over. '+p.parent+' is in charge tonight; '+p.arranger+' picks you up in the morning.'); done() }) }
+ else { driveSafe198({icon:'🚗',title:'On the road — '+esc198(p.friend)+' is coming over',sub:'<b>'+esc198(p.parent)+'</b> is dropping <b>'+esc198(p.friend)+'</b> at yours for the sleepover — sleeping bag, snacks, the works. Your house hosts tonight; '+esc198(p.parent)+' collects them in the morning.'},function(){ V.guest={name:p.friend,parent:p.parent,happy:84}; p.state='hosting'; p.nightDay=S.day; log('🌙🚗 DROP-OFF — '+p.friend+' is at <b>your house</b> for the night, sleeping bag and all. Your household hosts: snacks, a movie, lights-out eventually. '+p.parent+' collects them in the morning.'); done() }) } }
+function pickup198(){ const V=ensure198(); const p=V.plan; if(!p)return; if(V.busy&&(Date.now()-(V.busyAt||0)>15000))V.busy=false; if(V.busy)return; V.busy=true; V.busyAt=Date.now();
+ const done=function(){ V.busy=false; save(); render() };
+ if(p.state==='away'&&p.mode==='parent'){ const kid=(S.kids||[]).find(function(k){ return k.name===p.child }); const wasted=intoxLvl198()>=6;
+  driveSafe198({icon:wasted?'🚕':'🚗',title:wasted?'On the road — pickup, by ride':'On the road — sleepover pickup',sub:wasted?('Last night was a big one, so <b>'+esc198(p.child)+'</b> is collected <b>by ride</b> — a sober driver brings them home from <b>'+esc198(p.friend)+'’s house</b>. The pickup always completes; nobody drives on a night like that.'):('<b>'+esc198(S.name)+'</b> is collecting <b>'+esc198(p.child)+'</b> from <b>'+esc198(p.friend)+'’s house</b> — the sleepover arc, completed: there last night, home this morning.')},function(){ V.awayKids=[]; if(kid)kid.happy=Math.min(100,(kid.happy||60)+8); log('🌅 PICKUP — '+p.child+' is <b>home</b> from the sleepover at '+p.friend+'’s'+(wasted?', collected by ride after the big night':'')+'. Verdict: '+(p.bond>=70?'“BEST NIGHT EVER.”':p.bond>=50?'a really good night.':'a decent night — new houses take getting used to.')); V.plan=null; done() }) }
+ else if(p.state==='away'&&p.mode==='kid'){ driveSafe198({icon:'🚗',title:'On the road — home from the sleepover',sub:'<b>'+esc198(p.arranger)+'</b> has come to collect you from <b>'+esc198(p.friend)+'’s house</b> — pillow, bag, and a full report for the ride home.'},function(){ try{ S.location=homeLoc() }catch(e){ S.location='house' } S.room86=null; V.playerAway=false; log('🌅 PICKUP — '+p.arranger+' collected you from '+p.friend+'’s. Home again, smelling faintly of somebody else’s couch — the sign of a sleepover done right.'); V.plan=null; done() }) }
+ else if(p.state==='hosting'){ driveSafe198({icon:'🚗',title:'On the road — '+esc198(p.friend)+' heads home',sub:'<b>'+esc198(p.parent)+'</b> has come to collect <b>'+esc198(p.friend)+'</b> — sleeping bag rolled, fridge raided one last time, and the night officially a success.'},function(){ V.guest=null; log('🌅 PICKUP — '+p.parent+' collected '+p.friend+'. The sleepover at yours is complete: hosted, fed, and sent home happy.'); V.plan=null; done() }) }
+ else { V.busy=false } }
+window.dropNow198=function(){ const V=ensure198(); if(V&&V.plan&&V.plan.state==='planned'){ V.plan.dropNow=true; save(); let fired=false; try{ const mEl=document.getElementById('modal'); const modalUp=!!(mEl&&mEl.classList.contains('open')); if(!modalUp&&!window._drv176&&typeof homeLoc==='function'&&S.location===homeLoc()){ dropOff198(); fired=true } }catch(e){} if(!fired)toast('🚗 Drop-off in a moment — head home if you are out') } };
+window.pickupNow198=function(){ pickup198() };
+/* ---------- inbound offers: another parent proposes it ---------- */
+function makeOffer198(){ const V=ensure198(); const fams=fams198(); if(!fams.length)return; const f=fams[Math.floor(Math.random()*fams.length)]; const dir=Math.random()<0.7?'out':'in';
+ try{ if(!S.contacts)S.contacts={}; if(!S.contacts[f.parent])S.contacts[f.parent]={num:genNumber(f.parent),day:S.day} }catch(e){}
+ V.offer={child:f.child,friend:f.friend,parent:f.parent,bond:f.bond,dir:dir,day:S.day,shown:false};
+ try{ if(typeof pushMsg==='function')pushMsg(f.parent,dir==='out'?('hey! '+f.friend+' will NOT stop asking — sleepover at ours tonight? '+f.child+' is so welcome, we will feed them and everything 🌙'):('okay hear me out — could '+f.friend+' sleep at yours tonight? you are a lifesaver if yes 🌙')) }catch(e){}
+ toast('📱 '+f.parent.split(' ')[0]+' is proposing a sleepover'); save() }
+function offerSheet198(){ const V=ensure198(); const o=V.offer; if(!o)return;
+ openSheet('<h2>🌙 A sleepover proposal</h2><p><b>'+esc198(o.parent)+'</b> — '+esc198(o.friend)+'’s parent — got in touch through the normal channels:</p><div class="msg" style="text-align:left">“'+(o.dir==='out'?('Sleepover at <b>ours</b> tonight? '+esc198(o.friend)+' keeps asking, and '+esc198(o.child)+' is so welcome — we will feed them, tire them out, the full service.'):('Could <b>'+esc198(o.friend)+'</b> sleep at <b>yours</b> tonight? You would be doing us the biggest favour.'))+'”</div><p class="small">Parent to parent, like all of these. Say yes and it is set for tonight — drop-off at 6 PM, pickup in the morning.</p><button class="btn gold" onclick="offerAccept198()">🌙 Yes — set it up</button><button class="btn outline" style="margin-top:8px" onclick="offerDecline198()">Not tonight</button>',{person:o.parent,sfx:'pop'}) }
+window.offerAccept198=function(){ const V=ensure198(); const o=V.offer; if(!o||!S)return; try{ if(typeof convoDone93==='function')convoDone93(o.parent) }catch(e){} try{ if(window.__v196b&&window.__v196b.register)window.__v196b.register(o.parent) }catch(e){}
+ V.talked[o.parent]=S.day; V.offer=null;
+ V.plan={mode:mode198(),dir:o.dir,child:o.child,friend:o.friend,parent:o.parent,arranger:arranger198(),bond:o.bond,day:S.day,state:'planned',nightDay:0,dropNow:(S.hour||0)>=17};
+ log('🌙 SLEEPOVER SET — '+o.parent+' proposed it and the answer was yes: <b>'+o.child+'</b> '+(o.dir==='out'?('sleeps at <b>'+o.friend+'’s house</b> tonight'):('hosts <b>'+o.friend+'</b> at yours tonight'))+'. Drop-off at 6 PM, pickup in the morning.');
+ toast('🌙 Sleepover set for tonight'); save(); closeModal(); render() };
+window.offerDecline198=function(){ const V=ensure198(); if(!V||!V.offer)return; log('🌙 PASSED — '+V.offer.parent+'’s sleepover idea got a polite not-tonight. Another night, maybe.'); V.offer=null; V.offerDay=S.day; save(); closeModal(); render() };
+/* ---------- PART 2: the free night — club crowd, cards, the home party ---------- */
+function freeNight198(){ if(!S||S.age<18)return false; if((S.hour||0)<17)return false; const V=ensure198(); if(!V)return false;
+ const young=(S.kids||[]).filter(function(k){ return k&&k.age<13 }); if(!young.length)return true;
+ if(young.every(function(k){ return V.awayKids.indexOf(k.name)>=0 }))return true;
+ try{ const V9=(typeof ensure119==='function')?ensure119():null; if(V9&&V9.coverage&&V9.coverage.day===S.day)return true }catch(e){}
+ return false }
+function crowd198(){ const V=ensure198(); if(!V)return[]; if(V.crowdDay===S.day&&V.crowd.length)return V.crowd;
+ const names=[]; const used={}; const add=function(n){ if(n&&!used[n]&&n!==S.name){ used[n]=1; names.push(n) } };
+ try{ fams198().forEach(function(f){ add(f.parent) }) }catch(e){}
+ try{ const R=(S.v196&&S.v196.rels)||{}; Object.keys(R).forEach(function(n){ let a=null; try{ a=charAge79(n) }catch(e){} if(a===null||a>=18)add(n) }) }catch(e){}
+ let i=0; while(names.length<5&&i<60){ i++; const g=(hash198('cg'+S.day+'#'+i)%2===0); const pool=g?GIRL_NAMES:BOY_NAMES; add(pool[hash198('club'+S.day+'#'+i)%pool.length]+' '+TOWN_LAST[hash198('clL'+S.day+'#'+i)%TOWN_LAST.length]) }
+ V.crowd=names.slice(0,6); V.crowdDay=S.day;
+ V.crowd.forEach(function(n){ if(!V.npc[n])V.npc[n]={lvl:hash198(n+S.day)%3,kind:'alcohol',day:S.day} });
+ return V.crowd }
+function clubCard198(){ if(!S)return ''; const V=ensure198(); const crowd=crowd198();
+ let h='<div class="card" style="border-color:#5b21b6"><h3>🌃 Club Nova</h3><p>Strobe light, a bassline you feel in your shoes, and a room full of adults having the night. '+(freeNight198()?'The kids are covered tonight — this is the free night, and it is yours.':'Doors at 5 PM; the night crowd is in.')+'</p>';
+ h+='<p style="font-size:12.5px;margin:6px 0"><b>On the floor:</b> '+crowd.map(function(n){ const st=statusOf198(n); return esc198(n)+(st?' · '+st.txt:'') }).join(' • ')+'</p>';
+ h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="clubDance198()">💃 Dance</button><button class="btn" style="width:auto;margin:0;padding:8px 14px" onclick="clubTalk198()">💬 Work the room</button></div>';
+ h+='<h4 style="margin:12px 0 4px">🍸 From the bar — 18+</h4>'
+  +'<div class="kv"><span><b>🍺 Cold Beer</b> — $6</span><button class="btn gold" style="width:auto;margin:0;padding:7px 12px;flex:none" onclick="subUse198(\'alcohol\',1,\'🍺 Cold beer at Club Nova\',6)">Drink — $6</button></div>'
+  +'<div class="kv"><span><b>🍷 House Wine</b> — $8</span><button class="btn gold" style="width:auto;margin:0;padding:7px 12px;flex:none" onclick="subUse198(\'alcohol\',2,\'🍷 House wine at Club Nova\',8)">Drink — $8</button></div>'
+  +'<div class="kv"><span><b>🥃 Shots Round</b> — $10</span><button class="btn gold" style="width:auto;margin:0;padding:7px 12px;flex:none" onclick="subUse198(\'alcohol\',3,\'🥃 A round of shots at Club Nova\',10)">Drink — $10</button></div>'
+  +'<div class="kv"><span><b>🌿 Smoke</b> — your own stash'+((S.stash&&S.stash.thc>0)?(' ('+S.stash.thc+' in the 🎒 Bag)'):' (none in the 🎒 Bag)')+'</span><button class="btn" style="width:auto;margin:0;padding:7px 12px;flex:none;background:#14532d;color:#fff" onclick="subUse198(\'drug\',2,\'🌿 A smoke outside Club Nova\',0)">Smoke</button></div>';
+ return h+'</div>' }
+window.clubDance198=function(){ if(!S)return; closeModal(); startActivity('💃',2800,charX,charY,{energy:-4},function(){ if(!S)return; const l=intoxLvl198(); adj('fun',10+(l>=4?5:0)); adj('social',7); if(l>=6)log('💃🤪 The dance floor got your whole wasted choreography — elbows, confidence, zero rhythm, total commitment. The crowd respected it enormously.'); else log('💃 On the Club Nova floor — the bassline did half the work and you did the rest. Fun & Social up.'); save(); render() }) };
+window.clubTalk198=function(){ if(!S)return; const crowd=crowd198(); if(!crowd.length){ toast('🌃 Quiet night on the floor'); return } const n=crowd[Math.floor(Math.random()*crowd.length)]; closeModal(); startActivity('💬',1800,charX,charY,null,function(){ if(!S)return; try{ if(typeof convoDone93==='function')convoDone93(n) }catch(e){} try{ if(window.__v196b&&window.__v196b.register)window.__v196b.register(n) }catch(e){} adj('social',6); adj('fun',4); setSay198('club:'+n,pickArr(['this place on a Friday?? unmatched','we never get out like this anymore 😅','okay ONE more song, then I am a pumpkin','you come here much? the DJ is unreal tonight'])); log('💬💃 Club talk — you and '+n+' shouted a whole friendship over the bassline. That counts as socialising; the ringing ears are the receipt.'); save(); render() }) };
+function freeNightCard198(){ const V=ensure198(); const away=V.awayKids.length>0;
+ return '<div class="card" style="border-color:#5b21b6"><h3>🌙 '+(away?'The Free Night':'Night Out')+'</h3><p>'+(away?('The kids are at a sleepover — the night is <b>yours</b>, all of it, until pickup in the morning.'):('The little ones are covered tonight — the evening is yours.'))+' The night is played, not narrated: go, be there, come home.</p><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="goLoc(\'club\')">🌃 Club Nova</button><button class="btn" style="width:auto;margin:0;padding:8px 14px" onclick="goLoc(\'bar\')">🍸 The Velvet Fox</button><button class="btn outline" style="width:auto;margin:0;padding:8px 14px" onclick="partyStart198()">🎉 Party here instead</button></div></div>' }
+window.partyStart198=function(){ if(!S||S.age<18)return; const V=ensure198(); if(V.party){ toast('🎉 The party is already rolling'); return }
+ const gs=[]; const add=function(n){ if(n&&typeof n==='string'&&n!==S.name&&gs.indexOf(n)<0)gs.push(n) };
+ if(S.spouse)add(S.spouse); if(S.partner)add(S.partner);
+ try{ fams198().forEach(function(f){ add(f.parent) }) }catch(e){}
+ try{ const R=(S.v196&&S.v196.rels)||{}; Object.keys(R).forEach(function(n){ let a=null; try{ a=charAge79(n) }catch(e){} if(a!==null&&a>=18)add(n) }) }catch(e){}
+ let i=0; while(gs.length<2&&i<24){ i++; add(nameForGender(Math.random()<0.5)+' '+pickArr(TOWN_LAST)) }
+ V.party={day:S.day,guests:gs.slice(0,3)};
+ V.party.guests.forEach(function(n){ if(!V.npc[n])V.npc[n]={lvl:0,kind:'alcohol',day:S.day} });
+ log('🎉 THE FREE NIGHT, AT HOME — '+V.party.guests.join(', ')+' came over: music up, snacks out, grown-ups only. The kids are covered; the living room is a party until it winds down.');
+ toast('🎉 Party at yours — guests are in'); save(); render() };
+function partyEnd198(silent){ const V=ensure198(); if(!V||!V.party)return; const gs=V.party.guests.slice(); V.party=null; if(!silent)log('🎉 The party winds down — '+gs.join(', ')+' headed home into the night, and the house is yours again.'); save(); render() }
+window.partyEnd198=function(){ partyEnd198(false) };
+function partyCard198(){ if(!S)return ''; const V=ensure198(); if(!V.party)return ''; const gs=V.party.guests;
+ let h='<div class="card" style="border-color:#5b21b6"><h3>🎉 The Free Night — at yours</h3><p><b>In the room:</b> '+gs.map(function(n){ const st=statusOf198(n); return esc198(n)+(st?' · '+st.txt:'') }).join(' • ')+'. Music up, kids covered, nobody checking the time.</p>';
+ h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="partyDance198()">💃 Living-room dance</button><button class="btn outline" style="width:auto;margin:0;padding:8px 14px" onclick="partyEnd198()">🔚 Wind it down</button></div>';
+ h+='<h4 style="margin:12px 0 4px">🍻 Going around — 18+</h4>'
+  +'<div class="kv"><span><b>🍺 Cold Beer</b> — $6</span><button class="btn gold" style="width:auto;margin:0;padding:7px 12px;flex:none" onclick="subUse198(\'alcohol\',1,\'🍺 A cold beer at the house party\',6)">Drink — $6</button></div>'
+  +'<div class="kv"><span><b>🍷 House Wine</b> — $8</span><button class="btn gold" style="width:auto;margin:0;padding:7px 12px;flex:none" onclick="subUse198(\'alcohol\',2,\'🍷 Wine at the house party\',8)">Drink — $8</button></div>'
+  +'<div class="kv"><span><b>🥃 Shots Round</b> — $10</span><button class="btn gold" style="width:auto;margin:0;padding:7px 12px;flex:none" onclick="subUse198(\'alcohol\',3,\'🥃 A shots round at the house party\',10)">Drink — $10</button></div>'
+  +'<div class="kv"><span><b>🌿 Smoke</b> — your own stash'+((S.stash&&S.stash.thc>0)?(' ('+S.stash.thc+' in the 🎒 Bag)'):' (none in the 🎒 Bag)')+'</span><button class="btn" style="width:auto;margin:0;padding:7px 12px;flex:none;background:#14532d;color:#fff" onclick="subUse198(\'drug\',2,\'🌿 A smoke at the house party\',0)">Smoke</button></div>';
+ return h+'</div>' }
+window.partyDance198=function(){ if(!S)return; startActivity('💃',2400,charX,charY,{energy:-3},function(){ if(!S)return; adj('fun',9); adj('social',8); log('💃🎉 Living-room dance — furniture pushed back, somebody’s playlist undefeated, the free night in full effect.'); save(); render() }) };
+function friendCard198(){ const V=ensure198(); const p=V.plan; if(!p)return '';
+ return '<div class="card" style="border-color:#7c3aed"><h3>🌙 Sleepover at '+esc198(p.friend)+'’s</h3><p><b>'+esc198(p.parent)+'</b> is hosting tonight — you are a guest in their house: fed, looked after, and collected by <b>'+esc198(p.arranger)+'</b> in the morning. The night is yours and '+esc198(p.friend)+'’s:</p><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="soAct198(\'movie\')">🎬 Movie marathon</button><button class="btn" style="width:auto;margin:0;padding:8px 14px" onclick="soAct198(\'games\')">🎮 Game night</button><button class="btn outline" style="width:auto;margin:0;padding:8px 14px" onclick="soAct198(\'snacks\')">🍿 Snack raid</button></div><p class="small" style="margin-top:8px">Sleep from the ⚡ Actions when you are ready — pickup happens in the morning, here, by '+esc198(p.arranger)+'.</p></div>' }
+window.soAct198=function(act){ if(!S)return; const V=ensure198(); const p=V.plan; if(!p)return; const fx={movie:[14,10],games:[16,9],snacks:[11,12]}[act]||[12,10]; closeModal();
+ startActivity(act==='movie'?'🎬':act==='games'?'🎮':'🍿',2400,charX,charY,null,function(){ if(!S)return; adj('fun',fx[0]); adj('social',fx[1]); setSay198('friend',pickArr(['best night EVER btw','we are NOT sleeping early. not happening','snack check: elite tier 🍿','if we get caught raiding the fridge it was YOUR idea'])); log('🌙 Sleepover at '+p.friend+'’s — '+(act==='movie'?'a movie marathon under a blanket fort':act==='games'?'game night, controllers warm, rivalries eternal':'a snack raid of genuine tactical brilliance')+'. '+(p.bond>=70?'You two are in sync — the bond is doing this.':'Good times, new-house edition.')); save(); render() }) };
+/* ---------- travel wiring: club card, party & free-night cards, the friend's house ---------- */
+try{ const _tt198=travelTabHtml; travelTabHtml=function(){ let h=_tt198.apply(this,arguments); try{ if(!S)return h; const V=ensure198(); let add='';
+  if(S.location==='club'){ h=h.split('You are here: 🏠 Home').join('You are here: 🌃 Club Nova'); add=clubCard198() }
+  else if(S.location==='friendhouse'){ h=h.split('You are here: 🏠 Home').join('You are here: 🏠 '+(V.plan?V.plan.friend:'a friend')+'’s house'); if(V.playerAway)add=friendCard198() }
+  else if(typeof homeLoc==='function'&&S.location===homeLoc()){ if(V.party)add=partyCard198(); else if(freeNight198())add=freeNightCard198() }
+  if(add){ h=add+h }
+ }catch(e){} return h } }catch(e){}
+/* ---------- gates on the road: the club door, the friend's-house rule, and NOBODY DRIVES WASTED ---------- */
+function openRide198(dest){ const V=ensure198(); if(V)V.rideDest=dest;
+ openSheet('<h2>🤪 The keys stay in your pocket</h2><p>You are <b>wasted</b> — the car is not an option tonight, and that part is not a negotiation. The night does not have to end, though:</p><button class="btn gold" onclick="rideGo198()">🚕 Call a ride — $12</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">✋ Stay put — it fades about a level an hour</button>',{sfx:'pop'}) }
+window.rideGo198=function(){ if(!S)return; const V=ensure198(); const dest=(V&&V.rideDest)||homeLoc(); if(S.money<12){ toast('💸 Need $12 for the ride'); return } money(-12,'🚕 Ride — somebody sober drove'); closeModal(); window._ride198=true;
+ driveSheet176({icon:'🚕',title:'On the road — the ride',sub:'A sober driver, a quiet back seat, and your car exactly where you left it. That is how a big night ends well.'},function(){ try{ goLoc(dest) }catch(e){} window._ride198=false; log('🚕 THE RIDE — you did not drive. A ride took you '+(dest===homeLoc()?'home':'on')+' for $12; the car stays parked until your head is clear.'); save(); render() }) };
+try{ const _go198=goLoc; goLoc=function(id){ try{ if(!S)return _go198.apply(this,arguments); const V=ensure198();
+  if(V&&V.playerAway&&id!=='friendhouse'){ toast('🌙 You are sleeping over — '+(V.plan?V.plan.arranger:'your grown-up')+' collects you in the morning'); return }
+  if(id==='club'&&S.age<18){ toast('🌃 Club Nova is 18+ — the door checks IDs'); return }
+  if(id==='club'&&!clubOpen198()){ toast('🌃 Club Nova opens at 5 PM — doors till 3 AM'); return }
+  if(!window._ride198&&S.age>=18&&intoxLvl198()>=6&&id!==S.location&&S.car&&S.car.owned&&!S.escort){ openRide198(id); return }
+ }catch(e){} return _go198.apply(this,arguments) } }catch(e){}
+/* kids at a sleepover are AT the friend's house — not drawn at home, not in the home room lists */
+try{ const _kh198=kidHere86; kidHere86=function(k){ try{ const V=ensure198(); if(k&&V&&V.awayKids.indexOf(k.name)>=0)return false }catch(e){} return _kh198(k) } }catch(e){}
+/* ---------- the morning after + the day-roll bookkeeping ---------- */
+try{ const _nh198=nextHour; nextHour=function(){ const r=_nh198.apply(this,arguments); try{ if(!S||S.deadFlag)return r; const V=ensure198(); if(V){ const l=intoxLvl198(); if(l>(V.peak||0))V.peak=l; Object.keys(V.npc).forEach(function(n){ const e=V.npc[n]; if(e&&e.day===S.day&&e.lvl>0)e.lvl=Math.max(0,e.lvl-1) });
+  /* the sleepover state machine ALSO rides the hour hook (the core clock always turns): if a busy second starved the 1s tick, the hour still lands the drop-off / pickup */
+  const p=V.plan; if(p&&!V.busy){ const mEl=document.getElementById('modal'); const modalUp=!!(mEl&&mEl.classList.contains('open')); const dEl=document.getElementById('dayCard'); const dayUp=!!(dEl&&dEl.classList.contains('show'));
+   if(!modalUp&&!dayUp&&!window._drv176){ if(p.state==='planned'&&p.day===S.day&&typeof homeLoc==='function'&&S.location===homeLoc()&&(p.dropNow||(S.hour||0)>=17))dropOff198();
+    else if((p.state==='away'||p.state==='hosting')&&S.day>(p.nightDay||0)&&(S.hour||0)>=7){ if(p.mode==='kid'&&V.playerAway){ if(S.location==='friendhouse')pickup198() } else pickup198() } } } } }catch(e){} return r } }catch(e){}
+try{ const _nd198=nextDay; nextDay=function(skip){ const r=_nd198.apply(this,arguments); try{ if(!S||S.deadFlag)return r; const V=ensure198(); if(!V)return r; const peak=Math.max(V.peak||0,intoxLvl198());
+  if(peak>=6){ try{ adj('energy',-22); adj('health',-3) }catch(e){} log('🌅 THE MORNING AFTER — last night went all the way, and the morning is itemised: head pounding, energy in the basement, everything a little too bright. Water. Food. Time. It passes.') }
+  else if(peak>=4){ try{ adj('energy',-9) }catch(e){} log('🌅 A slow morning — last night is still sitting in your head a little. It fades by lunch.') }
+  V.peak=0;
+  if(V.plan&&V.plan.state==='planned'&&V.plan.day<S.day){ log('🌙 The sleepover plans with '+V.plan.parent+' fell through — the night just never lined up. Another night, maybe.'); V.plan=null }
+  if(V.offer&&V.offer.day<S.day)V.offer=null;
+  save() }catch(e){} return r } }catch(e){}
+/* ---------- the scene: club crowd, party guests, the friend's house — and every status label ---------- */
+const CLUB_SPOTS198=[[196,306],[322,352],[452,296],[586,348],[716,302],[826,352]];
+const PARTY_SPOTS198=[[248,332],[618,322],[762,352]];
+function drawScene198(){ if(!S||typeof inGame==='undefined'||!inGame)return; const cv=document.getElementById('cv'); if(!cv||!cv.getContext)return; const ctx=cv.getContext('2d'); const now=performance.now(); const V=ensure198(); if(!V)return;
+ const present={}; try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n&&n.state==='in')present[n.name]=1 }) }catch(e){} try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(n){ if(n&&n.state==='in')present[n.name]=1 }) }catch(e){}
+ const frame=[];
+ const spr=function(name,x,y,sayKey){ if(!name||present[name])return; let gd={icon:'🧑',col:'#64748b',hair:'#1f2937'}; try{ gd=guestDef(name) }catch(e){} drawNPCSprite(ctx,{name:name,icon:gd.icon,col:gd.col,hair:gd.hair,x:x,y:y,state:'in',bubble:'',say:sayKey?sayFor198(sayKey):'',sayUntil:now+4200},now,false); frame.push({name:name,x:x,y:y}) };
+ if(S.location==='friendhouse'&&V.playerAway&&V.plan){ const p=V.plan;
+  ctx.save(); ctx.fillStyle='#5b21b6'; ctx.globalAlpha=.85; ctx.beginPath(); ctx.roundRect(charX-120,charY+64,96,20,10); ctx.fill(); ctx.beginPath(); ctx.roundRect(charX+30,charY+64,96,20,10); ctx.fill(); ctx.globalAlpha=1; ctx.fillStyle='#fde68a'; ctx.font='13px sans-serif'; ctx.fillText('🌙',charX-14,charY+80); ctx.restore();
+  spr(p.friend,charX+(charX>470?-88:88),charY+16,'friend'); spr(p.parent,268,336,'host') }
+ if(S.location==='club'){ ctx.save(); for(let i=0;i<14;i++){ const dx=(hash198('dot'+i)%860)+20, dy=36+(hash198('doty'+i)%120); ctx.fillStyle='hsla('+((now/9+i*47)%360)+',95%,65%,.5)'; ctx.beginPath(); ctx.arc(dx,dy,3.4,0,7); ctx.fill() } ctx.fillStyle='#e9d5ff'; ctx.font='900 17px sans-serif'; ctx.fillText('🌃 CLUB NOVA',352,30); ctx.restore();
+  crowd198().forEach(function(n,i){ const sp=CLUB_SPOTS198[i%CLUB_SPOTS198.length]; spr(n,sp[0],sp[1],'club:'+n) }) }
+ if(typeof homeLoc==='function'&&S.location===homeLoc()){
+  if(V.guest&&V.plan&&V.plan.state==='hosting')spr(V.guest.name,charX+(charX>470?-88:88),charY+16,'guest');
+  if(V.party)V.party.guests.forEach(function(n,i){ const sp=PARTY_SPOTS198[i%PARTY_SPOTS198.length]; spr(n,sp[0],sp[1],'party:'+n) }) }
+ const tag=function(name,x,y){ const st=statusOf198(name); if(st)rainTag193(ctx,x,y,st.txt,now,10.5) };
+ tag(S.name,charX,charY-100);
+ try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n&&n.state==='in')tag(n.name,n.x,n.y-100) }) }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(n){ if(n&&n.state==='in')tag(n.name,n.x,n.y-100) }) }catch(e){}
+ frame.forEach(function(f){ tag(f.name,f.x,f.y-100) }) }
+try{ const _dr198=drawRoom; drawRoom=function(){ const r=_dr198.apply(null,arguments); try{ drawScene198() }catch(e){} return r } }catch(e){}
+/* ---------- the Social card: sleepover status with location truth, offers, arranging ---------- */
+function nightCard198(){ const V=ensure198(); if(!V)return ''; const md=mode198(); let h='<div class="card" id="nightCard198" style="border-color:#7c3aed"><h3>🌙 Sleepovers & Nights Out</h3>';
+ if(V.offer){ const o=V.offer; h+='<p>📱 <b>'+esc198(o.parent)+'</b> is proposing a sleepover — '+(o.dir==='out'?('<b>'+esc198(o.child)+'</b> at <b>'+esc198(o.friend)+'’s house</b> tonight'):('<b>'+esc198(o.friend)+'</b> at <b>yours</b> tonight'))+'.</p><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="offerAccept198()">🌙 Accept</button><button class="btn outline" style="width:auto;margin:0;padding:8px 14px" onclick="offerDecline198()">Decline</button></div>' }
+ const p=V.plan;
+ if(p&&p.state==='planned')h+='<p>🌙 <b>Tonight:</b> '+esc198(p.child)+(p.dir==='out'?(' sleeps at <b>'+esc198(p.friend)+'’s house</b> — '+esc198(p.parent)+' hosts.'):(' hosts <b>'+esc198(p.friend)+'</b> at yours.'))+' Drop-off at 6 PM from home — a real drive.</p><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="dropNow198()">🚗 Drop off now</button>';
+ else if(p&&p.state==='away'&&p.mode==='parent'){ const kid=(S.kids||[]).find(function(k){ return k.name===p.child }); h+='<p>🌙 <b>'+esc198(p.child)+'</b> is at <b>'+esc198(p.friend)+'’s house</b> — 📍 sleeping over, with '+esc198(p.parent)+' hosting. 😊 Happy: <b>'+Math.round(kid?(kid.happy||0):0)+'%</b> — fed, playing, looked after, on the same rules as home. Pickup in the morning (by ride if the night got big — it always completes).</p>' }
+ else if(p&&p.state==='away'&&p.mode==='kid')h+='<p>🌙 <b>You</b> are at <b>'+esc198(p.friend)+'’s house</b> — 📍 sleeping over. '+esc198(p.arranger)+' collects you in the morning.</p>';
+ else if(p&&p.state==='hosting'&&V.guest)h+='<p>🌙 <b>'+esc198(V.guest.name)+'</b> is sleeping over at <b>yours</b> — 📍 your house, your hosting: 😊 Happy <b>'+Math.round(V.guest.happy||0)+'%</b>. '+esc198(V.guest.parent)+' collects them in the morning.</p>';
+ if(!p&&!V.offer&&md)h+='<p class="small" style="margin-top:0">Parents arrange sleepovers parent-to-parent — talk first, then ask. Kids & toddlers, both directions: theirs or yours.</p><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="arrange198()">🌙 Arrange a sleepover</button>';
+ if(V.awayKids.length&&S.age>=18&&(S.hour||0)>=17)h+='<p style="margin-top:8px">🌃 The kids are out — <b>the night is yours</b>. Club Nova and the Velvet Fox are open late.</p><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" style="width:auto;margin:0;padding:8px 14px" onclick="goLoc(\'club\')">🌃 Club Nova</button><button class="btn outline" style="width:auto;margin:0;padding:8px 14px" onclick="goLoc(\'bar\')">🍸 Velvet Fox</button><button class="btn outline" style="width:auto;margin:0;padding:8px 14px" onclick="partyStart198()">🎉 Party at home</button></div>';
+ return h+'</div>' }
+function injectNight198(){ try{ if(!S||typeof inGame==='undefined'||!inGame)return; if(typeof curTab==='undefined'||curTab!=='life')return; const panel=document.getElementById('panel'); if(!panel)return;
+ const html=nightCard198(); const ex=document.getElementById('nightCard198');
+ if(ex){ if(ex._h198!==html){ const t=document.createElement('div'); t.innerHTML=html; if(t.firstChild){ t.firstChild._h198=html; ex.replaceWith(t.firstChild) } } }
+ else { const tmp=document.createElement('div'); tmp.innerHTML=html; const card=tmp.firstChild; if(card){ card._h198=html; const hub=panel.querySelector('.hub136'); if(hub&&hub.parentNode)hub.parentNode.insertBefore(card,hub.nextSibling); else panel.appendChild(card) } }
+ /* location truth inside the shipped roster: an arranged night beats the generic guess */
+ const V=ensure198(); const ros=document.getElementById('relRoster196'); if(ros&&V){ ros.querySelectorAll('.kv').forEach(function(row){ const nb=row.querySelector('span b'); const bs=row.querySelectorAll(':scope > b'); if(!nb||!bs.length)return; const nm=nb.textContent; const locB=bs[bs.length-1];
+  if(V.awayKids.indexOf(nm)>=0&&V.plan)locB.textContent='📍 🌙 at '+V.plan.friend+'’s house (sleepover)';
+  else if(V.guest&&nm===V.guest.name)locB.textContent='📍 🏠 your house (sleepover)';
+  else if(V.playerAway&&V.plan&&nm===V.plan.parent)locB.textContent='📍 🏠 '+V.plan.friend+'’s house — hosting you' }) }
+ }catch(e){} }
+try{ const _rt198=renderTabs; renderTabs=function(active){ const r=_rt198.apply(this,arguments); injectNight198(); return r } }catch(e){}
+/* ---------- the state machine: drop-offs at 6, pickups in the morning, offers on the doorstep ---------- */
+setInterval(function(){ try{ if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; const V=ensure198(); if(!V)return;
+ const modalOpen=!!(document.getElementById('modal')&&document.getElementById('modal').classList.contains('open'));
+ if(V.busy&&(Date.now()-(V.busyAt||0)>15000))V.busy=false; const busy=modalOpen||(typeof activity!=='undefined'&&!!activity)||!!window._drv176||V.busy;
+ const p=V.plan;
+ if(p&&p.state==='planned'&&p.day===S.day&&!busy&&typeof homeLoc==='function'&&S.location===homeLoc()&&(p.dropNow||(S.hour||0)>=17))dropOff198();
+ if(p&&(p.state==='away'||p.state==='hosting')&&S.day>(p.nightDay||0)&&!busy){ if(p.mode==='kid'&&V.playerAway){ if(S.location==='friendhouse')pickup198() } else pickup198() }
+ if(V.offer&&!V.offer.shown&&!modalOpen){ V.offer.shown=true; offerSheet198() }
+ if(V.party&&typeof homeLoc==='function'&&(S.day!==V.party.day||S.location!==homeLoc()))partyEnd198(false);
+ }catch(e){} },1000);
+/* ---------- ambient life: host care, club & party sipping, loose bubbles, the offer roll ---------- */
+setInterval(function(){ try{ if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; const V=ensure198(); if(!V)return; const p=V.plan;
+ if(p&&p.state==='away'&&p.mode==='parent'){ const kid=(S.kids||[]).find(function(k){ return k.name===p.child }); if(kid){ const target=72+p.bond*0.28; kid.happy=Math.max(0,Math.min(97,(kid.happy||60)+((target-(kid.happy||60))*0.25)+(Math.random()*4-1))) }
+  try{ if(window.__v149&&window.__v149.ensure149){ const V9=window.__v149.ensure149(); if(V9&&V9.neglect&&V9.neglect[p.child]){ V9.neglect[p.child].m=0; V9.neglect[p.child].stage=0 } } }catch(e){} }
+ if(V.playerAway){ try{ if(window.__v149&&window.__v149.ensure149){ const V9=window.__v149.ensure149(); if(V9&&V9.self)V9.self.m=0 } }catch(e){}
+  if(Math.random()<0.5)setSay198('friend',pickArr(p&&p.bond>=70?['best night EVER btw','we are NOT sleeping early','your house rules are ELITE btw']:['we are NOT sleeping early. not happening','snack check: elite tier 🍿','shhh — movie’s back on']));
+  if(Math.random()<0.3)setSay198('host',pickArr(['pizza’s on its way, you two','lights out soon-ish. soon-ish.','having fun in there? …good'])) }
+ if(V.guest){ V.guest.happy=Math.max(0,Math.min(97,(V.guest.happy||80)+((88-(V.guest.happy||80))*0.2))); if(Math.random()<0.4)setSay198('guest',pickArr(['your house is the BEST','we are NOT sleeping early','snack check: elite tier 🍿'])) }
+ const sip=function(name,cap){ const e=V.npc[name]; if(!e||e.day!==S.day)return; let a=null; try{ a=charAge79(name) }catch(e){} if(a!==null&&a<18)return; e.lvl=Math.min(cap||6,(e.lvl||0)+1); if(Math.random()<0.22)e.kind='drug' };
+ if(S.location==='club'){ const c=crowd198(); if(c.length&&Math.random()<0.5)sip(c[Math.floor(Math.random()*c.length)]); if(Math.random()<0.4){ const n=c[Math.floor(Math.random()*c.length)]; if(n)setSay198('club:'+n,pickArr(['this song!! 💃','one more round?','we never get out like this anymore 😅','okay ONE more song, then I am a pumpkin'])) } }
+ if(V.party&&typeof homeLoc==='function'&&S.location===homeLoc()){ if(Math.random()<0.45)sip(V.party.guests[Math.floor(Math.random()*V.party.guests.length)]); if(Math.random()<0.4)setSay198('party:'+pickArr(V.party.guests),pickArr(['to the free night! 🥂','we never do this enough','the kids have NO idea how fun we are','music UP, honestly'])) }
+ const l=intoxLvl198(); if(l>=5&&typeof playerSay!=='undefined'&&!playerSay&&Math.random()<0.16){ playerSay={text:pickArr(['…wait. what was i saying','hehe. hehehe. okay. okay i’m fine','i love EVERYONE in this room btw','*hic* …nailed it']),until:performance.now()+3200} }
+ if(!V.plan&&!V.offer&&V.offerDay!==S.day&&(S.hour||0)>=15&&(S.hour||0)<=20&&mode198()&&Math.random()<0.045)makeOffer198();
+ }catch(e){} },12000);
+if(typeof TIPS!=='undefined'&&!TIPS['night198'])TIPS['night198']={t:'🌙 Sleepovers & the free night',b:'Sleepovers are arranged parent to parent: talk to the other parent (❤️ Social → 🌙 Arrange), then ask — their house or yours, for kids and toddlers. Drop-off and pickup are real drives; the host family looks after the child all night. With the kids away, parents get a free night: 🌃 Club Nova, the 🍸 Velvet Fox, or a party at home. Adults (18+) can drink and smoke there — watch the status over their names (🍺 Buzzed → 🥴 Tipsy → 🤪 Wasted · 🌿 Hazy). Nobody drives wasted: the game offers a ride instead.'};
+window.__v198={ensure:ensure198,fams:fams198,statusOf:statusOf198,subUse:window.subUse198,plan:function(){ const V=ensure198(); return V?V.plan:null },away:function(){ const V=ensure198(); return V?V.awayKids:[] },crowd:crowd198,freeNight:freeNight198,dropOff:dropOff198,pickup:pickup198,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v198 NIGHT OUT: 🌙 sleepovers arranged parent-to-parent (talk first — the roster rule), physical both directions for kids & toddlers: real drop-off/pickup drives, the child AT the host house overnight, host care on home rules, CPS never counts an arranged night, offers arrive by text • 🌃 Club Nova + the free night (club crowd, dancing, a party at home with other parents) • 🍺🌿 substance life for adults 18+ ONLY with dynamic rainbow status labels (🍺 Buzzed → 🥴 Tipsy → 🤪 Wasted · 🌿 Hazy → Floating → Zooted) that fade by the hour, a real morning-after, driving blocked at Wasted with a ride offered, and pickups that always complete — by ride if the night got big');
+}catch(e){}
+})();
+</script>
+</body>
+</html>
