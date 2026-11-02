@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=185;
+const GAME_VERSION=191;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -1178,7 +1178,7 @@ function renderTabs(active){
  const p=document.getElementById('panel'); if(!p)return;
  const curFolder=folders.find(f=>f[0]===active);
  if(active==='home') p.innerHTML=`<div class="grid">${(S.age>=1&&S.age<=4)?todCardHtml72():''}${S.gender?'':`<div class="card" style="border-color:var(--pink)"><h3>♂️♀️ Boy or Girl?</h3><p>One-time pick — sets ${S.name}'s look and pronouns (he/him or she/her) everywhere.</p><button class="btn orange" onclick="setGender('boy')">♂️ Boy — he/him</button><button class="btn" style="background:#ec4899;color:#fff" onclick="setGender('girl')">♀️ Girl — she/her</button></div>`}${marriageFamilyHtml()}<div class="card"><h3>📖 My Story</h3><p>Origin: <b>${ORIGINS.find(o=>o.id===S.origin).name}</b> • Environment: ${S.location}${startHomeLine80()}<br>📍 Home town: <b>${placeOf().city}, ${placeOf().state} — ${placeOf().country}</b><br>Family bond: ${S.bond}%</p><div class="progress" style="margin-top:10px"><i style="width:${S.xp}%"></i></div><p class="small" style="margin-top:6px">Level ${S.level} • ${S.xp}/100 XP • Lifetime ${S.totalXp} XP</p></div><div class="card"><h3>🧠 Skills</h3>${Object.entries(S.skills).map(([k,v])=>`<div class="kv"><span style="text-transform:capitalize">${k}</span><b>${v} pts • Lv ${Math.floor(v/50)+1}</b></div>`).join('')}</div></div>`;
- if(active==='school'){ const sk31=schoolStageKey(S.age); if(!sk31){ p.innerHTML=`<div class="grid"><div class="card"><h3>🎓 School</h3><p>Stages: 🧸 Preschool (3–4), 📚 Elementary (5–10), 🎒 Middle School (11–13), 🏫 High School (14–17). Enroll at each stage's school.</p></div></div>` } else if(!stageEnrolled()){ p.innerHTML=enrollCardHtml(sk31) } else if(sk31==='pre'){ p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>🧸 ${schoolName('pre')}</h3><p>Preschool in ${placeOf().city} • <b>Enrolled ✓</b><br>🕐 <b>School day: 8:00 AM–3:00 PM</b> — preschool runs on the schedule, like a job: in for the whole block, the day runs on the clock (circle time, recess, lunch, afternoon play), and the final bell at 3:00 PM sends you straight home.<br>📅 <b>Term ends Day ${(S.term&&S.term.endDay)||termEndDay()}</b> — then a break, the little report settles, and a new term begins.</p></div></div>` } else { p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>${SCHOOL_STAGES[sk31].icon} ${schoolName(sk31)}</h3><p>${SCHOOL_STAGES[sk31].label} in ${placeOf().city} • <b>Enrolled ✓</b> — class, recess, cafeteria lunch, library & gym all happen AT school; using one takes you there, solo (parents stay home).<br>🕐 <b>School day: 8:00 AM–3:00 PM</b> — it runs on the clock, and the final bell at 3:00 PM sends you straight home.<br>📅 <b>Term ends Day ${(S.term&&S.term.endDay)||termEndDay()}</b> — then a break, the report card settles your grades (${S.grades}%), and you move up.${S.term&&S.term.report?'<br>'+S.term.report:''}</p></div>${[['Attend Class','Learn, raise grades. Best when fed & rested.',18,'study','school-grades'],['Recess','Yard time with classmates — Fun & Social, and occasionally a bully.',8,'social','recess'],['Eat Cafeteria Lunch','Free lunch program if money is low.',10,null,'caf-lunch'],['Library Study','Quiet XP boost.',14,'study','lib'],['Gym / Sports','Health + Fun, energy cost.',12,'fitness','gym']].map(([t,d,xp,sk])=>`<div class="card"><h3>${t}</h3><p>${d}</p><button class="btn" onclick="doGeneric('${t}',${xp},'${sk||''}')">Do It • +${xp} XP</button></div>`).join('')}</div>` } }
+ if(active==='school'){ const sk31=schoolStageKey(S.age); if(!sk31){ p.innerHTML=`<div class="grid"><div class="card"><h3>🎓 School</h3><p>Stages: 🧸 Preschool (3–4), 📚 Elementary (5–10), 🎒 Middle School (11–13), 🏫 High School (14–17). Enroll at each stage's school.</p></div></div>` } else if(!stageEnrolled()){ p.innerHTML=enrollCardHtml(sk31) } else if(sk31==='pre'){ p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>🧸 ${schoolName('pre')}</h3><p>Preschool in ${placeOf().city} • <b>Enrolled ✓</b><br>🕐 <b>School day: 8:00 AM–3:00 PM</b> — preschool runs on the schedule, like a job: in for the whole block, the day runs on the clock (circle time, recess, lunch, afternoon play), and the final bell at 3:00 PM sends you straight home.<br>📅 <b>Term ends Day ${(S.term&&S.term.endDay)||termEndDay()}</b> — then a break, the little report settles, and a new term begins.</p></div></div>` } else { p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>${SCHOOL_STAGES[sk31].icon} ${schoolName(sk31)}</h3><p>${SCHOOL_STAGES[sk31].label} in ${placeOf().city} • <b>Enrolled ✓</b> — every school day opens with one question, exactly like a work shift: 🎒 <b>Go to school</b> and live the day in person, or ⏩ <b>Fast-forward</b> straight through it. Either way the day counts in full — attendance, grades and progress.<br>🕐 <b>School day: 8:00 AM–3:00 PM</b> — it runs on the clock, and the final bell at 3:00 PM sends you straight home.<br>📅 <b>Term ends Day ${(S.term&&S.term.endDay)||termEndDay()}</b> — then a break, the report card settles your grades (${S.grades}%), and you move up.${S.term&&S.term.report?'<br>'+S.term.report:''}</p></div></div>` } }
  if(active==='trouble') p.innerHTML=(S.age<5)?troubleLockedHtml55():`<div style="background:#111;color:#fff;padding:12px;border-radius:12px;margin-bottom:10px"><b>🚔 Wanted ${S.wanted}★</b> · Record ${S.record} · Addiction ${S.addiction}% · 😈 Street Lv ${streetLv()} (${(S.skills&&S.skills.street)||0} pts, ${S.streetClean||0} clean runs): uncaught crime ↑, caught ↓ · 💊 Dealing Lv ${dealingLv()} (${(S.skills&&S.skills.dealing)||0} pts): clean sales ↑ — better prices, bigger moves, cooler heat · 💪 Strength Lv ${skillLv('strength')} · 🥊 Fighting Lv ${skillLv('fighting')} (fights ↑ both) · Cops scale with wanted ★ · Weapon in Bag = edge · Cops: street heat · FBI: 4★+ or bank jobs · Caught: fines, custody, record — blocks police/FBI careers · 🌡️ Heat: no new crimes → −1★ ~every 6 hrs · 🛒 Market record wipe: pricey, instant, risky.</div><div class="catHead58">😈 Crimes — the scores</div><div class="grid">${[['Shoplift','+$18, low heat — sometimes an item too'],['Pickpocket','+$35, medium heat — sometimes an item too'],['Pick a Lock','Break in & come out with ITEMS for your Bag — risk scales with the place'],['Dumpster Dive','Mostly junk… sometimes sellable goods, valuables or straight cash'],['Rob a House','+$120 & loot items, high heat'],['Rob a Bank','+$600, FBI heat']].map(([t,d])=>`<div class="card"><h3>😈 ${t}</h3><p>${d}</p><button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff" onclick="doTrouble('${t}')">Do It</button></div>`).join('')}</div><div class="catHead58">🌆 Street Life — the gun & drug world, under one name</div><div class="grid"><div class="card" style="border-color:#7f1d1d"><h3>💊 The Drug Market</h3><p>ONE market, both sides of the counter, never split up: <b>buy</b> stock in, <b>sell</b> it on the street, or <b>use</b> your own — 🌿 THC · 🌀 LSD · 🍄 Shrooms with stock, street prices & heat per product, and your ⭐ regulars listed inside.</p><button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff" onclick="dealMenu()">💊 Open the market — buy & sell together</button></div><div class="card"><h3>🔫 Guns & the people out there</h3><p>The 🔫 Gun & Sporting Counter and 🪪 license are below, beside the 🌆 street sellers & 👑 kingpins.</p></div></div>${streetCard53()}${gunShopCardHtml()}${typeof crewCard63==='function'?crewCard63():''}${typeof guardCard63==='function'?guardCard63():''}<div class="card" style="border-color:#14532d"><h3>🛒 The Market — orders & regulars</h3><p>A line for <b>regulars and buyers only</b>. Orders land there — close them on the phone for a bank transfer, or meet in person.</p><button class="btn" data-bad="1" style="background:#14532d;color:#fff" onclick="phoneBurner63()">🛒 Open the Market</button></div>`;
  if(active==='work') p.innerHTML=`<div class="grid">${resumeCard54()}${S.age<18?kidCardHtml():''}${S.age<18?`<div class="card"><h3>🧒 Kid Jobs</h3><p>Everyone starts at $0. Family ${S.origin==='orphan'?'stipend':'allowance'} lands weekly — these pay today, in cash, straight into your 🏦 Bank ledger. Bigger kid jobs unlock as you grow.</p>${KID_JOBS.map(j=>S.age>=j[2]?`<button class="btn" onclick="doKidJob('${j[0]}',${j[1]})">${j[0]} • +$${j[1]}</button>`:`<button class="btn outline" disabled style="opacity:.5">${j[0]} • unlocks at age ${j[2]}</button>`).join('')}${S.age<4?'<p class="small" style="margin-top:6px">Too little for jobs just yet — family money carries you for now.</p>':''}</div>`:''}${S.age>=14&&S.age<18?` <div class="card"><h3>Teen Jobs (14+)</h3><p>Fast food $12/hr, Retail $13/hr, Lawn work $15/hr</p><button class="btn" onclick="doWork('Teen Job',48)">Work Shift • Earn ~$48</button></div>`:''}<div class="card"><h3>Chores — Ages 5+</h3><p>${S.age<5?`Babies and toddlers can't do chores yet — family money carries you for now, and housework unlocks on your 5th birthday.`:`Earn cash at home, build responsibility. Helping out also makes 💵 asking your family for money go better.`}</p>${S.age<5?`<button class="btn outline" disabled style="opacity:.5">🔒 Do Chores • unlocks at age 5</button>`:`<button class="btn" onclick="doWork('Chores',12)">Do Chores • +$12</button>`}</div>${jobBoardHtml()}${jobAppsCardHtml43()}${certCardHtml53()}${taxCardHtml59()}${S.age>=18?`<div class="catHead58" style="grid-column:1/-1;margin:0 2px">🧑 Adults — college & one-off shifts</div>`+collegeCardHtml():''}</div>`;
  if(active==='life') p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>📊 Social &amp; Level</h3><p>Social breakdown, drain/gain %, followers, Level &amp; lifetime XP, skills, relationships, roommate bonds.</p><button class="btn gold" onclick="openSocialSheet()">📊 Open Full Social &amp; Level</button></div><div class="card"><h3>💖 Dating & Relationships</h3><p>${S.partner?`💍 Partner: <b>${S.partner}</b> ❤️ ${S.romance[S.partner]?S.romance[S.partner].meter:0}/100 — dates keep the meter high; days of silence let it slip, and partners can end it.`:S.age>=13?`Meet people face-to-face, get their number, then flirt from the chat: 💘 Crush → 💕 Dating → 💍 Partner. Dates happen in the scene, with bubbles — and cost real money.`:`Dating unlocks at 13 — for now, family & friends are the whole world.`}</p>${DATEABLE.filter(nm=>hasContact(nm)&&S.romance&&S.romance[nm]&&S.romance[nm].stage>=1).map(nm=>`<button class="btn outline" onclick="openConvo('${nm}')">${stageName(S.romance[nm].stage)} ${nm} — ❤️ ${S.romance[nm].meter}/100</button>`).join('')||'<p class="small" style="margin-top:8px">No sparks yet — your relationships will show up here.</p>'}</div>${townsfolkCardHtml()}<div class="card"><h3>🧑 Character</h3>${[['Gender',S.gender?(S.gender==='girl'?'♀️ Girl • she/her':'♂️ Boy • he/him'):'Not picked yet — see Life tab'],['Level',S.level],['Age / Stage',S.age+' • '+stage(S.age)],['School / Path',schoolStatusLine()],['🧭 Life Path',pathDef43(effectivePath43()).icon+' '+pathDef43(effectivePath43()).label],['Followers',S.followers],['Addiction',S.addiction+'%'],['Record',S.record]].map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}<div class="kv"><span>Style — skin · hair · clothes</span><span>${[lookOf(S).skin,lookOf(S).hair,lookOf(S).shirt].map(c=>`<i style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${c};border:1.5px solid #00000030;vertical-align:-3px;margin-left:5px"></i>`).join('')}</span></div><div class="kv"><span>Hat</span><b>${(HATS.find(h=>h.id===lookOf(S).hat)||HATS[0]).label}</b></div><div class="kv"><span>Glasses</span><b>${(GLASSES.find(g=>g.id===lookOf(S).glasses)||GLASSES[0]).label}</b></div><div class="kv"><span>Shoes</span><b>${(SHOES.find(s=>s.id===lookOf(S).shoes)||SHOES[0]).label}</b></div><div class="kv"><span>Face style</span><b>${(FACE_STYLES.find(f=>f.id===lookOf(S).face)||FACE_STYLES[0]).label}</b></div><div class="kv"><span>Hairstyle</span><b>${(HAIRSTYLES.find(h=>h.id===lookOf(S).hairStyle)||HAIRSTYLES[0]).label}</b></div><div class="kv"><span>🧤 Gloves</span><b>${(GLOVES.find(g=>g.id===lookOf(S).gloves)||GLOVES[0]).label}</b></div><div class="kv"><span>⌚ Watch</span><b>${(WATCHES.find(w=>w.id===lookOf(S).watch)||WATCHES[0]).label}</b></div><div class="kv"><span>💎 Jewelry</span><b>${(JEWELRY.find(j=>j.id===lookOf(S).jewelry)||JEWELRY[0]).label}</b></div><button class="btn gold" style="margin-top:10px" onclick="openStyleSheet()">🎨 Change style — face, hair, gloves, watch, jewelry & more</button></div></div>`;
@@ -1978,7 +1978,7 @@ function updateTownsfolk(now){ if(!S)return; const loc=S.location; if(['jail','b
  townsfolk.forEach(p=>{ const rec=S.town.people[p.name];
   if(p.state==='out'){ if(now>p.next){ p.state='in'; p.x=884; p.y=246+Math.random()*70; const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; p.tx=s[0]; p.ty=s[1]; p.until=now+16000+Math.random()*18000; p.bubble='👋'; if(rec&&!p.metDone)setTimeout(function(){ if(S&&townsfolk&&townsfolk.indexOf(p)>=0&&p.state!=='out')meetTownsperson(p) },2600) } }
   else if(p.state==='in'){ const dx=p.tx-p.x, dy=p.ty-p.y; if(Math.abs(dx)>3||Math.abs(dy)>3){ p.x+=dx*.05; p.y+=dy*.05 } else { if(Math.random()<.004){ const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; p.tx=s[0]; p.ty=s[1] } p.bubble=['💬','😊','📱','👀','✨'][Math.floor(now/2800)%5];
-    if(Math.random()<.0016&&rec){ const td=TOWN_TRAITS[rec.trait]; if(td){ p.say=pickArr(td.lines); p.sayUntil=now+3200; if(Math.random()<.4)setTimeout(function(){ if(!S)return; playerSay={text:pickArr(CONVO_REPLIES),until:performance.now()+2400}; adj('social',1); if(typeof convoDone93==='function')convoDone93(p.name) },3000) } } }
+    if(Math.random()<.0016&&rec&&!(typeof window._talkBusy191==='function'&&window._talkBusy191())){ const td=TOWN_TRAITS[rec.trait]; if(td){ p.say=pickArr(td.lines); p.sayUntil=now+3200; if(Math.random()<.4)setTimeout(function(){ if(!S)return; playerSay={text:pickArr(CONVO_REPLIES),until:performance.now()+2400}; adj('social',1); if(typeof convoDone93==='function')convoDone93(p.name) },3000) } } }
    if(now>p.until){ p.state='leaving'; p.tx=884; p.ty=p.y; p.bubble='👋' } }
   else if(p.state==='leaving'){ const dx=p.tx-p.x; p.x+=dx*.06; if(Math.abs(dx)<14){ p.state='out'; p.next=now+10000+Math.random()*14000; p.bubble='' } } }) }
 function townFirstText(p){ const rec=S.town.people[p.name]; const t=rec?rec.trait:''; const map={chill:'no-stress texting zone over here 😌 what is good, {n}',funny:'first text!! I lead with jokes, it is a whole brand 😂',shy:'hi 🙈 took me ten minutes to send this lol',bold:'saved your number in ALL CAPS. that is respect 😤',kind:'hi!! just wanted you to have a friendly first text 💛',nerdy:'first text fun fact: this friendship is now statistically inevitable 🤓',sporty:'first text 🏃 if I ever say "quick run" I am lying about the quick',artsy:'hi 🎨 sending you the sketch I did of the street later',gossipy:'first text 👀 I already know two things about you. kidding. …unless?',dreamy:'hi 🌙 I nearly texted you a dream I had instead of hello'}; return map[t]||'first text energy ✨ hi {n}!' }
@@ -7393,14 +7393,7 @@ function ttCard113(college){ if(!S)return ''; const nm=(typeof nowMin57==='funct
  if(college)h+='<p class="small" style="margin-top:8px">College lectures meet inside this skeleton at <b>11:00 AM &amp; 6:00 PM</b> on weekdays — attend in person (Experience) or Finish the class from its prompt.</p>';
  return h+'</div>' }
 function schoolDayOn113(){ if(!S)return false; const sk=schoolStageKey(S.age); return !!sk&&stageEnrolled()&&S.weather!=='snow'&&seasonOf().label!=='Summer'&&!onTermBreak()&&!(S.jail&&S.jail.in) }
-/* lunch moves to the printed 12:00 PM (the v91 beat waits for 12:30) + a real 1:00 PM afternoon class beat */
-setInterval(function(){ try{ if(!S||!inGame||rtPaused)return; const v=ensure91(); const w=ensure113(); if(!v||!w)return; if(ff113)return;
- if(S.location!=='school'||S._schoolDay!==S.day||!inSchool())return;
- if(document.getElementById('modal').classList.contains('open')||activity)return;
- const nm=nowMin57();
- if(nm>=720&&nm<780&&w.lunchDay!==S.day&&v.lunchDay91!==S.day){ w.lunchDay=S.day; v.lunchDay91=S.day; v.lastBeatNm91=nm; v.lunchDue91=true; save(); lunchBeat() }
- if(nm>=780&&w.aftDay!==S.day){ w.aftDay=S.day; save(); log('📚 AFTERNOON CLASS — the 1:00 PM block: lessons, activities and assignment work until the bell.'); doGeneric('Attend Class',14,'study') }
- }catch(e){} },4000);
+/* v188: the v113 timetable clock-beats (the printed 12:00 PM lunch block + 1:00 PM afternoon-class block) are REMOVED with the timetable — the attended day keeps its shipped class/recess/lunch beats, and the daily Go / Fast-forward prompt is the whole school-day interaction now. */
 /* the fast-forward stepper: small steps, SAME rules, interrupts for decisions */
 let ff113=null;
 function ffStop113(){ if(ff113){ clearInterval(ff113.timer); ff113=null } }
@@ -7471,11 +7464,12 @@ openCollegePrompt57=function(timeLbl){ if(!S||!S.college||!S.college.enrolled)re
 const _rt113=renderTabs;
 renderTabs=function(active){ const r=_rt113(active); try{ if(!S||!inGame)return r; ensure113(); const p=document.getElementById('panel'); if(!p)return r; gateHairDom113(p); const grid=p.querySelector('.grid'); if(!grid)return r;
  if(active==='school'){ const d=document.createElement('div'); d.innerHTML='';
-  if(S.college&&S.college.enrolled){ const c=document.createElement('div'); c.innerHTML=ttCard113(true); if(c.firstChild)grid.insertBefore(c.firstChild,grid.firstChild) }
-  if(schoolStageKey(S.age)&&stageEnrolled()){ const c=document.createElement('div'); c.innerHTML=ttCard113(false); if(c.firstChild)grid.insertBefore(c.firstChild,grid.firstChild);
+  if(schoolStageKey(S.age)&&stageEnrolled()){
    if(schoolDayOn113()&&nowMin57()<900){ const b=document.createElement('div'); b.className='card'; b.style.borderColor='var(--accent2)';
-    if(S._schoolDay===S.day&&S.location==='school')b.innerHTML='<h3>⏩ Still in the school day?</h3><p>You are living it in person (Experience). You can hand the rest of the day to the simulation instead — same rules, bell at 3:00, summary at the end.</p><button class="btn gold" onclick="finishSchool113()">⏩ FINISH SCHOOL DAY — from here to the bell</button>';
-    else if(S._schoolDay!==S.day)b.innerHTML='<h3>🎓 Today\'s school day</h3><p>8:00 AM – 3:00 PM, your choice: live it, or finish it.</p><button class="btn orange" onclick="attendGo()">🎒 EXPERIENCE SCHOOL — go in person</button><button class="btn gold" style="margin-top:8px" onclick="finishSchool113()">⏩ FINISH SCHOOL DAY — summary at the bell</button>';
+    if(S._schoolDay===S.day&&S.location==='school')b.innerHTML='<h3>⏩ Still in the school day?</h3><p>You went in person today. You can hand the rest of the day over instead — it resolves in full, and the clock lands past the 3:00 PM bell.</p><button class="btn gold" onclick="schoolFF188()">⏩ Fast-forward the rest of the school day</button>';
+    else if(S.v188&&S.v188.ffDay===S.day)b.innerHTML='<h3>🎓 Today\'s school day — done ⏩</h3><p>Fast-forwarded this morning: attendance counted, grades progressed, and the clock landed past the 3:00 PM bell. The next school day asks again.</p>';
+    else if(!(S.attend&&S.attend.attendDay===S.day))b.innerHTML='<h3>🎓 Today\'s school day</h3><p>🕐 8:00 AM – 3:00 PM — the same choice as a work shift: go in, or fast-forward straight through it. Either way the day counts in full.</p><button class="btn orange" onclick="attendGo()">🎒 Go to school — attend the day</button><button class="btn gold" style="margin-top:8px" onclick="schoolFF188()">⏩ Fast-forward through the school day</button>';
+    else b.innerHTML='<h3>🎓 Today\'s school day</h3><p>Today is settled. The next school day asks again in the morning — go in, or fast-forward.</p>';
     if(b.innerHTML)grid.insertBefore(b,grid.firstChild) } }
  }
  if(active==='work'&&S.jobInfo){ ensure57(); const sch=schedOf57(S.jobInfo);
@@ -7483,7 +7477,7 @@ renderTabs=function(active){ const r=_rt113(active); try{ if(!S||!inGame)return 
  if(active==='travel'&&S.location==='mall'){ const d=document.createElement('div'); d.className='card'; d.style.borderColor='var(--accent2)'; const n=cartCount113(); d.innerHTML='<h3>🛍️ Maple Mall</h3><p>The mall sells things now: '+(S.gender==='girl'?'👗 girls\' clothing':'👔 guys\' clothing')+', 🍔 food-court food, 🎮 video games, 🎬 movies and 📱 cell phones — all into one 🛒 cart, checked out once, everything landing in your 🎒 Bag.</p>'+(n?'<p><b>🛒 '+n+' item'+(n===1?'':'s')+' in your cart — $'+cartTotal113()+'</b></p>':'')+'<button class="btn gold" onclick="mallSheet113()">🛍️ Shop the mall'+(n?' — cart $'+cartTotal113():'')+'</button>'; grid.appendChild(d) }
  }catch(e){} return r };
 if(typeof TIPS!=='undefined'){ if(!TIPS['mall113'])TIPS['mall113']={t:'🛍️ The mall sells things now',b:'Maple Mall has real shops and a 🛒 cart: clothing from your gender\'s department, food-court food, video games, movies and cell phones (same models, same plan picker and setup as the phone store and the pawn shop). Add to cart, check out once — cash first, then your bank by debit card — and it all lands in your 🎒 Bag.'};
- if(!TIPS['timetable113'])TIPS['timetable113']={t:'🗓️ The school timetable',b:'Every school day — and college, same skeleton — runs five printed blocks: 8:00 AM morning class, 10:30 AM recess, 12:00 PM lunch, 1:00 PM afternoon class, 3:00 PM dismissal (the bell sends you home). Each morning you choose: EXPERIENCE it in person at natural 1×, or FINISH it — the same rules simulated to the bell, with a summary, stopping cold if a real decision shows up. Work shifts offer the same pair. There is no skip-life button: outside school and work, time just flows.'};
+ if(!TIPS['timetable113'])TIPS['timetable113']={t:'🎓 School runs like work',b:'Every school day at 8:00 AM you get the same question a work shift asks: 🎒 Go to school and live the day in person, or ⏩ Fast-forward straight through it — the clock lands past the 3:00 PM bell, attendance counts and your grades progress either way. Skip it and today counts as a skipped day. There are no per-block school controls any more: the morning choice is the whole interaction, and report cards still settle at the end of every term.'};
  if(!TIPS['menudown113'])TIPS['menudown113']={t:'🚪🎬 The menu gets out of the way',b:'Two courtesies: travel anywhere and the folder menu goes DOWN and stays down — you land looking at the place, and reopen menus from the dock when you want them. And when you do an action, the menu tucks away while it plays in the scene, then pulls back up to the exact spot you left — same folder, same scroll, same button in view.'} }
 /* offer-sheet copy: the v107 lines still describe the old cadence — patch the two stale sentences wherever they surface */
 const _po113=presentOffer107;
@@ -11402,45 +11396,25 @@ if(typeof openWhatsNew==='function'){ const _own137=openWhatsNew; openWhatsNew=f
 console.log('AquaLife v'+GAME_VERSION+' — round 9 layer loaded');
 </script>
 <script>
-/* ================= v138: ROUND 10 (11 items) — 🔒 ASSISTANT OUT OF ME IN JAIL + 😴 JAIL SLEEP UNDER ME • 📈 FOLLOWERS GROW ON THEIR OWN (events • viral posts • live streaming) • ⏰ OVERTIME after a worked shift • 🚨 FIRED FOR LATENESS / SHOWING UP INTOXICATED (the shipped 3-warning ladder, always signalled) • 📚 STUDY LEAVES ACTIONS FOR A REAL 📚 LIBRARY location • 📟 MARKET (dealer) APP: "Put it away" OUT + the Street Life section OUT • 🐞 PEOPLE STAY IN THEIR ROOMS/PLACES — the general presence fix (townsfolk scene filler ignored haunts; household NPC presence was location-blind away from home) • 🕶️ ANONYMOUS MODE IS BACK (rebuilt — no surviving code traces of the old one were found in this copy) WITH A ⚙️ SETTINGS ON/OFF TOGGLE • 💬 AUTONOMOUS SOCIAL — the character chats on its own when people are right there. Saves roll forward: S.v138 defaults lazily. ================= */
+/* ================= v138: ROUND 10 (11 items) — 🔒 ASSISTANT OUT OF ME IN JAIL + 😴 JAIL SLEEP UNDER ME • 📈 FOLLOWERS GROW ON THEIR OWN (events • viral posts • live streaming) • ⏰ OVERTIME after a worked shift • 🚨 FIRED FOR LATENESS / SHOWING UP INTOXICATED (the shipped 3-warning ladder, always signalled) • 📚 STUDY LEAVES ACTIONS FOR A REAL 📚 LIBRARY location • 📟 MARKET (dealer) APP: "Put it away" OUT + the Street Life section OUT • 🐞 PEOPLE STAY IN THEIR ROOMS/PLACES — the general presence fix (townsfolk scene filler ignored haunts; household NPC presence was location-blind away from home) • 💬 AUTONOMOUS SOCIAL — the character chats on its own when people are right there. Saves roll forward: S.v138 defaults lazily. ================= */
 function ensure138(){ if(!S)return null; if(!S.v138||typeof S.v138!=='object')S.v138={}; const V=S.v138;
- if(V.anon===undefined)V.anon=false; if(V.otDay===undefined)V.otDay=-9;
+ if('anon' in V)delete V.anon; /* v189: anonymous mode removed — a stale anon flag in an old save is dropped here, everything else in the save untouched */ if(V.otDay===undefined)V.otDay=-9;
  if(V.lastUseDay===undefined)V.lastUseDay=-9; if(V.lastUseMin===undefined)V.lastUseMin=-99999;
  if(V.autoSocNext===undefined)V.autoSocNext=0; return V }
-function anon138(){ const V=ensure138(); return !!(V&&V.anon) }
 if(typeof TIPS!=='undefined'){ TIPS['library138']={t:'📚 Study lives at the Library now',b:'The Study section left the ⚡ Actions tab for good — it all moved to a real place: 📚 <b>The Library</b>, on the 🚗 Travel list. Every option that was in Actions\' Study is there (Light review, Cram session, Study skills, Tech session, Cooking practice, Fitness theory, Social skills) with the same effects — you just go to the library to study now.'};
- TIPS['anon138']={t:'🕶️ Anonymous mode is back',b:'⚙️ Settings → 🕶️ Anonymous mode, on or off, your call. While it is ON: 📰 news & headlines never print your name (you are "an unidentified local"), 📸 posts go out as 🕶️ Anonymous instead of your handle (and your Social profile shows the mask), and 🔴 streams run anonymous — no name, no face. Your life, money, followers and record are untouched — only the name the world sees changes.'};
  TIPS['followers138']={t:'📈 Followers grow on their own now',b:'Three taps opened: 🎉 in-game EVENTS bring new followers in (once you have a social profile), 🔥 a post can GO VIRAL — a follower surge on the spot, and 🔴 followers trickle in WHILE you are live, not just when the stream ends. Fame still follows followers, and the 📬 Sponsorship inbox in your 📸 Social Media app still feeds on both.'} }
-
-/* ---------- item 10: 🕶️ ANONYMOUS MODE — a ⚙️ Settings toggle; the public surfaces mask your name ---------- */
-function anonToggle138(){ if(!S)return; const V=ensure138(); if(!V)return; V.anon=!V.anon; save();
- log(V.anon?'🕶️ ANONYMOUS MODE: ON — set in ⚙️ Settings. From here the world sees a mask: news prints "an unidentified local", posts go out as 🕶️ Anonymous, streams run faceless. Your name still runs your life — it just stops being the headline.':'🕶️ ANONYMOUS MODE: OFF — set in ⚙️ Settings. Your name is back on everything: the news, your posts, your streams.');
- toast(V.anon?'🕶️ Anonymous mode ON':'🕶️ Anonymous mode OFF — name back on');
- try{ openSettings121() }catch(e){} try{ render() }catch(e){} }
-const _sch138=settingsCardHtml121;
-settingsCardHtml121=function(){ let c=_sch138(); try{ if(c){ const V=ensure138(); const on=!!(V&&V.anon); c+='<div class="card anonCard138"><h3>🕶️ Anonymous mode</h3><p>Go faceless in public, Howard-style: while this is ON, 📰 news &amp; headlines call you <b>"an unidentified local"</b> (never your name), 📸 your posts go out as <b>🕶️ Anonymous</b> and your Social profile wears the mask, and 🔴 your streams run anonymous. Nothing about your life, money or record changes — only the name the world sees.</p><button class="btn '+(on?'gold':'outline')+'" style="margin-top:8px" onclick="anonToggle138()">🕶️ Anonymous mode: '+(on?'ON':'OFF')+' — tap to turn '+(on?'off':'on')+'</button></div>' } }catch(e){} return c };
-/* news & headlines never print the name while anonymous */
-const _ns138=newsStory;
-newsStory=function(head,body,notoriety){ try{ if(S&&anon138()&&S.name){ const mask=function(t){ return typeof t==='string'?t.split(S.name).join('an unidentified local'):t }; head=mask(head); body=mask(body) } }catch(e){} return _ns138(head,body,notoriety) };
-/* streams run anonymous */
-const _sl138=startLive46;
-startLive46=function(){ const r=_sl138(); try{ if(S&&anon138()){ const st=document.getElementById('liveStatus'); if(st)st.innerHTML='🔴 LIVE — 🕶️ streaming as Anonymous (no name, no face)'; liveChatLine46('<b style="color:#fca5a5">SYSTEM</b> — 🕶️ this stream is anonymous: no name, no face, just the content') } }catch(e){} return r };
 
 /* ---------- item 3: 📈 FOLLOWERS GROW ON THEIR OWN ---------- */
 /* (c) while live: a trickle of followers lands DURING the stream (the shipped end-of-stream bonus stays) — builder numbers: 45% of ticks (1.4s) convert, +1 follower, +1 more at 60+ viewers, +1 more at 160+, capped at +75 per stream */
 const _st138=stepLive46;
 stepLive46=function(){ const r=_st138(); try{ const s=(typeof liveState!=='undefined')?liveState:null; if(s&&S&&!S.deadFlag){ if(s._g138===undefined)s._g138=0; if(s._g138<75&&Math.random()<0.45){ let g=1+(s.viewers>=60?1:0)+(s.viewers>=160?1:0); g=Math.min(g,75-s._g138); if(g>0){ s._g138+=g; gainFollowers(g) } } } }catch(e){} return r };
-/* (b) viral posts — builder numbers: 12% + 1% per Fame level per post; surge = 30 + 20% of current followers + 15 per Fame level. This wrapper also carries item 10's post masking (posts go out as 🕶️ Anonymous while the mode is on) */
+/* (b) viral posts — builder numbers: 12% + 1% per Fame level per post; surge = 30 + 20% of current followers + 15 per Fame level */
 const _dp138=doPost;
-doPost=function(kind){ let old=null, prevTop=null;
- try{ if(S){ prevTop=(S.posts&&S.posts[0])||null; if(anon138()&&S.profile){ old=S.profile.handle; S.profile.handle='🕶️ Anonymous' } } }catch(e){}
+doPost=function(kind){ let prevTop=null;
+ try{ if(S){ prevTop=(S.posts&&S.posts[0])||null } }catch(e){}
  const r=_dp138(kind);
- try{ if(old!==null&&S&&S.profile)S.profile.handle=old }catch(e){}
  try{ if(S&&S.profile&&S.profile.created&&S.posts&&S.posts.length&&S.posts[0]!==prevTop){ const p0=S.posts[0]; if(p0&&!p0.news&&!p0.viral){ const chance=0.12+0.01*(S.fame||1); if(Math.random()<chance){ const surge=30+Math.round((S.followers||0)*0.2)+15*(S.fame||1); p0.viral=true; p0.text=p0.text+' — 🔥 WENT VIRAL'; p0.likes=(p0.likes||0)+surge*3; gainFollowers(surge,'🔥 YOUR POST WENT VIRAL — the algorithm picked it up and ran with it'); toast('🔥 VIRAL POST — +'+surge+' followers!'); try{ showTip('followers138') }catch(e){} save(); phoneSocial() } } } }catch(e){}
  return r };
-/* the Social profile itself wears the mask while anonymous */
-const _ps138=phoneSocial;
-phoneSocial=function(){ let old=null; try{ if(S&&anon138()&&S.profile&&S.profile.created){ old=S.profile.handle; S.profile.handle='🕶️ Anonymous' } }catch(e){} const r=_ps138(); try{ if(old!==null&&S&&S.profile)S.profile.handle=old }catch(e){} return r };
 /* (a) new events bring followers — builder numbers: +3–8 plus (Fame − 1) when a household or toddler event card lands; needs a social profile for the followers to land on */
 function evGain138(kind){ try{ if(!S||S.deadFlag||(S.jail&&S.jail.in))return; if(!(S.profile&&S.profile.created))return; const g=3+Math.floor(Math.random()*6)+Math.max(0,(S.fame||1)-1); gainFollowers(g,'📣 the '+kind+' got people talking — new faces found your page') }catch(e){} }
 const _mhe138=maybeHouseholdEvent;
@@ -11524,7 +11498,7 @@ function presentPeople138(){ const out=[], seen={}; const add=function(n){ if(n&
  try{ if(S.location===homeLoc()){ (S.housemates||[]).forEach(function(h){ if(typeof mateHere86!=='function'||mateHere86(h))add(h) }); (S.kids||[]).forEach(function(k){ if(k.age>=5&&(typeof kidHere86!=='function'||kidHere86(k)))add(k.name) }) } }catch(e){}
  if(S.escort)add(S.escort); if(S.guest&&S.guest.day===S.day)add(S.guest.name); if(typeof window!=='undefined'&&window._dateWith)add(window._dateWith); if(S.sleepover&&S.sleepover.at==='mine')add(S.sleepover.guest);
  return out }
-setInterval(function(){ try{ if(!S||!inGame||S.deadFlag)return; if(S.jail&&S.jail.in)return; const V=ensure138(); if(!V)return; const now=performance.now(); if(now<(V.autoSocNext||0))return; if(typeof activity!=='undefined'&&activity)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(typeof playerAsleep128==='function'&&playerAsleep128())return; if(!S.needs||S.needs.social>92)return; const folks=presentPeople138(); if(!folks.length)return;
+setInterval(function(){ try{ if(!S||!inGame||S.deadFlag)return; if(S.jail&&S.jail.in)return; const V=ensure138(); if(!V)return; const now=performance.now(); if(now<(V.autoSocNext||0))return; if(typeof activity!=='undefined'&&activity)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(typeof playerAsleep128==='function'&&playerAsleep128())return; if(!S.needs||S.needs.social>92)return; const folks=presentPeople138(); if(!folks.length)return; if(typeof window._talkBusy191==='function'&&window._talkBusy191())return;
  V.autoSocNext=now+50000+Math.random()*30000; const who=pickArr(folks);
  try{ const spr=(typeof npcs!=='undefined'&&npcs?npcs.find(function(n){ return n.name===who }):null)||(typeof townsfolk!=='undefined'&&townsfolk?townsfolk.find(function(p){ return p.name===who }):null); if(spr){ const td=(S.town&&S.town.people&&S.town.people[who]&&typeof TOWN_TRAITS!=='undefined')?(TOWN_TRAITS[S.town.people[who].trait]||{}).lines:null; spr.say=pickArr((typeof CONVO_LINES!=='undefined'&&CONVO_LINES[who])||td||['hey — good seeing you 🙂','what have you been up to?','we should hang out more, honestly']); spr.sayUntil=now+3300 } if(typeof fwSay==='function'&&typeof CONVO_REPLIES!=='undefined')fwSay(pickArr(CONVO_REPLIES)) }catch(e){}
  adj('social',7); adj('fun',2); addXp(3,'social'); try{ if(typeof convoDone93==='function')convoDone93(who) }catch(e){} save() }catch(e){} },5000);
@@ -15741,8 +15715,9 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v180: ✨ touch sparkles (tap b
 <style id="style181">
 /* ===== v181: XBOX CONTROLLER FOCUS RING — only ever applied while a gamepad is connected and the player is navigating with it; with no controller the class is never added and nothing on screen changes ===== */
 .gpFocus181{outline:3px solid #fff!important;outline-offset:2px;animation:gpPulse181 1.05s ease-in-out infinite,rgbSpin 3.2s linear infinite!important}
-@keyframes gpPulse181{0%,100%{box-shadow:0 0 0 5px #ffb703,0 0 0 7px #ff004c,0 0 20px 5px #ffb703aa,0 0 30px 8px #00cfff55}50%{box-shadow:0 0 0 6px #ffb703,0 0 0 9px #7a00ff,0 0 28px 9px #ffb703cc,0 0 40px 12px #ff004c55}}
-@media(prefers-reduced-motion:reduce){.gpFocus181{animation:none!important;box-shadow:0 0 0 5px #ffb703,0 0 0 7px #ff004c,0 0 20px 5px #ffb703aa!important}}
+/* v186: the pulse now ALSO paints an INSET ring (inside the element's own box, where no overflow ancestor can clip it) — the outer glow alone was clipped away inside menus (see the v186 block at the end of this file) */
+@keyframes gpPulse181{0%,100%{box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 7px #ff004c,inset 0 0 18px 5px #ffb703a6,0 0 0 5px #ffb703,0 0 0 7px #ff004c,0 0 20px 5px #ffb703aa,0 0 30px 8px #00cfff55}50%{box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 9px #7a00ff,inset 0 0 24px 7px #ffb703cc,0 0 0 6px #ffb703,0 0 0 9px #7a00ff,0 0 28px 9px #ffb703cc,0 0 40px 12px #ff004c55}}
+@media(prefers-reduced-motion:reduce){.gpFocus181{animation:none!important;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 7px #ff004c,inset 0 0 18px 5px #ffb703a6,0 0 0 5px #ffb703,0 0 0 7px #ff004c,0 0 20px 5px #ffb703aa!important}}
 </style>
 <script>
 /* ================= v181: 🎮 XBOX CONTROLLER SUPPORT — a purely additive Gamepad-API input layer.
@@ -16408,6 +16383,474 @@ var _settingsCardHtml185=settingsCardHtml121;
 settingsCardHtml121=function(){ var c=_settingsCardHtml185.apply(this,arguments); try{ if(c&&c.indexOf('openCtlTest185')<0){ var btn='<button class="btn outline" style="margin-top:8px" onclick="openCtlTest185()">🎮 Controller Test</button>'; var ix=c.lastIndexOf('</div>'); if(ix>0)c=c.slice(0,ix)+btn+c.slice(ix) } }catch(e){} return c };
 window.__v185={open:openCtlTest185,close:closeCtlTest185,api:ctlApi185,version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v185: 🎮 Controller Test in ⚙️ Settings — a live gamepad readout (id + mapping, every button, every axis, last-input line + 8-entry log) that reads navigator.getGamepads() directly while the focus layer is suspended, so Howard can screenshot what his real controller actually reports');
+</script>
+<style id="style186">
+/* ===== v186: THE FOCUS RING'S OWN TOP LAYER — a fixed overlay (child of <body>, above every panel, sheet and the dock) that the v186 script below parks on the focused control's true on-screen rect every frame. It lives outside every overflow container, so nothing can clip it; the in-element ring (style181) remains as the inner treatment. Pointer-transparent, purely presentational. ===== */
+#gpRing186{position:fixed;left:0;top:0;width:10px;height:10px;display:none;pointer-events:none;z-index:100000;border:3px solid #fff;border-radius:14px;box-shadow:0 0 0 3px #ff004c,0 0 0 7px #ffb703,0 0 26px 9px #ffb703b8,0 0 44px 14px #00cfff4d,inset 0 0 0 2px #ffb703;animation:gpRingPulse186 1.05s ease-in-out infinite}
+@keyframes gpRingPulse186{0%,100%{border-color:#fff;box-shadow:0 0 0 3px #ff004c,0 0 0 7px #ffb703,0 0 26px 9px #ffb703b8,0 0 44px 14px #00cfff4d,inset 0 0 0 2px #ffb703}50%{border-color:#ffee00;box-shadow:0 0 0 4px #7a00ff,0 0 0 9px #ff8a00,0 0 34px 12px #ff004c99,0 0 52px 18px #ffb70366,inset 0 0 0 3px #ff004c}}
+@media(prefers-reduced-motion:reduce){#gpRing186{animation:none}}
+</style>
+<script>
+/* ================= v186: 🎮 THE FOCUS RING PAINTS ON ITS OWN TOP LAYER — Howard's real-device diagnosis (Nov 2, 2026): "the controller works but when it gets to the individual menus it doesn't highlight the select that's why I can't see." Reproduced with screenshots at 390×844 (mocked standard gamepad, real Chromium): focus STATE was always right (the ⚡ Actions section even opened on A), but on a focused section header (<summary>) the pixels showed NOTHING — the header looked identical to its unfocused neighbours. ROOT CAUSE: the v181 ring was an outline + OUTER box-shadow painted on the focused element itself, and inside the menus the focused headers fill their <details class="dd132"> box edge-to-edge while .dd132 is overflow:hidden — the header sits within ~1px of the clip box on all four sides, so the entire ring (2px outline offset + 5–9px shadow + blur) painted OUTSIDE the clip box and was discarded; the panel (.panel, overflow-y:auto) and sheet (.sheet, overflow:auto) scroll containers clip the same way at their edges. On ordinary buttons the ring did paint but camouflaged against the game's own always-on rainbow borders. THE FIX (presentation only — focus behaviour, navigation, mapping, gameplay, math, costs and the save are untouched): (1) the gpPulse181 keyframes in style181 now ALSO paint an INSET ring inside the focused control's own box, which no ancestor can clip. (2) This layer: a single fixed overlay div (#gpRing186, z-index above every surface — panels, sheets, the age gate) that each frame finds the element wearing .gpFocus181, computes its VISIBLE rect (its rect intersected with the viewport and every clipping ancestor, the same geometry law as v184's visRect), and parks a thick white + rainbow-glow frame 5px outside that rect, with the control's own corner radius. If the focused control has no visible region (fully clipped / off-screen) the overlay hides rather than pointing at nothing. Tracking: a rAF loop that runs while a focus ring exists or a gamepad is connected (the same only-while-connected cost profile as the v181 poll), kicked by a MutationObserver (the game re-renders constantly) plus capture-phase scroll/resize listeners, so the frame follows the control through panel scrolls, sheet scrolls, the dock-sheet slide and re-renders. With no controller the class is never applied, the overlay never shows, and touch/mouse/keyboard are exactly as before. ================= */
+(function(){
+'use strict';
+try{
+var ring=document.createElement('div'); ring.id='gpRing186'; ring.setAttribute('aria-hidden','true'); document.body.appendChild(ring);
+function isClipper186(n){
+  if(!n||n.nodeType!==1)return false;
+  var cs; try{ cs=getComputedStyle(n) }catch(e){ return false }
+  var ox=cs.overflowX, oy=cs.overflowY;
+  return oy==='auto'||oy==='scroll'||oy==='hidden'||ox==='auto'||ox==='scroll'||ox==='hidden';
+}
+function visRect186(el){
+  if(!el||!el.getBoundingClientRect)return null;
+  var r=el.getBoundingClientRect();
+  var L=r.left, T=r.top, R=r.right, B=r.bottom;
+  L=Math.max(L,0); T=Math.max(T,0); R=Math.min(R,window.innerWidth); B=Math.min(B,window.innerHeight);
+  var n=el.parentNode;
+  while(n&&n!==document.body&&n!==document.documentElement){
+    if(isClipper186(n)){
+      var cr=n.getBoundingClientRect();
+      var cs; try{ cs=getComputedStyle(n) }catch(e){ cs=null }
+      var bl=cs?(parseFloat(cs.borderLeftWidth)||0):0, br=cs?(parseFloat(cs.borderRightWidth)||0):0,
+          bt=cs?(parseFloat(cs.borderTopWidth)||0):0, bb=cs?(parseFloat(cs.borderBottomWidth)||0):0;
+      L=Math.max(L,cr.left+bl); T=Math.max(T,cr.top+bt); R=Math.min(R,cr.right-br); B=Math.min(B,cr.bottom-bb);
+    }
+    n=n.parentNode;
+  }
+  if(R-L<0.5||B-T<0.5)return null;
+  return {left:L,top:T,right:R,bottom:B,width:R-L,height:B-T};
+}
+var raf186=0, idle186=0;
+function sync186(){
+  var el=document.querySelector('.gpFocus181');
+  if(!el){ ring.style.display='none'; return false }
+  var vr=visRect186(el);
+  if(!vr||vr.width<4||vr.height<4){ ring.style.display='none'; return true }
+  var rad=16;
+  try{ var pv=parseFloat(getComputedStyle(el).borderTopLeftRadius); if(isFinite(pv)&&pv>0)rad=Math.min(pv+5,64) }catch(e){}
+  ring.style.display='block';
+  ring.style.left=(vr.left-5)+'px'; ring.style.top=(vr.top-5)+'px';
+  ring.style.width=(vr.width+10)+'px'; ring.style.height=(vr.height+10)+'px';
+  ring.style.borderRadius=rad+'px';
+  return true;
+}
+function loop186(){
+  raf186=0;
+  var had=sync186();
+  var conn=false; try{ conn=!!(window.__pad181&&window.__pad181.connected()) }catch(e){}
+  if(had||conn){ idle186=0; raf186=requestAnimationFrame(loop186) }
+  else if(++idle186<24){ raf186=requestAnimationFrame(loop186) }
+}
+function kick186(){ if(!raf186)raf186=requestAnimationFrame(loop186) }
+try{ new MutationObserver(kick186).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','open']}) }catch(e){}
+window.addEventListener('scroll',kick186,true);
+window.addEventListener('resize',kick186);
+kick186();
+window.__v186={ring:function(){ return ring },sync:sync186,visible:function(){ return ring.style.display!=='none' },version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v186: 🎮 the controller focus ring now actually PAINTS inside menus — an inset ring inside the focused control plus a fixed top-layer frame that tracks its visible on-screen rect every frame (the old outline/outer-shadow was clipped away by the overflow:hidden section boxes and scroll containers); focus behaviour and mapping unchanged, presentation only');
+}catch(e){}
+})();
+</script>
+<style id="style187">
+/* ===== v187: NOTIFICATION QUEUE + CENTERED DRIVE + GAMEPAD BADGE ===== */
+/* the drive sheet (any sheet whose content carries the shared .driveRoad119 road) plays CENTERED:
+   the modal flex-centres it vertically while it is on screen; every other sheet keeps the shipped bottom-sheet placement */
+.modal.driveCenter187{align-items:center!important}
+/* the v176 location-change drive mini rides mid-screen too — same road, same car, centred */
+.v176DriveMini{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important}
+/* 🎮 Controller supported pill — sits in the intro/welcome header, in the game's own gold pill language */
+.gpBadge187{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:#ffb703;color:#111;font-size:12px;font-weight:900;letter-spacing:.02em;padding:6px 12px;border-radius:999px;box-shadow:0 4px 14px #00000040}
+</style>
+<script>
+/* ================= v187: 🔔 NOTIFICATIONS NEVER OVERLAP — ONE QUEUE, ONE AT A TIME • 🚗 THE DRIVE PLAYS MID-SCREEN • 🎮 GAMEPAD SUPPORT, SHOWN UP FRONT =================
+   FIX 1 — THE QUEUE. Surfaces unified under ONE global timeline (window.__nq187): toast() (bottom pill),
+   topToast98() (the level-up top toast on the same #toast element), achPop132() (achievement pops, bottom),
+   showTextNotif() (text banner, top), showDmNotif() (DM banner — same #textNotif element), runnerNotif146()
+   (runner banner — same #textNotif element) and showSpotlight() (#spotCard, top). Before v187 every one of
+   these owned its element outright: rapid toasts stomped each other mid-display, two achievement pops shared
+   the exact same bottom-centre pixels, and a text/DM/runner/spotlight could all sit in the top zone at once.
+   Now every call ENQUEUES; the pump shows exactly one notification, for its full shipped duration
+   (toast 2.6s · top toast 2.6s · achievement 3.95s · text/DM banner 5s · runner banner 6s · spotlight 4.2s),
+   hides it, and only then starts the next. Nothing is dropped — the queue drains in arrival order.
+   Pre-checks that were part of a surface's shipped behaviour stay at enqueue time (DND silence, parent
+   messages never banner, the open-thread suppression, and the text banner's own ~45s anti-pileup gate —
+   that gate was deliberate spacing design, and the queue now provides the spacing structurally).
+   Deliberately LEFT SEPARATE, and why: the incoming-call card (interactive — it must ring until the player
+   answers/declines or it times out as a missed call; the queue PAUSES behind it and a call pre-empts a
+   showing top banner, which is re-shown in full afterwards), the tip card (already has its own internal
+   queue — tipQueue/tipShowing — and is modal-gated; treated as a queue blocker), the thought card
+   (tap-to-dismiss, player-paced; also a blocker), and the v176 banner (a self-replacing surface sealed
+   inside the v176 IIFE — the queue pauses behind it and it pre-empts/re-shows top banners the same way
+   calls do). Full-screen dialogs (sheets, day card, welcome overlay) are not notifications and are untouched.
+   FIX 2 — driveSheet176 and the v119 goLoc drive both open the shared "🚗 On the road" sheet whose road is
+   .driveRoad119; a MutationObserver pins .driveCenter187 on #modal exactly while such a sheet is displayed,
+   so the whole drive plays vertically + horizontally centred. The v176DriveMini location-change drive is
+   centred by CSS above. Animation, durations (~2.35s sheet / shipped timers) and trip logic are untouched;
+   walking and called rides keep their own transitions (they carry no .driveRoad119).
+   FIX 3 — a "🎮 Controller supported" pill is added to the intro/welcome header (the dark AQUALIFE block
+   shared by renderSetup and renderWelcome — whichever of the two a player lands on before starting). */
+(function(){ 'use strict';
+try{
+/* ---------------- FIX 1: the queue ---------------- */
+var NQ187={q:[],cur:null,timer:0,log:[],shown:0};
+function nqLog187(ev,it){ try{ NQ187.log.push({t:Date.now(),ev:ev,kind:it?it.kind:'',label:it?String(it.label).slice(0,60):''}); if(NQ187.log.length>400)NQ187.log.shift() }catch(e){} }
+function nqBlocked187(){ try{ var cc=document.getElementById('callCard'); if(cc&&cc.classList.contains('show'))return 'call' }catch(e){}
+ try{ var tc=document.getElementById('tipCard'); if(tc&&tc.classList.contains('show'))return 'tip' }catch(e){}
+ try{ var th=document.getElementById('thoughtCard'); if(th&&th.classList.contains('show'))return 'thought' }catch(e){}
+ try{ var b=document.getElementById('v176Banner'); if(b&&b.classList.contains('show'))return 'banner176' }catch(e){}
+ return null }
+function nqPump187(){ if(NQ187.cur||!NQ187.q.length)return; if(nqBlocked187()){ setTimeout(nqPump187,350); return }
+ var it=NQ187.q.shift(); NQ187.cur=it; it.shownAt=Date.now(); NQ187.shown++; nqLog187('show',it);
+ try{ it.display(it) }catch(e){}
+ if(it.instant){ nqFinish187(); return }
+ clearTimeout(NQ187.timer); NQ187.timer=setTimeout(nqFinish187,it.dur||2600) }
+function nqFinish187(){ if(!NQ187.cur)return; clearTimeout(NQ187.timer); var it=NQ187.cur; NQ187.cur=null; it.hiddenAt=Date.now(); nqLog187('hide',it); try{ if(it.hide)it.hide() }catch(e){} setTimeout(nqPump187,70) }
+function nqPush187(kind,label,display,dur){ var it={kind:kind,label:label,display:display,dur:dur,enqueuedAt:Date.now(),instant:false}; NQ187.q.push(it); nqLog187('enqueue',it); nqPump187(); return it }
+function nqPreempt187(reason){ var it=NQ187.cur; if(!it)return; if(it.kind!=='text'&&it.kind!=='dm'&&it.kind!=='runner'&&it.kind!=='spot')return; clearTimeout(NQ187.timer); try{ if(it.hide)it.hide() }catch(e){} NQ187.cur=null; it.preempts=(it.preempts||0)+1; NQ187.q.unshift(it); nqLog187('preempt:'+reason,it); setTimeout(nqPump187,400) }
+window.__nq187=NQ187; window.__nqPump187=nqPump187;
+/* --- toast + top toast (same #toast element, bottom / top variants) --- */
+try{ toast=function(t){ nqPush187('toast',t,function(){ var el=document.getElementById('toast'); if(!el)return; el.textContent=t; el.classList.remove('top98'); el.style.display='block' },2600) } }catch(e){}
+try{ topToast98=function(t){ nqPush187('top',t,function(){ var el=document.getElementById('toast'); if(!el)return; el.textContent=t; el.classList.add('top98'); el.style.display='block' },2600) } }catch(e){}
+function toastHide187(){ var el=document.getElementById('toast'); if(el){ el.style.display='none'; el.classList.remove('top98') } }
+/* patch the queued items' hide for toast kinds at push time via a kind check in nqFinish — instead, attach hide in display wrappers: */
+/* (hide is wired below by wrapping nqPush for the two toast kinds) */
+var _nqPush187=nqPush187; nqPush187=function(kind,label,display,dur){ var it=_nqPush187(kind,label,display,dur); if(kind==='toast'||kind==='top')it.hide=toastHide187; return it };
+/* --- achievement pops --- */
+try{ var _ach187=achPop132; achPop132=function(id){ try{ var V=(typeof ensure132==='function')?ensure132():null; if(V&&V.ach&&V.ach[id]){ return _ach187.apply(this,arguments) } }catch(e){}
+ nqPush187('ach',id,function(it){ var before=document.querySelectorAll('.achPop132').length; try{ _ach187(id) }catch(e){} var pops=document.querySelectorAll('.achPop132'); if(pops.length<=before){ it.instant=true } },3950) } }catch(e){}
+/* --- text / DM / runner banners (same #textNotif element) --- */
+function notifHide187(){ var el=document.getElementById('textNotif'); if(el)el.classList.remove('show') }
+try{ var _stnOrig187=showTextNotif; showTextNotif=function(m){ try{ if(typeof inGame!=='undefined'&&!inGame){ return _stnOrig187.apply(this,arguments) } }catch(e){}
+ if(S&&S.dnd)return; if(!m)return; try{ if(typeof isParent70==='function'&&isParent70(m.from))return }catch(e){}
+ try{ if(typeof openThread42!=='undefined'&&openThread42&&openThread42.type==='msg'&&openThread42.who===m.from&&document.getElementById('modal').classList.contains('open'))return }catch(e){}
+ var nowB=Date.now(); try{ if(nowB-lastBanner69<45000)return; lastBanner69=nowB }catch(e){}
+ var it=nqPush187('text',(m.from||'')+': '+(m.text||''),function(){ var el=document.getElementById('textNotif'); if(!el)return; el.innerHTML='<div style="font-size:26px">💬</div><div style="flex:1;min-width:0"><b style="font-size:13px">'+m.from+' • now</b><div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.text+'</div><div style="font-size:11px;color:#ffb703;font-weight:800">Tap to open & reply ›</div></div><div style="font-size:20px">📱</div>';
+ try{ var b=el.querySelector('b'); if(b&&typeof charAge79==='function'){ var a=charAge79(m.from); if(a!=null)b.textContent=m.from+', '+a+' • now' } }catch(e){}
+ el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); el.onclick=function(){ try{ hideTextNotif() }catch(e){} try{ openConvo(m.from) }catch(e){} }; try{ notifAlert() }catch(e){} try{ setTimeout(function(){ try{ showTip('first-text') }catch(e){} },1100) }catch(e){} },5000); it.hide=notifHide187 } }catch(e){}
+try{ showDmNotif=function(th){ if(S&&S.dnd)return; if(!th)return; try{ if(typeof openThread42!=='undefined'&&openThread42&&openThread42.type==='dm'&&openThread42.id===th.id&&document.getElementById('modal').classList.contains('open'))return }catch(e){}
+ var it=nqPush187('dm',(th.from||'')+' DM',function(){ var el=document.getElementById('textNotif'); if(!el)return; var last=th.msgs[th.msgs.length-1]; el.innerHTML='<div style="font-size:26px">✉️</div><div style="flex:1;min-width:0"><b style="font-size:13px">'+th.from+' • DM • now</b><div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(last?last.text:'')+'</div><div style="font-size:11px;color:#ffb703;font-weight:800">Tap to open the DM ›</div></div><div style="font-size:20px">📸</div>';
+ try{ var b=el.querySelector('b'); if(b&&typeof charAge79==='function'){ var a=charAge79(th.from); if(a!=null)b.textContent=th.from+', '+a+' • DM • now' } }catch(e){}
+ el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); el.onclick=function(){ try{ hideTextNotif() }catch(e){} try{ openDmThread(th.id) }catch(e){} }; try{ notifAlert() }catch(e){} },5000); it.hide=notifHide187 } }catch(e){}
+try{ runnerNotif146=function(text){ var it=nqPush187('runner',text,function(){ var el=document.getElementById('textNotif'); if(!el)return; el.innerHTML='💬 <b>🛒 Runner</b><div>'+text+'</div>'; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); try{ sfx('textIn') }catch(e){} el.onclick=function(){ notifHide187(); if(NQ187.cur&&NQ187.cur.kind==='runner')nqFinish187(); try{ phoneBurner63() }catch(e){} } },6000); it.hide=notifHide187 } }catch(e){}
+/* --- spotlight (#spotCard) --- */
+function spotHide187(){ var el=document.getElementById('spotCard'); if(el)el.classList.remove('show') }
+try{ showSpotlight=function(icon,title,body){ var it=nqPush187('spot',title,function(){ var el=document.getElementById('spotCard'); if(!el)return; el.innerHTML='<div class="spotIcon">'+(icon||'🎬')+'</div><div style="flex:1;min-width:0"><b style="color:#ffb703;font-size:11px;letter-spacing:.07em">🎥 SPOTLIGHT</b><div style="font-weight:900;font-size:15px;margin:2px 0 3px">'+title+'</div><div style="font-size:13px;line-height:1.5;opacity:.93">'+body+'</div></div>'; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show'); el.onclick=function(){ try{ hideSpotlight() }catch(e){} } },4200); it.hide=spotHide187 } }catch(e){}
+/* --- manual dismissals advance the queue --- */
+try{ var _hideTN187=hideTextNotif; hideTextNotif=function(){ try{ _hideTN187() }catch(e){} if(NQ187.cur&&(NQ187.cur.kind==='text'||NQ187.cur.kind==='dm'||NQ187.cur.kind==='runner'))nqFinish187(); else nqPump187() } }catch(e){}
+try{ var _hideSP187=hideSpotlight; hideSpotlight=function(){ try{ _hideSP187() }catch(e){} if(NQ187.cur&&NQ187.cur.kind==='spot')nqFinish187(); else nqPump187() } }catch(e){}
+/* --- interactive blockers pre-empt a showing top banner (it is re-shown in full after) --- */
+try{ ['callCard','tipCard','thoughtCard'].forEach(function(id){ var el=document.getElementById(id); if(el)new MutationObserver(function(){ if(el.classList.contains('show'))nqPreempt187(id); else setTimeout(nqPump187,120) }).observe(el,{attributes:true,attributeFilter:['class']}) }) }catch(e){}
+try{ new MutationObserver(function(muts){ muts.forEach(function(mu){ Array.prototype.forEach.call(mu.addedNodes||[],function(n){ if(n&&n.id==='v176Banner'){ setTimeout(function(){ if(n.parentNode&&n.classList.contains('show'))nqPreempt187('banner176') },80) } }) }) }).observe(document.body,{childList:true}) }catch(e){}
+/* ---------------- FIX 2: centre the drive sheet while it is displayed ---------------- */
+function driveSync187(){ try{ var m=document.getElementById('modal'),sh=document.getElementById('sheet'); if(!m||!sh)return; var isDrive=m.classList.contains('open')&&sh.innerHTML.indexOf('driveRoad119')>=0; m.classList.toggle('driveCenter187',!!isDrive) }catch(e){} }
+try{ var _sh187=document.getElementById('sheet'),_md187=document.getElementById('modal'); if(_sh187)new MutationObserver(driveSync187).observe(_sh187,{childList:true,subtree:true,characterData:true}); if(_md187)new MutationObserver(driveSync187).observe(_md187,{attributes:true,attributeFilter:['class']}) }catch(e){}
+/* ---------------- FIX 3: 🎮 Controller supported pill on the intro/welcome header ---------------- */
+function gpBadge187(){ try{ var st=document.querySelector('#app .setup'); if(!st)return; var head=st.children&&st.children[0]; if(!head||head.querySelector('.gpBadge187'))return; var s=document.createElement('span'); s.className='gpBadge187'; s.textContent='🎮 Controller supported'; head.appendChild(s) }catch(e){} }
+try{ var _rs187=renderSetup; renderSetup=function(){ var r=_rs187.apply(this,arguments); gpBadge187(); return r } }catch(e){}
+try{ var _rw187=renderWelcome; renderWelcome=function(){ var r=_rw187.apply(this,arguments); gpBadge187(); return r } }catch(e){}
+window.__v187={version:function(){ return GAME_VERSION },queue:function(){ return NQ187 },pump:nqPump187,badge:gpBadge187,driveSync:driveSync187};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v187: 🔔 every notification (toasts, level-up toast, achievement pops, text/DM/runner banners, spotlights) rides ONE queue — one at a time, full duration, none dropped, never overlapping • 🚗 the "On the road" drive sheet + drive mini now play centred mid-screen • 🎮 a Controller supported pill sits on the intro/welcome screen');
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v188: 🎓 SCHOOL = 💼 WORK — Howard's ruling (Nov 2, 2026): "Make school and work the same… I want the same prompt they can go to school or fast forward like work. Everyday ask the question. Same feature. We can remove things from the school tab." + "I don't want individual manual settings for school anymore. It doesn't do much."
+   THE WORK PROMPT, AS SHIPPED (what school now mirrors): the work shift prompt (openShiftSheet57) is fired by the schedule tick (schedTick57) the moment the clock reaches the shift's start on a scheduled work day — and ONLY while no sheet/modal is open: the prompt-day stamp is set solely when the sheet actually opens, so if the player is mid-activity or reading another sheet the prompt simply waits and lands at the first free tick, never lost, never stacked. Its three choices: 💼 Go (attend in person — jobShift plays the shift at natural pace), ⏩ Fast-forward (shiftFF57: the day-stamp is set done, the clock jumps straight to the shift's END, and the FULL outcome lands at once — one taxed pay stub via payTaxed59, shifts/career counters +1, Tech XP, energy −10), 🛋️ Skip (counts missed + a warning). A fast-forwarded shift is worth exactly an attended one; only skipping costs you.
+   SCHOOL, MIRRORED EXACTLY: every school day, schedTick57 (8:00 AM–3:00 PM window, enrolled, not snow/summer/break/jail — the shipped schoolDayOn113 gate) calls maybeAttendPrompt; the override below stamps S.attend.attendDay ONLY when its sheet actually opens (a sheet already up = stay unstamped, the tick retries — the work prompt's exact queueing) and opens the twin sheet: 🎒 Go to school (the shipped attendGo — the day plays in person), ⏩ Fast-forward (schoolFF188 below), 🛋️ Skip today (the shipped attendSkip — skipped count, grades slip, warnings). Asked EVERY school day, for the PLAYER's own enrollment only (NPC/family attendance never prompts, as only the player's job prompts).
+   schoolFF188 = shiftFF57 translated: stamp the day done, jump the clock to the END of the school day (3:00 PM) via advanceMinutes57, and land the FULL day outcome at once — attendance counted exactly once (term.attended), grades +3 (the shipped class-beat progression an attended morning class grants), Study XP +18 (attendGo's class), recess/lunch effects (Fun/Social up, Hunger +22, the shipped $4 hot-lunch rule at 13+), energy −10 (the fast-forwarded shift's cost). Then dismissal: _schoolDay cleared and, if standing at school, sent home — so the v151 school block (which keys on _schoolDay + 8 AM–3 PM) can NEVER trap a fast-forwarded player: the day resolves PAST school hours. Preschool (3–4) rides the same sheet (as it did the shipped morning choice) with its gentler outcome set — no grades/energy line, attendance + play outcomes — and its v148 arrival-stamped block, lock and parent-led flows are untouched.
+   REMOVED (at the source, in the edits above): the printed 🗓️ TIMETABLE — TT113's five-block card no longer renders anywhere (both renderTabs insertions gone, ttCard113 stood down below), the v113 timetable clock-beats (12:00 lunch block / 1:00 PM afternoon-class block interval) are deleted, and the School tab's individual MANUAL school controls — the five do-it-yourself cards: Attend Class, Recess, Eat Cafeteria Lunch, Library Study, Gym / Sports — are gone from the tab: the daily Go / Fast-forward choice is the whole school interaction. KEPT (progression, not settings): enrollment, grades, the 7-day term/report-card cadence (settleTerm untouched), grade progression on BOTH paths, the exam, tracks, summer school, the school block on attended days, and the 3:00 PM bell. The v113 stepper (finishSchool113) now delegates to schoolFF188 so any surviving reference resolves the day the work way. Saves carry over: only S.v188.ffDay is new, defaulted lazily. ================= */
+function ensure188(){ if(!S)return null; if(!S.v188||typeof S.v188!=='object')S.v188={}; return S.v188 }
+function schoolFF188(){ if(!S)return; const sk=schoolStageKey(S.age); if(!sk||!stageEnrolled()){ toast('🎒 Enroll first — school starts with being on the books'); return }
+ if(typeof schoolDayOn113==='function'&&!schoolDayOn113()){ toast('🎓 No school day to fast-forward right now'); return }
+ ensure33(); const V=ensure188(); const pre=(sk==='pre');
+ const fresh=(S._schoolDay!==S.day);
+ if(fresh){ S._schoolDay=S.day; if(S.term)S.term.attended=(S.term.attended||0)+1 }
+ if(S.attend)S.attend.attendDay=S.day;
+ V.ffDay=S.day; S.escort=null;
+ closeModal();
+ advanceMinutes57(Math.max(30,900-nowMin57()),true);
+ /* the full day's outcomes, all at once — the completeness a fast-forwarded shift grants */
+ if(pre){ addXp(18,'study'); adj('fun',8); adj('social',7); adj('hunger',22) }
+ else { S.grades=clamp(S.grades+3); addXp(18,'study'); adj('energy',-10); adj('fun',8); adj('social',7); adj('hunger',22); if(S.age>=13&&S.money>=4)money(-4,'🍽️ Cafeteria lunch') }
+ /* dismissal — the day resolves PAST school hours, so the school block can never hold a fast-forwarded player */
+ S._schoolDay=0;
+ try{ if(typeof schoolFx109==='function')schoolFx109() }catch(e){}
+ if(S.location==='school'){ S.location=homeLoc(); S.escort=null; targetX=450; targetY=260 }
+ log('🎓⏩ FAST-FORWARDED the school day at '+schoolName(sk)+' (8:00 AM–3:00 PM) — the day counted in full: attendance counted'+(fresh?' (once)':'')+(pre?', a whole preschool day of play, food and friends':', grades progressed to '+S.grades+'%')+', and the clock landed past the 3:00 PM bell — you are home, and the evening is yours.');
+ toast('🎓 School day done — ⏩ fast-forwarded');
+ save(); render(); if(window._dockTab)renderTabs(window._dockTab) }
+/* the daily prompt: the work shift sheet's twin — stamped only when it opens, so a busy player is asked at the first free moment, every school day */
+const _map188=maybeAttendPrompt;
+maybeAttendPrompt=function(){ if(!S||!inGame)return _map188();
+ const sk=schoolStageKey(S.age);
+ const mine=!!sk&&stageEnrolled()&&typeof schoolDayOn113==='function'&&schoolDayOn113();
+ if(mine&&S.attend&&S.attend.attendDay!==S.day){
+  if(document.getElementById('modal').classList.contains('open'))return;
+  S.attend.attendDay=S.day; save();
+  openSheet('<h2>🎓 School time — it is starting, '+S.name+'</h2><p>🗓 <b>'+schoolLevel(S.age)+'</b> at <b>'+schoolName(sk)+'</b> • 🕐 <b>8:00 AM – 3:00 PM</b>. The clock says school starts <b>right now</b> — the same question a work shift asks, and it asks every school day:</p><p>🎒 <b>Go</b> and attend in person, or ⏩ <b>fast-forward</b> the clock straight through the day — either way the day counts in full: attendance, grades and progress all land. Blow it off and today counts as skipped.</p><p class="small">📚 Grades '+S.grades+'% • Days skipped: '+S.attend.schoolSkips+' • School warnings: '+S.attend.schoolWarn+'/3</p><button class="btn orange" onclick="attendGo()">🎒 Go to school — attend the day</button><button class="btn gold" style="margin-top:8px" onclick="schoolFF188()">⏩ Fast-forward through the school day</button><button class="btn outline" style="margin-top:8px" onclick="attendSkip()">🛋️ Skip today</button>');
+  return }
+ return _map188() };
+/* the retired timetable card renders nowhere now; the old stepper resolves the work way */
+try{ ttCard113=function(){ return '' } }catch(e){}
+try{ finishSchool113=function(){ schoolFF188() } }catch(e){}
+if(S)ensure188();
+window.__v188={ensure188:ensure188,schoolFF188:schoolFF188,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v188: 🎓 school = 💼 work — the daily 8 AM prompt (Go / ⏩ Fast-forward / Skip) mirrors the work shift sheet exactly, queueing behind any open sheet and asked every school day; fast-forward jumps the clock past the 3 PM bell with the full day counted (attendance once, grades + progress); the printed timetable, its clock-beats and the School tab\u2019s manual activity cards (Attend Class / Recess / Cafeteria Lunch / Library Study / Gym) are removed; enrollment, grades and the 7-day report cards untouched');
+</script>
+
+<script>
+/* ================= v190: 🧒 CHILD TRAVEL — Howard's ruling (Nov 2, 2026): "Once you go to another location it's hard to go back home again as a child. Travel is blocked but it does allow you to go home. When need another way or once you go somewhere with someone you come home very soon. After a hour automatically go back home."
+   THE SCOPE LINE (drawn from the game's OWN escort law, goLoc line ~1349 — nobody new invented): a CHILD is a player the travel rule says cannot travel solo: age < 18 AND origin !== 'orphan' (orphans travel solo by shipped law; 18+ travel free). An ESCORTED DAY-OUTING is any time such a child is standing somewhere that is NOT home WITH a caregiver escort riding along (S.escort set) — in shipped code that state is produced by exactly two flows: (1) goWithParent — the ask-a-parent trip a 5–17 picks from Travel, escort = caregiverDisplay82, any TRAVEL_OPTS destination; (2) parentTripGo80 — the grown-up-led trip a 1–4 accepts from maybeParentTrip80's invitation (street / grandparents / mall / fair / cinema / beach). The timer keys on the STATE (escort set + away from home), not on the entry point, so any equivalent go-with-a-grown-up flow is covered the same way.
+   EXCLUDED, deliberately: vacations & stays (bookVacation / bookLuxe63 also set S.escort, but S.vac.active is their own multi-day system with its own end — the timer never arms while vac.active), the school day (school NEVER carries an escort — goLoc/goWithParent clear it, students travel solo, and v188's prompt + the 3 PM bell already dismiss home; 'school' is hard-excluded), work shifts (no escort state), jail, dates (goDate clears the escort — not a grown-up trip), hospital and every adult trip (no escort state / age gate).
+   FIX A — THE RIDE HOME: on an escorted arrival the outing is stamped due at arrival + 60 game-minutes (the game's own clock: (day-1)*1440 + nowMin57). A 500 ms watchdog (the v151 net's pattern) checks it: if the child already went home, moved on to another trip, grew up, got jailed or started a vacation first, the stamp is simply spent — cleared, never fired, no double-return, no wrong-location teleport. When the hour lands, if a sheet/modal is open, the Day Card is up, a drive is playing or an activity is mid-performance, the return WAITS (pending) and lands at the first safe moment — nobody is yanked out mid-action. The return itself is the canon trip home: a toast + journal line in the escort's voice, then goLoc(homeLoc()) with the escort still attached, so the shipped QW1 parent-driven road presentation (the centred drive sheet / drive mini) plays exactly as it does for a manual trip home, and arrival clears the escort as shipped.
+   FIX B — HEAD HOME, NEVER BURIED: audited every place a child can stand. Already sound: the toddler Travel tab and the toddler Travel lock sheet carry a real 🏠 Head home button, Grandma & Grandpa's card carries one, and the Travel folder lists home among its destinations. BURIED: everywhere else — on the main room screen (where a child actually stands at the mall / arcade / cinema / a friend-facing scene) there was NO way home at all short of opening the Travel folder and picking '🏠 Family House' out of ~21 lookalike destination buttons, and the 5–17 Travel tab buries it the same way. FIX: a persistent 🏠 Head home pill (below) rides on the main screen for EVERY under-18 player standing away from home — orphan minors included (their home trip is always allowed too) — one tap, goLoc(homeLoc()), the one trip the travel law always allows. It hides at home, in jail, and during the v151 school block (when the bell, not a button, sends you home — a button there would only be refused). Saves carry over: only S.v190.out is new, defaulted lazily; SAVE_KEY untouched. ================= */
+function ensure190(){ if(!S)return null; if(!S.v190||typeof S.v190!=='object')S.v190={out:null}; if(S.v190.out===undefined)S.v190.out=null; return S.v190 }
+function absMin190(){ try{ return (S.day-1)*1440+(typeof nowMin57==='function'?nowMin57():((S.hour||0)*60)) }catch(e){ try{ return (S.day-1)*1440+(S.hour||0)*60 }catch(e2){ return 0 } } }
+function escortedOuting190(){ try{ if(!S||S.deadFlag)return false; if(S.age>=18)return false; if(S.origin==='orphan')return false; if(!S.escort)return false; if(S.vac&&S.vac.active)return false; if(S.jail&&S.jail.in)return false; if(S.location==='school')return false; if(typeof homeLoc!=='function')return false; if(S.location===homeLoc())return false; return true }catch(e){ return false } }
+function armOuting190(){ const V=ensure190(); if(!V)return; V.out={dest:S.location,cg:S.escort,due:absMin190()+60,pending:false}; try{ save() }catch(e){} }
+function busyForHome190(){ try{ const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return true; const d=document.getElementById('dayCard'); if(d&&d.classList.contains('show'))return true; if(window._drv176)return true; if(typeof activity!=='undefined'&&activity)return true; return false }catch(e){ return false } }
+function fireOuting190(){ const V=ensure190(); if(!V||!V.out)return; const cg=V.out.cg||S.escort||'Your grown-up'; let hl='house'; try{ hl=homeLoc() }catch(e){} V.out=null; try{ save() }catch(e){}
+ try{ log('🏠⏰ OUTING OVER — an hour out with '+cg+' is a good outing, and outings with a grown-up always end the same way: '+cg+' gathers you up and takes you home. No hunting for the way back, no getting stranded — home, safe, every time.') }catch(e){}
+ try{ toast('🏠 Heading home — '+cg+' is taking you home') }catch(e){}
+ try{ openSheet('<h2>🏠 Time to head home</h2><p>'+cg+' checks the time — you have been out about an hour, and that was a good outing. <b>Time to head home.</b></p>') }catch(e){}
+ try{ goLoc(hl) }catch(e){} }
+function headHome190(){ if(!S)return; let hl='house'; try{ hl=homeLoc() }catch(e){} try{ goLoc(hl) }catch(e){} }
+function homeBtnShow190(){ try{ if(!S||!inGame||S.deadFlag)return false; if(S.age>=18)return false; if(S.jail&&S.jail.in)return false; if(typeof homeLoc!=='function')return false; if(S.location===homeLoc())return false; if(typeof schoolBlock151==='function'&&schoolBlock151())return false; return true }catch(e){ return false } }
+function syncHomeBtn190(){ try{ const show=homeBtnShow190(); let b=document.getElementById('homeBtn190'); if(!show){ if(b)b.remove(); return } if(!b){ b=document.createElement('button'); b.id='homeBtn190'; b.type='button'; b.className='homeBtn190'; b.setAttribute('aria-label','Head home — always allowed'); b.onclick=function(){ headHome190() }; document.body.appendChild(b) } const t='🏠 Head home'+(S.escort?' — '+S.escort+' takes you':''); if(b.textContent!==t)b.textContent=t }catch(e){} }
+try{ const _st190=document.createElement('style'); _st190.id='style190'; _st190.textContent='.homeBtn190{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--dockH,64px) + var(--sheetH51,0px) + 10px);z-index:46;background:#f97316;color:#fff;border:2.5px solid #ffb703;border-radius:999px;padding:12px 22px;font-family:inherit;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 10px 26px #00000055;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}.homeBtn190:active{transform:translateX(-50%) scale(.95)}'; document.head.appendChild(_st190) }catch(e){}
+setInterval(function(){ try{
+ if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag){ syncHomeBtn190(); return }
+ const V=ensure190(); if(!V){ syncHomeBtn190(); return }
+ if(!escortedOuting190()){ if(V.out)V.out=null }
+ else if(!V.out||V.out.dest!==S.location){ armOuting190() }
+ else if(absMin190()>=V.out.due){ if(busyForHome190()){ V.out.pending=true } else { fireOuting190() } }
+ syncHomeBtn190();
+}catch(e){} },500);
+if(S)ensure190();
+window.__v190={ensure190:ensure190,absMin190:absMin190,escortedOuting190:escortedOuting190,armOuting190:armOuting190,fireOuting190:fireOuting190,headHome190:headHome190,homeBtnShow190:homeBtnShow190,syncHomeBtn190:syncHomeBtn190,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v190: 🧒 child travel — a child out on an escorted day-outing (the game\u2019s own escort law: under 18, non-orphan, caregiver riding along — goWithParent trips 5–17 and grown-up-led parentTripGo80 trips 1–4) is brought HOME automatically 1 game hour after arriving: the stamp is spent if they already got home or moved on, the return waits out any open sheet or mid-activity moment, and the ride home is the canon parent-driven road trip via goLoc(home) • vacations, the school day, work and adult travel are untouched • 🏠 a persistent Head home pill now rides the main screen for every under-18 player away from home');
+</script>
+
+<script>
+/* ================= v191: 💬 REAL CONVERSATION BUBBLES — Howard's ruling (Nov 2, 2026): "I want them to have real conversation bubbles in the game. Actually makes sense and conversations that's make sense."
+   PART 1 — PRESENTATION: speech was already drawn in the scene (drawSpeechBubble over a sprite's head, the 💤 precedent's family), but the old chatter pulled lines from a per-name hat, carried NO speaker name in the bubble, could stack on top of other writers, and kept talking behind open sheets. This layer: (1) the bubble renderer is wrapped so every spoken bubble carries the SPEAKER'S NAME as its header line, tied to the character under it; (2) ONE speaker at a time — the engine never starts while any bubble (household, townsfolk, guest, date, the player's own reply) is up, it clears rival bubbles before it speaks, and the two legacy writers (townsfolk idle chatter, the v138 autonomous-social beat) are gated on the same busy flag at the source; (3) ambient bubbles PAUSE while any sheet/modal is open — the engine checks every frame, truncates any live bubble the moment a sheet opens, and schedules nothing until the sheet closes (plus a settle delay after). Bubbles are scene life only: nothing here touches the toast queue, and tapping a character still does NOTHING — no tap handlers are added anywhere.
+   PART 2 — CONTENT: runConversations is replaced by a context engine. Every line is picked from the REAL situation: (a) RELATIONSHIP — the speaker is classified first (parent / step-parent / caregiver / dorm staff / kid friend / dorm friend / friend / partner / classmate / coworker / neighbour / stranger) and each relationship has its own voice bank; (b) PLACE — home / school / work / campus / store / out-and-about tag the context; (c) TIME — morning / day / evening / late tag it too, with school-night and bedtime lines landing when they should; (d) THE MOMENT — the newest journal entries and needs are read every beat: just ate, report card, just travelled, earned money, sick, hungry, tired, wanted, broke, flush, birthday, level-up, busted — matching state lines jump the queue (70% weight when any exist); weather still speaks (the shipped specialLine themes, folded in); (e) AGE-TRUTH — a toddler player hears toddler-directed talk and answers in toddler babble, a kid player answers like a kid, kid speakers (Leo, Priya, young classmates) speak kid-scaled, adults speak adult. Replies are TOPIC-MATCHED: a line about food gets a food answer, a school line gets a school answer — from the player (reply bubble over the player's head, the shipped playerSay channel, +1 Social and the shipped convoDone93 memory, exactly as before) or from a second person in the room (pair exchanges). ANTI-SPAM CADENCE: after a bubble clears, the room stays quiet for 14–28 seconds before the next beat; ANTI-REPEAT: the last 10 lines per speaker are remembered for the session and filtered out of their pool. DIRECT TALK: the in-person exchanges that already lived in the scene (ambient to-player talk, the autonomous-social beat, meet intros, date and guest bubbles) keep their flows and outcomes untouched — the to-player and pair exchanges now run through this engine, so a direct conversation is a coherent back-and-forth in bubbles: line, then an answer that answers it. Phone texting is not touched. No economy or math changes: the only numbers are the shipped ones the old chatter already granted (+1 Social on a player reply, convoDone93 ticks). Saves carry over: nothing new is stored — the recent-lines memory is session-only, by design. ================= */
+function relOf191(name,spr){
+ if(!name)return 'stranger';
+ if(name==='Mom'||name==='Dad')return 'parent';
+ if(name==='Step-Mom'||name==='Step-Dad')return 'step';
+ if(name==='Ms. Rivera')return 'caregiver';
+ if(name==='Mr. Chen')return 'staff';
+ if(name==='Leo'||name==='Priya')return 'kidfriend';
+ if(name==='Riley'||name==='June')return 'dormfriend';
+ if(S&&S.partner&&name===S.partner)return 'partner';
+ if(typeof FRIEND_DEFS!=='undefined'&&FRIEND_DEFS[name])return 'friend';
+ try{ const rec=(S&&S.town&&S.town.people)?S.town.people[name]:null; if(rec){ const h=rec.haunt; if(h==='school'||h==='boarding'||h==='orphanage')return 'classmate'; if(h==='college')return 'classmate'; if(h==='work')return 'coworker'; return (S.met&&S.met['town:'+name])?'neighbor':'stranger' } }catch(e){}
+ try{ if(S&&S.jobInfo&&typeof jobLine47==='function')return 'coworker' }catch(e){}
+ return 'stranger' }
+function locTag191(){ const l=S.location; if(l===homeLoc())return 'home'; if(l==='school')return 'school'; if(l==='work')return 'work'; if(l==='college')return 'campus'; if(['mall','grocery','pawn','store','pharmacy','salon','gym'].indexOf(l)>=0)return 'store'; if(l==='boarding')return 'dorm'; if(l==='orphanage')return 'home'; return 'out' }
+function ctxOf191(){ const tags={}; const lt=locTag191(); tags[lt]=1; tags.place=lt;
+ const hr=S.hour||8; const tod=hr<5?'late':hr<11?'morning':hr<17?'day':hr<21?'evening':'late'; tags[tod]=1; tags.tod=tod;
+ if((tod==='evening')&&S.age>=5&&S.age<=17)tags.schoolnight=1;
+ const wx=S.weather||'sunny'; if(wx==='rain'||wx==='storm')tags.rain=1; if(wx==='snow')tags.snow=1; if(wx==='sunny'&&(tod==='day'))tags.sun=1;
+ const nd=S.needs||{}; if(S.healthSys&&(S.healthSys.sick||S.healthSys.injured))tags.sick=1; if(nd.health!==undefined&&nd.health<28)tags.sick=1; if(nd.hunger!==undefined&&nd.hunger<30)tags.hungry=1; if(nd.energy!==undefined&&nd.energy<25)tags.tired=1;
+ if((S.wanted||0)>=1)tags.wanted=1; if(S.age>=10&&(S.money||0)<8)tags.broke=1; if((S.money||0)>=200)tags.flush=1;
+ try{ const j=(S.journal||[]).slice(0,3).join(' ').replace(/<[^>]*>/g,''); if(/ate|🍽|lunch|breakfast|dinner|snack|meal|cafeteria/i.test(j))tags.ate=1; if(/report card/i.test(j))tags.report=1; if(/arrived|✈|trip|drove|vacation|traveled|travelled/i.test(j))tags.traveled=1; if(/earned \$|shift — earned|payday|got paid|paycheck/i.test(j))tags.earned=1; if(/turned \d|🎂|birthday/i.test(j))tags.birthday=1; if(/leveled up|level up/i.test(j))tags.levelup=1; if(/BUSTED|🚔|arrested/i.test(j))tags.busted=1 }catch(e){}
+ tags.pband=S.age<=4?'toddler':S.age<=9?'kid':S.age<=12?'preteen':S.age<=17?'teen':'adult';
+ return tags }
+/* line banks — entry: [text, tag?, topic?]. Short, spoken, human. */
+const BANK191={
+parent:[
+ ['Dinner\'s at six — no phones at the table! 🍽️',null,'food'],['Who left the fridge open??',null,'food'],['Family movie night Friday — voting is open!',null,'fun'],['I\'m making my famous casserole Sunday',null,'food'],['Did everyone get enough to eat?','home','food'],['This house runs on love and leftovers','home','food'],
+ ['Morning, {n}. Breakfast before anything','morning','food'],['Up and at \'em — big day today','morning','day'],['Sleep okay? You were out like a light','morning','sleep'],
+ ['School night — homework first, then fun','schoolnight','school'],['It\'s getting late, {n}. Wind down','late','sleep'],['Bed soon. And I mean it this time','late','sleep'],
+ ['You look pale, {n}. Sit. I\'m making soup','sick','sick'],['Medicine, water, rest. Doctor\'s orders — mine','sick','sick'],['Eat something, {n}. You can\'t run on empty','hungry','food'],
+ ['I saw that report card. We\'re proud of you','report','school'],['Report cards don\'t raise themselves — good work','report','school'],
+ ['How was the trip? Tell me everything','traveled','trip'],['You earned that money. Save some of it','earned','money'],['Money\'s tight right now — we\'re careful, not worried','broke','money'],
+ ['Happy birthday, {n}! Cake is non-negotiable','birthday','fun'],['Look at you — levelling up in real life','levelup','fun'],
+ ['Rain\'s coming down — umbrella if you\'re heading out','rain','weather'],['Snow day energy! Hot cocoa later','snow','weather'],['Too nice to stay in all day, honestly','sun','weather'],
+ ['{n}, taste this — does it need salt?','home','food'],['Love you, {n}. Pass it on','home','love'],['Proud of you. Just so you know','home','love']],
+step:[
+ ['I\'m trying a new recipe tonight — wish me luck 🍳',null,'food'],['Movie or board game? Your pick tonight',null,'fun'],['Your room\'s looking great, by the way',null,'home'],
+ ['Morning! I saved you the good mug','morning','food'],['School night rules still rule, sorry','schoolnight','school'],['It\'s late — even I\'m calling it a night','late','sleep'],
+ ['Grill weather. Burgers or hot dogs?','sun','food'],['Rainy day = board game day. House rules','rain','fun'],['Soup\'s on if you\'re feeling rough','sick','sick'],
+ ['Heard about the report card — nice work','report','school'],['Welcome back! Trip treat is in the fridge','traveled','trip']],
+caregiver:[
+ ['Lights out at nine, everyone 🏠',null,'sleep'],['Art afternoon sign-ups are by the door 🎨',null,'fun'],['Proud of how everyone\'s settling in',null,'home'],['Dining hall smells amazing today',null,'food'],
+ ['Morning, everyone — breakfast line is open','morning','food'],['It\'s late. Hope House is a sleepy house','late','sleep'],['You look unwell — nurse\'s corner, then rest','sick','sick'],
+ ['Rainy day — indoor voices, indoor plans','rain','weather'],['Sun\'s out! Yard time after lunch','sun','weather'],['Happy birthday to our birthday star!','birthday','fun']],
+staff:[
+ ['Prep hour starts soon — books out 📚',null,'school'],['Dorm inspection Friday. You know the drill',null,'school'],['Lights out means lights OUT',null,'sleep'],['Quiz night teams are posted',null,'fun'],
+ ['Morning. Breakfast, then prep — in that order','morning','school'],['It\'s late for the halls to be this awake','late','sleep'],['If you\'re sick, infirmary. No heroics','sick','sick'],['Good report card term, this dorm','report','school']],
+kidfriend:[
+ ['I traded my pudding for TWO cookies 🍪',null,'food'],['Bet you can\'t find my hiding spot',null,'fun'],['Race you to the dining hall!',null,'fun'],['I\'m basically a snack-trading millionaire',null,'food'],
+ ['I finished a whole book in one day 📚',null,'school'],['Let\'s sit together at dinner!',null,'food'],['I hid a note somewhere in this room…',null,'fun'],
+ ['It\'s DARK dark. I\'m not scared. …a bit scared','late','sleep'],['Morning!! I\'ve been up for HOURS','morning','day'],['It\'s raining — puddle jumping later?','rain','weather'],['SNOW! Race you outside!','snow','weather'],
+ ['You look yucky-sick. I\'ll trade you my juice','sick','sick'],['You came BACK! Was the trip far?','traveled','trip'],['It\'s your birthday?! PARTY MODE','birthday','fun']],
+dormfriend:[
+ ['Rematch tonight. I\'ve been practicing 🎮',null,'game'],['Cafeteria mystery meat… brave or foolish?',null,'food'],['Quiz night — our team is stacked',null,'fun'],['I saved you a seat at prep',null,'school'],
+ ['I aced the practice test, just saying 🏆',null,'school'],['Library after prep? I saved the good table',null,'school'],['Who took my lucky pencil?? ✏️',null,'school'],
+ ['It\'s late — one more game, then sleep. …two more','late','game'],['Morning classes should be illegal','morning','school'],['You look rough. Infirmary exists, you know','sick','sick'],['Report card day. Deep breaths, everyone','report','school']],
+friend:[
+ ['Okay but we NEED to talk about your last post',null,'fun'],['Rematch. Today. I\'ve been practicing 🎮',null,'game'],['Snack run later? I\'m buying',null,'food'],['You\'re my favourite person in this room, don\'t tell',null,'love'],
+ ['Morning, superstar','morning','day'],['It\'s late — text me when you\'re home safe','late','day'],['You look actually sick. Sit down','sick','sick'],['Heard the report card news — huge','report','school'],
+ ['The trip pics?? Obsessed','traveled','trip'],['You got PAID paid. Treats are on you','earned','money'],['Rain check on plans — literally, look outside','rain','weather']],
+partner:[
+ ['There you are. Hi 💕',null,'love'],['I saved you a seat. And the good snacks',null,'food'],['You look tired — come here, sit with me',null,'love'],['Best part of my day, right here',null,'love'],
+ ['Morning, you 💕','morning','love'],['It\'s late. Walk you home?','late','love'],['You\'re sick? I\'m on soup duty','sick','sick'],['Happy birthday to my favourite person','birthday','love'],['Missed you while you were away. Trip good?','traveled','trip']],
+classmate:[
+ ['Did YOU do the homework? Asking for me',null,'school'],['That test?? I blacked out halfway',null,'school'],['Race you to lunch — last one gets the soggy fries',null,'food'],['Our teacher has NO chill today',null,'school'],
+ ['Morning. I did NOT sleep enough','morning','sleep'],['School night… one more episode can\'t hurt','schoolnight','fun'],['Report card day. If I vanish, you know why','report','school'],
+ ['You were GONE gone — trip?? Tell me','traveled','trip'],['Games after school. You\'re on my team',null,'game'],['Rain at recess is a war crime','rain','weather'],['Snow day rules: no homework talk','snow','fun']],
+coworker:[
+ ['Shift\'s nearly done — home stretch',null,'work'],['Coffee first. THEN I\'m a person',null,'work'],['The boss is in a mood today, heads up',null,'work'],['You take lunch yet? Go. I\'ll cover',null,'food'],
+ ['Morning shift crew — let\'s get it','morning','work'],['Payday energy is real today','earned','money'],['Overtime again? They love us, huh','work','work'],
+ ['You look wiped. Break room, ten minutes','tired','work'],['Rain\'s gonna make the commute fun','rain','weather'],['New here tip: the good stapler is hidden','work','work']],
+neighbor:[
+ ['Lovely day for our street, isn\'t it',null,'weather'],['You settling in okay around here?',null,'home'],['Morning! Love what you did with the place','morning','home'],['Heard you were travelling — welcome back','traveled','trip'],['Careful out there — rain\'s turning mean','rain','weather']],
+stranger:[
+ ['Oh — hi. Don\'t think we\'ve met',null,'meet'],['Excuse me — do you know the time?',null,'meet'],['Nice day for it, whatever \'it\' is',null,'weather'],['Careful, that step\'s a tripper',null,'out'],
+ ['Morning rush is no joke today','morning','out'],['It\'s late for this street to be busy','late','out'],['Rain caught everyone out today','rain','weather'],['You dropped— no wait, false alarm',null,'out']]};
+/* toddler-directed variants: adults talking to a 1–4 player */
+const TODDLER_TO191={
+parent:[['Who\'s my big kid? YOU are','home','love'],['Num-num time! Yummy bites make you strong','home','food'],['Uh oh — someone looks sleepy. Nap soon','tired','sleep'],['No no, gentle hands, sweetie','home','love'],['You did it! Clap clap clap!','home','fun'],['Boo-boo? Kiss it better, all done','sick','sick'],['Rain rain! Splish splash in your boots','rain','weather'],['Wakey wakey! The sun says hi','morning','day'],['Shhh… night night soon, little one','late','sleep'],['Happy birthday, tiny human!','birthday','fun']],
+caregiver:[['Small steps, big feelings — we\'ve got you','home','love'],['Snack time, little ones!','home','food'],['Nap mats out soon — sleepy heads rest','tired','sleep'],['Gentle hands, kind words','home','love'],['Look at you walking like a pro!','home','fun']],
+step:[['Hey, little buddy — hungry?','home','food'],['High five? …Too slow! Got you','home','fun'],['Sleepy face detected. Nap o\'clock','tired','sleep'],['You are the cutest alarm clock ever','morning','day']],
+staff:[['Little ones stay with a grown-up, always','home','love'],['Snack, story, nap — that\'s the schedule','home','fun']]};
+const PLAYER_REPLIES191={
+generic:['lol fr? 😂','no wayyy','wait — tell me more!','same tbh','ok that\'s actually funny 😭','👀 go on…','bet. I\'m in','omg YES'],
+food:['okay now I\'m STARVING','you had me at snacks','elite taste, as always','we ride at dawn. for food'],
+school:['don\'t remind me 😭','I studied! …mostly','our grades are our Roman Empire','pray for my report card'],
+work:['one more shift, we survive','coffee is a coworker too','clock out cannot come faster','we EARNED that break'],
+game:['rematch. I demand a rematch','you\'re going DOWN this time','one more round. one!','my win streak says otherwise'],
+money:['we\'re basically rich now','save some, spend some — balance','treats are ON me','future us says thanks'],
+trip:['the trip?? ELITE','I have stories for DAYS','missed this place though','next trip, you\'re coming'],
+sick:['I feel like a phone at 2%','soup and blankets era','send snacks and sympathy','I\'ll live. dramatically, but I\'ll live'],
+sleep:['five more minutes…','my bed misses me too','sleep is my love language','zzz — sorry, what?'],
+weather:['the sky is doing THE MOST','umbrella era incoming','perfect stay-in weather tbh','nature said plot twist'],
+love:['stoppp, you\'re sweet','right back at you ❤️','this is why you\'re my person','okay, heart officially melted'],
+meet:['hi! I\'m {n}','oh hey — new face!','pleasure\'s all mine','we simply must be friends now'],
+day:['big day energy','let\'s make it a good one','today feels LUCKY','coffee first, world second'],
+out:['this town never sleeps fr','people-watching: elite sport','main street main character hours','love it out here'],
+fun:['I\'m SO in','say less. SAY LESS','this is the content I live for','core memory loading…'],
+home:['home sweet home era','this house has seen THINGS','cozy is a personality now','fridge check in 3… 2…']};
+const PAIR_REPLIES191={
+generic:['Ha! Classic 😂','You always say that!','Wait, really??','Okay, that\'s actually a good point','Tell me more at dinner','No way. NO way','I knew it!!','That\'s going in the group chat'],
+food:['Now I\'m hungry. Thanks for that','Save me some!!','You and your recipes…','Second dinner. I said what I said'],
+school:['Don\'t remind me','We\'re all in this together','Study group. Tonight. Mandatory','The teacher fears us, honestly'],
+work:['Clock-watching is a skill too','We survive another day','Break room. Now','The boss could never'],
+game:['Rematch accepted','You wish','I let you win that one','Controller two is MINE'],
+money:['Look at us, thriving','Savings account says hi','Don\'t spend it all in one place','Rich era loading'],
+trip:['Take me next time!','Photos or it didn\'t happen','You went WHERE?','Travel era looks good on you'],
+sick:['Soup. I\'ll make soup','Rest means REST','You and germs, a saga','Feel better or else'],
+sleep:['Same. I\'m a zombie','Early night, we\'ve earned it','Dream of snacks','Lights out, legends'],
+weather:['The sky said drama','Umbrellas up, spirits down','Cozy day supremacy','Weather: 0, us: unbothered'],
+love:['You two are adorable','Family: the original group chat','Heart officially full','Say it louder'],
+meet:['New friend alert!','This town keeps growing','Introductions all round','Welcome to the chaos'],
+day:['Big day, big energy','Let\'s get it','Today is OUR day','Manifesting: snacks'],
+out:['This town, honestly','Never a dull corner','People-watching gold','Main character street'],
+fun:['I\'m in. Always in','Core memory unlocked','This is the good stuff','Peak living, this'],
+home:['This house runs the show','Home team forever','The fridge agrees','Cozy HQ, reporting in']};
+const TODDLER_REPLIES191=['me do it!','no nap! …okay nap','mine!','look! LOOK!','yummy yummy','again! again!','uh oh…','mama? dada? hi!','big kid!!','choo choo!','rawr means I love you','peekaboo!'];
+const KID_REPLIES191=['that\'s SO cool','can I have a snack after?','I\'m telling everyone at school','race you!','when I grow up I\'m doing that too','best day EVER','one more minute, pleeease','I drew that in class!'];
+const usedLines191={};
+function pickFresh191(name,pool){ if(!pool||!pool.length)return null; const used=usedLines191[name]||(usedLines191[name]=[]); let fresh=pool.filter(function(e){ return used.indexOf(e[0])<0 }); if(!fresh.length){ usedLines191[name]=[]; fresh=pool } const e=fresh[Math.floor(Math.random()*fresh.length)]; used.push(e[0]); if(used.length>10)used.shift(); return e }
+function linePool191(rel,ctx){ let bank=BANK191[rel]||BANK191.stranger; if(ctx.pband==='toddler'&&TODDLER_TO191[rel])bank=TODDLER_TO191[rel]; const spec=[],base=[]; bank.forEach(function(e){ if(e[1]&&ctx[e[1]])spec.push(e); else if(!e[1])base.push(e) }); if(ctx.pband==='toddler'&&(rel==='parent'||rel==='caregiver'||rel==='step'))return spec.concat(base); if(spec.length&&Math.random()<0.7)return spec; return base.concat(spec) }
+function pickLine191(name,ctx){ const rel=relOf191(name); const e=pickFresh191(name,linePool191(rel,ctx||ctxOf191())); if(!e)return null; return {text:e[0].split('{n}').join(S.name),topic:e[2]||'generic',rel:rel} }
+function replyFor191(topic,ctx){ if(ctx.pband==='toddler')return pickArr(TODDLER_REPLIES191); if(ctx.pband==='kid')return pickArr(KID_REPLIES191.concat(PLAYER_REPLIES191[topic]||[])); return pickArr((PLAYER_REPLIES191[topic]||[]).concat(PLAYER_REPLIES191.generic)) }
+function pairReplyFor191(topic){ return pickArr((PAIR_REPLIES191[topic]||[]).concat(PAIR_REPLIES191.generic)) }
+function sayDur191(text){ return Math.max(2800,Math.min(5400,2300+String(text).length*46)) }
+/* ---- speaker plumbing: household NPCs, townsfolk, guests, dates, sleepovers ---- */
+function speakers191(){ const out=[]; const now=performance.now();
+ try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in'&&(typeof npcHere86!=='function'||npcHere86(n)))out.push({name:n.name,spr:n,set:function(t,u){ n.say=t; n.sayUntil=u },until:function(){ return n.sayUntil||0 },clear:function(){ if(n.sayUntil>performance.now())n.sayUntil=performance.now() }}) }) }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')out.push({name:p.name,spr:p,set:function(t,u){ p.say=t; p.sayUntil=u },until:function(){ return p.sayUntil||0 },clear:function(){ if(p.sayUntil>performance.now())p.sayUntil=performance.now() }}) }) }catch(e){}
+ try{ if(S.guest&&S.guest.day===S.day&&S.location===homeLoc()){ const g=S.guest; out.push({name:g.name,spr:null,set:function(t,u){ g.say=t; g.sayUntil=u },until:function(){ return g.sayUntil||0 },clear:function(){ if((g.sayUntil||0)>performance.now())g.sayUntil=performance.now() }}) } }catch(e){}
+ try{ if(S.sleepover&&S.sleepover.at==='mine'){ const so=S.sleepover; out.push({name:so.guest,spr:null,set:function(t,u){ so.say=t; so.sayUntil=u },until:function(){ return so.sayUntil||0 },clear:function(){ if((so.sayUntil||0)>performance.now())so.sayUntil=performance.now() }}) } }catch(e){}
+ try{ if(window._dateWith){ out.push({name:window._dateWith,spr:null,set:function(t,u){ window._dateSay={text:t,until:u} },until:function(){ return (window._dateSay&&window._dateSay.until)||0 },clear:function(){ if(window._dateSay&&window._dateSay.until>performance.now())window._dateSay.until=performance.now() }}) } }catch(e){}
+ return out }
+function anySpeaking191(now){ if(playerSay&&now<playerSay.until)return true; return speakers191().some(function(sp){ return sp.until()>now }) }
+window._talkBusy191=function(){ try{ return anySpeaking191(performance.now()) }catch(e){ return false } };
+let nextTalk191=0; const exchangeLog191=[];
+function bubbleSay191(sp,text,now){ sp.set(text,now+sayDur191(text)); return sayDur191(text) }
+/* ---- the engine: replaces runConversations (called every frame by the shipped NPC update) ---- */
+runConversations=function(now){
+ if(!S||typeof inGame==='undefined'||!inGame)return;
+ const modal=document.getElementById('modal');
+ if(modal&&modal.classList.contains('open')){ /* PAUSE: a sheet is up — kill live bubbles, schedule nothing */
+  speakers191().forEach(function(sp){ sp.clear() }); if(playerSay&&now<playerSay.until)playerSay.until=now;
+  if(nextTalk191<now+5000)nextTalk191=now+5000; return }
+ if(now<nextTalk191)return;
+ if(anySpeaking191(now)){ nextTalk191=now+2500; return }
+ const folks=speakers191();
+ if(!folks.length){ nextTalk191=now+4000; return }
+ const ctx=ctxOf191();
+ const a=folks[Math.floor(Math.random()*folks.length)];
+ try{ if(typeof gentleFocus==='function')gentleFocus(a.spr||{x:charX,y:charY}) }catch(e){}
+ const roll=Math.random();
+ if(folks.length>=2&&roll<0.42){ /* pair exchange: A speaks, B ANSWERS the topic */
+  let b=folks[Math.floor(Math.random()*folks.length)]; if(b===a)b=folks[(folks.indexOf(a)+1)%folks.length];
+  const L=pickLine191(a.name,ctx); if(!L){ nextTalk191=now+6000; return }
+  const dur=bubbleSay191(a,L.text,now);
+  exchangeLog191.push({who:a.name,rel:L.rel,line:L.text,reply:null,ctx:ctx.place+'/'+ctx.tod}); if(exchangeLog191.length>24)exchangeLog191.shift();
+  const bb=b, topic=L.topic;
+  setTimeout(function(){ try{ if(!S)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(anySpeaking191(performance.now()))return; const r=pairReplyFor191(topic); const d2=bubbleSay191(bb,r,performance.now()); nextTalk191=Math.max(nextTalk191,performance.now()+d2+14000+Math.random()*14000); const last=exchangeLog191[exchangeLog191.length-1]; if(last)last.reply=bb.name+': '+r }catch(e){} },dur+350);
+  nextTalk191=now+dur+30000; /* ceiling; the reply's own timer tightens it */
+ } else if(roll<0.82){ /* to the player: line, then the player's answering bubble */
+  const L=pickLine191(a.name,ctx); if(!L){ nextTalk191=now+6000; return }
+  const dur=bubbleSay191(a,L.text,now);
+  exchangeLog191.push({who:a.name,rel:L.rel,line:L.text,reply:null,ctx:ctx.place+'/'+ctx.tod}); if(exchangeLog191.length>24)exchangeLog191.shift();
+  const topic=L.topic, who=a.name;
+  setTimeout(function(){ try{ if(!S)return; const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return; if(anySpeaking191(performance.now()))return; const r=replyFor191(topic,ctxOf191()).split('{n}').join(S.name); playerSay={text:r,until:performance.now()+2600}; try{ adj('social',1) }catch(e){} try{ if(typeof convoDone93==='function')convoDone93(who) }catch(e){} const last=exchangeLog191[exchangeLog191.length-1]; if(last)last.reply=S.name+': '+r }catch(e){} },dur+300);
+  nextTalk191=now+dur+2600+14000+Math.random()*14000;
+ } else { /* a solo remark, in character */
+  const L=pickLine191(a.name,ctx); if(!L){ nextTalk191=now+6000; return }
+  const dur=bubbleSay191(a,L.text,now);
+  exchangeLog191.push({who:a.name,rel:L.rel,line:L.text,reply:null,ctx:ctx.place+'/'+ctx.tod}); if(exchangeLog191.length>24)exchangeLog191.shift();
+  nextTalk191=now+dur+14000+Math.random()*14000;
+ } };
+/* ---- the bubble itself: the speaker's NAME rides on top of their line ---- */
+function bubbleName191(text){ try{
+ if(playerSay&&playerSay.text===text&&S)return S.name;
+ const all=[]; try{ if(typeof npcs!=='undefined'&&npcs)all.push.apply(all,npcs) }catch(e){} try{ if(typeof townsfolk!=='undefined'&&townsfolk)all.push.apply(all,townsfolk) }catch(e){}
+ for(let i=0;i<all.length;i++){ if(all[i].say===text)return all[i].name }
+ if(S&&S.guest&&S.guest.say===text)return S.guest.name;
+ if(S&&S.sleepover&&S.sleepover.say===text)return S.sleepover.guest;
+ if(window._dateSay&&window._dateSay.text===text&&window._dateWith)return window._dateWith;
+ return '' }catch(e){ return '' } }
+const _dsb191=drawSpeechBubble;
+drawSpeechBubble=function(ctx,cx,bottomY,text){
+ const nm=bubbleName191(text); if(!nm){ _dsb191(ctx,cx,bottomY,text); return }
+ ctx.font='bold 13.5px sans-serif';
+ const words=String(text).split(' '); const lines=[]; let line='';
+ words.forEach(function(w){ const t=line?line+' '+w:w; if(t.length>20&&line){ lines.push(line); line=w } else line=t });
+ if(line)lines.push(line); const show=lines.slice(0,3);
+ let w=ctx.measureText(nm).width+24; show.forEach(function(l){ w=Math.max(w,ctx.measureText(l).width+24) });
+ const h=show.length*17+14+15;
+ let x=cx-w/2; x=Math.max(4,Math.min(896-w,x)); const y=bottomY-h;
+ ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.roundRect(x+2,y+3,w,h,10); ctx.fill();
+ ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.roundRect(x,y,w,h,10); ctx.fill(); ctx.strokeStyle='#14100c'; ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+ ctx.beginPath(); ctx.moveTo(cx-6,y+h-1); ctx.lineTo(cx+6,y+h-1); ctx.lineTo(cx,y+h+8); ctx.closePath(); ctx.fillStyle='#ffffff'; ctx.fill();
+ ctx.font='900 10.5px sans-serif'; ctx.fillStyle='#b45309'; ctx.fillText(nm.toUpperCase(),x+11,y+14);
+ ctx.font='bold 13.5px sans-serif'; ctx.fillStyle='#14100c'; show.forEach(function(l,i){ ctx.fillText(l,x+11,y+20+15+i*17) }) };
+function samples191(){ const saveAge=S.age, saveLoc=S.location, saveHour=S.hour;
+ const out={};
+ const grab=function(name,mut){ try{ if(mut)mut(); const c=ctxOf191(); const L=pickLine191(name,c); out[relOf191(name)+' ('+name+', '+c.place+'/'+c.tod+(c.pband==='toddler'?', toddler player':'')+')']=L?L.text:null }catch(e){ out[name]=null } };
+ grab('Mom',function(){ S.location=homeLoc(); S.hour=8; S.age=9 });
+ grab('Mom',function(){ S.age=2 });
+ grab('Leo',function(){ S.age=8 });
+ grab('Riley',function(){ S.location='boarding'; S.age=14 });
+ grab('Sam',function(){ S.age=15 });
+ S.location='school'; S.hour=12; grab('Classmate Probe',null);
+ try{ const rec={name:'Classmate Probe',haunt:'school',trait:'chill'}; if(!S.town)S.town={people:{}}; S.town.people['Classmate Probe']=rec; const c=ctxOf191(); const L=pickLine191('Classmate Probe',c); out['classmate (school, midday)']=L?L.text:null; delete S.town.people['Classmate Probe'] }catch(e){}
+ S.location='work'; grab('Workmate Probe',null);
+ try{ if(!S.town)S.town={people:{}}; S.town.people['Workmate Probe']={name:'Workmate Probe',haunt:'work',trait:'kind'}; const c2=ctxOf191(); const L2=pickLine191('Workmate Probe',c2); out['coworker (work)']=L2?L2.text:null; delete S.town.people['Workmate Probe'] }catch(e){}
+ S.location='street'; try{ if(!S.town)S.town={people:{}}; S.town.people['Passerby Probe']={name:'Passerby Probe',haunt:'street',trait:'shy'}; const c3=ctxOf191(); const L3=pickLine191('Passerby Probe',c3); out['stranger (street)']=L3?L3.text:null; delete S.town.people['Passerby Probe'] }catch(e){}
+ S.age=saveAge; S.location=saveLoc; S.hour=saveHour; return out }
+function forceTalk191(){ nextTalk191=0; const now=performance.now(); runConversations(now); return exchangeLog191[exchangeLog191.length-1]||null }
+window.__v191={relOf191:relOf191,ctxOf191:ctxOf191,pickLine191:pickLine191,replyFor191:replyFor191,speakers191:speakers191,anySpeaking191:anySpeaking191,samples191:samples191,forceTalk191:forceTalk191,exchangeLog191:exchangeLog191,BANK191:BANK191,version:function(){ return GAME_VERSION }};
+console.log('💬 AquaLife v'+GAME_VERSION+' — v191: real conversation bubbles — every spoken bubble carries its speaker\'s name; one voice at a time (legacy chatter gated on the same busy flag); ambient talk pauses while any sheet is open; lines are picked from relationship × place × time of day × the moment (journal & needs: ate / report card / travelled / earned / sick / hungry / tired / wanted / broke) × age-truth (toddler-directed talk & babble replies for 1–4, kid talk for kids, adult talk for adults); replies answer the line\'s topic; 14–28s of quiet between beats; last-10-lines-per-speaker anti-repeat');
 </script>
 
 </body>
