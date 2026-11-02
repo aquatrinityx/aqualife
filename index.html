@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=194;
+const GAME_VERSION=195;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -1090,11 +1090,8 @@ function confettiBurst(){ sfx('win'); buzz([50,30,50,30,90]); const h=document.q
 // v25: EMOJI CONFETTI — a celebration bursts emojis flying everywhere across the whole screen, themed to the moment
 function emojiConfetti(set,n){ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return; const bits=(set&&set.length)?set:['🎉','⭐','✨','🌟','💛','🎊']; const count=n||26; const spread=Math.min(window.innerWidth||400,620)*0.55; for(let i=0;i<count;i++){ const s=document.createElement('span'); s.className='emojiFx'; s.textContent=bits[i%bits.length]; const ang=Math.random()*Math.PI*2, dist=110+Math.random()*spread; s.style.left=(50+(Math.random()*16-8))+'vw'; s.style.top=(42+(Math.random()*14-7))+'vh'; s.style.setProperty('--fx',(Math.cos(ang)*dist)+'px'); s.style.setProperty('--fy',(Math.sin(ang)*dist-50)+'px'); s.style.setProperty('--fr',(Math.random()*560-280)+'deg'); s.style.fontSize=(18+Math.random()*20)+'px'; s.style.animationDelay=(Math.random()*0.25)+'s'; document.body.appendChild(s); setTimeout(()=>s.remove(),3000) } }
 function miniConfetti(){ const h=document.querySelector('.headline'); if(!h)return; const bits=['✨','🎉','⭐','💛','🌟']; for(let i=0;i<7;i++){const s=document.createElement('span'); s.className='confetti'; s.textContent=bits[i%5]; s.style.left=(6+Math.random()*88)+'%'; s.style.animationDelay=(Math.random()*.2)+'s'; h.appendChild(s); setTimeout(()=>s.remove(),2000)} }
-// ---- QUICK-REWARD TUNING (internal polish): tiny wins get celebrated constantly — hot-streak bonuses on back-to-back actions, lucky micro-moments, a small delight most days, micro-confetti on real money gains. Small numbers roll and flash exactly like big ones.
-let actStreak=0;
-function dopamineBeat(){ if(!S)return; actStreak++;
- if(actStreak%5===0){ const bonus=4+Math.floor(Math.random()*5); setTimeout(function(){ if(!S)return; money(bonus,'✨ Hot-streak bonus'); toast('🔥 '+actStreak+' actions in a flow — hot-streak bonus +$'+bonus+'!'); miniConfetti(); log('🔥 Hot streak! '+actStreak+' actions back-to-back — a lucky $'+bonus+' bonus landed in your cash. Momentum is a real mechanic here.'); save(); render() },380) }
- else if(Math.random()<0.09){ const treats=[['✨ Lucky moment — a $3 coin glints on the ground. Yours now.',function(){ money(3,'✨ Lucky find') }],['🎵 Your song comes on at the perfect moment. Instant mood lift.',function(){ adj('fun',6) }],['🍀 Right place, right time — somebody hands you the last free sample. Elite.',function(){ adj('hunger',6); adj('fun',4) }]]; const t=pickArr(treats); setTimeout(function(){ if(!S)return; t[1](); toast(t[0].split(' — ')[0]+'!'); miniConfetti(); log(t[0]); save(); render() },380) } }
+// ---- v195 (Howard's order): THE FLOW SYSTEM IS DEAD — the 🔥 action-flow counter, the hot-streak bonus payouts and their toasts, and the lucky-moment treats that rode along with them are REMOVED at the source. There is no actStreak any more: actions simply happen, and money only ever moves because an action moved it. (A streak that lives INSIDE a phone app is the app's own business and is untouched.) dopamineBeat stays as an empty stub because the shipped activity engine still calls it at the end of every action — it now does exactly nothing, forever.
+function dopamineBeat(){ /* v195: no flow, no streak, no bonus — the action was the reward. */ }
 function dailyDelight(){ if(!S||Math.random()>0.45)return; const opts=[function(){ const amt=2+Math.floor(Math.random()*7); money(amt,'✨ Found money'); return '✨ Found $'+amt+' on the ground — the day started generous.' },function(){ adj('fun',6); return '🎵 The perfect song found you at the perfect moment. Instant main-character energy.' },function(){ ensure21(); S.fridge.snacks++; return '🍪 A neighbour dropped off snacks “just because” — +1 snack waiting in the fridge.' },function(){ addXp(6,'social'); return '⭐ A little kid pointed at you today and whispered “cool.” Officially certified.' }]; const msg=opts[Math.floor(Math.random()*opts.length)](); log(msg); toast('✨ A good little moment landed today'); miniConfetti() }
 function applyStatFx(prev){ if(!prev||!S)return; const cur=snapStats(); if(!cur)return; const app=document.getElementById('app');
  app.querySelectorAll('[data-roll]').forEach(el=>{const k=el.getAttribute('data-roll'); if(prev[k]!==undefined&&cur[k]!==undefined&&prev[k]!==cur[k]){ if(k==='xp'&&cur.level>prev.level)el.textContent=cur[k]; else rollNum(el,prev[k],cur[k],650)}});
@@ -4539,11 +4536,7 @@ function todCardHtml72(){ if(!S||S.age<1||S.age>4)return ''; ensure72(); const T
  +'<h4 style="margin:12px 0 2px">⭐ Toddler Skills — Lv 1–10</h4>'
  +TOD_SKILLS72.map(function(sk){ const xp=T.skills[sk[0]]||0,lv=todLv72(xp); const cur=TOD_XP72[lv-1]||0,nx=TOD_XP72[lv]||null; const pct=nx?Math.round((xp-cur)/(nx-cur)*100):100; return '<div class="todSk"><span style="width:150px;flex:none">'+sk[1]+'</span><span class="tr"><span class="fl" style="display:block;width:'+pct+'%"></span></span><b style="flex:none">Lv '+lv+'</b><span class="small" style="flex:none">'+xp+' XP</span></div>' }).join('')
  +'<p class="small">Skills grow by DEVELOPMENT, not just birthdays — built day by day by the care of the grown-ups, and everything earned here carries forward at age 5.</p></div>';
- // relationships
- const relRows=Object.keys(T.rels).map(function(k){ const r=T.rels[k]; return '<div class="kv"><span>'+r.icon+' '+r.label+'</span><span style="text-align:right">❤️ Bond <b>'+Math.round(r.bond)+'</b> • 🤝 Trust '+Math.round(r.trust)+' • 👋 Familiarity '+Math.round(r.fam)+'<br>💛 Friendship '+Math.round(r.friend)+' • 🛋️ Comfort '+Math.round(r.comfort)+'</span></div>' }).join('');
- const petRows=(S.pets||[]).map(function(p){ return '<div class="kv"><span>'+p.icon+' '+p.name+' (pet)</span><b>❤️ Bond '+Math.round(p.care47||80)+'</b></div>' }).join('');
- const friendRows=T.friends.map(function(f){ return '<div class="kv"><span>🧒 '+f.name+(f.pts>=70?' — 💛 BEST FRIEND':'')+'</span><b>Friendship '+Math.round(f.pts)+'</b></div>' }).join('');
- h+='<div class="card"><h3>👨‍👩‍👧 Family & Relationships</h3>'+relRows+petRows+(friendRows||'<p class="small">No little friends yet — Make Friend (Social) or preschool opens that world.</p>')+'<p class="small">Grandma &amp; Grandpa are simply family, like everyone else on this list — no special visit button, just grandparents, in the family like they always were. Hugs, stories, food requests and asking to be carried live in the 🤝 Social actions — bonds grow every time they are used. Age 1 needs the most caregiver help; by 4, independence does the heavy lifting.</p></div>';
+ /* v195: NO Family & Relationships card on the toddler Me card — family & relationships are single-homed in the ❤️ Social tab (v193), so the read-only meters summary that used to render here is removed entirely. The T.rels / pets / friends DATA is untouched (Social reads it); meTodRegroup148's fam lookup null-checks and simply finds nothing now. */
  // preschool
  if(S.age>=3){ if(!stageEnrolled()){ h+='<div class="card" style="border-color:var(--accent2)"><h3>🧸 Preschool — unlocked!</h3><p>'+S.name+' is preschool age (3–4). Enroll at '+schoolName('pre')+' to open circle time, classmates, story time, arts & crafts, playground, group games and the road to kindergarten.</p><button class="btn orange" onclick="openSheet(enrollSheetHtml(schoolStageKey(S.age)))">🎒 Enroll at '+schoolName('pre')+'</button></div>' }
  else { h+='<div class="card" style="border-color:var(--accent2)"><h3>🧸 Preschool — '+schoolName('pre')+'</h3><div>'+[['social','👥 Social Development'],['comm','🗣️ Communication'],['creativity','🎨 Creativity'],['learn','📚 Early Learning'],['indep','🎒 Independence']].map(function(p){ return todBar72(p[1],T.pre[p[0]]||0,'#f59e0b') }).join('')+'</div><p class="small" style="margin-top:6px">The preschool day runs itself now — the teachers lead circle time, stories, crafts and the playground, and the progress lands here on its own, day by day. It feeds the same toddler skills — and strong preschool progress is kindergarten readiness at age 5.</p></div>' } }
@@ -17073,14 +17066,14 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v188: 🎓 school = 💼 work �
 function ensure190(){ if(!S)return null; if(!S.v190||typeof S.v190!=='object')S.v190={out:null}; if(S.v190.out===undefined)S.v190.out=null; return S.v190 }
 function absMin190(){ try{ return (S.day-1)*1440+(typeof nowMin57==='function'?nowMin57():((S.hour||0)*60)) }catch(e){ try{ return (S.day-1)*1440+(S.hour||0)*60 }catch(e2){ return 0 } } }
 function escortedOuting190(){ try{ if(!S||S.deadFlag)return false; if(S.age>=18)return false; if(S.origin==='orphan')return false; if(!S.escort)return false; if(S.vac&&S.vac.active)return false; if(S.jail&&S.jail.in)return false; if(S.location==='school')return false; if(typeof homeLoc!=='function')return false; if(S.location===homeLoc())return false; return true }catch(e){ return false } }
-function armOuting190(){ const V=ensure190(); if(!V)return; V.out={dest:S.location,cg:S.escort,due:absMin190()+60,pending:false}; try{ save() }catch(e){} }
+function armOuting190(){ const V=ensure190(); if(!V)return; V.out={dest:S.location,cg:S.escort,due:absMin190()+90,pending:false}; try{ save() }catch(e){} }
 function busyForHome190(){ try{ const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return true; const d=document.getElementById('dayCard'); if(d&&d.classList.contains('show'))return true; if(window._drv176)return true; if(typeof activity!=='undefined'&&activity)return true; return false }catch(e){ return false } }
 function fireOuting190(){ const V=ensure190(); if(!V||!V.out)return; const cg=V.out.cg||S.escort||'Your grown-up'; let hl='house'; try{ hl=homeLoc() }catch(e){} V.out=null; try{ save() }catch(e){}
- try{ log('🏠⏰ OUTING OVER — an hour out with '+cg+' is a good outing, and outings with a grown-up always end the same way: '+cg+' gathers you up and takes you home. No hunting for the way back, no getting stranded — home, safe, every time.') }catch(e){}
+ try{ log('🏠⏰ OUTING OVER — an hour and a half out with '+cg+' is a good outing, and outings with a grown-up always end the same way: '+cg+' gathers you up and takes you home. No hunting for the way back, no getting stranded — home, safe, every time.') }catch(e){}
  try{ goLoc(hl) }catch(e){} }
 function headHome190(){ if(!S)return; let hl='house'; try{ hl=homeLoc() }catch(e){} try{ goLoc(hl) }catch(e){} }
 function homeBtnShow190(){ try{ if(!S||!inGame||S.deadFlag)return false; if(S.age>=18)return false; if(S.jail&&S.jail.in)return false; if(typeof homeLoc!=='function')return false; if(S.location===homeLoc())return false; if(typeof schoolBlock151==='function'&&schoolBlock151())return false; return true }catch(e){ return false } }
-function syncHomeBtn190(){ try{ const show=homeBtnShow190(); let b=document.getElementById('homeBtn190'); if(!show){ if(b)b.remove(); return } if(!b){ b=document.createElement('button'); b.id='homeBtn190'; b.type='button'; b.className='homeBtn190'; b.setAttribute('aria-label','Head home — always allowed'); b.onclick=function(){ headHome190() }; document.body.appendChild(b) } const t='🏠 Head home'+(S.escort?' — '+S.escort+' takes you':''); if(b.textContent!==t)b.textContent=t }catch(e){} }
+function syncHomeBtn190(){ /* v195 (Howard's order): the 🏠 Head home pill is REMOVED — this sync now only ever takes a pill away (e.g. one left on screen by an older build), it never creates one. Kids do not drive the schedule; the escort brings them home (see the v195 layer: 1.5-hour outings, warned out loud first). */ try{ const b=document.getElementById('homeBtn190'); if(b)b.remove() }catch(e){} }
 try{ const _st190=document.createElement('style'); _st190.id='style190'; _st190.textContent='.homeBtn190{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--dockH,64px) + var(--sheetH51,0px) + 10px);z-index:46;background:#f97316;color:#fff;border:2.5px solid #ffb703;border-radius:999px;padding:12px 22px;font-family:inherit;font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 10px 26px #00000055;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}.homeBtn190:active{transform:translateX(-50%) scale(.95)}'; document.head.appendChild(_st190) }catch(e){}
 setInterval(function(){ try{
  if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag){ syncHomeBtn190(); return }
@@ -17872,6 +17865,184 @@ try{
     }catch(e){}
   },1600);
   console.log('[AquaLife v194] 🥊 Toddler tussle fix live — one tussle a day from every path, born tap-stamped so its sheet can never be queued, queue purged at the end, closing its sheet breaks it off clean, watchdog keeps a live tussle on screen');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v195: 🧸 THE CARE BUILD — Howard's six standing orders (Nov 2, 2026).
+   PART 1 — DAYCARE IS PHYSICAL: coverage used to SAY "🏫 Daycare is watching {child}" while the child stood in the living room. Now daycare is a real place (a real location, 'daycare', with its own rooms and scene): when coverage books daycare, a parent/caregiver DRIVES the child there on the shipped drive sheet, the child's location becomes daycare and STAYS daycare — watched, playing, daycare activities all happen THERE — until a pickup drive brings them home when the stretch ends. The impossible state can no longer occur: no drive, no daycare; the Me-tab coverage card only ever says daycare about a child who is actually there, and household kids at daycare are not drawn at home and not in the home room lists (kidHere86 gate). SAFETY NET (labeled default): daycare closes at 6:00 PM — if the day ends with no pickup, a parent collects the child at closing, the journal notes it, and daycare coverage never re-books that day: no child is ever stranded overnight. Enrollment and costs are untouched — this changes presence/transport truth, not prices.
+   PART 2 — BABYSITTER HIRING: Phone → 🧹 Services gains a "Your Babysitter" card on a PARENT's phone only (18+ with kids — it is never injected for a toddler or kid player). It opens an APPLICANT LIST: 8 generated candidates, each card showing name, age, gender, experience, certifications and record/history, filterable by age, gender, qualifications and records. Hiring writes the chosen applicant into the shipped sitter record (S.v120.sitter), so the whole care system — coverage, the knock, the sittings, the 🌈 Babysitter label — uses them; hiring another applicant replaces them. Fees ride the game's existing babysitter machinery exactly as before: the house-standard $20 per sitting (coverage charge + Services booking), so no new rate table was needed.
+   PART 3 — OUTINGS, REVISED (source edits in the v190 layer + this layer): the 🏠 Head home pill is REMOVED at the source (syncHomeBtn190 now only ever removes one); the escorted outing auto-return moves from 60 to 90 game-minutes at the source (armOuting190), same deferral law; and ~15 game-minutes before the ride home the ESCORT SAYS SO — a real speech bubble over the escort in the scene (the shipped drawNPCSprite/drawSpeechBubble channel), with fireOuting190 wrapped so a return that somehow reaches its moment unwarned speaks first and waits two game-minutes: the ride home NEVER arrives unannounced.
+   PART 4 — FLOW/STREAK REMOVED (source edit): dopamineBeat is emptied at the source — no flow counter, no "actions in a flow" tracking, no hot-streak bonus payouts, no flow toasts, no lucky treats; actions simply happen and money only moves by the actions themselves. A streak living INSIDE a phone app is untouched, per Howard's carve-out.
+   PART 5 — DAILY-PLAY AWARD: once per REAL calendar day, the first time a life is loaded and in play, the current character is paid a daily-play bonus: +$10 on streak day 1, +$2 per additional consecutive day, capped at $30 (day 3 = $14, day 11+ = $30). The streak lives in a device-level store (localStorage 'aqualifeDaily.v1', the trails store's pattern) — it survives lives and SAVE_KEY is untouched; missing a day resets it to day 1. Announced once with a single queued toast: "🎁 Daily play bonus — Day {N} streak: +${X}".
+   PART 6 — RECAP CAUSALITY: the while-you-were-away simulation no longer rolls a bare title off the event pool. Every away entry is generated from the household's REAL state — who is actually home, their ages, the household Bond, the home's cleanliness, a kid's real happiness — and the simulated act actually happens in state (a scribbled wall dirties the home, an argument costs Bond, a story raises the kid's happiness). Each entry narrates what happened AND why, traceable to that act; if nothing with a cause can happen, no entry is made. The recap sheet renders the cause under every entry, generalising the v193 Bond-cause footer. Saves carry over: everything new lives in S.v195, defaulted lazily; SAVE_KEY untouched. ================= */
+(function(){
+try{
+function ensure195(){ if(!S)return null; if(!S.v195||typeof S.v195!=='object')S.v195={}; const V=S.v195; if(!V.dc||typeof V.dc!=='object')V.dc={at:false,by:'',day:0}; if(V.dc.at===undefined)V.dc.at=false; if(!Array.isArray(V.dcKids))V.dcKids=[]; if(V.dcKidsDay===undefined)V.dcKidsDay=0; if(V.dcClosed===undefined)V.dcClosed=0; if(!Array.isArray(V.apps))V.apps=[]; if(V.hiredId===undefined)V.hiredId=null; return V }
+function modalOpen195(){ const m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+function cov195(){ try{ const V9=ensure119(); return (V9&&V9.coverage&&V9.coverage.day===S.day)?V9.coverage:null }catch(e){ return null } }
+function isParent195(){ try{ return !!S&&S.age>=18&&!!(S.kids&&S.kids.length) }catch(e){ return false } }
+if(S)ensure195();
+
+/* ================= PART 1 — DAYCARE IS A REAL PLACE ================= */
+try{ if(typeof TRAVEL_OPTS!=='undefined'&&!TRAVEL_OPTS.find(function(o){ return o[0]==='daycare' }))TRAVEL_OPTS.push(['daycare','🏫 Daycare — where the little ones actually go']) }catch(e){}
+try{ if(typeof AREA_ROOMS123!=='undefined'&&!AREA_ROOMS123.daycare)AREA_ROOMS123.daycare=[['play','🧸','Playroom'],['nap','🛏️','Nap Corner'],['yums','🍎','Snack Table']] }catch(e){}
+try{ if(typeof LOC_LABELS92!=='undefined')LOC_LABELS92.daycare='🏫 Daycare' }catch(e){}
+try{ if(typeof LOC_THEMES!=='undefined'&&!LOC_THEMES.daycare)LOC_THEMES.daycare={wall:['#ffe3ea','#ffeef2','#ffc9d6'],wains:'#c9839b',wainsTop:'#dda0b5',wainsLine:'#a86a84',floor:['#f3d9b8','#ecd2ac','#f7e2c2','#e6c89e'],floorLine:'#a86a8455',tiles:false,rug:'oval',rugA:'#fbcfe8',rugB:'#fde7f3',rugRing:'#e2547a',fridge:['#f4f6f8','#dde3e8','#aeb8c0'],couch:['#fde9c8','#f7dcab','#e0bd7d'],bedCol:'#e2547a',blanket:'#fde68a'} }catch(e){}
+function dcDriver195(){ try{ const cgs=caregiverNames119(); if(cgs&&cgs.length)return cgs[0] }catch(e){} try{ return caregiverDisplay82() }catch(e){ return 'Your grown-up' } }
+let dcBusy195=false;
+function dcDrive195(kind){ if(dcBusy195)return; const V=ensure195(); if(!V)return; dcBusy195=true;
+ const isPlayer=S.age>=1&&S.age<=4; const drv=dcDriver195();
+ const names=isPlayer?S.name:(V.dcKids.join(' & ')||'the little ones'); const plural=V.dcKids.length>1;
+ let title,sub;
+ if(kind==='drop'){ title='On the road — to daycare'; sub=isPlayer?('<b>'+drv+'</b> is driving you to <b>🏫 Daycare</b> — dropped off on the way out, bag packed, all buckled in. That is where you will stay until pickup.'):('<b>'+names+'</b> '+(plural?'are':'is')+' being driven to <b>🏫 Daycare</b> — dropped off on the way out, bags packed, all buckled in. They stay there until pickup.') }
+ else if(kind==='close'){ title='On the road — collected at closing'; sub=isPlayer?('Daycare is <b>closing</b> (6:00 PM) — <b>'+drv+'</b> has come to collect you and take you home. Nobody stays at daycare overnight.'):('Daycare is <b>closing</b> (6:00 PM) — <b>'+names+'</b> '+(plural?'are':'is')+' being collected and taken home. Nobody stays at daycare overnight.') }
+ else { title='On the road — home from daycare'; sub=isPlayer?('<b>'+drv+'</b> is picking you up from <b>🏫 Daycare</b> — the stretch is over, and the ride home is part of it.'):('Collecting <b>'+names+'</b> from <b>🏫 Daycare</b> — the stretch is over, and the ride home is part of it.') }
+ const proceed=function(){ dcBusy195=false; try{ if(!S)return; const V2=ensure195(); if(!V2)return;
+  if(kind==='drop'){ if(isPlayer){ V2.dc={at:true,by:drv,day:S.day}; S.location='daycare'; S.escort=null; log('🏫🚗 DROP-OFF — '+drv+' drove '+S.name+' to 🏫 Daycare on the way out, and that is where '+S.name+' stays now: watched, playing, snacking, napping — AT daycare — until pickup. No drive, no daycare: this is the drive.') } else { log('🏫🚗 DROP-OFF — '+names+' '+(plural?'were':'was')+' driven to 🏫 Daycare on the way out. They stay there — playing, snacking, napping — until pickup. Until then they are not home, and home will not show them.') } }
+  else { if(kind==='close'){ V2.dcClosed=S.day; try{ const V9=ensure119(); if(V9.coverage&&V9.coverage.day===S.day&&V9.coverage.who==='daycare')V9.coverage=null }catch(e){} }
+   if(isPlayer){ const wasDc=S.location==='daycare'; V2.dc.at=false; if(wasDc)S.location=homeLoc(); if(wasDc)log(kind==='close'?('🏫⏰ COLLECTED AT CLOSING — daycare closed at 6:00 PM, so '+drv+' collected '+S.name+' and brought them home. No child is ever left at daycare overnight.'):('🏫🚗 PICKUP — '+drv+' picked '+S.name+' up from 🏫 Daycare and brought them home. The daycare stretch is over: home again.')) }
+   else { const gone=V2.dcKids.slice(); V2.dcKids=[]; if(gone.length)log(kind==='close'?('🏫⏰ COLLECTED AT CLOSING — daycare closed at 6:00 PM, so '+gone.join(' & ')+' '+(gone.length>1?'were':'was')+' collected and brought home. No child is ever left at daycare overnight.'):('🏫🚗 PICKUP — '+gone.join(' & ')+' '+(gone.length>1?'were':'was')+' picked up from 🏫 Daycare and brought home. Home has its noise back.')) } }
+  save(); render() }catch(e){} };
+ try{ driveSheet176({icon:'🚗',title:title,sub:sub},proceed) }catch(e){ proceed() } }
+/* household kids AT daycare are not at home — not drawn, not in the room lists */
+try{ const _kh195=kidHere86; kidHere86=function(k){ try{ const V=ensure195(); if(k&&V&&V.dcKids.indexOf(k.name)>=0)return false }catch(e){} return _kh195(k) } }catch(e){}
+/* a toddler AT daycare cannot self-travel anywhere — pickup is the only way home */
+try{ const _gl195=goLoc; goLoc=function(id){ try{ const V=ensure195(); if(V&&V.dc.at&&S&&S.location==='daycare'){ toast('🏫 You are at daycare — '+(V.dc.by||'your grown-up')+' picks you up. Nobody walks home from daycare alone.'); return } }catch(e){} return _gl195.apply(this,arguments) } }catch(e){}
+/* after closing collection, daycare coverage never re-books that day */
+try{ const _ce195=coverageEval119; coverageEval119=function(){ try{ const V=ensure195(); if(V&&V.dcClosed===S.day)return }catch(e){} return _ce195.apply(this,arguments) } }catch(e){}
+try{ const _cw195=coverageWatch120; coverageWatch120=function(){ const r=_cw195.apply(this,arguments); try{ const V=ensure195(); const V9=ensure119(); if(V&&V.dcClosed===S.day&&V9.coverage&&V9.coverage.day===S.day&&V9.coverage.who==='daycare'){ V9.coverage=null; save() } }catch(e){} return r } }catch(e){}
+/* the day can never roll with a child still at daycare */
+try{ const _nd195=nextDay; nextDay=function(skip){ try{ const V=ensure195(); if(V){ if(V.dc.at){ V.dc.at=false; if(S.location==='daycare')S.location=homeLoc(); log('🏫⏰ COLLECTED AT CLOSING — the day ended, and '+S.name+' was collected from 🏫 Daycare and brought home. No child is ever left at daycare overnight.') } if(V.dcKids.length){ log('🏫⏰ COLLECTED AT CLOSING — the day ended, and '+V.dcKids.join(' & ')+' '+(V.dcKids.length>1?'were':'was')+' collected from 🏫 Daycare and brought home. No child is ever left at daycare overnight.'); V.dcKids=[] } V.dcClosed=0 } }catch(e){} return _nd195(skip) } }catch(e){}
+/* the coverage card tells the physical truth */
+try{ const _r195=render; render=function(){ const r=_r195.apply(this,arguments); try{ if(S&&typeof inGame!=='undefined'&&inGame){ const V=ensure195(); const cov=cov195(); const card=document.querySelector('.covCard119'); if(card&&cov&&cov.who==='daycare'){ const p=card.querySelector('p'); if(p){ const who=cov.for||'the little ones'; const there=(S.age>=1&&S.age<=4)?!!(V&&V.dc.at):!!(V&&V.dcKids.length); p.innerHTML='<b>🏫 Daycare</b> is watching <b>'+who+'</b> — because '+who+' is <b>AT daycare</b>: driven there by a parent/caregiver, and staying there — playing, snacking, napping — until pickup. Daycare closes at <b>6:00 PM</b>; if nobody has picked them up by then, a parent collects them at closing. Daycare only ever watches a child who is actually there.'+(there?'':' (The drive is just setting out.)') } } } }catch(e){} return r } }catch(e){}
+/* daycare has people in it: a teacher and other little ones */
+try{ const _dr195=drawRoom; drawRoom=function(){ _dr195(); try{ if(!S||typeof inGame==='undefined'||!inGame||S.location!=='daycare')return; const cv=document.getElementById('cv'); if(!cv)return; const ctx=cv.getContext('2d'); const now=performance.now();
+ const td=guestDef('Ms. Daisy'); drawNPCSprite(ctx,{name:'Ms. Daisy',icon:td.icon,col:td.col,hair:td.hair,x:296,y:332,state:'in',bubble:'🧸',say:'',sayUntil:0},now,false);
+ const r1=guestDef('Rosie'); drawNPCSprite(ctx,{name:'Rosie',icon:r1.icon,col:r1.col,hair:r1.hair,x:540,y:356,state:'in',bubble:'',say:'',sayUntil:0},now,false);
+ const r2=guestDef('Sam'); drawNPCSprite(ctx,{name:'Sam',icon:r2.icon,col:r2.col,hair:r2.hair,x:648,y:356,state:'in',bubble:'',say:'',sayUntil:0},now,false);
+ }catch(e){} } }catch(e){}
+/* the daycare state machine: drive out when coverage books daycare, drive home when it ends, collect at closing */
+setInterval(function(){ try{ if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; const V=ensure195(); if(!V)return; const cov=cov195(); const hl=homeLoc(); const isPlayer=S.age>=1&&S.age<=4;
+ if(isPlayer){ const dcNow=!!(cov&&cov.who==='daycare');
+  if(dcNow&&!V.dc.at&&S.location===hl){ if(!dcBusy195&&(typeof activity==='undefined'||!activity)&&!modalOpen195())dcDrive195('drop') }
+  else if(dcNow&&V.dc.at&&(S.hour||0)>=18){ if(!dcBusy195)dcDrive195('close') }
+  else if(!dcNow&&V.dc.at){ if(S.location!=='daycare'){ V.dc.at=false; save() } else if(!dcBusy195&&(typeof activity==='undefined'||!activity)&&!modalOpen195())dcDrive195('pick') }
+ } else { const tots=(S.kids||[]).filter(function(k){ return k&&k.age>=1&&k.age<=4 }).map(function(k){ return k.name });
+  const dcNow=!!(cov&&cov.who==='daycare');
+  if(dcNow&&tots.length){ const want=tots.filter(function(n){ return (cov.for||'').indexOf(n)>=0 }); const list=(want.length?want:tots).slice();
+   if(V.dcKidsDay!==S.day||V.dcKids.join('')!==list.join('')){ if(!dcBusy195){ V.dcKids=list; V.dcKidsDay=S.day; save(); dcDrive195('drop') } }
+   else if((S.hour||0)>=18&&!dcBusy195)dcDrive195('close') }
+  else if(!dcNow&&V.dcKids.length){ if(!dcBusy195)dcDrive195('pick') } }
+}catch(e){} },1000);
+
+/* ================= PART 2 — BABYSITTER HIRING (Phone → Services, parents only) ================= */
+const CERTS195=['🩹 First Aid & CPR','🧸 Early Childhood Education','🚗 Licensed Driver','🍽️ Food Handler Card'];
+function genApps195(){ const V=ensure195(); if(!V)return[]; const out=[]; const used={};
+ for(let i=0;i<8;i++){ const girl=Math.random()<0.6; let first=nameForGender(girl); let name=first+' '+pickArr(TOWN_LAST); let guard=0; while(used[name]&&guard++<8){ first=nameForGender(girl); name=first+' '+pickArr(TOWN_LAST) } used[name]=1;
+  const age=18+Math.floor(Math.random()*40); const exp=Math.max(0,Math.min(12,Math.round((age-18)*Math.random()*0.55)+Math.floor(Math.random()*3)));
+  const certs=[]; CERTS195.forEach(function(c){ if(Math.random()<0.34)certs.push(c) }); if(exp>=6&&certs.indexOf(CERTS195[1])<0&&Math.random()<0.5)certs.push(CERTS195[1]);
+  const r=Math.random(); const rec=r<0.5?{k:'clean',t:'✅ Clean record — background check passed, nothing on file'}:r<0.82?{k:'refs',t:'📞 References checked — two families vouch for them'}:{k:'flag',t:'⚠️ One flag: late to two sittings last year — raised with them, and addressed'};
+  out.push({id:'a'+i+'_'+Math.floor(Math.random()*1e6),name:name,first:first,gender:girl?'girl':'boy',age:age,exp:exp,certs:certs,rec:rec}) }
+ V.apps=out; return out }
+function sitF195(){ if(!window._sitF195)window._sitF195={age:'all',gender:'all',qual:'all',rec:'all'}; return window._sitF195 }
+function appPass195(a,f){ if(f.gender!=='all'&&a.gender!==f.gender)return false;
+ if(f.age==='1824'&&!(a.age>=18&&a.age<=24))return false; if(f.age==='2534'&&!(a.age>=25&&a.age<=34))return false; if(f.age==='35p'&&a.age<35)return false;
+ if(f.qual==='firstaid'&&a.certs.indexOf(CERTS195[0])<0)return false; if(f.qual==='ece'&&a.certs.indexOf(CERTS195[1])<0)return false; if(f.qual==='driver'&&a.certs.indexOf(CERTS195[2])<0)return false; if(f.qual==='exp5'&&a.exp<5)return false;
+ if(f.rec==='clean'&&a.rec.k!=='clean')return false; if(f.rec==='refs'&&a.rec.k!=='refs')return false; if(f.rec==='noflag'&&a.rec.k==='flag')return false;
+ return true }
+window.sitFilter195=function(k,v){ sitF195()[k]=v; window.openSitterSheet195(true) };
+window.sitRefresh195=function(){ genApps195(); save(); window.openSitterSheet195(true); toast('👶 A fresh batch of applicants came in') };
+window.openSitterSheet195=function(){ if(!isParent195()){ toast('👶 Babysitter hiring lives on a parent\u2019s phone'); return }
+ const V=ensure195(); if(!V.apps.length)genApps195();
+ const f=sitF195(); const list=V.apps.filter(function(a){ return appPass195(a,f) });
+ const st=(typeof ensureSitter120==='function')?ensureSitter120():null;
+ const sel=function(k,v,label){ return '<option value="'+v+'"'+(f[k]===v?' selected':'')+'>'+label+'</option>' };
+ const selStyle='width:100%;padding:9px;border-radius:9px;background:#1f2937;color:#fff;border:1px solid #ffffff33;margin-top:3px';
+ let h='<p style="font-size:12.5px;opacity:.9;margin-top:0">You pick your sitter — nobody is assigned to your family. The household rate is the house standard: <b>$20 per sitting</b>, charged exactly as before. Whoever you hire becomes <b>the</b> babysitter: the care system calls them, they knock at your door, they sit.</p>';
+ if(st)h+='<div class="msg" style="text-align:left"><b>🧑 Current sitter: '+st.name+'</b>, '+st.age+'<br><span style="font-size:12px;opacity:.85">Sittings so far: '+(st.sittings||0)+(st.quals195?('<br>📋 '+st.quals195):'')+'</span></div>';
+ h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">'
+  +'<label style="font-size:11px;font-weight:800">AGE<select onchange="sitFilter195(\'age\',this.value)" style="'+selStyle+'">'+sel('age','all','Any age')+sel('age','1824','18–24')+sel('age','2534','25–34')+sel('age','35p','35+')+'</select></label>'
+  +'<label style="font-size:11px;font-weight:800">GENDER<select onchange="sitFilter195(\'gender\',this.value)" style="'+selStyle+'">'+sel('gender','all','Anyone')+sel('gender','girl','Women')+sel('gender','boy','Men')+'</select></label>'
+  +'<label style="font-size:11px;font-weight:800">QUALIFICATIONS<select onchange="sitFilter195(\'qual\',this.value)" style="'+selStyle+'">'+sel('qual','all','Any qualifications')+sel('qual','firstaid','🩹 First Aid & CPR')+sel('qual','ece','🧸 Early Childhood Ed')+sel('qual','driver','🚗 Licensed Driver')+sel('qual','exp5','⭐ 5+ years experience')+'</select></label>'
+  +'<label style="font-size:11px;font-weight:800">RECORDS / HISTORY<select onchange="sitFilter195(\'rec\',this.value)" style="'+selStyle+'">'+sel('rec','all','Any record')+sel('rec','clean','✅ Clean record')+sel('rec','refs','📞 References checked')+sel('rec','noflag','No flags')+'</select></label></div>';
+ h+='<p style="font-size:12px;opacity:.85">'+list.length+' applicant'+(list.length===1?'':'s')+' match your filters.</p>';
+ if(!list.length)h+='<div class="msg" style="text-align:left">Nobody matches that combination — loosen a filter, or bring in a fresh batch below.</div>';
+ list.forEach(function(a){ const hired=st&&st.name===a.name;
+  h+='<div class="msg" style="text-align:left"><b>'+(a.gender==='girl'?'👩':'👨')+' '+a.name+'</b> — '+a.age+'<br><span style="font-size:12px;opacity:.9">💼 Experience: <b>'+a.exp+' year'+(a.exp===1?'':'s')+'</b> babysitting<br>🎓 Qualifications: '+(a.certs.length?a.certs.join(' • '):'No certificates yet')+'<br>📋 Record: '+a.rec.t+'</span><br>'+(hired?'<b style="color:#4ade80">✅ Your current sitter</b>':'<button class="btn gold" style="width:auto;margin-top:6px;padding:8px 14px" onclick="hireSitter195(\''+a.id+'\')">👶 Hire '+a.first+' — $20/sitting</button>')+'</div>' });
+ h+='<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:10px" onclick="sitRefresh195()">↻ New applicants</button>';
+ h+='<button class="btn outline" style="color:#fff;border-color:#fff;margin-top:8px" onclick="phoneServices()">‹ Back to Services</button>';
+ openSheet(phoneShell('👶 Babysitter — hire yours',h)) };
+window.hireSitter195=function(id){ if(!isParent195())return; const V=ensure195(); const a=(V.apps||[]).find(function(x){ return x.id===id }); if(!a)return;
+ const V0=ensure120(); if(V0.covState==='in'){ toast('👶 A sitting is happening right now — hire the new sitter once it ends'); return }
+ const old=V0.sitter&&V0.sitter.name;
+ V0.sitter={name:a.name,first:a.first,gender:a.gender,age:a.age,sinceDay:S.day,sittings:0,quals195:('Experience: '+a.exp+' yrs'+(a.certs.length?(' • '+a.certs.join(', ')):'')+' • '+a.rec.t)};
+ V0.covState=''; V0.knockPending=false; V.hiredId=id;
+ try{ const V9=ensure119(); if(V9.coverage&&V9.coverage.day===S.day&&V9.coverage.who==='sitter'){ V9.coverage.sitName120=a.name; V9.coverage.label='🧑 '+a.name+' — the household\u2019s babysitter ($20)' } }catch(e){}
+ log('👶 HIRED — you picked '+a.name+' ('+a.age+') from the applicant list in 🧹 Services: '+a.exp+' years\u2019 experience'+(a.certs.length?(', '+a.certs.join(', ')):'')+', '+a.rec.t+'. '+(old&&old!==a.name?(old+' is replaced — '):'')+a.first+' is now THE household babysitter: the care system calls '+a.first+', '+a.first+' knocks, '+a.first+' sits — at the house rate of $20 a sitting.');
+ toast('👶 '+a.first+' is your babysitter now');
+ save(); window.openSitterSheet195(true) };
+/* the Services card — injected ONLY on a parent's phone (never a toddler's or kid's) */
+try{ const _psv195=phoneServices; phoneServices=function(){ const r=_psv195.apply(null,arguments); try{ if(!isParent195())return r; const sh=document.getElementById('sheet'); if(!sh)return r; const phone=sh.querySelector('.phone')||sh; if(phone.querySelector('.sitterCard195'))return r; const st=(typeof ensureSitter120==='function')?ensureSitter120():null; const d=document.createElement('div'); d.className='sitterCard195'; d.innerHTML='<div class="msg" style="text-align:left;margin-top:10px"><b>👶 Your Babysitter — who sits for you</b><br><span style="font-size:12px;opacity:.85">'+(st?('Current sitter: <b>'+st.name+'</b>, '+st.age+' — sittings so far: '+(st.sittings||0)+'. '):'')+'Sitters are not assigned: pick yours from the applicant list — filter by age, gender, qualifications and record. $20 per sitting, as always.</span><br><button class="btn gold" style="width:auto;margin-top:6px;padding:8px 14px" onclick="openSitterSheet195()">👶 See applicants &amp; hire</button></div>'; const btns=phone.querySelectorAll('button'); let anchor=null; btns.forEach(function(b){ if(b.textContent.indexOf('All apps')>=0)anchor=b }); if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(d,anchor); else phone.appendChild(d) }catch(e){} return r } }catch(e){}
+
+/* ================= PART 3 — OUTINGS: THE ESCORT WARNS YOU OUT LOUD ================= */
+function escSay195(text){ window._escSay195={text:text,until:performance.now()+(typeof sayDur191==='function'?sayDur191(text):4600)} }
+try{ const _dns195=drawNPCSprite; drawNPCSprite=function(ctx,spr,now,moving){ try{ if(spr&&S&&S.escort&&spr.name===S.escort&&window._escSay195&&now<window._escSay195.until){ spr=Object.assign({},spr); spr.say=window._escSay195.text; spr.sayUntil=window._escSay195.until } }catch(e){} return _dns195(ctx,spr,now,moving) } }catch(e){}
+const WARN_LINES195=['We\u2019re leaving soon, {n} — start wrapping up!','Nearly time to go, {n} — we head home in a little bit.','Five more minutes, {n} — then we\u2019re leaving. Say your goodbyes!'];
+function warnOuting195(){ escSay195(pickArr(WARN_LINES195).split('{n}').join(S.name)); try{ log('💬 '+(S.escort||'Your grown-up')+' — \u201cWe\u2019re leaving soon.\u201d The warning every kid knows: the outing is nearly over, and the ride home comes right after — never out of nowhere.') }catch(e){} }
+setInterval(function(){ try{ if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; if(typeof escortedOuting190!=='function'||!escortedOuting190())return; const V=ensure190(); if(!V||!V.out||V.out.warned195)return; if(absMin190()>=V.out.due-15){ if(busyForHome190())return; V.out.warned195=true; warnOuting195(); save() } }catch(e){} },500);
+try{ const _fire195=fireOuting190; fireOuting190=function(){ try{ const V=ensure190(); if(V&&V.out&&!V.out.warned195&&escortedOuting190()){ V.out.warned195=true; warnOuting195(); V.out.due=absMin190()+2; save(); return } }catch(e){} return _fire195.apply(this,arguments) }; window.fireOuting190=fireOuting190 }catch(e){}
+
+/* ================= PART 5 — THE DAILY-PLAY AWARD ================= */
+const DKEY195='aqualifeDaily.v1';
+function dStore195(){ try{ const r=localStorage.getItem(DKEY195); if(r){ const o=JSON.parse(r); if(o&&typeof o==='object')return o } }catch(e){} return {last:'',streak:0} }
+function dSave195(o){ try{ localStorage.setItem(DKEY195,JSON.stringify(o)) }catch(e){} }
+function dStr195(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0') }
+let dailyDone195=false;
+setInterval(function(){ try{ if(dailyDone195)return; if(!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return;
+ const now=new Date(); const today=dStr195(now); const st=dStore195();
+ if(st.last===today){ dailyDone195=true; return }
+ const ystr=dStr195(new Date(now.getTime()-86400000));
+ const streak=(st.last===ystr)?((st.streak||0)+1):1;
+ const amt=Math.min(30,10+2*(streak-1));
+ dSave195({last:today,streak:streak}); dailyDone195=true;
+ money(amt,'🎁 Daily play bonus');
+ log('🎁 DAILY PLAY BONUS — day '+streak+' of your AquaLife streak: +$'+amt+' for '+S.name+'. Showing up counts — see you tomorrow.');
+ toast('🎁 Daily play bonus — Day '+streak+' streak: +$'+amt);
+ save();
+}catch(e){} },1500);
+
+/* ================= PART 6 — RECAP CAUSALITY ================= */
+function homeAdults195(){ try{ const V=ensure195(); return currentRoommates().map(function(p){ return p.name }).filter(function(n){ if(V&&V.dcKids.indexOf(n)>=0)return false; try{ const a=charAge79(n); return a===null||a>=13 }catch(e){ return true } }) }catch(e){ return [] } }
+function homeKids195(){ try{ const V=ensure195(); return (S.kids||[]).filter(function(k){ return k&&!(V&&V.dcKids.indexOf(k.name)>=0) }) }catch(e){ return [] } }
+function awayEvent195(){
+ const adults=homeAdults195(); const kids=homeKids195(); const cands=[]; const bond=(S.bond==null?50:S.bond);
+ const tots=kids.filter(function(k){ return k.age>=1&&k.age<=4 });
+ if(tots.length){ cands.push(function(){ const kid=pickArr(tots); const adult=adults.length?pickArr(adults):'the babysitter'; const acts=[
+  ['🖍️',kid.name+' scribbled on the living-room wall with crayon',adult+' is upset — '+kid.name+' got into the crayons while '+adult+' was busy making lunch, and the wall took the hit before anyone could stop it'],
+  ['🥤',kid.name+' spilled a whole cup of juice across the kitchen floor',adult+' had to mop it up — '+kid.name+' carried the cup with both hands, very carefully, right up until the wobble'],
+  ['🧻',kid.name+' unrolled the entire toilet roll down the hallway',adult+' followed the paper trail and found one very proud toddler at the end of it'],
+  ['🔑',kid.name+' hid the TV remote inside a shoe','the whole house hunted for it — '+adult+' only found it because '+kid.name+' kept giggling at the shoe rack']];
+  const a=pickArr(acts); try{ if(typeof ensure81==='function'){ ensure81(); if(S.clean81)S.clean81.level=Math.max(0,(S.clean81.level||80)-5) } }catch(e){}
+  return {who:kid.name,t:a[0]+' '+a[1],why:a[2]} }) }
+ if(adults.length>=2&&(bond<55||Math.random()<0.3)){ cands.push(function(){ const a=adults[0],b=adults[1]; const topics=[['the dishes','left the whole lunch pile sitting in the sink'],['the thermostat','kept turning the heat up and down like a DJ'],['money','brought up the electric bill at exactly the wrong moment'],['the noise','had the TV up loud enough to hear through the walls']]; const t=pickArr(topics); try{ S.bond=clamp((S.bond||50)-2) }catch(e){}
+  return {who:a,t:'🌩️ '+a+' and '+b+' argued about '+t[0],why:a+' is upset — '+b+' '+t[1]+', and it turned into a proper row about '+t[0]+'. It blew over, but the house felt it'} }) }
+ if(adults.length){ cands.push(function(){ const a=pickArr(adults); const others=adults.filter(function(n){ return n!==a }); const b=others.length?pickArr(others):null; const kid=kids.length?pickArr(kids):null;
+  if(kid&&Math.random()<0.55){ try{ kid.happy=Math.min(100,(kid.happy==null?70:kid.happy)+6) }catch(e){} return {who:a,t:'📖 '+a+' read '+kid.name+' a story after lunch',why:'because '+kid.name+' was restless, and a story is this house\u2019s best reset button — it worked: '+kid.name+' came out of it happy'} }
+  if(b){ try{ S.bond=clamp((S.bond||50)+1) }catch(e){} return {who:a,t:'🍵 '+a+' made '+b+' a cup of tea and just sat with them a while',why:'because '+b+' had a long, draining stretch of it — no fixing, no advice, just company. The house felt warmer for it'} }
+  try{ if(typeof ensure81==='function'){ ensure81(); if(S.clean81)S.clean81.level=Math.min(100,(S.clean81.level||80)+3) } }catch(e){}
+  return {who:a,t:'🧹 '+a+' did a quiet tidy of the front room',why:'because the place had reached that level of lived-in where it starts to weigh on everyone — it is noticeably better now'} }) }
+ if(adults.length){ cands.push(function(){ const a=pickArr(adults); try{ if(typeof ensure81==='function'){ ensure81(); if(S.clean81)S.clean81.level=Math.min(100,(S.clean81.level||80)+4) } }catch(e){}
+  return {who:a,t:'🔧 '+a+' finally fixed the wobbly kitchen chair',why:'because it has been rocking one leg short for a week, and nearly took '+(kids.length?kids[0].name:'somebody')+' down at breakfast'} }) }
+ const sadKid=kids.find(function(k){ return k.happy!=null&&k.happy<35 });
+ if(sadKid&&adults.length){ cands.push(function(){ const a=pickArr(adults); try{ sadKid.happy=Math.max(0,(sadKid.happy||20)-3) }catch(e){}
+  return {who:sadKid.name,t:'😢 '+sadKid.name+' was miserable for a stretch today',why:'because their favourite toy broke — '+a+' kept them close on the couch with cartoons until it passed, but the toy is still in two pieces'} }) }
+ if(!cands.length)return null;
+ return pickArr(cands)() }
+try{ const _mhe195=maybeHouseholdEvent; maybeHouseholdEvent=function(){ if(!S||!inGame)return; if(S.location!==homeLoc()&&!(S.jail&&S.jail.in)){ try{ ensure84(); if(Math.random()<0.65&&S.away84.length<5){ const ev=awayEvent195(); if(ev){ S.away84.push({who:ev.who,t:ev.t,why:ev.why,day:S.day,ctx:(typeof awayCtx193==='function')?awayCtx193():null}); save() } } }catch(e){} return } return _mhe195() } }catch(e){}
+try{ recapShow84=function(){ if(!S||!S.away84||!S.away84.length)return; const items=S.away84.slice(); S.away84=[]; const bondUp=Math.min(3,items.length); S.bond=clamp((S.bond||50)+bondUp); adj('fun',2); log('🏠 WHILE YOU WERE OUT — '+items.length+' household moment(s) happened at home and landed as one tidy recap. Bond +'+bondUp+'.'); var ttl195='While You Were Out'; for(var qi=items.length-1;qi>=0;qi--){ if(items[qi].ctx){ ttl195='While You Were '+items[qi].ctx; break } } openSheet('<h2>🏠 '+ttl195+'</h2>'+items.map(function(it){ return '<div class="kv" style="align-items:flex-start"><span>'+it.t+(it.why?'<br><span style="font-size:12px;opacity:.8">↳ Why: '+it.why+'</span>':'')+'</span><b>Day '+it.day+'</b></div>' }).join('')+'<p class="small" style="margin-top:8px">❤️ '+items.length+' household moment'+(items.length>1?'s':'')+' happened while you were out — the house felt lived-in when you got back — Bond +'+bondUp+'.</p><button class="btn gold" style="margin-top:10px" onclick="closeModal()">🏠 Good to be home</button>',{sfx:'pop'}) } }catch(e){}
+window.__v195={ensure195:ensure195,isParent195:isParent195,dcDrive195:dcDrive195,genApps195:genApps195,awayEvent195:awayEvent195,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v195 THE CARE BUILD: 🏫 daycare is a real place (driven there, stays there, picked up; collected at the 6 PM closing, never stranded) • 👶 babysitter hiring in Phone → Services (parent-only applicant list, filterable by age/gender/qualifications/record; the hire becomes THE sitter at the existing $20) • 🧒 outings run 1.5 hours, the Head home pill is gone, and the escort says \u201cwe\u2019re leaving soon\u201d out loud before the ride home • 🔥 the flow/streak system is deleted at the source • 🎁 a daily-play award (+$10, +$2/day, cap $30) for showing up • 🏠 every recap entry now carries its real cause');
 }catch(e){}
 })();
 </script>
