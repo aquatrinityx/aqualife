@@ -588,7 +588,7 @@ body.standalone67 #installBtn67,body.standalone67 .installBtnW67{display:none!im
 
 <script>
 const SAVE_KEY='miniLifeSimShareable_v3';
-const GAME_VERSION=195;
+const GAME_VERSION=197;
 const SEEN_KEY='miniLifeSimShareable_seenVer';
 // ================= v69: TALKING HAS A COOLDOWN — after a real conversation (reply / call / selfie / invite) that person gets a breather (~3 game hours), the whole phone goes quiet for ~2 game hours, the same person cannot ambient-text again for ~6 game hours, reply follow-up bursts are capped, and the pop-up banner rate-limits itself so notifications stop piling up =================
 function gNow69(){ return S?(S.day*24+(S.hour||0)):0 }
@@ -17528,8 +17528,8 @@ function skyDraw193(){
   ctx.fillStyle=(ph==='night')?'#ffffff2e':(dark>0.2?'#5b6a86cc':'#ffffffcc');
   for(var ci=0;ci<nC;ci++){ var cx=((now/(wx==='storm'?26:60)+ci*310)%(W+220))-110, cy=8+(ci%3)*11; ctx.beginPath(); ctx.ellipse(cx,cy,30,8,0,0,7); ctx.ellipse(cx+20,cy+2,22,6.5,0,0,7); ctx.fill() }
   /* precipitation */
-  if(wx==='rain'||wx==='storm'){ ctx.strokeStyle='#bcd8ffaa'; ctx.lineWidth=1.4; ctx.beginPath(); for(var ri=0;ri<44;ri++){ var rx=(ri*67+((now/3)%67))%W, ry=(ri*29+((now/2.2)%29))%H; ctx.moveTo(rx,ry); ctx.lineTo(rx-3,ry+8) } ctx.stroke(); ctx.lineWidth=1 }
-  if(wx==='snow'){ ctx.fillStyle='#ffffffdd'; for(var fi=0;fi<30;fi++){ var fx=(fi*97+Math.sin(now/900+fi)*14)%W, fy=(fi*41+((now/14)%41))%H; ctx.beginPath(); ctx.arc(fx,fy,1.9,0,7); ctx.fill() } }
+  if(wx==='rain'||wx==='storm'){ ctx.strokeStyle='#bcd8ffaa'; ctx.lineWidth=1.4; ctx.beginPath(); for(var ri=0;ri<44;ri++){ var rx=(ri*67+((now/90)%67))%W, ry=(ri*29+((now/8)%29))%H; ctx.moveTo(rx,ry); ctx.lineTo(rx-3,ry+8) } ctx.stroke(); ctx.lineWidth=1 }
+  if(wx==='snow'){ ctx.fillStyle='#ffffffdd'; for(var fi=0;fi<30;fi++){ var fx=(fi*97+Math.sin(now/900+fi)*14)%W, fy=(fi*41+((now/34)%41))%H; ctx.beginPath(); ctx.arc(fx,fy,1.9,0,7); ctx.fill() } }
  }catch(e){} }
 
 /* ---------------- PHASE 2: stage floor pass + close-ups ---------------- */
@@ -17694,7 +17694,7 @@ function tLoad193(){ try{ var o=JSON.parse(localStorage.getItem(TKEY)||'null'); 
 var TSTORE=tLoad193();
 function tSave193(){ try{ localStorage.setItem(TKEY,JSON.stringify(TSTORE)) }catch(e){} }
 function tDef193(id){ for(var i=0;i<TRAILS193.length;i++)if(TRAILS193[i].id===id)return TRAILS193[i]; return null }
-function tUnlocked193(d){ return !!d&&TSTORE.max>=d.lv }
+function tUnlocked193(d){ if(!d)return false; if(TSTORE.max>=d.lv)return true; /* v196: gates now read the permanent PLAYER LEVEL; TSTORE.max stays as the grandfather record — anything unlocked under the old character-level rule stays unlocked forever. */ try{ return typeof window.playerLevel196==='function'&&window.playerLevel196()>=d.lv }catch(e){ return false } }
 if(TSTORE.sel!=='off'&&(!tDef193(TSTORE.sel)||!tUnlocked193(tDef193(TSTORE.sel))))TSTORE.sel='sparkle';
 function applyGate193(){ window.__trailCustom193=(TSTORE.sel!=='sparkle'); }
 applyGate193();
@@ -17745,27 +17745,15 @@ function end193(e){ try{ delete down193[e.pointerId] }catch(err){} }
 window.addEventListener('pointerup',end193,{passive:true});
 window.addEventListener('pointercancel',end193,{passive:true});
 document.addEventListener('visibilitychange',function(){ if(document.hidden){ parts.length=0; down193={}; if(rafId){ cancelAnimationFrame(rafId); rafId=0 } lastT=0; try{ ctx.clearRect(0,0,W,H) }catch(e){} } });
-/* ---------- level watch: unlocks are the player's, forever ---------- */
-var baseSeen193=false;
-setInterval(function(){
-  try{
-    if(typeof S==='undefined'||!S||typeof S.level!=='number')return;
-    var lv=S.level;
-    if(!baseSeen193){ baseSeen193=true; if(lv>TSTORE.max){ TSTORE.max=lv; tSave193(); } return; }
-    if(lv>TSTORE.max){
-      var crossed=[]; for(var i=0;i<TRAILS193.length;i++){ if(TRAILS193[i].lv>TSTORE.max&&TRAILS193[i].lv<=lv&&TRAILS193[i].lv>1)crossed.push(TRAILS193[i]); }
-      TSTORE.max=lv; tSave193();
-      if(crossed.length&&typeof toast==='function'){ for(var j=0;j<crossed.length;j++){ (function(d,k){ setTimeout(function(){ try{ toast('✨ Touch trail unlocked: '+d.icon+' '+d.name+' — pick it in ⚙️ Settings → ✨ Touch Trail') }catch(e){} },k*2800) })(crossed[j],j); } }
-    }
-  }catch(e){}
-},1000);
+/* ---------- level watch: RETIRED in v196 ---------- */
+/* v196: this watch used to grow TSTORE.max from the CHARACTER's level and toast each trail unlock. Both jobs moved to the PLAYER LEVEL layer (v196): trail gates read the permanent player level, and the single player level-up toast names any trail it unlocks — one voice. TSTORE.max is frozen here as the grandfather record: every trail unlocked under the v193 character-level rule stays unlocked forever (see tUnlocked193). Character level-ups no longer touch this store at all. */
 /* ---------- Settings picker (game ⚙️ Settings sheet only) ---------- */
 function pickerHtml193(){
-  var h='<div class="card" id="trailCard193"><h3>✨ Touch Trail</h3><p class="small">Drag a finger (or mouse) and your trail follows. Unlocks are yours forever — they live on this device, across every life.</p>';
+  var h='<div class="card" id="trailCard193"><h3>✨ Touch Trail</h3><p class="small">Drag a finger (or mouse) and your trail follows. Unlocks are yours forever — they live on this device, across every life. Trails unlock with your permanent 👤 Player Level (shown in the 👽 Me tab) — and anything you already unlocked stays yours.</p>';
   h+='<button class="btn '+(TSTORE.sel==='off'?'gold':'outline')+'" style="margin-top:8px" onclick="pickTrail193(\'off\')">🚫 Off'+(TSTORE.sel==='off'?' ✓':'')+'</button>';
   for(var i=0;i<TRAILS193.length;i++){ var d=TRAILS193[i], un=tUnlocked193(d), sel=TSTORE.sel===d.id;
     if(un)h+='<button class="btn '+(sel?'gold':'outline')+'" style="margin-top:8px" onclick="pickTrail193(\''+d.id+'\')">'+d.icon+' '+d.name+' trail'+(sel?' ✓':'')+'</button>';
-    else h+='<button class="btn outline" style="margin-top:8px;opacity:.55" onclick="trailLocked193('+d.lv+',\''+d.icon+' '+d.name+'\')">'+d.icon+' '+d.name+' trail · 🔒 Lv '+d.lv+'</button>';
+    else h+='<button class="btn outline" style="margin-top:8px;opacity:.55" onclick="trailLocked193('+d.lv+',\''+d.icon+' '+d.name+'\')">'+d.icon+' '+d.name+' trail · 🔒 Player Lv '+d.lv+'</button>';
   }
   return h+'</div>';
 }
@@ -17785,7 +17773,7 @@ window.pickTrail193=function(id){
   var old=document.getElementById('trailCard193'); if(old){ var tmp=document.createElement('div'); tmp.innerHTML=pickerHtml193(); old.replaceWith(tmp.firstChild); }
   try{ if(typeof toast==='function')toast(id==='off'?'✨ Touch trail off':(tDef193(id).icon+' Touch trail: '+tDef193(id).name)) }catch(e){}
 };
-window.trailLocked193=function(lv,nm){ try{ if(typeof toast==='function')toast('🔒 Reach Lv '+lv+' to unlock the '+nm+' trail') }catch(e){} };
+window.trailLocked193=function(lv,nm){ try{ if(typeof toast==='function')toast('🔒 Reach Player Lv '+lv+' to unlock the '+nm+' trail') }catch(e){} };
 try{ if(typeof openSettings121==='function'){ var _os193=openSettings121; openSettings121=function(){ var r=_os193.apply(this,arguments); setTimeout(injectTrail193,40); setTimeout(injectTrail193,300); return r }; } }catch(e){}
 window.__trails193={store:function(){ return TSTORE },trails:TRAILS193,parts:function(){ return parts.length }};
 try{ console.log('[AquaLife v193] ✨ Touch trails ready — device max Lv '+TSTORE.max+', selected: '+TSTORE.sel) }catch(e){}
@@ -18043,6 +18031,229 @@ try{ const _mhe195=maybeHouseholdEvent; maybeHouseholdEvent=function(){ if(!S||!
 try{ recapShow84=function(){ if(!S||!S.away84||!S.away84.length)return; const items=S.away84.slice(); S.away84=[]; const bondUp=Math.min(3,items.length); S.bond=clamp((S.bond||50)+bondUp); adj('fun',2); log('🏠 WHILE YOU WERE OUT — '+items.length+' household moment(s) happened at home and landed as one tidy recap. Bond +'+bondUp+'.'); var ttl195='While You Were Out'; for(var qi=items.length-1;qi>=0;qi--){ if(items[qi].ctx){ ttl195='While You Were '+items[qi].ctx; break } } openSheet('<h2>🏠 '+ttl195+'</h2>'+items.map(function(it){ return '<div class="kv" style="align-items:flex-start"><span>'+it.t+(it.why?'<br><span style="font-size:12px;opacity:.8">↳ Why: '+it.why+'</span>':'')+'</span><b>Day '+it.day+'</b></div>' }).join('')+'<p class="small" style="margin-top:8px">❤️ '+items.length+' household moment'+(items.length>1?'s':'')+' happened while you were out — the house felt lived-in when you got back — Bond +'+bondUp+'.</p><button class="btn gold" style="margin-top:10px" onclick="closeModal()">🏠 Good to be home</button>',{sfx:'pop'}) } }catch(e){}
 window.__v195={ensure195:ensure195,isParent195:isParent195,dcDrive195:dcDrive195,genApps195:genApps195,awayEvent195:awayEvent195,version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v195 THE CARE BUILD: 🏫 daycare is a real place (driven there, stays there, picked up; collected at the 6 PM closing, never stranded) • 👶 babysitter hiring in Phone → Services (parent-only applicant list, filterable by age/gender/qualifications/record; the hire becomes THE sitter at the existing $20) • 🧒 outings run 1.5 hours, the Head home pill is gone, and the escort says \u201cwe\u2019re leaving soon\u201d out loud before the ride home • 🔥 the flow/streak system is deleted at the source • 🎁 a daily-play award (+$10, +$2/day, cap $30) for showing up • 🏠 every recap entry now carries its real cause');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v196: 👤 PLAYER LEVEL — Option B, the dual system (Howard's ruling, Nov 2, 2026: "B is the right way to go").
+   TWO LEVELS, TWO JOBS. The CHARACTER level is 100% untouched — every in-world gate, reaction and milestone still reads S.level exactly as shipped, and nothing in this layer writes to it. The new PLAYER LEVEL is permanent and belongs to the player, not to any life: it lives in a DEVICE-level store (localStorage 'aqualifePlayer.v1', the trails store / daily-streak family) — NOT inside the life save — so it survives deaths, new lives and generations, and it NEVER resets. SAVE_KEY and the save format are untouched.
+   PXP SOURCES (shipped table — every life feeds the one player):
+     · Character level-up: +25 PXP per level gained (hooked at addXp, the one choke point whose while-loop is the only place S.level rises).
+     · Achievement earned: +15 PXP (hooked at achPop132, only when the achievement was not already earned).
+     · Each game day completed: +2 PXP (hooked at nextDay, only with a life active and not dead).
+     · A life completed (character death): legacy bonus +5 PXP per character level that life reached (a 1s watchdog on S.deadFlag — every death path in the game sets it — signed per life in the device store so a reload can never pay it twice).
+   THE CURVE (shipped): each step costs 100 × the level you are leaving — Lv 2 at 100 total PXP, Lv 3 at 300, Lv 4 at 600, Lv 5 at 1000; cumulative cost of level L is 50·L·(L−1).
+   DISPLAY: quietly in the 👽 Me tab only (the 'home' folder) — a small "👤 Player Lv {N}" card with a slim progress bar to the next level and total PXP, inserted after the 📖 My Story card. NOT in the main HUD: it never fights the character's level bar.
+   LEVEL-UP MOMENT: exactly ONE announcement, through the toast queue: "👤 Player Level {N}!" — and if that level crossed a Touch Trail gate that was not already unlocked, the SAME toast names it ("…unlocked 🌈 Rainbow Trail!"). PXP gains themselves are SILENT — no per-gain toasts, no journal spam. One voice.
+   TRAILS RETIE: the v193d gates now read the PLAYER LEVEL (Lv 3/5/7/10/15/20, unchanged numbers) via tUnlocked193; the picker's requirement text reads "Player Lv {N}"; and TSTORE.max is frozen as the grandfather record, so any trail unlocked under the v193 character-level rule STAYS unlocked forever — preserved and merged, never revoked. The v193d character-level watch (which grew max and toasted unlocks) is retired at the source. ================= */
+(function(){
+try{
+var PKEY196='aqualifePlayer.v1';
+function pLoad196(){ try{ var o=JSON.parse(localStorage.getItem(PKEY196)||'null'); if(o&&typeof o==='object')return {pxp:Math.max(0,o.pxp|0), deathSig:(typeof o.deathSig==='string'?o.deathSig:'')} }catch(e){} return {pxp:0,deathSig:''} }
+function pSave196(st){ try{ localStorage.setItem(PKEY196,JSON.stringify(st)) }catch(e){} }
+function pLevelFor196(pxp){ var L=1; while(50*(L+1)*L<=pxp)L++; return L }
+function pInto196(pxp){ var L=pLevelFor196(pxp); return {lv:L,into:pxp-50*L*(L-1),need:100*L} }
+window.playerLevel196=function(){ return pLevelFor196(pLoad196().pxp) };
+function trailDefs196(){ try{ return (window.__trails193&&window.__trails193.trails)||[] }catch(e){ return [] } }
+function grandMax196(){ try{ var s=window.__trails193&&window.__trails193.store(); return s?(s.max|0):0 }catch(e){ return 0 } }
+/* ---------- display: the quiet Me-tab card ---------- */
+function playerCardHtml196(){ var st=pLoad196(); var pr=pInto196(st.pxp); var pct=Math.max(0,Math.min(100,Math.round(pr.into/pr.need*100)));
+ return '<div class="card" id="playerCard196"><h3>👤 Player Lv '+pr.lv+'</h3><div class="progress" style="margin-top:2px"><i style="width:'+pct+'%"></i></div><p class="small" style="margin-top:6px"><b>'+st.pxp+' PXP</b> total • '+pr.into+'/'+pr.need+' PXP to Player Lv '+(pr.lv+1)+'<br>Yours forever — this level belongs to you the player, not to any one life. It never resets.</p></div>' }
+function refreshPlayerCard196(){ try{ var ex=document.getElementById('playerCard196'); if(ex){ var tmp=document.createElement('div'); tmp.innerHTML=playerCardHtml196(); if(tmp.firstChild)ex.replaceWith(tmp.firstChild) } }catch(e){} }
+function injectPlayerCard196(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; if(typeof curTab==='undefined'||(curTab!=='home'&&curTab!=='me'))return; var panel=document.getElementById('panel'); if(!panel)return; if(document.getElementById('playerCard196')){ refreshPlayerCard196(); return } var grid=panel.querySelector('.grid')||panel; var tmp=document.createElement('div'); tmp.innerHTML=playerCardHtml196(); var card=tmp.firstChild; if(!card)return; var anchor=null; var cards=grid.querySelectorAll('.card'); for(var i=0;i<cards.length;i++){ var h=cards[i].querySelector('h3'); if(h&&h.textContent.indexOf('My Story')>=0){ anchor=cards[i]; break } } if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(card,anchor.nextSibling); else grid.appendChild(card) }catch(e){} }
+try{ var _rt196=renderTabs; renderTabs=function(active){ var r=_rt196.apply(this,arguments); injectPlayerCard196(); return r } }catch(e){}
+/* ---------- the award: silent gains, one voice at level-up ---------- */
+function levelUpMoment196(newLv,oldLv){
+ var crossed=[]; var gm=grandMax196(); var defs=trailDefs196();
+ for(var i=0;i<defs.length;i++){ var d=defs[i]; if(d.lv>oldLv&&d.lv<=newLv&&d.lv>gm)crossed.push(d) }
+ var msg='👤 Player Level '+newLv+'!';
+ if(crossed.length)msg+=' …unlocked '+crossed.map(function(d){ return d.icon+' '+d.name+' Trail' }).join(' and ')+'!';
+ try{ toast(msg) }catch(e){}
+}
+function awardPXP196(n){ if(!n||n<=0)return; var st=pLoad196(); var oldLv=pLevelFor196(st.pxp); st.pxp+=n; var newLv=pLevelFor196(st.pxp); pSave196(st); if(newLv>oldLv)levelUpMoment196(newLv,oldLv); refreshPlayerCard196() }
+/* ---------- source 1: character level-up, +25 PXP per level ---------- */
+try{ var _ax196=addXp; addXp=function(n,skill){ var lv0=0; try{ lv0=(typeof S!=='undefined'&&S&&typeof S.level==='number')?S.level:0 }catch(e){} var r=_ax196.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&typeof S.level==='number'&&S.level>lv0)awardPXP196(25*(S.level-lv0)) }catch(e){} return r } }catch(e){}
+/* ---------- source 2: achievement earned, +15 PXP ---------- */
+try{ var _ap196=achPop132; achPop132=function(id){ var had=false; try{ var V=(typeof ensure132==='function')?ensure132():null; had=!!(V&&V.ach&&V.ach[id]) }catch(e){} var r=_ap196.apply(this,arguments); try{ if(!had){ var V2=(typeof ensure132==='function')?ensure132():null; if(V2&&V2.ach&&V2.ach[id])awardPXP196(15) } }catch(e){} return r } }catch(e){}
+/* ---------- source 3: a game day completed, +2 PXP ---------- */
+try{ var _nd196=nextDay; nextDay=function(skip){ var live=false,day0=0; try{ live=!!(typeof S!=='undefined'&&S&&!S.deadFlag&&typeof inGame!=='undefined'&&inGame); if(S)day0=S.day }catch(e){} var r=_nd196.apply(this,arguments); try{ if(live&&typeof S!=='undefined'&&S&&S.day>day0&&!S.deadFlag)awardPXP196(2) }catch(e){} return r } }catch(e){}
+/* ---------- source 4: a life completed — legacy bonus, +5 PXP per character level reached ---------- */
+var deathSeen196=false;
+setInterval(function(){ try{ if(typeof S==='undefined'||!S)return; if(!S.deadFlag){ deathSeen196=false; return } if(deathSeen196)return; deathSeen196=true; var sig=[S.name||'',S.generation||0,S.day||0,S.age||0,S.level||1].join('|'); var st=pLoad196(); if(st.deathSig!==sig){ st.deathSig=sig; pSave196(st); awardPXP196(5*(S.level||1)) } }catch(e){} },1000);
+/* ---------- trail selection restore: the v193d load-time check runs before this layer exists, so on reload it can un-pick (in memory only — the disk store is never overwritten by that check) a trail that is unlocked by PLAYER level alone. Restore the pick here under the new rule. ---------- */
+try{ var TS196=window.__trails193&&window.__trails193.store(); var rawT196=null; try{ rawT196=JSON.parse(localStorage.getItem('aqualifeTrails.v1')||'null') }catch(e){} if(TS196&&rawT196&&typeof rawT196.sel==='string'&&rawT196.sel!=='off'&&TS196.sel!==rawT196.sel){ var defs196=trailDefs196(); for(var i=0;i<defs196.length;i++){ if(defs196[i].id===rawT196.sel&&(TS196.max>=defs196[i].lv||window.playerLevel196()>=defs196[i].lv)){ TS196.sel=rawT196.sel; window.__trailCustom193=(TS196.sel!=='sparkle'); break } } } }catch(e){}
+window.__v196={store:pLoad196,award:awardPXP196,levelFor:pLevelFor196,into:pInto196,cardHtml:playerCardHtml196,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v196 PLAYER LEVEL (Option B dual system): 👤 a permanent player level in a device store (never resets, survives every life) fed by every life — +25 PXP per character level-up, +15 per achievement, +2 per day completed, +5×level legacy bonus at a life\u2019s end; curve 100×step (Lv 2 @100, Lv 3 @300, Lv 4 @600); shown quietly in the 👽 Me tab only; ONE toast at player level-up, naming any trail it unlocks; ✨ trails now gate on PLAYER level with every v193 unlock grandfathered forever. Character level untouched.');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v196 PART 2: 💞 RELATIONSHIPS ARE EARNED BY TALKING (Howard's order, Nov 2, 2026 — sent with his live Social screenshot).
+   THE RULE: nobody is a tracked relationship before you have actually TALKED to them. Standing near someone, seeing them in the 🌍 Around You discovery list, even meeting them — none of that registers them. A real conversation does: an in-person talk or a directed bubble exchange with that specific person. It applies to EVERYONE alike — actual family members, the household babysitter, classmates, neighbours, town folk.
+   THE HOOK: the game's own conversation ledger, convoDone93 — every real conversation path in the shipped game funnels through it (in-person talk, the v191 bubble exchanges the player answers, the autonomous-social beat, townsperson talk; the number-ask gate itself already reads it as "a real conversation happened"). It is wrapped, never rewritten: the first conversation with a person writes them into this life's roster (S.v196.rels — per-life state, like every other relationship record; existing bonds/dating/family-tree data are untouched). Registration is SILENT — no toast, no journal spam (one voice). One migration seed, same rule: conversations a life already had before v196 (S.v93.convos, the shipped ledger) count — those talks really happened.
+   FAMILY AROUND YOU: family members and the babysitter also register from the family's natural talk around the player — when a family member or the sitter speaks in the player's presence at home (or answers in a family exchange), the v191 exchange log shows it, and a quiet 2s watcher registers the speaker. A baby's family populates from the talking that already happens around them. Strangers and classmates in pair/small talk the player is not part of do NOT register — that talk is not with you.
+   THE ROSTER: a 💞 Relationships card inside the ❤️ Social hub (Family · Relationships · Dating), fed by registration. EVERY entry always shows (a) their identity — the v193 relationship vocabulary (relLabel193: Mom, Sister, Babysitter, Classmate, Friend…), and (b) their current LOCATION, computed live at render from real state: standing in the scene with you ("With you — {place}"), a household kid at daycare (the v195 physical list), grandparents at their house, household members at home, townsfolk at their haunt (school / work / Maple Street / campus / dorm / Hope House). Nothing is cached — move, travel or time passing changes the entry, because it is re-derived every render. The 🌍 Around You list stays the discovery surface, untouched. SAVE_KEY untouched; everything new lives in S.v196, defaulted lazily. ================= */
+(function(){
+try{
+function okName196(n){ return !!n&&typeof n==='string'&&n!=='You'&&n!=='Family'&&n!=='School'&&n!=='FBI'&&n.indexOf('Officer')<0 }
+function ensureRels196(){ if(!S)return null; if(!S.v196||typeof S.v196!=='object')S.v196={}; var V=S.v196; if(!V.rels||typeof V.rels!=='object')V.rels={}; if(!V.seeded196){ V.seeded196=true; try{ var cv=(S.v93&&S.v93.convos)||{}; Object.keys(cv).forEach(function(n){ if(cv[n]>0&&okName196(n)&&n!==S.name&&!V.rels[n])V.rels[n]=S.day }) }catch(e){} } return V }
+if(typeof S!=='undefined'&&S)ensureRels196();
+function registerRel196(name){ try{ if(typeof S==='undefined'||!S||S.deadFlag)return; if(!okName196(name)||name===S.name)return; var V=ensureRels196(); if(!V||V.rels[name])return; V.rels[name]=S.day; try{ save() }catch(e){} }catch(e){} }
+/* ---------- identity: the v193 vocabulary, always present ---------- */
+function identOf196(name){ var l=null; try{ l=(typeof relLabel193==='function')?relLabel193(name):null }catch(e){} if(l==='Stranger'){ var tr=(S.town&&S.town.people)?S.town.people[name]:null; return (tr&&tr.haunt==='street')?'Neighbour':'Friend' } if(l)return l; try{ var c=(typeof contactRel==='function')?contactRel(name):null; if(c)return c }catch(e){} return 'Friend' }
+function isFam196(name){ try{ var l=(typeof relLabel193==='function')?relLabel193(name):null; if(l&&/^(Mom|Dad|Step-Mom|Step-Dad|Grandma|Grandpa|Sister|Brother|Step-Sister|Step-Brother|Babysitter|Caregiver|Son|Daughter|Child|Wife|Husband|Girlfriend|Boyfriend)$/.test(l))return true }catch(e){} try{ if(typeof parentRoleOf47==='function'&&parentRoleOf47(name))return true }catch(e){} try{ if(S.kids&&S.kids.some(function(k){ return k.name===name }))return true }catch(e){} return false }
+/* ---------- location: derived live from real state, every render ---------- */
+function presentHere196(name){ try{ if(typeof npcs!=='undefined'&&npcs){ for(var i=0;i<npcs.length;i++)if(npcs[i].name===name&&npcs[i].state==='in')return true } }catch(e){} try{ if(typeof townsfolk!=='undefined'&&townsfolk){ for(var i=0;i<townsfolk.length;i++)if(townsfolk[i].name===name&&townsfolk[i].state==='in')return true } }catch(e){} if(S.escort===name)return true; if(S.guest&&S.guest.name===name)return true; if(S.sleepover&&S.sleepover.guest===name)return true; try{ if(window._dateWith===name)return true }catch(e){} return false }
+function locLabel196(id){ try{ if(typeof LOC_LABELS92!=='undefined'&&LOC_LABELS92[id])return LOC_LABELS92[id] }catch(e){} return id }
+function locOf196(name){
+ if(presentHere196(name))return 'With you — '+locLabel196(S.location);
+ try{ if(S.v195&&S.v195.dcKids&&S.v195.dcKids.indexOf(name)>=0)return '🏫 Daycare' }catch(e){}
+ try{ var f=S.fam78; if(f&&((f.grandma&&f.grandma.name===name)||(f.grandpa&&f.grandpa.name===name)))return '🏡 Grandma & Grandpa\u2019s house' }catch(e){}
+ try{ if(S.kids&&S.kids.some(function(k){ return k.name===name }))return '🏠 Home' }catch(e){}
+ try{ var f2=S.fam78; if(f2&&f2.siblings&&f2.siblings.some(function(sb){ return sb.name===name }))return '🏠 Home' }catch(e){}
+ try{ if(typeof npcs!=='undefined'&&npcs&&npcs.some(function(n){ return n.name===name }))return '🏠 Home' }catch(e){}
+ if(S.housemates&&S.housemates.indexOf(name)>=0)return '🏠 Home';
+ try{ if(S.v120&&S.v120.sitter&&S.v120.sitter.name===name)return '🏠 Home' }catch(e){}
+ var tr=(S.town&&S.town.people)?S.town.people[name]:null;
+ if(tr)return {school:'🎓 School',work:'💼 Work',street:'🌆 Maple Street',college:'🏛️ Campus',house:'🏠 Home',boarding:'🛏️ The dorm',orphanage:'🏠 Hope House'}[tr.haunt]||'🌆 Around town';
+ return '🌆 Around town' }
+/* ---------- the roster card, inside the Social hub ---------- */
+function rosterHtml196(){ var V=ensureRels196(); if(!V)return ''; var names=Object.keys(V.rels); names.sort(function(a,b){ var d=(isFam196(a)?0:1)-(isFam196(b)?0:1); return d!==0?d:a.localeCompare(b) });
+ var rows=names.map(function(n){ return '<div class="kv"><span><b>'+n+'</b> — '+identOf196(n)+'</span><b>📍 '+locOf196(n)+'</b></div>' }).join('');
+ return '<div class="card" id="relRoster196"><h3>💞 Relationships — '+names.length+'</h3><p class="small" style="margin-top:0">Everyone you have actually talked with — family, your babysitter, classmates, neighbours. People land here from real conversations, not from standing nearby.</p>'+(names.length?rows:'<p class="small">Nobody yet — talk to the people around you and they will show up here, with who they are to you and where they are.</p>')+'</div>' }
+function injectRoster196(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; if(typeof curTab==='undefined'||curTab!=='life')return; var panel=document.getElementById('panel'); if(!panel)return; var ex=document.getElementById('relRoster196'); if(ex){ var t0=document.createElement('div'); t0.innerHTML=rosterHtml196(); if(t0.firstChild)ex.replaceWith(t0.firstChild); return } var tmp=document.createElement('div'); tmp.innerHTML=rosterHtml196(); var card=tmp.firstChild; if(!card)return; var hub=panel.querySelector('.hub136'); if(hub){ var head=hub.querySelector('.hubHead193c'); if(head&&head.nextSibling)hub.insertBefore(card,head.nextSibling); else hub.insertBefore(card,hub.firstChild) } else { var grid=panel.querySelector('.grid')||panel; grid.appendChild(card) } }catch(e){} }
+try{ var _rt196b=renderTabs; renderTabs=function(active){ var r=_rt196b.apply(this,arguments); injectRoster196(); return r } }catch(e){}
+/* ---------- the registration hooks ---------- */
+try{ var _cd196=convoDone93; convoDone93=function(name,opts){ var r=_cd196.apply(this,arguments); registerRel196(name); return r } }catch(e){}
+try{ var _oc196=openConvo; openConvo=function(from){ registerRel196(from); return _oc196.apply(this,arguments) } }catch(e){}
+/* family talk around the player: a family member or the sitter speaking in the player's presence registers — the baby's family populates from the talking that already happens around them */
+var seenEx196=new Set();
+setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; var log191=(window.__v191&&window.__v191.exchangeLog191)||(typeof exchangeLog191!=='undefined'?exchangeLog191:null); if(!log191)return; for(var i=0;i<log191.length;i++){ var e=log191[i]; if(!e||seenEx196.has(e))continue; seenEx196.add(e); if(e.who&&isFam196(e.who))registerRel196(e.who); if(e.reply){ var rn=String(e.reply).split(':')[0]; if(rn&&rn!==S.name&&isFam196(rn))registerRel196(rn) } } if(seenEx196.size>240){ seenEx196.clear(); for(var j=0;j<log191.length;j++)seenEx196.add(log191[j]) } }catch(e){} },2000);
+window.__v196b={ensure:ensureRels196,register:registerRel196,ident:identOf196,locOf:locOf196,rosterHtml:rosterHtml196,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v196 part 2: 💞 relationships are earned by talking — the first real conversation with anyone (family, babysitter, classmate, neighbour, town folk) registers them in the ❤️ Social hub roster, silently; family & the sitter also register from the family talk that happens around you; every roster entry always shows who they are to you (v193 labels) and where they are right now, derived live from the world.');
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v197: 🔧 REPAIR BUILD — Howard's live-play bug list (Nov 2, 2026), root-caused one by one.
+   1) 🌈 RGB GLITCH AFTER FAST TIME: the rainbow borders are ONE registered @property (--rgba) spun by rgbSpin keyframes on dozens of surfaces. While time runs fast (⏩ FINISH flows ff113/ff116 stepping every 200 ms, 💤 sleep ×2 via fastState54), render() rebuilds the whole app nonstop and every rebuilt element restarts its spin against a differently-phased survivor — the borders tear and strobe. The spin is PAUSED (animation-play-state) for exactly the fast window plus a 700 ms settle, then resumes once, cleanly, when the churn stops. Normal-time RGB is untouched.
+   2) 🌦️ WEATHER BAND GLITCH (fixed in skyDraw193 above): the sky band redraws on a 140 ms cadence, but its rain phase advanced ~46 px horizontally and ~63 px vertically per sample against pattern periods of 67/29 px — every streak teleported every frame. Phases now move continuously (rain falls ~125 px/s with a slow drift; snow ~29 px/s), under one period-step per sample, so precipitation flows instead of jumping.
+   3) 📱 PHONE KEEPS POPPING UP AFTER REPLIES: two holes. (a) v187's notification queue replaced showTextNotif and dropped v158's in-phone routing — so a reply landing while the phone was open (thread closed back to Messages/Home, openThread42 reset) raised the WORLD banner over the phone itself. Restored: while a .phone sheet is up, texts route to the shipped in-phone banner (phoneBanner158), the open thread stays silent, parents delegate to the shipped silent path. (b) The burst tail: chooseReply schedules staggered follow-up bursts + queued replies that keep landing for seconds AFTER the player closes the phone, each raising the banner again. Now: closing a phone sheet stamps the moment + the thread in use; a banner from that same person within 14 s of the close lands silently in the inbox (unread badge intact, exactly like the shipped parent rule). Any other sender, or anything later, pops as designed. DMs get the same while-phone-open suppression.
+   4) 📺 FULLSCREEN NOT ADAPTING: the layout's height chain ran on 100dvh with NO fallback — engines/WebViews that don't recompute dvh on fullscreen/orientation changes kept a stale height. vh fallbacks now sit in front of every dvh declaration (dvh still wins where supported), and fullscreenchange / orientationchange / visualViewport resizes re-run the shipped layout sync (syncSheetH51 + a real resize event so the canvas/stage sizers re-measure at the settled size).
+   5) 🌳 FAMILY TREE MISSING FROM SOCIAL: not deleted — buried. socialHub136 wraps every hub card in a collapsed <details class="dd132"> and collapsePass135 keeps it shut, so the tree sat invisible behind a dropdown row. On every Social render the tree card is now UNWRAPPED out of its dropdown and left in plain sight in the hub; if it is ever missing, it is re-added from fam78HomeCard().
+   6) 🚗 THREE CAR ANIMATIONS ON ONE TRIP: three stacked systems fired per car trip — v193's Stage+Curb walk-to-curb/pull-out + pull-in bookends (goLoc/goWithParent wrappers), v176's "🚗 On the road" sheet, and v176's location-change DriveMini banner. ONE canonical animation now: the shipped "On the road" sheet (driveSheet176, the same one school/work/daycare drives already use). The v193 bookends are stood down by holding ST193.bkBusy for the duration of a trip call + its drive (their own wrappers fall straight through when busy; the parked car at the curb — syncStage193 — is untouched, and the living-stage routines only pause for the ~2 s of a drive), and the DriveMini node is removed the instant the watcher adds it (the casino overlay reuses the class but never the id, and the watcher's arrival-knock handling still runs). Walking and rides keep their own shipped presentation — this governs car trips only.
+   7) 🌍 AROUND YOU REMOVED FROM SOCIAL (Howard's direct order, supersedes v196's keep): the "🌍 Around You" section (v141's combineAround141 block: People Around Town + Pets Around You) and any stray People Around Town card are removed from the ❤️ Social panel on every render — no dead space, the hub closes up. Social's people surface is the v196 roster (earned by talking, identity + live location) plus the Family · Relationships · Dating hub. In-world meeting/discovery is untouched — townsfolk still exist in the world; only the Social list section is gone.
+   8) 🖼️ PORTRAITS MATCH THE PERSON + ALIVE (Howard, with Jennifer's card as evidence): personLook fell through to a generic default (boy, spiky 'classic', grey-blue shirt) for anyone without a town/dating record — parents above all: Jennifer the mom rendered as a blocky boy because parent records live in PEOPLE_DEFS by ROLE and in the household defs the world sprites are built from, neither of which the old lookup consulted for a display name. personLook now resolves, in order: your kids (the scene painter's EXACT formula — same hash, same family skin tone), the babysitter (her record's gender, stable look by name), grandparents & siblings (the fam78 record's own girl flag + family tone), parents/household (the very defs initNPCs builds sprites from: icon → gender, col → shirt, hair → hair), then the shipped lookup — with a live-sprite merge on top (a visible npc/townsfolk entry's skin/hair/shirt/gender overrides) and a hard rule that a female family role (mom/grandma/sister/…) never renders male. Female family portraits wear a long feminine style (wavyLong) so a mom reads as a mom at a glance. And portraits are ALIVE: every evPortrait/avatarCv canvas is repainted on a gentle idle (the same drawFigure, phase swaying ±0.55 with a soft bob — the world's own idle language) at ~9 fps while on screen; prefers-reduced-motion keeps the shipped static paint. One renderer (drawFigure), one look source, everywhere a portrait appears: person panels, résumés, character cards, Spark, the barber preview, the top-bar avatar.
+   9) 🏷️ ABOVE-NAME LABELS ONE SIZE STEP UP (Howard, Nov 2): the 🌈 rainbow relationship labels (rainTag193 — the single painter every above-name label in every location flows through: household NPCs, townsfolk, escorts, dates, guests, cops, your kids, speech-bubble headers) render +2 px at every call site (10.5→12.5, 9.5→11.5, 10→12 — roughly +20%). The tag's pill is measured from the same fs, so box, wave and wording scale together, identically styled — size only.
+   Presentation and bug-fix only: no economy, timing, odds or save changes; GAME_VERSION bumps to 197 so the footer tells the truth. ================= */
+(function(){ 'use strict';
+try{
+/* ---------- shared CSS: vh fallbacks (item 4) + RGB calm while time runs fast (item 1) ---------- */
+var st197=document.createElement('style'); st197.id='style197';
+st197.textContent='.app{min-height:100vh;min-height:100dvh}body.inGame51 .app{height:100vh;height:100dvh}body.ff197 *,body.ff197 *::before,body.ff197 *::after{animation-play-state:paused!important}';
+document.head.appendChild(st197);
+
+/* ---------- item 1: pause the RGB spin while time runs fast ---------- */
+var lastFast197=0;
+setInterval(function(){ try{
+ var fast=false;
+ try{ if(typeof fastState54==='function'&&fastState54())fast=true }catch(e){}
+ try{ if(typeof ff113!=='undefined'&&ff113)fast=true }catch(e){}
+ try{ if(typeof ff116!=='undefined'&&ff116)fast=true }catch(e){}
+ var now=Date.now();
+ if(fast){ lastFast197=now; if(!document.body.classList.contains('ff197'))document.body.classList.add('ff197') }
+ else if(document.body.classList.contains('ff197')&&now-lastFast197>700)document.body.classList.remove('ff197');
+}catch(e){} },200);
+
+/* ---------- item 4: fullscreen / orientation / viewport changes re-sync the layout ---------- */
+var lastH197=-1;
+function fsSync197(force){ try{ var h=window.innerHeight; if(!force&&h===lastH197)return; lastH197=h; if(typeof syncSheetH51==='function')syncSheetH51(); window.dispatchEvent(new Event('resize')) }catch(e){} }
+function fsKick197(force){ setTimeout(function(){ fsSync197(force) },80); setTimeout(function(){ fsSync197(force) },350) }
+try{ document.addEventListener('fullscreenchange',function(){ fsKick197(true) }) }catch(e){}
+try{ window.addEventListener('orientationchange',function(){ fsKick197(true) }) }catch(e){}
+try{ if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){ fsKick197(false) }) }catch(e){}
+
+/* ---------- item 6: ONE car animation — the shipped "On the road" sheet ---------- */
+var pinDrive197=false;
+function pinBk197(on){ try{ var st=window.__v193&&window.__v193.state; if(!st)return; if(on){ if(!st.bkBusy){ st.bkBusy=true; pinDrive197=true } } else if(pinDrive197){ st.bkBusy=false; pinDrive197=false } }catch(e){} }
+try{ var _go197=goLoc; goLoc=function(){ pinBk197(true); try{ return _go197.apply(this,arguments) }finally{ if(!window._drv176)pinBk197(false) } } }catch(e){}
+try{ var _gp197=goWithParent; goWithParent=function(){ pinBk197(true); try{ return _gp197.apply(this,arguments) }finally{ if(!window._drv176)pinBk197(false) } } }catch(e){}
+setInterval(function(){ try{ if(window._drv176)pinBk197(true); else if(pinDrive197)pinBk197(false) }catch(e){} },250);
+try{ new MutationObserver(function(muts){ muts.forEach(function(mu){ Array.prototype.forEach.call(mu.addedNodes||[],function(n){ if(n&&n.id==='v176DriveMini'&&n.parentNode)n.remove() }) }) }).observe(document.body,{childList:true}) }catch(e){}
+
+/* ---------- item 3: the phone stops popping up after replies ---------- */
+var lastThread197=null, phoneClosedAt197=0;
+try{ var _oc197=openConvo; openConvo=function(from){ try{ lastThread197=from; phoneClosedAt197=0 }catch(e){} return _oc197.apply(this,arguments) } }catch(e){}
+try{ var _cm197=closeModal; closeModal=function(){ try{ var sh=document.getElementById('sheet'); if(sh&&sh.querySelector('.phone'))phoneClosedAt197=Date.now() }catch(e){} return _cm197.apply(this,arguments) } }catch(e){}
+try{ var _stn197=showTextNotif; showTextNotif=function(m){ try{
+ if(m&&typeof S!=='undefined'&&S&&!S.dnd){
+  var phoneOpen=false; try{ phoneOpen=!!document.querySelector('#sheet .phone') }catch(e){}
+  if(phoneOpen){
+   if(typeof isParent70==='function'&&isParent70(m.from))return _stn197.apply(this,arguments);
+   var inThread=false; try{ inThread=!!(typeof openThread42!=='undefined'&&openThread42&&openThread42.type==='msg'&&openThread42.who===m.from) }catch(e){}
+   if(inThread)return;
+   if(typeof phoneBanner158==='function'){ phoneBanner158(m); return }
+  }
+  if(phoneClosedAt197&&lastThread197&&m.from===lastThread197&&(Date.now()-phoneClosedAt197)<14000)return;
+ }
+}catch(e){} return _stn197.apply(this,arguments) } }catch(e){}
+try{ var _sdm197=showDmNotif; showDmNotif=function(th){ try{ if(document.querySelector('#sheet .phone'))return }catch(e){} return _sdm197.apply(this,arguments) } }catch(e){}
+
+/* ---------- items 5 + 7: Social — Family Tree in plain sight, Around You gone ---------- */
+function socialFix197(){ try{
+ var panel=document.getElementById('panel'); if(!panel)return;
+ Array.prototype.slice.call(panel.querySelectorAll('.around141')).forEach(function(el){ el.remove() });
+ Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(c){ var h=c.querySelector('h3'); if(h&&(h.textContent||'').indexOf('People Around Town')>=0){ var dd=c.closest('details.dd132'); (dd||c).remove() } });
+ var tree=null;
+ Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(c){ if(tree)return; var h=c.querySelector('h3'); if(h&&(h.textContent||'').indexOf('Family Tree')>=0)tree=c });
+ if(!tree){ try{ var hh=fam78HomeCard(); if(hh){ var hub=panel.querySelector('.hub136')||panel.querySelector('.grid')||panel; var dv=document.createElement('div'); dv.innerHTML=hh; tree=dv.firstElementChild; if(tree)hub.appendChild(tree) } }catch(e){} }
+ if(tree){ var dd2=tree.closest('details.dd132'); if(dd2&&dd2.parentNode){ dd2.parentNode.insertBefore(tree,dd2); dd2.remove() } }
+}catch(e){} }
+try{ var _rt197=renderTabs; renderTabs=function(active){ var r=_rt197.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&typeof inGame!=='undefined'&&inGame){ var cur=(typeof curTab!=='undefined'&&curTab)?curTab:active; if(cur==='life')socialFix197() } }catch(e){} return r } }catch(e){}
+
+/* ---------- item 8: portraits — one appearance source, alive ---------- */
+function hash197(nm){ var h=0; nm=String(nm||''); for(var i=0;i<nm.length;i++)h+=nm.charCodeAt(i); return h }
+function baseLook197(girl,skin,hair,shirt,hairStyle){ return {girl:!!girl,skin:skin,hair:hair,shirt:shirt,hat:'none',glasses:'none',shoes:'sneakers',face:'classic',hairStyle:hairStyle||'classic',gloves:'none',watch:'none',jewelry:'none'} }
+function famSkin197(off){ try{ var ti=(typeof famToneIdx83==='function')?famToneIdx83():2; return SKINS[Math.max(0,Math.min(SKINS.length-1,ti+(off||0)))] }catch(e){ return '#f7cf9f' } }
+function look197(name){ try{
+ if(!S||!name||name===S.name)return null;
+ var kid=(S.kids||[]).find(function(k){ return k.name===name });
+ if(kid){ var kh=hash197(name); return baseLook197(kid.gender==='girl',kid.skin||famSkin197((kh%3)-1),HAIRS[kh%HAIRS.length],SHIRTS[(kh>>2)%SHIRTS.length],'classic') }
+ try{ var sit=S.v120&&S.v120.sitter; if(sit&&sit.name===name){ var sh2=hash197(name); return baseLook197(sit.gender==='girl',famSkin197((sh2%3)-1),HAIRS[sh2%HAIRS.length],SHIRTS[(sh2>>2)%SHIRTS.length],sit.gender==='girl'?'wavyLong':'classic') } }catch(e){}
+ try{ if(S.fam78){ var f=S.fam78,rec=null,girl=false;
+  if(f.grandma&&f.grandma.name===name){ rec=f.grandma; girl=true } else if(f.grandpa&&f.grandpa.name===name){ rec=f.grandpa; girl=false }
+  if(!rec){ for(var si=0;si<(f.siblings||[]).length;si++){ if(f.siblings[si].name===name){ rec=f.siblings[si]; girl=!!f.siblings[si].girl; break } } }
+  if(rec){ var fh=hash197(name); return baseLook197(girl,famSkin197(0),HAIRS[fh%HAIRS.length],SHIRTS[(fh>>2)%SHIRTS.length],girl?'wavyLong':'classic') }
+ } }catch(e){}
+ try{ var role=(typeof parentRoleOf47==='function')?parentRoleOf47(name):null, def=null;
+  if(role&&typeof PEOPLE_DEFS!=='undefined'&&PEOPLE_DEFS[role])def=PEOPLE_DEFS[role];
+  if(!def&&typeof householdPeople==='function'){ var hp=householdPeople(); for(var hi=0;hi<hp.length;hi++){ if(hp[hi].name===name){ def=hp[hi]; break } } }
+  if(def){ var g2=(def.icon==='👩'||def.icon==='👧'); return baseLook197(g2,'#fcd7b0',def.hair,def.col,g2?'wavyLong':'classic') }
+ }catch(e){}
+ return null }catch(e){ return null } }
+try{ var _pl197=personLook; personLook=function(name){ var over=look197(name); if(over)return over; var base=_pl197.apply(this,arguments); try{
+ if(base&&typeof S!=='undefined'&&S&&name&&name!==S.name){
+  var spr=null,pools=[]; try{ if(typeof npcs!=='undefined'&&npcs)pools.push(npcs) }catch(e){} try{ if(typeof townsfolk!=='undefined'&&townsfolk)pools.push(townsfolk) }catch(e){}
+  for(var pi=0;pi<pools.length&&!spr;pi++){ for(var ni=0;ni<pools[pi].length;ni++){ if(pools[pi][ni].name===name){ spr=pools[pi][ni]; break } } }
+  if(spr){ if(spr.skin)base.skin=spr.skin; if(spr.hair)base.hair=spr.hair; if(spr.col)base.shirt=spr.col; if(spr.icon==='👩'||spr.icon==='👧')base.girl=true; else if(spr.icon==='👨'||spr.icon==='👦')base.girl=false }
+  if(!base.girl){ var lbl=''; try{ var rl=(typeof relLabel193==='function')?relLabel193:((window.__v193b&&window.__v193b.relLabel)||null); if(rl)lbl=rl(name)||'' }catch(e){} try{ if(!lbl&&typeof identOf196==='function')lbl=identOf196(name)||'' }catch(e){}
+   if(/mom|grandma|sister|daughter|wife|girlfriend|aunt/i.test(lbl)){ base.girl=true; base.hairStyle='wavyLong' } }
+ }
+}catch(e){} return base } }catch(e){}
+function paintLive197(){ try{
+ var now=performance.now(), phase=Math.sin(now/300)*0.55, bobY=Math.sin(now/620)*0.9;
+ document.querySelectorAll('canvas.evPortrait, canvas.avatarCv').forEach(function(cv){ var name=cv.getAttribute('data-person'); if(!name)return; var look=null; try{ look=personLook(name) }catch(e){} if(!look)return; var ctx=cv.getContext('2d'); if(!ctx)return; var g=ctx.createLinearGradient(0,0,0,92); g.addColorStop(0,'#fbd9a0'); g.addColorStop(1,'#d08a45'); ctx.fillStyle=g; ctx.fillRect(0,0,72,92); ctx.save(); ctx.scale(0.75,0.75); try{ drawFigure(ctx,48,58+bobY,look,phase,null,now,(typeof personExpr==='function')?personExpr(name):'neutral') }catch(e){} ctx.restore() });
+}catch(e){} }
+var RM197=false; try{ RM197=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){}
+if(!RM197)setInterval(function(){ try{ if(document.hidden)return; if(!document.querySelector('canvas.evPortrait, canvas.avatarCv'))return; paintLive197() }catch(e){} },110);
+try{ var _pp197=paintPortraits; paintPortraits=function(){ var r=_pp197.apply(this,arguments); try{ paintLive197() }catch(e){} return r } }catch(e){}
+
+/* ---------- item 9: above-name relationship labels — one size step up, everywhere ---------- */
+try{ var _rtg197=rainTag193; rainTag193=function(ctx,cx,baseY,text,now,fs){ return _rtg197(ctx,cx,baseY,text,now,(fs||10.5)+2) } }catch(e){}
+
+window.__v197={version:function(){ return GAME_VERSION },socialFix:socialFix197,look:look197,paintLive:paintLive197,pinBk:pinBk197};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v197 repair build: 🌈 RGB holds still while time runs fast • 🌦️ sky-band rain & snow flow instead of teleporting • 📱 texts stop popping the phone back up after replies (in-phone banner restored, post-close burst tail lands silently) • 📺 vh fallbacks + fullscreen/orientation re-sync • 🌳 Family Tree back in plain sight in Social • 🚗 ONE car animation for every trip — the On the road sheet • 🌍 Around You section removed from Social • 🖼️ portraits render from the same appearance the world uses (Mom looks like Mom) and idle alive • 🏷️ above-name relationship labels one size step bigger everywhere they render');
 }catch(e){}
 })();
 </script>
