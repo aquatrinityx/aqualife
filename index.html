@@ -9644,7 +9644,7 @@ const SHOP128={
  store:[['🥤 Soda',3,'food','Cold, sweet, gone in four minutes.'],['🍟 Chips',4,'food','The big bag, because the small one is a lie.'],['🔋 Batteries (4-pack)',9,'item','Everything in the house just started working again.'],['👛 Wallet',25,'item','Cash, cards, one folded photo. The thing your money lives in.']],
  arcade:[['🪙 Token roll',10,'item','Forty tokens of pure possibility.'],['👕 Arcade tee',22,'item','Neon letters, high-score energy.'],['🎧 Gaming headset',60,'electronics','Hear the footsteps before they hear you.']],
  cinema:[['🍿 Large popcorn',11,'food','Butter layered the right way.'],['🥤 Movie soda',6,'food','A small lake of cola.'],['🎟️ Movie poster',16,'item','For the wall, for the memory.']],
- mall:[['👕 Mall tee',24,'clothes','Clean cut, soft cotton — the clothes store staple.'],['👖 Jeans',48,'clothes','The good denim, broken in by Friday.'],['👟 Sneakers',75,'clothes','Fresh out of the shoe store box.'],['🎮 Video game',60,'electronics','This season\u2019s big one, from the game store.'],['🎬 Movie (Blu-ray)',20,'electronics','From the movie store — yours to keep.'],['📱 Smartphone',300,'electronics','The phone store\u2019s current model, unlocked.'],['👛 Wallet',25,'item','Leather, card slots, a coin pocket that works.']],
+ mall:[['👕 Mall tee',24,'clothes','Clean cut, soft cotton — the clothes store staple.'],['👖 Jeans',48,'clothes','The good denim, broken in by Friday.'],['👟 Sneakers',75,'clothes','Fresh out of the shoe store box.'],['🎮 Video game',60,'electronics','This season\u2019s big one, from the game store.'],['🎬 Movie (Blu-ray)',20,'electronics','From the movie store — yours to keep.'],['📱 Smartphone (display model — NOT a working phone)',300,'electronics','A non-working DISPLAY model from the phone store shelf: it lights up for customers and that is all. It is NOT a usable phone — no calls, no apps, no plan. Resale gadget only: pawn it like any other electronics. Real phones live at 📱 Phones & Plans.'],['👛 Wallet',25,'item','Leather, card slots, a coin pocket that works.']],
  concert:[['👕 Tour shirt',35,'clothes','Proof you were there, wearable forever.'],['💿 Signed CD',45,'item','Signed at the merch table, allegedly by hand.'],['🧢 Tour cap',25,'item','One size, all memories.']],
  fair:[['🍭 Cotton candy',7,'food','A pink cloud on a stick.'],['🎈 Fair balloon',8,'item','It WILL escape by Saturday. Worth it.'],['🏆 Goldfish (in a bag)',12,'item','His name is Champion. He believes in you.']],
  pawn:[['⌚ Vintage watch',55,'item','Keeps perfect time, tells no stories.'],['🎸 Old guitar',85,'item','Six strings, a hundred previous songs.'],['📷 Film camera',65,'electronics','Thirty-six shots, each one a decision.']],
@@ -14349,7 +14349,17 @@ function driveTestOpen158(){ if(!S)return; driveStop158(); const st={hits:0,cone
   const speed=140+75*prog; roadOff=(roadOff+speed*dt)%48;
   if(st.dir)st.targetX=Math.max(28,Math.min(292,st.targetX+st.dir*300*dt));
   st.carX+=(st.targetX-st.carX)*Math.min(1,dt*16); st.carX=Math.max(28,Math.min(292,st.carX));
-  st.spawn-=dt; if(st.spawn<=0){ st.cones.push({x:36+Math.random()*248,y:-30}); if(Math.random()<0.10+0.12*prog)st.cones.push({x:36+Math.random()*248,y:-70}); st.spawn=1.15-0.30*prog }
+  st.spawn-=dt; if(st.spawn<=0){ /* h8: STEERING GUARANTEE — every run threatens EVERY lane, and aimed cones come at the car's own lane on a schedule (25% / 55% / 85%), so a parked car takes 3 hits and fails: passing always takes steering. Spawn rate & speed (the h5 tuning) untouched. */
+   if(!st.lanesT){ st.lanesT=[0,0,0]; st.aimed=0 }
+   const laneC158=[60,160,253]; const laneOf158=function(x){ return x<107?0:(x<213?1:2) };
+   const push158=function(x,y){ st.cones.push({x:x,y:y}); st.lanesT[laneOf158(x)]++ };
+   let forced158=-1;
+   if(prog>=0.15&&st.lanesT[1]===0)forced158=1; else if(prog>=0.55){ for(let li158=0;li158<3;li158++){ if(st.lanesT[li158]===0){ forced158=li158; break } } }
+   const aimDue158=(prog>=0.25&&st.aimed===0)||(prog>=0.55&&st.aimed===1)||(prog>=0.85&&st.aimed===2);
+   if(aimDue158){ push158(Math.max(36,Math.min(284,st.carX+(Math.random()*16-8))),-30); st.aimed++ }
+   else if(forced158>=0){ push158(laneC158[forced158]+(Math.random()*30-15),-30) }
+   else push158(36+Math.random()*248,-30);
+   if(Math.random()<0.10+0.12*prog)push158(36+Math.random()*248,-70); st.spawn=1.15-0.30*prog }
   const carY=420-86;
   st.cones=st.cones.filter(function(c){ c.y+=speed*dt; if(c.y>450)return false; if(Math.abs(c.y-carY)<28&&Math.abs(c.x-st.carX)<21){ st.hits++; try{ buzz([90]) }catch(e){} try{ sfx('hit') }catch(e){} return false } return true });
   ctx.fillStyle='#1f2937'; ctx.fillRect(0,0,320,420);
@@ -15407,7 +15417,7 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — a new lo-fi beat for the intro 
 })();
 </script>
 <script>
-/* ================= v166: CROSS THE LINE LEAVES THE SHEET - Howard (Oct 31, 2026): "let's not show cross the line, lets remove those two and that can only happen if the person rejects the sex protected and sex unprotected. If they say no then you have the choice to force but the crime is the same" + "It's not a manual choice. It's only if you ask and they say no." So: (1) the spend-the-night sheet (nightAsk128, v128 base above) shows ONLY its four shipped choices - Sleep together / Sex - protected / Sex - unprotected / Not tonight - and the v131 wrapper no longer appends any Cross the line paragraph or Force buttons to it; a defensive strip below removes any force UI a stale layer might add. (2) There is NO revealed section and NO standing/manual unlock: each sex ask is still answered by the shipped per-ask roll inside intimacyGo38 (pYes = 0.3 + meter/160, rolled fresh per ask - protected and unprotected can EACH be accepted or refused; neither is ever automatic). This layer watches the answer to each sex ask in THIS encounter: a FIRST refusal (either ask) simply re-presents the same night sheet so the other ask can still be made - no force UI appears. Only when BOTH asks have been refused in the same encounter does the SECOND "no" immediately fire forcePrompt166 - an in-the-moment force-or-back-off prompt (the shipped warning wording + the two shipped Force buttons, calling the UNCHANGED nightForce131). (3) Backing off ends it: the prompt is marked fired and locked for that person that day (lock166), the sheet is not re-presented, and re-asking that night cannot re-trigger it. "Just sleep" never counts toward the gate; "Not tonight" never reaches nightGo128 and ends the encounter; the gate is in-memory only (never saved) and resets on a fresh nightAsk128 - a new night starts clean. (4) THE CRIME IS UNCHANGED: nightForce131 / forceGo103 are untouched - 85% report on the spot (wanted 5-star, 12 days inside), the rest reported within days, restraining order, family finds out, pregnancy at the shipped odds for the condom choice (2% protected / 30% unprotected), relationship ends forever. ================= */
+/* ================= v166: CROSS THE LINE LEAVES THE SHEET - Howard (Oct 31, 2026): "let's not show cross the line, lets remove those two and that can only happen if the person rejects the sex protected and sex unprotected. If they say no then you have the choice to force but the crime is the same" + "It's not a manual choice. It's only if you ask and they say no." So: (1) the spend-the-night sheet (nightAsk128, v128 base above) shows ONLY its four shipped choices - Sleep together / Sex - protected / Sex - unprotected / Not tonight - and the v131 wrapper no longer appends any Cross the line paragraph or Force buttons to it; a defensive strip below removes any force UI a stale layer might add. (2) There is NO revealed section and NO standing/manual unlock: each sex ask is still answered by the shipped per-ask roll inside intimacyGo38 (pYes = 0.3 + meter/160, rolled fresh per ask - protected and unprotected can EACH be accepted or refused; neither is ever automatic). This layer watches the answer to each sex ask in THIS encounter: a FIRST refusal (either ask) simply re-presents the same night sheet so the other ask can still be made - no force UI appears. Only when BOTH asks have been refused in the same encounter does the SECOND "no" immediately fire forcePrompt166 - an in-the-moment force-or-back-off sheet (the shipped warning wording + the two shipped Force buttons, calling the UNCHANGED nightForce131). (3) Backing off ends it: the prompt is marked fired and locked for that person that day (lock166), the sheet is not re-presented, and re-asking that night cannot re-trigger it. "Just sleep" never counts toward the gate; "Not tonight" never reaches nightGo128 and ends the encounter; the gate is in-memory only (never saved) and resets on a fresh nightAsk128 - a new night starts clean. (4) THE CRIME IS UNCHANGED: nightForce131 / forceGo103 are untouched - 85% report on the spot (wanted 5-star, 12 days inside), the rest reported within days, restraining order, family finds out, pregnancy at the shipped odds for the condom choice (2% protected / 30% unprotected), relationship ends forever. ================= */
 (function(){ 'use strict';
  var gate166={nm:null,day:-1,prot:false,raw:false,prompted:false};
  var lock166=null;
@@ -17019,7 +17029,7 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v187: 🔔 every notification (
 
 <script>
 /* ================= v188: 🎓 SCHOOL = 💼 WORK — Howard's ruling (Nov 2, 2026): "Make school and work the same… I want the same prompt they can go to school or fast forward like work. Everyday ask the question. Same feature. We can remove things from the school tab." + "I don't want individual manual settings for school anymore. It doesn't do much."
-   THE WORK PROMPT, AS SHIPPED (what school now mirrors): the work shift prompt (openShiftSheet57) is fired by the schedule tick (schedTick57) the moment the clock reaches the shift's start on a scheduled work day — and ONLY while no sheet/modal is open: the prompt-day stamp is set solely when the sheet actually opens, so if the player is mid-activity or reading another sheet the prompt simply waits and lands at the first free tick, never lost, never stacked. Its three choices: 💼 Go (attend in person — jobShift plays the shift at natural pace), ⏩ Fast-forward (shiftFF57: the day-stamp is set done, the clock jumps straight to the shift's END, and the FULL outcome lands at once — one taxed pay stub via payTaxed59, shifts/career counters +1, Tech XP, energy −10), 🛋️ Skip (counts missed + a warning). A fast-forwarded shift is worth exactly an attended one; only skipping costs you.
+   THE WORK PROMPT, AS SHIPPED (what school now mirrors): the work shift sheet (openShiftSheet57) is fired by the schedule tick (schedTick57) the moment the clock reaches the shift's start on a scheduled work day — and ONLY while no sheet/modal is open: the prompt-day stamp is set solely when the sheet actually opens, so if the player is mid-activity or reading another sheet the prompt simply waits and lands at the first free tick, never lost, never stacked. Its three choices: 💼 Go (attend in person — jobShift plays the shift at natural pace), ⏩ Fast-forward (shiftFF57: the day-stamp is set done, the clock jumps straight to the shift's END, and the FULL outcome lands at once — one taxed pay stub via payTaxed59, shifts/career counters +1, Tech XP, energy −10), 🛋️ Skip (counts missed + a warning). A fast-forwarded shift is worth exactly an attended one; only skipping costs you.
    SCHOOL, MIRRORED EXACTLY: every school day, schedTick57 (8:00 AM–3:00 PM window, enrolled, not snow/summer/break/jail — the shipped schoolDayOn113 gate) calls maybeAttendPrompt; the override below stamps S.attend.attendDay ONLY when its sheet actually opens (a sheet already up = stay unstamped, the tick retries — the work prompt's exact queueing) and opens the twin sheet: 🎒 Go to school (the shipped attendGo — the day plays in person), ⏩ Fast-forward (schoolFF188 below), 🛋️ Skip today (the shipped attendSkip — skipped count, grades slip, warnings). Asked EVERY school day, for the PLAYER's own enrollment only (NPC/family attendance never prompts, as only the player's job prompts).
    schoolFF188 = shiftFF57 translated: stamp the day done, jump the clock to the END of the school day (3:00 PM) via advanceMinutes57, and land the FULL day outcome at once — attendance counted exactly once (term.attended), grades +3 (the shipped class-beat progression an attended morning class grants), Study XP +18 (attendGo's class), recess/lunch effects (Fun/Social up, Hunger +22, the shipped $4 hot-lunch rule at 13+), energy −10 (the fast-forwarded shift's cost). Then dismissal: _schoolDay cleared and, if standing at school, sent home — so the v151 school block (which keys on _schoolDay + 8 AM–3 PM) can NEVER trap a fast-forwarded player: the day resolves PAST school hours. Preschool (3–4) rides the same sheet (as it did the shipped morning choice) with its gentler outcome set — no grades/energy line, attendance + play outcomes — and its v148 arrival-stamped block, lock and parent-led flows are untouched.
    REMOVED (at the source, in the edits above): the printed 🗓️ TIMETABLE — TT113's five-block card no longer renders anywhere (both renderTabs insertions gone, ttCard113 stood down below), the v113 timetable clock-beats (12:00 lunch block / 1:00 PM afternoon-class block interval) are deleted, and the School tab's individual MANUAL school controls — the five do-it-yourself cards: Attend Class, Recess, Eat Cafeteria Lunch, Library Study, Gym / Sports — are gone from the tab: the daily Go / Fast-forward choice is the whole school interaction. KEPT (progression, not settings): enrollment, grades, the 7-day term/report-card cadence (settleTerm untouched), grade progression on BOTH paths, the exam, tracks, summer school, the school block on attended days, and the 3:00 PM bell. The v113 stepper (finishSchool113) now delegates to schoolFF188 so any surviving reference resolves the day the work way. Saves carry over: only S.v188.ffDay is new, defaulted lazily. ================= */
@@ -17059,7 +17069,7 @@ try{ ttCard113=function(){ return '' } }catch(e){}
 try{ finishSchool113=function(){ schoolFF188() } }catch(e){}
 if(S)ensure188();
 window.__v188={ensure188:ensure188,schoolFF188:schoolFF188,version:function(){ return GAME_VERSION }};
-console.log('🌊 AquaLife v'+GAME_VERSION+' — v188: 🎓 school = 💼 work — the daily 8 AM prompt (Go / ⏩ Fast-forward / Skip) mirrors the work shift sheet exactly, queueing behind any open sheet and asked every school day; fast-forward jumps the clock past the 3 PM bell with the full day counted (attendance once, grades + progress); the printed timetable, its clock-beats and the School tab\u2019s manual activity cards (Attend Class / Recess / Cafeteria Lunch / Library Study / Gym) are removed; enrollment, grades and the 7-day report cards untouched');
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v188: 🎓 school = 💼 work — the daily 8 AM choice (Go / ⏩ Fast-forward / Skip) mirrors the work shift sheet exactly, queueing behind any open sheet and asked every school day; fast-forward jumps the clock past the 3 PM bell with the full day counted (attendance once, grades + progress); the printed timetable, its clock-beats and the School tab\u2019s manual activity cards (Attend Class / Recess / Cafeteria Lunch / Library Study / Gym) are removed; enrollment, grades and the 7-day report cards untouched');
 </script>
 
 <script>
@@ -19916,7 +19926,7 @@ function openLaptop200(app){ if(!S)return; const V=ensure200(); if(!V)return; co
  if(app==='desk'){ win='<div style="display:flex;flex-wrap:wrap;gap:14px;padding:16px 6px;min-height:230px;align-content:flex-start">'+L.apps.map(function(id){ const a=apps[id]; if(!a)return ''; return '<div onclick="openLaptop200(\''+id+'\')" style="cursor:pointer;text-align:center;width:76px;color:#fff"><div style="font-size:34px">'+a[0]+'</div><div style="font-size:12px;font-weight:700;text-shadow:1px 1px 2px #000">'+a[1]+'</div></div>' }).join('')+'</div>' }
  else if(app==='surf'){ win='<div style="padding:12px;color:#111"><h3 style="margin:2px 0">🌐 AquaSurf — the town, browsable</h3><p style="font-size:13px">🏠 <b>Portal</b> — your life at a glance: $'+(S.money||0)+' cash · Day '+S.day+' · '+(S.jobInfo?S.jobInfo.title:'no job yet')+'</p><p style="font-size:13px">📰 <b>Town News</b> — the headlines up top are the same ones here: the town talks, AquaSurf just writes it down.</p><p style="font-size:13px">💼 <b>Job Board</b> — 29 career tracks are hiring through 💼 Work; AquaSurf says the good ones want a clean record and a real résumé.</p><p style="font-size:13px">📺 <b>StreamBay</b> — your 🎬 Creator Sim numbers live on the phone; the laptop is where the serious uploads happen (BookSmith, below).</p><p style="font-size:13px">📚 <b>BookNook</b> — published from this laptop: '+(L.books.length?L.books.map(function(b){ return '<b>'+b.title+'</b> ('+b.words+' words)' }).join(' · '):'nothing yet — BookSmith is waiting.')+'</p></div>' }
  else if(app==='paint'){ win='<div style="padding:10px;text-align:center"><canvas id="pxCv200" width="260" height="170" style="width:260px;height:170px;background:#fff;border:2px solid #555;border-radius:4px;touch-action:none"></canvas><div style="margin-top:8px">'+['#111827','#dc2626','#2563eb','#16a34a','#f59e0b','#db2777','#ffffff'].map(function(c){ return '<button onclick="pxColor200(\''+c+'\')" style="width:28px;height:28px;border-radius:50%;background:'+c+';border:2px solid #888;margin:0 3px;cursor:pointer"></button>' }).join('')+'</div><p style="font-size:12px;color:#333">Drag on the canvas. It is 1998 somewhere in this laptop\'s heart.</p></div>' }
- else if(app==='write'){ const wc=L.book.trim()?L.book.trim().split(/\s+/).length:0; win='<div style="padding:12px;color:#111"><h3 style="margin:2px 0">📝 BookSmith</h3><p style="font-size:12.5px">Word count: <b>'+wc+'</b> / 10,000 goal · Published: '+L.books.length+'</p><textarea id="bookTxt200" rows="9" style="width:100%;box-sizing:border-box;border-radius:8px;padding:9px;font-size:14px" placeholder="Chapter one…">'+L.book.replace(/</g,'&lt;')+'</textarea><div style="margin-top:8px"><button class="btn gold" style="width:auto;padding:8px 14px" onclick="bookSave200()">💾 Save draft</button> <button class="btn" style="width:auto;padding:8px 14px;background:#334155;color:#fff" onclick="bookPublish200()">📚 Publish to AquaPress'+(wc>=10000?'':' (needs 10,000 words)')+'</button></div></div>' }
+ else if(app==='write'){ const wc=L.book.trim()?L.book.trim().split(/\s+/).length:0; win='<div style="padding:12px;color:#111"><h3 style="margin:2px 0">📝 BookSmith</h3><p style="font-size:12.5px">Word count: <b id="wcNow208">'+wc+'</b> / 10,000 goal · Published: '+L.books.length+'</p><textarea id="bookTxt200" oninput="bookCount208(this)" rows="9" style="width:100%;box-sizing:border-box;border-radius:8px;padding:9px;font-size:14px" placeholder="Chapter one…">'+L.book.replace(/</g,'&lt;')+'</textarea><div style="margin-top:8px"><button class="btn gold" style="width:auto;padding:8px 14px" onclick="bookSave200()">💾 Save draft</button> <button class="btn" style="width:auto;padding:8px 14px;background:#334155;color:#fff" id="pubBtn208" onclick="bookPublish200()">📚 Publish to AquaPress'+(wc>=10000?'':' (needs 10,000 words)')+'</button></div></div>' }
  else if(app==='dlc'){ const extra=[['calc','🧮 CalcPro — a calculator with confidence'],['tunes','🎵 AquaTunes — tunes that pay Fun'],['notes','🗒️ Notes+ — a notebook that saves']]; win='<div style="padding:12px;color:#111"><h3 style="margin:2px 0">⬇️ Download Center</h3>'+extra.map(function(e){ const has=L.apps.indexOf(e[0])>=0; return '<div class="kv"><span style="color:#111">'+e[1]+'</span>'+(has?'<b>On your desktop ✓</b>':'<button class="btn gold" style="width:auto;margin:0;padding:7px 12px" onclick="dlApp200(\''+e[0]+'\')">⬇️ Download</button>')+'</div>' }).join('')+'<p style="font-size:12px">Downloads add desktop icons. The modem noises are free.</p></div>' }
  else if(app==='calc'){ win='<div style="padding:14px;color:#111;text-align:center"><h3>🧮 CalcPro</h3><input id="calcIn200" style="font-size:18px;padding:8px;width:200px;text-align:right" placeholder="12*9"><br><button class="btn gold" style="margin-top:9px" onclick="calcGo200()">= Solve</button><div id="calcOut200" style="font-size:22px;font-weight:900;margin-top:8px"></div></div>' }
  else if(app==='tunes'){ win='<div style="padding:14px;color:#111;text-align:center"><h3>🎵 AquaTunes</h3><p>Lo-fi beats to boot windows to.</p><button class="btn gold" onclick="tunesGo200()">▶ Play a track</button></div>' }
@@ -20707,6 +20717,191 @@ try{
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 7: 🏦 Bank = 1B dashboard tiles (app + branch counter: balances on top, Deposit / Withdraw / My Cards / RiverCard / Wallet / Cash Back / Cars & Driving tiles over the shipped flows) • 📱 Phone = 2B folders (Games 15 · Life · Money; real attention badges on folders and apps; PocketPal & Miami Nights stay out as favorites) • 🎒 Bag = 3B smart buttons (Eat / Deposit / Open / Give / Pay / Pawn — one right button per item) • 📊 HUD = 4B two tidy rows (money + day/time + wanted stars over the five needs)','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
+</script>
+
+
+<script>
+/* ================= v200 HOTFIX 8 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   From QA Playthrough #3 of the v200h5 build (the chain now works end to end — test passed
+   attempt 1 with 0 hits, quiz 3/3, license, car, Mall, phone and laptop all reached):
+   1) PHONE COUNTER TAKES THE FULL WALLET PICKER — choosePlan40 (the choke point for the store
+      counter, the pawn counter AND the Mall phone sale) checked CASH ONLY: a player rich in the
+      bank was refused the $504 Aqua Nova Ultra until they withdrew. A pending phone purchase now
+      routes through the same picker the store counter got in h3 — Cash / Debit (PIN) / Tap-debit /
+      Credit (PIN) / Tap-credit, pinSheet201 rules and all — and card payment completes the purchase
+      through the shipped setup flow. ALSO: the Mall shelf's $300 "Smartphone" was a sell-only
+      gadget wearing a real phone's name — relabelled at the source (SHOP128.mall) as a display
+      model that is NOT a working phone; price and resale value unchanged.
+   2) BIRDY LEAVES THE APP STORE — v200 law deleted Snake, Blockfall, Chomp, Birdy and Memory;
+      Birdy was off the phone but still listed in the store's All list. Its store entry is deleted
+      below (the same delete STORE_APPS110 pattern h-shipped for Burner): it can no longer be
+      installed; a copy already installed keeps working, like any grandfathered app.
+   3) BOOKSMITH COUNTS LIVE — the word count (and the publish button's "(needs 10,000 words)")
+      now update on every keystroke via bookCount208, wired by an oninput on the draft textarea
+      (source edit in openLaptop200's write window). Goal and publish rule unchanged.
+   4) AQUAOS START MENU + AQUASURF PAGES — Start used to just re-open the desktop. It now opens a
+      real Start menu (every installed laptop app + Put away). AquaSurf's five pages were static
+      text; each now OPENS: Portal (live life snapshot), Town News (the real S.posts feed),
+      Job Board (the real JOB_BOARD + a door into Work), StreamBay (real Creator Sim numbers),
+      BookNook (your real published books + a door into BookSmith).
+   5) HEADER MONEY NEVER LAGS — the h3 rule (money displays refresh the moment money changes)
+      stopped at the dialog door: while a sheet was open, render() never ran, so the header kept
+      pre-transaction totals (bank still $483 after a $50 in-dialog withdrawal). syncMoney208 now
+      writes the live cash/bank straight into every money readout in the DOM (data-roll money
+      spans, the HUD bank pill, in-sheet money bars, the phone money strip) the moment money() or
+      any bank-ledger call lands — plus a light 500ms guard pass while in game, so a change made
+      by ANY path (direct bank mutation included) shows at once, dialog open or not.
+   6) SHIFTS — (a) FINISH WORK SHIFT ACTUALLY FINISHES: finishShift113 ran on the v113 fast-forward
+      STEPPER, which interrupts the moment a modal is open, an activity is running or an offer is
+      pending — and an interrupt UN-marked the day, so on real days the button silently never
+      completed or paid the shift (only the deterministic shiftFF57 path did). The button now runs
+      that same deterministic completion the fast-forward proves: day marked first, clock advanced
+      to shift end, then the shipped shiftSummary113 pays ONE taxed stub, counts the shift and
+      shows the end-of-shift summary — plus coworker Social feedback. The v138 discipline guard
+      (intox / late) is preserved in front of it. (b) THE WORKPLACE IS IN THE SCENE: townsfolk
+      sprites spawn "out" and stroll in over 2.5–12s, but a shift activity lasts 2.8s — so the
+      shift played to an empty room. seatWork208 now seats the job's NAMED coworkers (coworkers203's
+      work-haunt townsfolk) IN the work scene, at spots, the moment the scene or the shift starts.
+   7) CONTEXTUAL ACTIONS CONFIRM OUT LOUD — every "Right here, right now" action completed into
+      the journal only: no toast, and Hug never even named its target. ctxAct200 is re-issued with
+      a visible toast on every completion (what happened + the gain), and Hug names who was hugged
+      (partner/spouse first when they are the ones here, like a person would).
+   8) CONE COURSE — STEERING GUARANTEED (source edit in driveTestOpen158): the h5 tuning stays,
+      but spawns are now lane-aware — every lane is threatened during a run, the car's starting
+      lane is blocked early, and aimed cones come at the car's own position at 25% / 55% / 85% of
+      the course, so parking in one lane takes 3 hits and fails. A pass always takes steering.
+   9) TODDLER ROOM SCENES DRAW THE FAMILY — h5 made the toddler's room LIST name the household;
+      the canvas never drew them (their NPC room assignments park them in other rooms while the
+      toddler's room is, by the game's own rule, the caregiver's room). A drawRoom post-pass now
+      draws every present household member the room list names — same drawNPCSprite the adult
+      homes use — skipping anyone genuinely away (at work / not home), so list and scene agree. */
+/* ---------- 2) Birdy: out of the App Store entirely ---------- */
+try{ if(typeof STORE_APPS110!=='undefined'&&STORE_APPS110.birdy)delete STORE_APPS110.birdy }catch(e){}
+try{ if(typeof STORE_CAT_OF151!=='undefined'&&STORE_CAT_OF151.birdy)delete STORE_CAT_OF151.birdy }catch(e){}
+/* ---------- 3) BookSmith: the count is live ---------- */
+function bookCount208(el){ try{ const v=(el&&el.value)||''; const n=v.trim()?v.trim().split(/\s+/).length:0; const c=document.getElementById('wcNow208'); if(c)c.textContent=n; const b=document.getElementById('pubBtn208'); if(b)b.textContent='📚 Publish to AquaPress'+(n>=10000?'':' (needs 10,000 words)') }catch(e){} }
+/* ---------- 5) Money displays refresh the moment money changes — dialog open or not ---------- */
+function syncMoney208(){ try{ if(typeof S==='undefined'||!S)return; const m=S.money||0, bk=(S.bank63&&S.bank63.bank)||0; const last=window._ms208; if(last&&last.m===m&&last.b===bk)return; window._ms208={m:m,b:bk};
+ document.querySelectorAll('[data-roll="money"]').forEach(function(el){ el.textContent=m });
+ document.querySelectorAll('.hudRow207 .hudPill207').forEach(function(p){ if(p.textContent.indexOf('🏦')>=0)p.textContent='🏦 $'+bk });
+ document.querySelectorAll('.moneyBar54').forEach(function(bar){ const amt=bar.querySelector('.mbAmt'); if(amt)amt.textContent='$'+m; bar.querySelectorAll('span').forEach(function(sp){ if(sp.textContent.indexOf('Debit / bank:')>=0)sp.textContent='💳 Debit / bank: $'+bk }) });
+ document.querySelectorAll('.phoneMoney54 .pmAmt').forEach(function(el){ el.textContent='💵 $'+m+'  •  💳 $'+bk });
+}catch(e){} }
+try{ const _mn208=money; money=function(n,label){ const r=_mn208.apply(null,arguments); try{ syncMoney208() }catch(e){} return r } }catch(e){}
+try{ const _tx208=txn63; txn63=function(){ const r=_tx208.apply(null,arguments); try{ syncMoney208() }catch(e){} return r } }catch(e){}
+try{ if(typeof bankMoney63==='function'){ const _bm208=bankMoney63; bankMoney63=function(){ const r=_bm208.apply(null,arguments); try{ syncMoney208() }catch(e){} return r } } }catch(e){}
+setInterval(function(){ try{ if(typeof S!=='undefined'&&S&&typeof inGame!=='undefined'&&inGame)syncMoney208() }catch(e){} },500);
+/* ---------- 1) The phone counter takes the full wallet picker ---------- */
+function phonePaySheet208(){ if(!S)return; const mid=window._phBuy40; if(!mid)return; const m=phoneModel40(mid); const planId=window._phPlan208; const price=(window._phPrice40!=null)?window._phPrice40:lvlPrice(m.price); try{ ensure63() }catch(e){} const b=S.bank63||{bank:0,debit:false,credit:null};
+ const canCash=(S.money||0)>=price, canDebit=!!(b.debit&&(b.bank||0)>=price), canCredit=!!(b.credit&&((b.credit.limit-b.credit.due)>=price));
+ const btn=function(how,t,ok,sub){ return ok?('<button class="btn gold" style="margin-top:8px" onclick="phonePay208(\''+how+'\')">'+t+' — $'+price+'<br><span style="font-size:12px;font-weight:600;opacity:.85">'+sub+'</span></button>'):('<button class="btn" disabled style="margin-top:8px;opacity:.45;filter:grayscale(1)">'+t+' — $'+price+'<br><span style="font-size:12px;font-weight:600">'+sub+' — can\'t cover this</span></button>') };
+ let h='<h2>💳 Pay for your '+m.name+' — $'+price+'</h2><p>Plan: <b>'+phonePlan40(planId).icon+' '+phonePlan40(planId).name+'</b>. The phone counter takes the whole wallet — cash, debit, credit or tap — same as every other counter in town.</p><p style="font-size:12.5px;opacity:.85">💵 Cash: $'+(S.money||0)+' • 💳 Bank: $'+(b.bank||0)+(b.credit?(' • 💳 Credit available: $'+Math.max(0,b.credit.limit-b.credit.due)):'')+'</p>';
+ h+=btn('cash','💵 Pay cash',canCash,'in hand: $'+(S.money||0));
+ h+=btn('debit','💳 Pay debit',canDebit,b.debit?('bank balance: $'+(b.bank||0)+' · PIN asked'):'no debit card');
+ if(b.debit)h+=btn('tapdebit','📶 Tap to pay — debit',canDebit,'no PIN — just tap');
+ h+=btn('credit','💳 Pay credit',canCredit,b.credit?('$'+Math.max(0,b.credit.limit-b.credit.due)+' available · PIN asked'):'no credit card');
+ if(b.credit)h+=btn('tapcredit','📶 Tap to pay — credit',canCredit,'no PIN — just tap');
+ if(!canCash&&!canDebit&&!canCredit)h+='<p style="font-size:12.5px;margin-top:8px">Nothing you carry covers $'+price+' yet — not cash, not the bank, not credit. The phone waits at the counter until something does.</p>';
+ h+='<button class="btn outline" style="margin-top:10px" onclick="phoneBackPlans208()">‹ Back to plans</button>';
+ openSheet(h) }
+function phoneBackPlans208(){ const mid=window._phBuy40; if(!mid){ openPhoneShop40(); return } const m=phoneModel40(mid); const src=window._phSrc40||('— $'+((window._phPrice40!=null)?window._phPrice40:lvlPrice(m.price))+' at the counter'); phonePlanPicker40(m,src) }
+function phonePay208(how){ if(!S)return; const mid=window._phBuy40; const planId=window._phPlan208; if(!mid||!planId)return; const m=phoneModel40(mid); const price=(window._phPrice40!=null)?window._phPrice40:lvlPrice(m.price); try{ ensure63() }catch(e){} const b=S.bank63||{bank:0,debit:false,credit:null};
+ if(how==='cash'){ window._phInPay208=true; try{ choosePlan40(planId) }catch(e){} window._phInPay208=false; return }
+ const method=(how==='debit'||how==='tapdebit')?'debit':'credit'; const tap=(how==='tapdebit'||how==='tapcredit');
+ if(method==='debit'){ if(!b.debit||(b.bank||0)<price){ toast('💳 Debit can\'t cover $'+price); return } }
+ else if(!b.credit||(b.credit.limit-b.credit.due)<price){ toast('💳 Credit can\'t cover $'+price); return }
+ const go=function(){ phoneBuyGo208(planId,method) };
+ if(tap){ toast('📶 Tap to pay — no PIN'); go() } else { try{ pinSheet201(method,function(ok){ if(ok)go(); else { toast('💳 Payment cancelled — nothing was charged'); phonePaySheet208() } }) }catch(e){ go() } } }
+function phoneBuyGo208(planId,method){ if(!S)return; try{ ensure27() }catch(e){} const mid=window._phBuy40; if(!mid)return; const m=phoneModel40(mid); const price=(window._phPrice40!=null)?window._phPrice40:lvlPrice(m.price); const src40=window._phSrc40||'';
+ const old=S.inv.findIndex(function(it){ return it.kind==='phone' }); if(old>=0)S.inv.splice(old,1);
+ const it=addItem(m.name,'phone',Math.round(m.price*0.6),false,m.look); if(!it){ toast('🎒 Bag is FULL — pawn something first'); window._phBuy40=null; window._phPrice40=null; window._phSrc40=''; openPhoneShop40(); return }
+ try{ ensure63() }catch(e){} const b=S.bank63;
+ if(method==='debit'){ b.bank-=price; try{ txn63('💳 Debit card — 📱 '+m.name+' — Phones & Plans',-price) }catch(e){} }
+ else { b.credit.due+=price; try{ txn63('💳 Credit card — 📱 '+m.name+' — Phones & Plans',-price) }catch(e){} log('💳 On the CREDIT CARD: $'+price+' — balance owed is now $'+b.credit.due+' of your $'+b.credit.limit+' limit. It behaves exactly like every other credit purchase: statement weekly, pay it down in the 🏦 Bank app.') }
+ try{ if(typeof receipt201==='function')receipt201('📱 '+m.name+' — Phones & Plans',price,method==='debit'?'💳 Debit':'💳 Credit') }catch(e){}
+ window._phBuy40=null; window._phPrice40=null; window._phSrc40='';
+ S.hasPhone=true; S.phone40={model:mid,devName:'',plan:planId,lapsed:false,pin:null};
+ if(!S.phoneMsgs||!S.phoneMsgs.length)S.phoneMsgs=seedThreads(S.origin,S.age,S.name);
+ log('📱 Bought the '+m.name+' for $'+price+(src40?' — '+src40:'')+' on the '+phonePlan40(planId).icon+' '+phonePlan40(planId).name+' plan'+(old>=0?' — the old phone was traded in at the counter.':'.')+' Paid by '+(method==='debit'?'💳 debit card':'💳 credit card')+'. It lives in your 🎒 Bag now.');
+ save(); render(); startSetup40(mid,planId,src40||'bought') }
+try{ const _cp208=choosePlan40; choosePlan40=function(planId){ try{ if(window._phBuy40&&!window._phInPay208){ const m=phoneModel40(window._phBuy40); const price=m?((window._phPrice40!=null)?window._phPrice40:lvlPrice(m.price)):0; if(m&&price>0){ window._phPlan208=planId; phonePaySheet208(); return } } }catch(e){} return _cp208(planId) } }catch(e){}
+/* ---------- 4) AquaOS: a real Start menu, and AquaSurf pages that open ---------- */
+const LAP_APPS208={surf:['🌐','AquaSurf'],paint:['🎨','Pixel Paint'],write:['📝','BookSmith'],dlc:['⬇️','Download Center'],calc:['🧮','CalcPro'],tunes:['🎵','AquaTunes'],notes:['🗒️','Notes+']};
+function lapFrame208(){ try{ const sh=document.getElementById('sheet'); if(!sh)return null; return sh.querySelector('div[style*="#008080"]') }catch(e){ return null } }
+function lapStart208(){ try{ const f=lapFrame208(); if(!f)return; const old=document.getElementById('lapMenu208'); if(old){ old.remove(); return }
+ const V=(typeof ensure200==='function')?ensure200():null; const L=V&&V.laptop; const apps=(L&&L.apps&&L.apps.length)?L.apps:['surf','paint','write','dlc'];
+ const menu=document.createElement('div'); menu.id='lapMenu208';
+ menu.style.cssText='position:absolute;left:6px;bottom:42px;width:220px;background:#c0c0c0;border:2px outset #ffffff;box-shadow:3px 3px 0 #00000055;z-index:6;padding:5px;color:#111';
+ menu.innerHTML='<div style="font-weight:900;font-size:12.5px;padding:4px 7px;background:#000080;color:#fff;margin:-5px -5px 5px">🌊 AquaOS — Start</div>'+apps.map(function(id){ const a=LAP_APPS208[id]; if(!a)return ''; return '<button onclick="openLaptop200(\''+id+'\')" style="display:block;width:100%;text-align:left;padding:7px 8px;background:transparent;border:0;font-size:13.5px;font-weight:700;cursor:pointer;color:#111">'+a[0]+' '+a[1]+'</button>' }).join('')+'<div style="border-top:1px solid #808080;margin:4px 0"></div><button onclick="closeModal()" style="display:block;width:100%;text-align:left;padding:7px 8px;background:transparent;border:0;font-size:13.5px;font-weight:700;cursor:pointer;color:#111">✕ Put away the laptop</button>';
+ f.appendChild(menu) }catch(e){} }
+function surfWin208(){ const f=lapFrame208(); return (f&&f.children&&f.children[1])?f.children[1]:null }
+function esc208(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;') }
+function surfHome208(){ const w=surfWin208(); if(!w)return; const row=function(pg,ic,t,d){ return '<button onclick="surfPage208(\''+pg+'\')" style="display:block;width:100%;text-align:left;background:#ffffff;border:1.5px solid #9ca3af;border-radius:9px;padding:10px 12px;margin:0 0 8px;cursor:pointer;color:#111"><b style="font-size:14.5px">'+ic+' '+t+'</b><br><span style="font-size:12.5px;opacity:.8">'+d+'</span></button>' };
+ w.innerHTML='<div style="padding:12px;color:#111"><h3 style="margin:2px 0 8px">🌐 AquaSurf — the town, browsable</h3>'
+ +row('portal','🏠','Portal','Your life at a glance — money, day, job, needs.')
+ +row('news','📰','Town News','The headlines and posts the town is talking about.')
+ +row('jobs','💼','Job Board','Who is hiring, what it pays, what it takes.')
+ +row('stream','📺','StreamBay','Your Creator Sim channel, by the numbers.')
+ +row('books','📚','BookNook','Books you have published from this laptop.')
+ +'</div>' }
+function surfPage208(pg){ const w=surfWin208(); if(!w||!S)return; const back='<button onclick="surfHome208()" style="background:#000080;color:#fff;border:2px outset #ffffff;padding:6px 12px;font-weight:800;cursor:pointer;margin-bottom:9px">‹ AquaSurf home</button>'; let h='';
+ if(pg==='portal'){ const bk=(S.bank63&&S.bank63.bank)||0; const n=S.needs||{}; h='<h3 style="margin:2px 0">🏠 Portal — your life at a glance</h3>'
+  +'<p style="font-size:13.5px;line-height:1.6">💵 Cash <b>$'+(S.money||0)+'</b> · 🏦 Bank <b>$'+bk+'</b><br>📅 Day <b>'+S.day+'</b> · 🕐 <b>'+(typeof clockStr==='function'?clockStr():'')+'</b> · ⭐ Lv <b>'+(S.level||1)+'</b><br>💼 '+(S.jobInfo?('<b>'+esc208(S.jobInfo.title)+'</b>'):'<b>No job yet</b> — the Job Board is one tap back')+'<br>📍 You are at <b>'+esc208(S.location||'home')+'</b> · 👥 Followers <b>'+(S.followers||0)+'</b></p>'
+  +'<p style="font-size:13px">🍔 Hunger '+Math.round(n.hunger||0)+'% · ⚡ Energy '+Math.round(n.energy||0)+'% · 🎮 Fun '+Math.round(n.fun||0)+'% · 💬 Social '+Math.round(n.social||0)+'%</p>' }
+ else if(pg==='news'){ const posts=(S.posts||[]).slice(0,8); h='<h3 style="margin:2px 0">📰 Town News</h3>'+(posts.length?posts.map(function(p){ return '<div style="background:#ffffff;border:1px solid #d1d5db;border-radius:9px;padding:8px 11px;margin:0 0 7px;font-size:13px">'+esc208(p.text)+'<br><span style="font-size:11px;opacity:.65">❤️ '+(p.likes||0)+'</span></div>' }).join(''):'<p style="font-size:13px">No headlines right now — when the news happens (especially YOUR news), it lands here.</p>') }
+ else if(pg==='jobs'){ const list=(typeof JOB_BOARD!=='undefined'&&JOB_BOARD)?JOB_BOARD:[]; h='<h3 style="margin:2px 0">💼 Job Board</h3><p style="font-size:12.5px">The board AquaSurf mirrors — applying happens in 💼 Work, where the full career board lives.</p>'+list.map(function(j){ return '<div style="display:flex;justify-content:space-between;gap:8px;background:#ffffff;border:1px solid #d1d5db;border-radius:9px;padding:7px 11px;margin:0 0 6px;font-size:13px"><span><b>'+esc208(j.t)+'</b>'+(j.req?' <span style="opacity:.7">· needs '+esc208(j.req.degree||j.req.cert||'')+'</span>':(j.teen?' <span style="opacity:.7">· teen ok</span>':''))+'</span><b>$'+j.pay+'</b></div>' }).join('')+'<button class="btn gold" style="width:auto;padding:8px 14px" onclick="closeModal();renderTabs(\'work\')">💼 Open Work — apply there</button>' }
+ else if(pg==='stream'){ const G=(typeof g200==='function')?g200():null; const C=(G&&G.creator)||{subs:0,posts:0,earned:0}; h='<h3 style="margin:2px 0">📺 StreamBay — your channel</h3><p style="font-size:13.5px;line-height:1.65">🎬 Creator Sim channel: <b>'+(C.subs||0)+'</b> subs · <b>'+(C.posts||0)+'</b> posts · <b>$'+(C.earned||0)+'</b> earned.<br>👥 Followers out in the world: <b>'+(S.followers||0)+'</b>. Posting and going live happen in the 🎬 Creator Sim app — AquaSurf keeps the scoreboard.</p><button class="btn gold" style="width:auto;padding:8px 14px" onclick="closeModal();creatorSim200()">🎬 Open Creator Sim</button>' }
+ else if(pg==='books'){ const V=(typeof ensure200==='function')?ensure200():null; const L=V&&V.laptop; const books=(L&&L.books)||[]; h='<h3 style="margin:2px 0">📚 BookNook — published from this laptop</h3>'+(books.length?books.map(function(b){ return '<div style="background:#ffffff;border:1px solid #d1d5db;border-radius:9px;padding:8px 11px;margin:0 0 7px;font-size:13px"><b>'+esc208(b.title)+'</b><br><span style="font-size:11.5px;opacity:.7">'+(b.words||0)+' words · Day '+(b.day||'?')+'</span></div>' }).join(''):'<p style="font-size:13px">Nothing published yet — 📝 BookSmith is waiting. 10,000 words and AquaPress prints it.</p>')+'<button class="btn gold" style="width:auto;padding:8px 14px" onclick="openLaptop200(\'write\')">📝 Open BookSmith</button>' }
+ w.innerHTML='<div style="padding:12px;color:#111">'+back+h+'</div>' }
+function lapDecorate208(app){ const f=lapFrame208(); if(!f)return; f.style.position='relative';
+ const btns=f.querySelectorAll('button'); for(let i=0;i<btns.length;i++){ const oc=btns[i].getAttribute('onclick')||''; if((btns[i].textContent||'').indexOf('Start')>=0&&oc.indexOf('desk')>=0){ btns[i].setAttribute('onclick','lapStart208()'); break } }
+ if(app==='surf')surfHome208() }
+try{ const _ol208=openLaptop200; openLaptop200=function(app){ const r=_ol208.apply(null,arguments); try{ lapDecorate208(app||'desk') }catch(e){} return r } }catch(e){}
+/* ---------- 6a) Finish Work Shift: deterministic completion, same result as fast-forwarding ---------- */
+function finishShift208(){ if(!S||!S.jobInfo)return; ensure57(); try{ ffStop113() }catch(e){}
+ const j=S.jobInfo; const sch=schedOf57(j); if(!sch)return;
+ if(S.sched57.doneDay===S.day){ toast('💼 Today\'s shift is already worked — wages landed once'); return }
+ if(!isWorkDay57(j)){ toast('💤 No shift today — a scheduled day off'); return }
+ if(nowMin57()>=sch.end*60){ toast('💼 That shift is already over — no finishing a shift that has ended'); return }
+ try{ if(typeof coworkers203==='function')coworkers203() }catch(e){}
+ S.sched57.doneDay=S.day; /* marked FIRST: no missed-shift warning, no second stub */
+ closeModal();
+ log('💼⏩ FINISH WORK SHIFT — the shift is worked through in full: the clock runs to '+fmtHour(sch.end)+', the workplace hours count, and ONE pay stub lands — the same result as fast-forwarding through it, with no stepper left to interrupt.');
+ advanceMinutes57(Math.max(30,sch.end*60-nowMin57()),true);
+ shiftSummary113({sch:sch});
+ try{ if(typeof shiftSocial205==='function')shiftSocial205() }catch(e){}
+ save() }
+try{ finishShift113=function(){ try{ if(typeof clockInCheck138==='function'&&typeof discipline138==='function'){ const c=clockInCheck138(); if(c==='intox'){ discipline138('intox'); save(); render(); return } if(c==='late'&&!discipline138('late')){ save(); render(); return } } }catch(e){} return finishShift208() } }catch(e){}
+/* ---------- 6b) The shift shows the workplace — named coworkers, seated in the scene ---------- */
+function seatWork208(){ try{ if(!S||S.location!=='work'||!S.jobInfo)return; if(typeof coworkers203==='function')coworkers203(); const V=(typeof ensure200==='function')?ensure200():null; const w=V&&V.work?V.work[S.jobInfo.title]:null; const mates=(w&&w.mates)||[]; if(!mates.length)return; if(!Array.isArray(townsfolk))townsfolk=[];
+ const now=performance.now();
+ mates.forEach(function(nm,i){ const rec=(S.town&&S.town.people)?S.town.people[nm]:null; if(!rec)return; let sp=null; for(let k=0;k<townsfolk.length;k++){ if(townsfolk[k].name===nm){ sp=townsfolk[k]; break } } if(!sp){ sp=townSprite(rec,townsfolk.length); townsfolk.push(sp) } const spot=NPC_SPOTS[i%NPC_SPOTS.length]; sp.state='in'; sp.x=spot[0]; sp.y=spot[1]; sp.tx=spot[0]; sp.ty=spot[1]; sp.until=now+30*60*1000; sp.next=now+30*60*1000 });
+}catch(e){} }
+try{ const _it208=initTownsfolk; initTownsfolk=function(){ const r=_it208.apply(null,arguments); seatWork208(); return r } }catch(e){}
+try{ const _js208=jobShift; jobShift=function(){ const r=_js208.apply(this,arguments); try{ seatWork208(); setTimeout(seatWork208,450); setTimeout(seatWork208,1600) }catch(e){} return r } }catch(e){}
+/* ---------- 7) Contextual actions confirm out loud — Hug names its target ---------- */
+function ctxAct200(k){ if(!S)return; const here=peopleHere200(); let who=here[0]||'someone close';
+ if(k==='hug'){ const pref=[S.spouse,S.partner].filter(Boolean); for(let i=0;i<pref.length;i++){ if(here.indexOf(pref[i])>=0){ who=pref[i]; break } } }
+ if(k==='meditate')startActivity('🧘',2200,charX,charY,{fun:6,energy:5},function(){ log('🧘 MEDITATED — ten honest breaths in a place that allows them. The day got quieter on the inside.'); toast('🧘 Meditated — Fun +6, Energy +5'); save(); render() });
+ else if(k==='nap')startActivity('😴',2400,charX,charY,{energy:22},function(){ log('😴 NAPPED — not a sleep, a tactical retreat. Energy back, dignity intact.'); toast('😴 Napped — Energy +22'); save(); render() });
+ else if(k==='photo')startActivity('📸',1800,charX,charY,{fun:8,social:6},function(){ log('📸 PHOTO TOGETHER — you and '+who+', mid-laugh, the good kind of unposed. It goes in the storybook someday.'); page200('📸','A photo together','You + '+who+', Day '+S.day+'. The good kind of unposed.'); toast('📸 Photo together with '+who+' — Social +6'); save(); render() });
+ else if(k==='hug')startActivity('🤗',1500,charX,charY,{social:8},function(){ const t=who; if(S.fam78||t)mem200(t,2); log('🤗 HUGGED '+t+' — the real kind, both arms, no rush. Some mechanics are just that simple.'); toast('🤗 Hugged '+t+' — Social +8'); save(); render() });
+ else if(k==='catch')startActivity('⚾',2200,charX,charY,{fun:10,social:5,energy:-4},function(){ log('⚾ PLAYED CATCH — sun out, a kid in range, a ball with opinions. Childhood, administered directly.'); toast('⚾ Played catch — Fun +10, Social +5'); save(); render() });
+ else if(k==='sing')startActivity('🎤',2200,charX,charY,{fun:10,social:7},function(){ log('🎤 SANG TOGETHER — harmony attempted, volume achieved, neighbors informed. Worth it.'); toast('🎤 Sang together — Fun +10, Social +7'); save(); render() });
+ else if(k==='walk')startActivity('🚶',2400,charX,charY,{fun:6,energy:-3,health:2},function(){ log('🚶 WENT FOR A WALK — no destination, which was the destination. The street knows your face a little better.'); toast('🚶 Walk done — Fun +6, Health +2'); save(); render() });
+ else if(k==='porch')startActivity('🌇',2200,charX,charY,{fun:7,social:4},function(){ log('🌇 PORCH SAT — people-watched the whole street into the golden hour. Zero plot, perfect episode.'); toast('🌇 Porch sit — Fun +7, Social +4'); save(); render() });
+ else if(k==='letter'){ const fam=(typeof famNames201==='function')?famNames201():[]; const to=fam[0]||'Mom'; startActivity('✉️',2000,charX,charY,{social:5},function(){ mem200(to,3); log('✉️ WROTE A LETTER to '+to+' — paper, ink, the works. It will land like mail used to: slowly and all at once.'); toast('✉️ Letter written to '+to+' — Social +5'); save(); render() }) }
+ else if(k==='vent')startActivity('🫂',2000,charX,charY,{social:8,fun:5},function(){ log('🫂 VENTED — said the whole unsayable thing out loud to someone safe. It is smaller outside your head.'); toast('🫂 Vented to '+who+' — Social +8'); save(); render() });
+ else if(k==='book'){ closeModal(); openLaptop200('write'); return }
+ save() }
+/* ---------- 9) Toddler room scenes draw the family the room list names ---------- */
+function toddlerFamDraw208(){ if(!S||typeof inGame==='undefined'||!inGame)return; if(!(S.age>=1&&S.age<=4))return; if(typeof homeLoc!=='function'||S.location!==homeLoc())return; const rm=(typeof curRoom86==='function')?curRoom86():null; if(!rm)return; const folks=(typeof roomFolks106==='function')?roomFolks106(rm.id):[]; if(!folks||!folks.length)return; const cv=document.getElementById('cv'); if(!cv)return; const ctx=cv.getContext('2d'); const now=performance.now(); let slot=0;
+ folks.forEach(function(nm){ try{ if(typeof atWork120==='function'&&atWork120(nm))return; const n=(typeof npcs!=='undefined'&&npcs)?npcs.find(function(x){ return x.name===nm }):null;
+  if(n){ if(n.state!=='in')return; if((n.room86||'living')===rm.id)return; const sp=NPC_SPOTS[slot++%NPC_SPOTS.length]; drawNPCSprite(ctx,{name:n.name,icon:n.icon,col:n.col,hair:n.hair,x:sp[0],y:sp[1],state:'in',bubble:n.bubble||'',say:'',sayUntil:0},now,false) }
+  else { const hd=(typeof personDefFor82==='function')?personDefFor82(nm):((typeof PEOPLE_DEFS!=='undefined')?PEOPLE_DEFS[nm]:null); if(!hd)return; const sp=NPC_SPOTS[slot++%NPC_SPOTS.length]; drawNPCSprite(ctx,{name:nm,icon:hd.icon,col:hd.col,hair:hd.hair,x:sp[0],y:sp[1],state:'in',bubble:'',say:'',sayUntil:0},now,false) } }catch(e){} }) }
+try{ const _dr208=drawRoom; drawRoom=function(){ const r=_dr208.apply(null,arguments); try{ toddlerFamDraw208() }catch(e){} return r } }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 8: 📱 phone counter takes the full wallet picker (cash / debit+PIN / tap / credit+PIN) and the Mall $300 "Smartphone" is honestly a display-model resale gadget now • 🐦 Birdy deleted from the App Store • 📝 BookSmith counts words live as you type • 💻 AquaOS Start opens a real menu and every AquaSurf page loads • 💵 header money refreshes the moment money moves, dialog open or not • 💼 Finish Work Shift completes & pays like fast-forward, and shifts seat named coworkers in the workplace scene • 🤗 Hug (and every contextual action) confirms out loud, target named • 🚧 cone course: every lane threatened + aimed cones — a pass always takes steering • 🧸 toddler room scenes draw the family the room list names','color:#0ea5e9;font-weight:bold') }catch(e){}
+
 </script>
 
 </body>
