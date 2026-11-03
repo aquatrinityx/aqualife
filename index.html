@@ -20722,14 +20722,15 @@ try{
  try{ bagRows=function(dark){ return bagRows207(dark) } }catch(e){}
 
  /* ================= 4) HUD = 4B TWO TIDY ROWS ================= */
+ /* h10 (Howard, from his phone): the 💵 cash + 🏦 bank pills and the Day+time pill leave the
+    top HUD — money's one always-visible readout is the bottom dock (its data-roll span and
+    the h8 instant sync are untouched), and the time lives back under the 📅 Calendar pill in
+    the top bar (the shipped .clockPill125 in the day stack, live via .jsClock as before).
+    This row now carries ONLY the wanted stars, and only while wanted. */
  function hudPass207(){ try{ if(!S||!(typeof inGame!=='undefined'&&inGame))return; const tp=document.getElementById('topPin'); if(!tp||tp.querySelector('.hudRow207'))return; const needs=tp.querySelector('.needsRow100'); if(!needs)return;
-  const bank=(S.bank63&&S.bank63.bank)||0; const w=S.wanted||0;
-  const stars=w>0?'<span class="hudPill207">🚔 <span><span class="hStars207">'+'★'.repeat(Math.min(5,w))+'</span><span class="hStarsOff207">'+'★'.repeat(Math.max(0,5-w))+'</span></span></span>':'';
-  const d=document.createElement('div'); d.className='hudRow207'; d.setAttribute('aria-label','Money, day and time');
-  d.innerHTML='<span class="hudPill207">💵 $<span data-roll="money">'+(S.money||0)+'</span></span>'
-  +'<span class="hudPill207">🏦 $'+bank+'</span>'
-  +'<button type="button" class="hudPill207" onclick="phoneCalendar89()" aria-label="Day and time — open your calendar">📅 Day '+(S.day||1)+' · 🕐 <span class="jsClock">'+((typeof clockStr==='function')?clockStr():'')+'</span></button>'
-  +stars;
+  const w=S.wanted||0; if(w<=0)return;
+  const d=document.createElement('div'); d.className='hudRow207'; d.setAttribute('aria-label','Wanted level');
+  d.innerHTML='<span class="hudPill207">🚔 <span><span class="hStars207">'+'★'.repeat(Math.min(5,w))+'</span><span class="hStarsOff207">'+'★'.repeat(Math.max(0,5-w))+'</span></span></span>';
   tp.insertBefore(d,needs) }catch(e){} }
  try{ const _r207=render; render=function(){ const r=_r207.apply(this,arguments); try{ hudPass207(); setTimeout(hudPass207,90) }catch(e){} return r } }catch(e){}
 
