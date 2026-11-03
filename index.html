@@ -19216,5 +19216,58 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v199 hotfix 7: 🚗 THE DRIVING TEST NO LONGER FREEZES AT THE CONES + 🕺 A LIVING, BREATHING WORLD =================
+   BUG 1 — STUCK AT THE CONES (root cause): the cone course ends in one of two ways, and BOTH hand over by calling openSheet() with NO tap anywhere near them — the 35-second timer expiring (→ driveQuiz158 → the 📋 quiz sheet) or the 3rd cone hit (→ driveFail158 → the fail sheet). But since v115 every sheet goes through the popup queue: while a popup is open, a new openSheet() is QUEUED instead of shown whenever the last click inside #modal is more than 350 ms old (modalNav115). Steering produces almost no qualifying clicks — keyboard steering produces none at all, and the canvas/button pointer handlers preventDefault() their pointerdowns, which suppresses the click — so by the time the course ended, the quiz/fail sheet was silently filed into modalQueue115, the rAF was stopped, and the player was left staring at a frozen cone course at 🏁 100% (or on their 3rd hit) forever: "stuck at the cones part." It only ever unstuck if the player closed the sheet, at which point a dead quiz (its state already torn down) could pop up behind them. THE FIX follows the game's own established cure (v194's stampTap194 for toddler fights, v128's phone stamps): the test's own sheet transitions stamp the tap/nav clocks (lastTap132 + modalNav115) immediately before they render, so each one passes the v115 replace-gate and lands live, in order — the cones hand straight to the quiz, a fail hands straight to the fail sheet, and the verdict hands straight to its sheet. Starting the test purges any stale drive-test sheets already sitting in the queue and stamps its own opening; aborting purges the queue too, so an abandoned attempt can never leave a dead quiz waiting behind the close. Nothing about the test itself changes: same 35-second course, same ≤2 hits, same quiz, same $30.
+   BUG 2 — THE WORLD STOOD STILL: people in the scene wandered and chatted, but nobody ever DID anything on their own while you watched. NOW they live: every visible person (household NPCs and townsfolk alike) picks up ambient activities on their own — 📺 settles in front of the TV to watch it, 🍳 cooks in the kitchen, 💃 dances where they stand (real bounce, 🎵 notes and all), 📖 reads, 🎮 games, 📱 phones, 🎧 listens, ☕ coffees, 🧘 stretches, 🌱 gardens on the porch, 🪥 brushes in the bathroom, 📚 studies at school, 💻 works at work — room-appropriate at home, place-appropriate out in town. They walk to their spot, stay a while, then drift back to wandering and pick something else up later. It is PURE LIFE, exactly as ordered: no stats, no social, no log spam — just a world that breathes while you watch it idle. Sleepers are never disturbed (asleep sprites are skipped), and anyone mid-conversation keeps their line — the activity waits its turn. */
+function stampDrive200(){ try{ lastTap132=Date.now() }catch(e){} try{ modalNav115=Date.now() }catch(e){} }
+function purgeDriveQueue200(){ try{ if(typeof modalQueue115!=='undefined'&&Array.isArray(modalQueue115)){ for(let i=modalQueue115.length-1;i>=0;i--){ const h=(modalQueue115[i]&&typeof modalQueue115[i].html==='string')?modalQueue115[i].html:''; if(h.indexOf('driveCv158')>=0||h.indexOf('driveHud158')>=0||h.indexOf('Driving Test')>=0)modalQueue115.splice(i,1) } } }catch(e){} }
+try{ const _dto200=driveTestOpen158; driveTestOpen158=function(){ purgeDriveQueue200(); stampDrive200(); const r=_dto200.apply(this,arguments); stampDrive200(); return r } }catch(e){}
+try{ const _dq200=driveQuiz158; driveQuiz158=function(){ stampDrive200(); return _dq200.apply(this,arguments) } }catch(e){}
+try{ const _dfs200=driveFailSheet158; driveFailSheet158=function(){ stampDrive200(); return _dfs200.apply(this,arguments) } }catch(e){}
+try{ const _dfn200=driveFinish158; driveFinish158=function(){ stampDrive200(); return _dfn200.apply(this,arguments) } }catch(e){}
+try{ const _da200=driveAbort158; driveAbort158=function(){ purgeDriveQueue200(); stampDrive200(); return _da200.apply(this,arguments) } }catch(e){}
+/* ---- the living world: ambient activities for every visible sprite ---- */
+function ambActs200(p){ const acts=[]; if(!S)return acts; const loc=S.location||'house';
+ const kidAge=(typeof charAge79==='function')?charAge79(p.name):null; const isKid=(kidAge!==null&&kidAge<13);
+ let roomId=null; try{ const rm=(typeof curRoom86==='function')?curRoom86():null; roomId=rm?rm.id:(p.room86||null) }catch(e){}
+ const homeLike=(loc===(typeof homeLoc==='function'?homeLoc():'house')||loc==='grandparents'||loc==='orphanage'||loc==='boarding');
+ if(homeLike){
+  if(roomId==='kitchen'){ acts.push({k:'cook',i:'🍳'},{k:'eat',i:'🍽️'},{k:'wash',i:'🧽'}); if(!isKid)acts.push({k:'coffee',i:'☕'}) }
+  else if(roomId==='bedroom'){ acts.push({k:'read',i:'📖'},{k:'phone',i:'📱'},{k:'music',i:'🎧'},{k:'tidy',i:'🧹'}) }
+  else if(roomId==='bathroom'){ acts.push({k:'brush',i:'🪥'},{k:'wash',i:'🧼'}) }
+  else if(roomId==='yard'){ acts.push({k:'garden',i:'🌱'},{k:'play',i:'⚽'},{k:'stretch',i:'🧘'},{k:'phone',i:'📱'}) }
+  else { let tvOk=false; try{ tvOk=(loc===(typeof homeLoc==='function'?homeLoc():'house')) }catch(e){}
+   if(tvOk)acts.push({k:'tv',i:'📺',ax:465,ay:302});
+   acts.push({k:'dance',i:'💃'},{k:'game',i:'🎮'},{k:'read',i:'📖'},{k:'music',i:'🎧'},{k:'phone',i:'📱'},{k:'stretch',i:'🧘'},{k:'snack',i:'🍿'}) }
+ } else if(loc==='school'){ acts.push({k:'study',i:'📚'},{k:'draw',i:'🎨'},{k:'phone',i:'📱'},{k:'snack',i:'🍎'},{k:'read',i:'📖'}) }
+ else if(loc==='work'){ acts.push({k:'work',i:'💻'},{k:'phone',i:'📱'},{k:'stretch',i:'🧘'}); if(!isKid)acts.push({k:'coffee',i:'☕'}) }
+ else if(loc==='college'){ acts.push({k:'study',i:'📚'},{k:'phone',i:'📱'},{k:'music',i:'🎧'},{k:'dance',i:'💃'}); if(!isKid)acts.push({k:'coffee',i:'☕'}) }
+ else { acts.push({k:'dance',i:'💃'},{k:'phone',i:'📱'},{k:'music',i:'🎧'},{k:'photo',i:'📸'},{k:'read',i:'📖'},{k:'snack',i:'🍿'},{k:'stretch',i:'🧘'}); if(!isKid)acts.push({k:'coffee',i:'☕'}) }
+ return acts }
+function ambDirect200(list,now){ if(!list||!S||!inGame)return; list.forEach(function(p){ if(!p||p.state!=='in')return;
+ if(typeof asleep128==='function'&&asleep128(p.name)){ if(p.amb200)p.amb200=null; return }
+ if(p.amb200){ if(now>=p.amb200.until){ if(p.bubble===p.amb200.i)p.bubble=''; p.amb200=null; p.ambNext200=now+6000+Math.random()*10000 }
+  else { if(p.amb200.ax!=null){ p.tx=p.amb200.ax; p.ty=p.amb200.ay } if(!(p.say&&now<p.sayUntil))p.bubble=p.amb200.i; return } }
+ if(now<(p.ambNext200||0))return;
+ if(p.say&&now<p.sayUntil){ p.ambNext200=now+2500; return }
+ if(Math.random()>0.72){ p.ambNext200=now+5000+Math.random()*8000; return }
+ const acts=ambActs200(p); if(!acts.length){ p.ambNext200=now+8000; return }
+ const a=acts[Math.floor(Math.random()*acts.length)];
+ const anch=(a.ax!=null)?{ax:a.ax,ay:a.ay}:(Math.random()<0.45?function(){ const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; return {ax:s[0],ay:s[1]} }():{ax:null,ay:null});
+ p.amb200={k:a.k,i:a.i,until:now+7000+Math.random()*8000,ax:anch.ax,ay:anch.ay} }) }
+try{ const _ul200=updateLiving; updateLiving=function(now){ const r=_ul200(now); try{ if(!rtPaused)ambDirect200((typeof npcs!=='undefined')?npcs:null,now) }catch(e){} return r } }catch(e){}
+try{ const _ut200=updateTownsfolk; updateTownsfolk=function(now){ const r=_ut200(now); try{ if(!rtPaused)ambDirect200((typeof townsfolk!=='undefined')?townsfolk:null,now) }catch(e){} return r } }catch(e){}
+try{ const _dns200=drawNPCSprite; drawNPCSprite=function(ctx,n,now,stepping){ let oy=null;
+ if(n&&n.amb200&&now<n.amb200.until&&n.amb200.k==='dance'){ oy=n.y; n.y=oy-Math.abs(Math.sin(now/120+n.x))*6; stepping=true }
+ const r=_dns200(ctx,n,now,stepping); if(oy!==null)n.y=oy;
+ try{ if(n&&n.amb200&&now<n.amb200.until&&!(typeof asleep128==='function'&&asleep128(n.name))){
+  if(n.amb200.k==='dance'){ ctx.font='13px sans-serif'; ctx.fillText('🎵',n.x+28,n.y-56+Math.sin(now/300+n.x)*3); ctx.fillText('🎶',n.x-36,n.y-42+Math.cos(now/340+n.x)*3) }
+  else if(n.amb200.k==='cook'&&Math.floor(now/650)%2===0){ ctx.font='12px sans-serif'; ctx.fillText('💨',n.x+22,n.y-54) }
+  else if(n.amb200.k==='tv'){ ctx.font='12px sans-serif'; ctx.fillText('🍿',n.x+24,n.y-30+Math.sin(now/500+n.x)*1.5) } } }catch(e){}
+ return r } }catch(e){}
+window.__v199h7={stampDrive200:stampDrive200,purgeDriveQueue200:purgeDriveQueue200,ambActs200:ambActs200,ambDirect200:ambDirect200,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix 7: 🚗 the driving test hands over from the cones again (its quiz/fail/verdict sheets stamp through the popup queue instead of being silently queued behind a frozen course) • 🕺 THE WORLD LIVES — everyone around you watches TV, cooks, dances, reads, games and more on their own while you watch; pure ambience, no stats attached');
+</script>
 </body>
 </html>
