@@ -21557,5 +21557,87 @@ try{
  try{ console.log('🌊 AquaLife v'+GAME_VERSION+' — v214: 📊 anonymous stats (install / daily open / days / levels / license / phone / laptop) post quietly to the Stats & Feedback sheet — random install ID outside the save, Settings → Data & Save opt-out (default ON), zero names or save data • 💬 in-game feedback sheet posts type + message + Day/Level progress to the same sheet') }catch(e){}
 })();
 </script>
+<script>
+/* ================= 🎬 CINEMATIC CAMERA — IMMERSIVE SHOTS (Howard's order) =================
+   The world scene used to sit at one far wide shot (scale 1) whenever no event zoom was
+   running. Now the lens has a resting life of its own, layered UNDER the shipped camera
+   discipline: the v128 single-flight state machine and the v148 reborn-canvas restore keep
+   sole ownership of event / action zooms — while one is live or held, this layer does not
+   touch the canvas at all, and when it ends the lens glides from that frame to the resting
+   shot (exactly one zoom-in and one zoom-out per action, as shipped).
+   • IDLE — the resting shot is a CLOSER framing (1.24×) centred on you, not the far wide
+     shot. It re-aims only when you have wandered off-centre, so the room sits still while
+     you stand in it.
+   • CONVERSATION — while speech bubbles are live (the v191 conversation engine's speakers;
+     your own reply bubble counts), the lens pushes in to 1.52× on the talking characters —
+     you included when you are talking or standing close — and eases back to the idle shot
+     when the talk ends. A short grace window bridges the gap between a line and its
+     answer, so back-and-forth chat never bounces the lens. Wider two-shots (speakers far
+     apart) settle at 1.34× so both stay in frame.
+   • MENUS — panels and sheets open over the scene never drop the shot back to the wide
+     framing: the closer framing simply holds behind them.
+   Every move rides the canvas's own .75s ease — no jump cuts. A canvas reborn by a render
+   gets the current shot restored without animating (the v148 rule), and a shot change on a
+   reborn canvas still glides in from the previous shot. Fully automatic: no controls, no
+   settings; tapping a character still does nothing. Nothing is stored — GAME_VERSION and
+   SAVE_KEY are untouched. */
+const _actCine215=applyCameraTransform;
+let cineNode215=null, cineShot215=null, cineConvo215={until:0,x:0,y:0,scale:1.52};
+function cineReduced215(){ try{ return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){ return false } }
+function cineShotFor215(now){
+ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return null;
+ if(!document.querySelector('.roomWrap'))return null;
+ const px=(typeof charX==='number')?charX:450, py=(typeof charY==='number')?charY:260;
+ let pts=null, talking=false, meTalking=false;
+ try{ if(typeof speakers191==='function'){ const sps=speakers191(); for(let i=0;i<sps.length;i++){ const sp=sps[i]; if(sp.until()>now){ talking=true; if(!pts)pts=[]; if(sp.spr&&typeof sp.spr.x==='number')pts.push([sp.spr.x,sp.spr.y]); else pts.push([px+(px>470?-70:70),py+13]) } } } }catch(e){}
+ try{ if(typeof playerSay!=='undefined'&&playerSay&&now<playerSay.until){ meTalking=true; talking=true; if(!pts)pts=[]; pts.push([px,py]) } }catch(e){}
+ if(talking&&pts&&pts.length){
+  let cx=0,cy=0; for(let i=0;i<pts.length;i++){ cx+=pts[i][0]; cy+=pts[i][1] } cx/=pts.length; cy/=pts.length;
+  if(!meTalking&&Math.hypot(cx-px,cy-py)<300){ cx=(cx+px)/2; cy=(cy+py)/2 } /* you are part of this scene — stay in the shot */
+  let span=0; for(let i=0;i<pts.length;i++){ span=Math.max(span,Math.hypot(pts[i][0]-cx,pts[i][1]-cy)) }
+  cineConvo215={until:now+1100,x:cx,y:cy,scale:(span>190?1.34:1.52)};
+ }
+ let mode,x,y,scale;
+ if(now<cineConvo215.until){ mode='convo'; x=cineConvo215.x; y=cineConvo215.y; scale=cineConvo215.scale }
+ else { mode='idle'; x=px; y=py; scale=1.24 }
+ x=Math.max(150,Math.min(750,x)); y=Math.max(130,Math.min(360,y-10));
+ return {mode:mode,x:x,y:y,scale:scale,org:(x/900*100).toFixed(2)+'% '+(y/460*100).toFixed(2)+'%',tr:'scale('+scale+')',loc:(S.location||'')+'|'+(S.room86||'')};
+}
+applyCameraTransform=function(){
+ const cv=document.getElementById('cv');
+ const now=performance.now();
+ let eventLive=false;
+ try{ eventLive=!!(typeof camState!=='undefined'&&camState.active&&now<Math.max(camState.until,(typeof camHoldUntil!=='undefined'?camHoldUntil:0))) }catch(e){}
+ if(!cv||eventLive)return _actCine215(); /* an event/action zoom owns the lens — untouched */
+ const shot=cineShotFor215(now);
+ if(!shot)return _actCine215(); /* no world scene on screen — shipped behaviour (frame cleared) */
+ const prev=cineShot215; cineShot215=shot;
+ if(cv!==cineNode215){ cineNode215=cv;
+  /* render() destroys and reborns #cv constantly. Restore the held shot with NO animation
+     (the v148 rule — re-animating it would pulse on every render). When the shot CHANGES,
+     park the lens on whatever frame the canvas currently shows (the previous resting shot,
+     or an event frame v148 restored) and ease from there: still a glide, never a cut. */
+  const prevT=cv.style.transition; cv.style.transition='none';
+  let from=null;
+  if(prev&&prev.loc===shot.loc){ if(cv.style.transform)from={org:cv.style.transformOrigin,tr:cv.style.transform}; else from=prev }
+  if(from&&(from.tr!==shot.tr||from.org!==shot.org)){
+   cv.style.transformOrigin=from.org; cv.style.transform=from.tr; void cv.offsetWidth; cv.style.transition=prevT;
+   cv.style.transformOrigin=shot.org; cv.style.transform=shot.tr;
+  } else { cv.style.transformOrigin=shot.org; cv.style.transform=shot.tr; void cv.offsetWidth; cv.style.transition=prevT }
+  return;
+ }
+ /* same canvas: hold while the lens already shows this shot; glide when it doesn't.
+    The leash is measured off the canvas's ACTUAL aim, so a slow walk accumulates drift
+    until the lens re-aims — and an event frame left on this canvas always glides home. */
+ const om=/([\d.]+)%\s+([\d.]+)%/.exec(cv.style.transformOrigin||'');
+ const curAim=om?{x:parseFloat(om[1])/100*900,y:parseFloat(om[2])/100*460}:null;
+ const curScale=parseFloat(String(cv.style.transform||'').replace('scale(','').replace(')',''))||1;
+ const holding=!!(curAim&&Math.abs(curScale-shot.scale)<0.01&&Math.hypot(shot.x-curAim.x,shot.y-curAim.y)<(cineReduced215()?110:30));
+ if(!holding){ cv.style.transformOrigin=shot.org; cv.style.transform=shot.tr }
+};
+setInterval(function(){ try{ if(document.hidden)return; if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; applyCameraTransform() }catch(e){} },350);
+window.__cine215={shot:function(){ return cineShot215 }};
+try{ console.log('🎬 AquaLife cinematic camera — closer idle framing (1.24×), conversation push-ins (1.52×), framing holds behind menus') }catch(e){}
+</script>
 </body>
 </html>
