@@ -2927,7 +2927,7 @@ function drawRoom(){
  if(S.guest&&S.guest.day===S.day&&S.location===homeLoc()&&!S.sleepover){ const gd=guestDef(S.guest.name); drawNPCSprite(ctx,{name:S.guest.name,icon:gd.icon,col:gd.col,hair:gd.hair,x:charX+(charX>470?-72:72),y:charY+16,state:'in',bubble:'🏠',say:(nowMs<(S.guest.sayUntil||0))?S.guest.say:'',sayUntil:S.guest.sayUntil||0},nowMs,false) }
  // ---- POLICE PRESENCE (v20): at wanted 1★+ an officer patrols the scene and a patrol car cruises by; during a house visit, two officers stand at your door ----
  if(S.wanted>=1&&!(S.jail&&S.jail.in)&&['street','school','work','college','pawn'].indexOf(S.location)>=0){ const cop=updateCopSprite(nowMs); if(cop)drawNPCSprite(ctx,cop,nowMs,Math.abs(cop.tx-cop.x)>4||Math.abs(cop.ty-cop.y)>4); if(S.wanted>=3){ const cop2={name:'Officer 2',icon:'👮',col:'#1e3a8a',hair:'#111827',x:cop?cop.x+64:300,y:cop?cop.y+18:330,state:'in',bubble:'🚔',say:'',sayUntil:0}; drawNPCSprite(ctx,cop2,nowMs,false) }
-  const carPeriod=S.wanted>=3?13000:22000; const carX=((nowMs%carPeriod)/carPeriod)*1180-140; ctx.font='30px sans-serif'; ctx.fillText('🚓',carX,456); ctx.font='12px sans-serif' }
+  const carPeriod=S.wanted>=3?13000:22000; const carX=((nowMs%carPeriod)/carPeriod)*1180-140; if(window.paintCar221){ window.paintCar221(ctx,carX+118,456,'🚓',{body:'#e8ecf1',dark:'#26314e'},1,S.hour>=18||S.hour<6) } else { ctx.font='30px sans-serif'; ctx.fillText('🚓',carX,456); ctx.font='12px sans-serif' } }
  if(nowMs<copVisitUntilPerf&&['house','orphanage','boarding'].indexOf(loc)>=0){ const exP=copExitT0?Math.max(0,Math.min(1,(nowMs-copExitT0)/1700)):0; const exX=exP*560, exStep=exP>0&&exP<1; drawNPCSprite(ctx,{name:'Officer',icon:'👮',col:'#1e40af',hair:'#111827',x:404+exX,y:392,state:'in',bubble:exP>0?'':'🚔',say:exP>0?'':(nowMs<copVisitUntilPerf-14000?'🚔 Police! Open up!':''),sayUntil:copVisitUntilPerf},nowMs,exStep); drawNPCSprite(ctx,{name:'Officer 2',icon:'👮',col:'#1e3a8a',hair:'#111827',x:508+exX,y:392,state:'in',bubble:'',say:'',sayUntil:0},nowMs,exStep) }
  // ---- HOUSEHOLD NPCs: named sprites who walk in, hang out, talk, and leave ----
  updateLiving(nowMs);
@@ -20240,7 +20240,7 @@ function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='und
   if(depActive&&!window._depTick216){ window._depTick216=true; setTimeout(function(){ window._depTick216=false; try{ drawCars202() }catch(e){} },55) }
   }finally{ ctx.restore() }
  }catch(e){} }
-setInterval(drawCars202,900);
+setInterval(function(){ try{ drawCars202() }catch(e){} },900); /* h21: name-resolved so the hotfix-21 replacement painter is the one this tick calls */
 /* ---------- 4) sleep tiers — a real tier table inside the sleep system ---------- */
 const SLEEP_TIERS202={floor:20,bag:32,bed:45};
 function sleepSpot202(){ if(!S)return 'bed'; if(S.location==='friendhouse')return 'bag'; if(S.homeless80&&!S.movedOut&&S.location==='street')return 'floor'; try{ const hl=(typeof homeLoc==='function')?homeLoc():null; if(hl&&S.location===hl)return 'bed' }catch(e){} if(['beach','city','mountains','park','jail','hospital','grandparents'].indexOf(S.location)>=0)return 'bed'; return 'floor' }
@@ -22436,6 +22436,325 @@ try{
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 20: 📍 "Only here" per-place actions are now ONE-TIME per character (persisted in S.v217.done) — do Build a blanket fort once and it leaves the card for that life: no return on revisit, new day or reload; daily gates superseded, todays daily completions migrate where the state allows; a place with its whole set finished shows no card; everything outside the Only here set keeps its repeatability','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
+</script>
+<script>
+/* ================= v200 HOTFIX 21 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's order (Nov 3, 2026): "The car is huge on the road doesn't look right. Test it out" + "The
+   road/car isn't going with the ui it's going off the screen. Needs to follow." A DRIVEN test of the
+   LIVE hotfix-18 build (fresh Quick Life adult on The Sidewalk, 60+ s, several camera states) proved
+   the h18 harness claims did NOT match the render. What the live game actually showed, and why:
+   1) THREE CAR RENDERERS, THREE SCALES. The cars a player SEES on the street were mostly NOT
+      drawCars202's solids: the passing traffic was streetTick199's DOM emoji spans at font-size:19px
+      inside #curb193 (measured ~30px long against a ~130px character), and the patrol car was a 30px
+      emoji inside drawRoom. drawCars202's parked solids (128 long × ~41 tall vs a ~94-unit character
+      = 1.4× / 0.44×) were also under true world scale. FIX: ONE painter (paintCar221) at ONE world
+      scale for parked, passing, departing and patrol cars alike — ~256 units long (≈2.5× a standing
+      character as rendered) and ~85 tall (≈0.85×), with body / windows / wheels readable at normal view.
+      Passing traffic now drives IN THE CANVAS (this layer's drawCars202 replacement): two lanes
+      (near lane left→right, far lane right→left, flipped so headlights lead), and a passing car is,
+      when one is available, a REAL non-present townsfolk/NPC's own equipped car in their colour
+      (vehOf119) wearing their owner name tag — grounded in the game's own data, never invented;
+      anonymous models fill the gaps tagless. streetTick199 is replaced with a pets-only version so
+      the 19px DOM traffic can never spawn again (pets still stroll).
+   2) THE ROAD DID NOT TRULY FOLLOW THE CAMERA. Root cause: the cinematic camera is a CSS scale on
+      the #cv ELEMENT with transform-origin computed as % of the 900×460 BITMAP — but the element box
+      was the whole tall/wide .roomWrap with the bitmap letterboxed inside it via object-fit:contain.
+      Origin % of the element ≠ the same point in the bitmap, so every zoom/pan pivoted around the
+      wrong point: the scene slid, houses/trees cut off at the edges, and the wrap's tan/orange
+      gradient showed through as blank panels (up to ~230px on a wide frame) — while at home the
+      #sky193/#curb193 DOM bands, siblings of the canvas, never transformed at all (a literally
+      fixed road strip). FIX: (a) the canvas element is locked to the bitmap's exact aspect
+      (width:100%, height:auto, aspect-ratio 900/460) so element box == bitmap box and the shipped
+      origin math is exact — no letterbox, no side panels, the scene covers its frame at every zoom;
+      at home the curb band flexes to absorb the stage slack so the column still fills the wrap;
+      (b) applyCameraTransform is wrapped to MIRROR the same scale onto #sky193/#curb193 with each
+      band's origin recomputed in px so the pivot is the same scene point — sky, scene and road now
+      move as one rigid body through every zoom and return.
+   3) OWNER TAGS: parked/world cars keep their h13/h16 tags, re-proportioned to the bigger cars
+      (16.5px 900-weight, per-lane de-collision march, gold rim for yours); passing cars carry their
+      real owner's tag when they are a real person's car (see 1). The departure walk-to-car figure is
+      re-proportioned to the sidewalk and the car drives off at the new scale, headlights leading.
+   CONFIRMED GOOD in the driven test and NOT touched: exactly one expression emoji over the head,
+   name tag beneath it, zero stray glyphs in the street scene. GAME_VERSION stays 200; SAVE_KEY
+   untouched; all state here is session-only (traffic lives in window._traf221). */
+(function(){ 'use strict';
+try{
+ /* ---------- frame geometry: canvas element == bitmap, bands glued ---------- */
+ var st=document.createElement('style'); st.id='style221';
+ st.textContent=
+  'body.inGame51 #cv{height:auto!important;aspect-ratio:900/460!important;object-fit:fill!important;max-height:100%}'
+  +'.roomWrap.stage193 #cv{flex:none!important;height:auto!important}'
+  +'#curb193{flex:1 1 auto!important;min-height:46px}'
+  +'#sky193,#curb193{transition:transform .75s cubic-bezier(.22,1,.36,1)}'
+  +'#parked193{font-size:46px!important}'
+  +'@media(prefers-reduced-motion:reduce){#sky193,#curb193{transition:none}}';
+ document.head.appendChild(st);
+
+ /* ---------- ONE car painter at ONE world scale ----------
+    A standing character (drawFigure) is ~94 scene units tall. A car here runs ~256 long
+    (sport 268 / SUV 252 / patrol 262) and ~85 tall — real proportions beside a person:
+    ~2.5× their height in length, ~0.85× in height. dir<0 flips the car so the headlights
+    lead in its direction of travel. gy is the ground line the wheels rest on. */
+ function paintCar221(ctx,cx,gy,model,col,dir,night){ try{ var gl='🚗'; try{ gl=carGlyph202(model) }catch(e){}
+  var suv=gl==='🚙', sport=gl==='🏎️';
+  var L=sport?268:(suv?252:(gl==='🚓'?262:256));
+  var cabH=suv?33:(sport?24:29), cabW=L*(suv?0.56:(sport?0.42:0.48));
+  ctx.save(); ctx.translate(cx,gy); if(dir<0)ctx.scale(-1,1);
+  ctx.fillStyle='#00000042'; ctx.beginPath(); ctx.ellipse(0,3,L/2+8,6,0,0,7); ctx.fill();
+  ctx.save(); ctx.globalAlpha=0.5; ctx.fillStyle=col.body; ctx.beginPath(); ctx.ellipse(0,4,L/2-12,3.6,0,0,7); ctx.fill(); ctx.restore();
+  var cabX=-cabW/2-4, cabTop=-56-cabH+6;
+  ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cabX-2,cabTop-2,cabW+4,cabH+5,8); ctx.fill();
+  ctx.fillStyle='#d8eef8'; ctx.beginPath(); ctx.roundRect(cabX+2,cabTop+2,cabW-4,cabH-2,5); ctx.fill();
+  ctx.fillStyle=col.dark; ctx.fillRect(-3,cabTop+1,5,cabH);
+  if(gl==='🚓'){ ctx.fillStyle='#26314e'; ctx.fillRect(-17,cabTop-7,34,4); ctx.fillStyle='#ef4444'; ctx.fillRect(-16,cabTop-10,15,4); ctx.fillStyle='#3b82f6'; ctx.fillRect(1,cabTop-10,15,4) }
+  if(gl==='🚕'){ ctx.fillStyle='#ffd94d'; ctx.beginPath(); ctx.roundRect(-11,cabTop-9,22,7,2); ctx.fill(); ctx.strokeStyle='#00000055'; ctx.lineWidth=1; ctx.stroke() }
+  ctx.fillStyle=col.body; ctx.beginPath(); ctx.roundRect(-L/2,-56,L,48,10); ctx.fill();
+  ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(-L/2+3,-25,L-6,13,6); ctx.fill();
+  ctx.fillStyle='#ffffff59'; ctx.fillRect(-L/2+10,-53,L-20,3.5);
+  ctx.strokeStyle='#00000030'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(8,-54); ctx.lineTo(8,-11); ctx.stroke(); ctx.lineWidth=1;
+  ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.arc(17,-33,2.2,0,7); ctx.fill();
+  if(night){ var lg=ctx.createLinearGradient(L/2,0,L/2+120,0); lg.addColorStop(0,'rgba(255,240,170,.45)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(L/2-2,-38); ctx.lineTo(L/2+120,-46); ctx.lineTo(L/2+120,-12); ctx.lineTo(L/2-2,-18); ctx.closePath(); ctx.fill() }
+  ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(L/2-4,-33,3.4,0,7); ctx.fill();
+  ctx.fillStyle='#ff6b5e'; ctx.beginPath(); ctx.arc(-L/2+4,-33,2.6,0,7); ctx.fill();
+  [-L/2+34,L/2-34].forEach(function(wx){ ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,-11,11.5,0,7); ctx.fill(); ctx.fillStyle='#cfd6de'; ctx.beginPath(); ctx.arc(wx,-11,5,0,7); ctx.fill(); ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,-11,1.8,0,7); ctx.fill() });
+  ctx.restore(); }catch(e){} }
+ window.paintCar221=paintCar221;
+
+ /* ---------- owner name tag (the h16 pill, sized for the bigger cars) ---------- */
+ function carTag221(ctx,cx,topY,name,dot,mine,slotW,prevR){ var nm=String(name||''); if(!nm)return prevR||2;
+  var fs=16.5, tw=0; var fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit();
+  var maxW=Math.max(120,(slotW||200)+44);
+  while(fs>11.5&&tw+24>maxW){ fs-=0.5; fit() }
+  if(tw+24>maxW){ while(nm.length>1&&tw+24>maxW){ nm=nm.slice(0,-2)+'…'; fit() } }
+  var pw=tw+24; var px=cx-pw/2; px=Math.max(prevR||2,Math.min(898-pw,px)); var ph=fs+8;
+  ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(px+2,topY+2,pw,ph,10); ctx.fill();
+  ctx.fillStyle='#0d0d10f2'; ctx.beginPath(); ctx.roundRect(px,topY,pw,ph,10); ctx.fill();
+  ctx.strokeStyle=mine?'#ffb703':'#ffffffd0'; ctx.lineWidth=mine?2.2:1.6; ctx.stroke(); ctx.lineWidth=1;
+  ctx.fillStyle=dot||'#ffffff'; ctx.beginPath(); ctx.arc(px+11,topY+ph/2,3.8,0,7); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+19,topY+ph/2+fs*0.36); ctx.font='12px sans-serif';
+  return px+pw+4 }
+
+ /* ---------- passing traffic: real drive-bys, in the canvas, at world scale ---------- */
+ function trafOwner221(){ try{ var present={};
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')present[p.name]=1 });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')present[n.name]=1 });
+   var out=[], seen={};
+   var push=function(nm){ if(!nm||nm===S.name||present[nm]||seen[nm])return; seen[nm]=1; try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)out.push({name:nm,model:v.equipped,col:carColor202(v.equipped,nm)}) }catch(e){} };
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='out')push(p.name) });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='out')push(n.name) });
+   if(S.town&&S.town.people)Object.keys(S.town.people).forEach(push);
+   if(!out.length)return null; return out[Math.floor(Math.random()*out.length)] }catch(e){ return null } }
+ function trafTick221(ctx,now,atHome,night){ try{ var OUT=['street','city','park','beach','fair','mountains'];
+   if(!atHome&&OUT.indexOf(S.location)<0){ if(window._traf221)window._traf221.list=[]; return }
+   var T=window._traf221||(window._traf221={list:[],next:0,last:0});
+   var dt=T.last?Math.min(0.1,(now-T.last)/1000):0; T.last=now;
+   var m=document.getElementById('modal'); var sheetOpen=!!(m&&m.classList.contains('open'));
+   if(!sheetOpen&&!document.hidden&&now>=T.next&&T.list.length<2){ T.next=now+2800+Math.random()*3400;
+    var dirT=Math.random()<0.5?1:-1; var own=trafOwner221();
+    T.list.push({x:dirT>0?-160:1060,dir:dirT,gy:dirT>0?456:428,model:own?own.model:pickArr(['🚗','🚙','🚕','🚐','🛻']),owner:own?own.name:'',col:own?own.col:CAR_COLORS202[Math.floor(Math.random()*CAR_COLORS202.length)],sp:235+Math.random()*50}) }
+   T.list=T.list.filter(function(c){ c.x+=c.dir*c.sp*dt; return c.x>-200&&c.x<1100 });
+   T.list.forEach(function(c){ paintCar221(ctx,c.x,c.gy,c.model,c.col,c.dir,night); if(c.owner)carTag221(ctx,c.x,c.gy-110,c.owner,c.col.body,false,240,2) });
+  }catch(e){} }
+
+ /* ---------- drawCars202 REPLACED: road + parked + traffic + departures, one scale ---------- */
+ drawCars202=function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var wrap=document.querySelector('.roomWrap'); if(!wrap)return; var cvEl=document.getElementById('cv'); var cars=carList202(); var deps=window._dep216||{}; var depKeys=Object.keys(deps);
+  var strip=document.getElementById('cars202'); if(strip)strip.style.display='none';
+  var pk=document.getElementById('parked193'); var hl=(typeof homeLoc==='function')?homeLoc():null; var atHome=S.location===hl||S.location==='grandparents';
+  if(!cvEl)return;
+  var night=S.hour>=18||S.hour<6; var now=performance.now();
+  window._carSig216=S.location+'|'+(night?'n':'d')+'|'+cars.map(function(c){ return c.owner+c.model }).join(',');
+  if(pk&&atHome&&cars.some(function(c){ return c.mine }))pk.style.setProperty('display','none','important'); else if(pk)pk.style.removeProperty('display');
+  if(pk&&S.car&&S.car.owned){ try{ var po=pk.querySelector('.pOwner'); if(!po){ po=document.createElement('span'); po.className='pOwner'; po.style.cssText='position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);background:#111111e8;color:#fff;font-size:11px;font-weight:900;line-height:1;padding:3px 8px;border-radius:999px;border:1.5px solid #ffb703;white-space:nowrap;pointer-events:none'; pk.appendChild(po) } if(po.textContent!==S.name)po.textContent=S.name }catch(e){} }
+  var ctx=cvEl.getContext('2d'); ctx.save(); ctx.beginPath(); ctx.rect(0,300,900,160); ctx.clip();
+  try{
+  /* the road surface — sidewalk + two-lane asphalt away from home, the driveway at home */
+  if(atHome){ ctx.fillStyle='#c9b691'; ctx.fillRect(0,420,900,40); ctx.fillStyle='#b3a07c'; ctx.fillRect(0,420,900,3); ctx.fillStyle='#00000014'; for(var dx=40;dx<900;dx+=150)ctx.fillRect(dx,424,2,32) }
+  else { ctx.fillStyle='#cfc8ba'; ctx.fillRect(0,384,900,14); ctx.fillStyle='#00000020'; for(var sx=30;sx<900;sx+=60)ctx.fillRect(sx,386,2,10); ctx.fillStyle='#8f8570'; ctx.fillRect(0,396,900,3);
+   var g=ctx.createLinearGradient(0,398,0,460); g.addColorStop(0,'#3b3936'); g.addColorStop(1,'#282724'); ctx.fillStyle=g; ctx.fillRect(0,398,900,62); ctx.fillStyle='#f7d54d99'; for(var lx=8;lx<900;lx+=80)ctx.fillRect(lx,440,38,4) }
+  var GY={near:456,far:428};
+  window._carPos216={}; if(!window._carLane216)window._carLane216={};
+  /* parked world cars: near lane / far lane alternating, tags marching per lane */
+  var rows=cars.length>3?[cars.filter(function(c,i){ return i%2===0 }),cars.filter(function(c,i){ return i%2===1 })]:[cars];
+  (rows.length>1?[1,0]:[0]).forEach(function(li){ var row=rows[li]; var gy=li?GY.far:GY.near; if(!row||!row.length)return; var slotW=880/row.length; var prevR=2;
+   row.forEach(function(c,i){ var cx=10+slotW*(i+0.5); window._carPos216[c.owner]=cx; window._carLane216[c.owner]=gy; paintCar221(ctx,cx,gy,c.model,c.col,1,night); prevR=carTag221(ctx,cx,gy-110,c.owner,c.col.body,c.mine,slotW,prevR) }) });
+  /* ambient traffic on the same road, at the same scale */
+  trafTick221(ctx,now,atHome,night);
+  /* departures: the owner walks the sidewalk to their car, gets in, drives off */
+  var depActive=false;
+  depKeys.forEach(function(owner){ var d=deps[owner]; if(!d)return; var el=now-d.t0; var carX=d.x; var gy=(window._carLane216&&window._carLane216[owner])||GY.near;
+   if(el<1500){ depActive=true; var p=el/1500, e2=1-Math.pow(1-p,2); var fx=884+(carX-884)*e2; var bob=Math.abs(Math.sin(now/90))*2; var FY=394, yy=FY-bob;
+    ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(fx,397,11,3,0,0,7); ctx.fill();
+    ctx.fillStyle='#20242c'; ctx.fillRect(fx-5,yy-20,4.5,20); ctx.fillRect(fx+0.5,yy-20,4.5,20);
+    ctx.fillStyle=d.fig||'#3b82f6'; ctx.fillRect(fx-5.5,yy-39,11,20);
+    ctx.fillStyle='#f2c89b'; ctx.beginPath(); ctx.arc(fx,yy-45,6.5,0,7); ctx.fill();
+    carTag221(ctx,fx,yy-76,owner,(d.col&&d.col.body)||'#ffffff',false,200,2);
+    paintCar221(ctx,carX,gy,d.model,d.col,1,night) }
+   else if(el<1950){ depActive=true; paintCar221(ctx,carX,gy,d.model,d.col,1,night) }
+   else if(el<3400){ depActive=true; var p2=(el-1950)/1450; var out=carX>=450?1:-1; paintCar221(ctx,carX+out*p2*p2*880,gy,d.model,d.col,out,night) }
+   else { delete deps[owner]; window._carSig216='' } });
+  if(depActive&&!window._depTick216){ window._depTick216=true; setTimeout(function(){ window._depTick216=false; try{ drawCars202() }catch(e){} },55) }
+  }finally{ ctx.restore() }
+ }catch(e){} };
+
+ /* ---------- streetTick199: pets only — the 19px DOM traffic is retired ---------- */
+ streetTick199=function(){ try{ var curb=document.getElementById('curb193'); if(!curb||!S||!inGame)return; var m=document.getElementById('modal'); if((m&&m.classList.contains('open'))||document.hidden)return;
+  if(!curb.querySelector('.pet199')&&Math.random()<0.4){ var p=document.createElement('span'); p.className='pet199'; var flip=Math.random()<0.5; p.textContent=pickArr(['🐕','🐈','🐩','🐕‍🦺']); p.style.cssText='position:absolute;top:0px;font-size:12px;z-index:3;'+(flip?'right:-26px':'left:-26px'); curb.appendChild(p); var W2=curb.offsetWidth||360; requestAnimationFrame(function(){ p.style.transition=(flip?'right':'left')+' 11s linear'; if(flip){ p.style.transform='scaleX(-1)'; p.style.right=(W2+26)+'px' } else p.style.left=(W2+26)+'px' }); setTimeout(function(){ p.remove() },11800) }
+ }catch(e){} };
+ setInterval(function(){ try{ document.querySelectorAll('#curb193 .car199').forEach(function(c){ c.remove() }) }catch(e){} },800);
+
+ /* ---------- the camera moves the whole stage: sky + road bands ride the same transform ---------- */
+ function bandCam221(){ try{ var cv=document.getElementById('cv'); if(!cv)return; var sky=document.getElementById('sky193'), curb=document.getElementById('curb193'); if(!sky&&!curb)return;
+   var on=false, sc=1; try{ on=!!(typeof camState!=='undefined'&&camState.active&&performance.now()<Math.max(camState.until,(typeof camHoldUntil!=='undefined'?camHoldUntil:0))); sc=camState.scale }catch(e){}
+   [sky,curb].forEach(function(el){ if(!el)return; if(!on){ if(el.style.transform)el.style.transform=''; return }
+    var px=cv.offsetLeft+(camState.x/900)*cv.offsetWidth-el.offsetLeft;
+    var py=cv.offsetTop+(camState.y/460)*cv.offsetHeight-el.offsetTop;
+    el.style.transformOrigin=px.toFixed(1)+'px '+py.toFixed(1)+'px'; el.style.transform='scale('+sc+')' });
+  }catch(e){} }
+ try{ var _act221=applyCameraTransform; applyCameraTransform=function(){ var r=_act221.apply(this,arguments); try{ bandCam221() }catch(e){} return r } }catch(e){}
+ setInterval(bandCam221,500);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 21: 🚗 ONE car painter at true world scale (~232×80 vs a ~94 character — parked, passing, departing and patrol alike), passing traffic drives in the canvas in two lanes and real owners\u2019 cars carry their name tags; the 19px DOM curb traffic is retired (pets still stroll) • 🛣️ the road follows the camera for real: the canvas element is locked to the bitmap\u2019s exact aspect (no letterbox, no blank panels, exact zoom pivot) and the home sky + curb bands mirror the same camera transform about the same scene point','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 22 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Three workstreams from Howard (Nov 3, 2026), one layer:
+   A) THE RUNAWAY CLOCK DIES. Howard: a stuck teacher conference was "speeding the time up and faster
+      and not going away". The tick itself is one interval (rtTick, 1s) — but the RATE feeding it was
+      multiplied in layers: pace84 ended as _pace133()*1.2 (a constant ×1.2 since v133, ×1.8 for
+      toddlers via TODDLER_PACE146), and setFast54's ×2 window could be re-armed indefinitely. The law
+      (Howard, standing): ONE canonical rate — 1 game-minute per real second; sleep is the ONLY ×2.
+      Enforced here at the single choke points every layer funnels through: pace84 is clamped to ≤1,
+      setFast54's window is hard-capped at 30s from now (no re-arm can hold ×2 open), rtStep59's
+      backlog is clamped so a stall can never dump hours at once, and a rate watchdog samples real
+      elapsed vs game elapsed (advanceMinutes57 jumps — actions, the conference's +45 — are tracked
+      and subtracted) and zeroes any fast state if the continuous rate ever exceeds ×2.05.
+   B) NO SHEET MAY STRAND THE PLAYER. The conference deadlock is the v115/sheetQ84 queue family the
+      tussle repair (h216) documented: a sheet copy filed in a queue is re-shown by a drain AFTER the
+      real one resolved; its button then re-runs a completed flow (+45 min a tap — the "speeding
+      time") or no-ops forever. Hygiene here: (1) any sheet the player RESOLVED by tapping a button
+      inside it is fingerprinted; the watchdog purges fingerprinted sheets from both queues and
+      force-closes them if a drain ever re-shows one; (2) the conference specifically: openConf102
+      purges stale copies before showing, confDone102 is completion-guarded (a done conference's
+      button is a clean exit — no double effects, no second +45) and exception-proof (it always
+      closes); (3) on load, a save found with a completed conference sheet up or queued is freed and
+      the clock state normalized — the update itself un-sticks trapped players.
+   C) TRAVEL IS FOR GOING; ACTIONS ARE FOR DOING. Every location's service cards are extracted from
+      travelTabHtml's output (string level, so every builder/wrapper is honored) and re-homed into
+      the ⚡ Actions panel as the place's "Next steps", beside Right here, right now and Only here.
+      Travel keeps only going: the 📍 destination list, Days Out, Rides, Cars, Vacations, Housing.
+      Relocated services stay repeatable (the once-ever law is Only-here's alone). ORDER OF
+      OPERATIONS: places with a real entry space are STAGED — hospital (Waiting Room → Clinic &
+      Pharmacy; appointments book at the front desk, in the lobby), bank (the Line → the Counter),
+      sit-down restaurant (Host Stand → Your Table), vet, spa, barber, salon, cinema (Lobby →
+      Screens). Actions shows only the current stage's next steps; joining the line / checking in
+      runs a short real wait (people ahead of you count down), then the area's services open.
+      Leaving resets the stage — next visit starts at the door again. Single-space places stay
+      simple: arrive → act. Stage lives in S.flow222 (lazily defaulted, resets on location change). */
+(function(){ 'use strict';
+try{
+
+ /* ================= A) ONE CLOCK RATE ================= */
+ try{ var _pace222=pace84; pace84=function(){ try{ var p=_pace222(); if(!(p>0))p=1; return Math.min(p,1) }catch(e){ return 1 } } }catch(e){}
+ try{ var _sf222=setFast54; setFast54=function(mult,ms){ try{ var now=performance.now(); rtFastMult54=Math.min(mult||1,2); var until=now+Math.min(ms||0,30000); if(until>rtFastUntil54)rtFastUntil54=Math.min(until,now+30000) }catch(e){} } }catch(e){}
+ window._advJump222=0;
+ try{ var _am222=advanceMinutes57; advanceMinutes57=function(n,force){ try{ if(n>0)window._advJump222+=n }catch(e){} return _am222(n,force) } }catch(e){}
+ var clk222={t:0,mins:0,jump:0,strikes:0};
+ function totalMins222(){ try{ return S.day*1440+S.hour*60+rtAcc }catch(e){ return 0 } }
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+  if(typeof rtStep59==='number'){ if(rtStep59>25)rtStep59=25; if(rtStep59<0)rtStep59=0 }
+  var now=performance.now(); var held=false; try{ held=!!document.hidden||(typeof evHold65==='function'&&evHold65()) }catch(e){}
+  if(!clk222.t||held){ clk222={t:now,mins:totalMins222(),jump:window._advJump222,strikes:0}; return }
+  var dt=(now-clk222.t)/1000; if(dt<4)return;
+  var adv=(totalMins222()-clk222.mins)-(window._advJump222-clk222.jump); var rate=adv/dt;
+  if(rate>2.05){ clk222.strikes++; if(clk222.strikes>=2){ try{ rtFastUntil54=0; rtStep59=0 }catch(e){} clk222.strikes=0 } } else clk222.strikes=0;
+  clk222={t:now,mins:totalMins222(),jump:window._advJump222,strikes:clk222.strikes};
+ }catch(e){} },2000);
+
+ /* ================= B) SHEETS: RESOLVED MEANS GONE ================= */
+ window._resolved222=window._resolved222||{};
+ function sig222(html){ var h=String(html||'').replace(/\s+/g,' '); return h.slice(0,180)+'|'+h.length }
+ function sheetHtml222(){ try{ var sh=document.getElementById('sheet'); return sh?sh.innerHTML:'' }catch(e){ return '' } }
+ document.addEventListener('click',function(e){ try{ var t=e.target; if(!t||!t.closest)return; if(!t.closest('#modal'))return; if(!t.closest('button'))return; var h=sheetHtml222(); if(h)window._resolved222[sig222(h)]=Date.now() }catch(err){} },true);
+ function confDoneAlready222(){ try{ return !!(typeof S!=='undefined'&&S&&S.v102&&S.v102.confDoneAge===S.age) }catch(e){ return false } }
+ function purgeQueues222(){ try{ var now=Date.now(); var res=window._resolved222||{};
+   var dead=function(h){ if(!h)return false; var sg=sig222(h); if(res[sg]&&now-res[sg]<900000)return true; if(confDoneAlready222()&&(h.indexOf('Teacher Conference')>=0||h.indexOf('confDone102')>=0))return true; return false };
+   if(typeof modalQueue115!=='undefined'&&modalQueue115&&modalQueue115.length)for(var i=modalQueue115.length-1;i>=0;i--){ if(dead(modalQueue115[i]&&modalQueue115[i].html))modalQueue115.splice(i,1) }
+   if(typeof sheetQ84!=='undefined'&&sheetQ84&&sheetQ84.length)for(var j=sheetQ84.length-1;j>=0;j--){ if(dead(sheetQ84[j]&&sheetQ84[j].html))sheetQ84.splice(j,1) }
+  }catch(e){} }
+ try{ var _oc222=openConf102; openConf102=function(){ purgeQueues222(); return _oc222.apply(this,arguments) } }catch(e){}
+ try{ var _cd222=confDone102; confDone102=function(how){ try{ if(confDoneAlready222()){ try{ closeModal() }catch(e){} purgeQueues222(); return } }catch(e){}
+   var r; try{ r=_cd222.apply(this,arguments) }catch(err){ try{ ensure102(); if(S)S.v102.confDoneAge=S.age; try{ closeModal() }catch(e){} try{ save() }catch(e){} }catch(e){} }
+   purgeQueues222(); return r } }catch(e){}
+ /* watchdog + load-time unstick: a resolved (or already-completed conference) sheet that a drain
+    re-shows is closed on sight; a wedged conference in a loaded save is freed the same way */
+ function sheetWatch222(){ try{ purgeQueues222(); var m=document.getElementById('modal'); if(!m||!m.classList.contains('open'))return; var h=sheetHtml222(); if(!h)return;
+   if(confDoneAlready222()&&h.indexOf('Teacher Conference')>=0){ try{ closeModal() }catch(e){} return }
+   var sg=sig222(h); var ts=(window._resolved222||{})[sg]; if(ts&&Date.now()-ts<900000){ try{ closeModal() }catch(e){} purgeQueues222() }
+  }catch(e){} }
+ setInterval(sheetWatch222,1200);
+ setTimeout(sheetWatch222,700); setTimeout(sheetWatch222,2600);
+ try{ if(typeof rtStep59==='number'&&rtStep59>20)rtStep59=20; if(typeof rtFastUntil54==='number'&&rtFastUntil54>performance.now()+30000)rtFastUntil54=0 }catch(e){}
+
+ /* ================= C) TRAVEL → ACTIONS, WITH STAGES ================= */
+ var KEEP222=['You are here:','Days Out','✈️ Vacations','High-Status Vacations','🛹 Rides','🏠 Housing'];
+ function keepCard222(head){ if(!head)return false; if(head==='🚗 Cars')return true; if(head.indexOf('🚗 Your car')===0)return true; for(var i=0;i<KEEP222.length;i++)if(head.indexOf(KEEP222[i])>=0)return true; return false }
+ function extract222(html){ if(typeof S==='undefined'||!S||S.age<=4)return html;
+  var tmp=document.createElement('div'); tmp.innerHTML=html; var loc=[];
+  var els=tmp.querySelectorAll('.card'); var tops=[];
+  els.forEach(function(el){ if(el.parentElement&&el.parentElement.closest('.card'))return; tops.push(el) });
+  tops.forEach(function(el){ var h3=el.querySelector('h3'); var head=h3?h3.textContent.trim():''; if(keepCard222(head))return; loc.push({html:el.outerHTML,head:head}); el.remove() });
+  window._svc222={loc:S.location,cards:loc};
+  return tmp.innerHTML }
+ try{ var _tt222=travelTabHtml; travelTabHtml=function(){ var h=_tt222(); try{ h=extract222(h) }catch(e){} return h } }catch(e){}
+
+ var STAGED222={
+  hospital:{name:'Regional Hospital',entry:'🪑 Waiting Room',area:'🩺 Clinic & Pharmacy',step:'🛋️ Check in at the front desk',w0:0,w1:2,entryHeads:['Appointments &'],room0:'waiting',room1:'clinic'},
+  bank:{name:'First River Bank',entry:'🧍 The Line',area:'🏦 The Counter',step:'🧍 Join the line — wait your turn',w0:2,w1:4},
+  restaurant:{name:'The Salty Cup',entry:'🛎️ The Host Stand',area:'🍽️ Your Table',step:'🛎️ Ask the host for a table',w0:0,w1:1},
+  vet:{name:'The Vet',entry:'🪑 Waiting Room',area:'🩺 Exam Room',step:'🛋️ Check in at the desk',w0:0,w1:2,room0:'waiting',room1:'exam'},
+  spa:{name:'The Spa',entry:'🕯️ Lobby',area:'💦 Pools & Sauna',step:'🕯️ Check in at the lobby desk',w0:0,w1:1,room0:'lobby',room1:'pools'},
+  barber:{name:'The Barbershop',entry:'🪑 Waiting Area',area:'💈 The Chairs',step:'🪑 Take a seat — a chair will open up',w0:1,w1:2,room0:'waiting',room1:'chairs'},
+  salon:{name:'The Salon',entry:'🪑 Waiting Area',area:'💇 The Chairs',step:'🪑 Take a seat — a chair will open up',w0:1,w1:2,room0:'waiting',room1:'chairs'},
+  cinema:{name:'Cinema',entry:'🎟️ Lobby',area:'🎬 The Screens',step:'🎟️ Head in — ticket checked at the door',w0:0,w1:0,room0:'lobby',room1:'screens'}
+ };
+ function flow222(){ if(typeof S==='undefined'||!S)return null; var F=S.flow222; if(!F||F.loc!==S.location){ F={loc:S.location,stage:'entry',waiting:false,ahead:0}; S.flow222=F; var st=STAGED222[S.location]; if(st&&st.room0){ try{ goRoom86(st.room0) }catch(e){} } } return F }
+ function placeName222(){ var st=STAGED222[S.location]; if(st)return st.name; try{ var o=(typeof TRAVEL_OPTS!=='undefined')?TRAVEL_OPTS.find(function(x){ return x[0]===S.location }):null; if(o)return o[1].replace(/^[^A-Za-z]+/,'').split('—')[0].trim() }catch(e){} return S.location }
+ function goRoomTry222(id){ if(!id)return; try{ goRoom86(id) }catch(e){} }
+ function completeStage222(){ var F=flow222(); if(!F)return; var st=STAGED222[S.location]; F.stage='area'; F.waiting=false; F.ahead=0; try{ toast('✅ Your turn — you\u2019re in: '+(st?st.area:'')) }catch(e){} if(st)goRoomTry222(st.room1); try{ save() }catch(e){} svcInject222() }
+ window.flowStep222=function(){ try{ var F=flow222(); var st=STAGED222[S.location]; if(!F||!st||F.stage!=='entry'||F.waiting)return; var ahead=st.w0+Math.floor(Math.random()*(st.w1-st.w0+1)); if(ahead<=0){ completeStage222(); return } F.waiting=true; F.ahead=ahead; try{ save() }catch(e){} svcInject222() }catch(e){} };
+ window.flowBack222=function(){ try{ var F=flow222(); var st=STAGED222[S.location]; if(!F||!st)return; F.stage='entry'; F.waiting=false; F.ahead=0; goRoomTry222(st.room0); try{ save() }catch(e){} svcInject222() }catch(e){} };
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||!S.flow222)return; var F=S.flow222; if(F.loc!==S.location||!F.waiting)return; if(Math.random()<0.62)F.ahead--; if(F.ahead<0)completeStage222(); else svcInject222() }catch(e){} },1300);
+
+ function stageCard222(st,F){ if(F.stage==='entry'){ return '<div class="card" style="border-color:#f59e0b"><h3>'+st.entry+' — '+st.name+'</h3><p class="small">First stop here — this is where every visit starts. The rest of '+st.name+' opens once you\u2019re through.</p>'+(F.waiting?'<p style="margin-top:6px">🧍 <b>You\u2019re in line</b> — '+F.ahead+' ahead of you. Won\u2019t be long…</p>':'<button class="btn orange" style="margin-top:6px" onclick="flowStep222()">'+st.step+'</button>')+'</div>' }
+  return '<div class="card" style="border-color:#22c55e"><h3>'+st.area+' — '+st.name+'</h3><p class="small">✅ You\u2019re in — everything here is open.</p><button class="btn outline" style="width:auto;margin:6px 0 0;padding:7px 12px" onclick="flowBack222()">↩ Back to '+st.entry+'</button></div>' }
+
+ function svcInject222(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='actions101')return; if(S.age<=4)return; var panel=document.getElementById('panel'); if(!panel)return; var old=document.getElementById('svcSec222'); if(old)old.remove(); var grid=panel.querySelector('.grid'); if(!grid)return;
+   var F=flow222(); var st=STAGED222[S.location]||null;
+   if(!window._svc222||window._svc222.loc!==S.location){ try{ travelTabHtml() }catch(e){} }
+   if(!window._svc222||window._svc222.loc!==S.location)return; var cards=window._svc222.cards||[];
+   var stage=st?(F?F.stage:'entry'):'area';
+   var vis=cards.filter(function(c){ if(!st)return true; if(stage==='area')return true; return (st.entryHeads||[]).some(function(f){ return c.head.indexOf(f)>=0 }) });
+   if(!st&&!vis.length)return;
+   var wrap=document.createElement('div'); wrap.id='svcSec222'; wrap.style.cssText='grid-column:1/-1;display:flex;flex-direction:column;gap:10px';
+   var h='<div class="catHead58" style="margin:2px 2px 0">📍 Next steps — '+placeName222()+(st?(' • '+(stage==='entry'?st.entry:st.area)):'')+'</div>';
+   if(st)h+=stageCard222(st,F);
+   h+=vis.map(function(c){ return c.html }).join('');
+   wrap.innerHTML=h;
+   var anchor=null; var all=grid.querySelectorAll('.card'); for(var i=0;i<all.length;i++){ var hh=all[i].querySelector('h3'); if(hh&&hh.textContent.indexOf('Only here')>=0){ anchor=all[i]; break } }
+   if(!anchor)anchor=grid.querySelector('.ctxCard200')||grid.children[0]||null;
+   if(anchor&&anchor.parentNode===grid)grid.insertBefore(wrap,anchor.nextSibling); else grid.appendChild(wrap);
+  }catch(e){} }
+ window.svcInject222=svcInject222;
+ ['paintActions101','paintQCards101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__svc222)return; var w=function(){ var r=fn.apply(this,arguments); try{ svcInject222() }catch(e){} return r }; w.__svc222=true; window[nm]=w }catch(e){} });
+ try{ var _rt222=renderTabs; renderTabs=function(a){ var r=_rt222(a); try{ svcInject222() }catch(e){} return r } }catch(e){}
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 22: 🕐 one clock rate (pace clamped to canonical, sleep \u00d72 window hard-capped, rate watchdog armed) • 🗂️ resolved sheets can never resurrect — the teacher conference is completion-guarded, queue-purged and un-stuck on load • 📍 Travel is going only: every location\u2019s services moved to \u26a1 Actions as staged next steps (lobby \u2192 line \u2192 area, per place)','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+
 </script>
 
 </body>
