@@ -7144,6 +7144,7 @@ function relLabel193(name){
     if(!S||!name||name===S.name) return null;
     if(name==='Officer'||name==='Officer 2'||name==='Police Officer') return null;
     if(typeof parentRoleOf47==='function'){ var role=parentRoleOf47(name); if(role) return role }
+    if(name==='Mr. Chen'&&S.location==='boarding') return 'Dorm Supervisor';
     try{ if(typeof teacherFor110==='function'&&(S.age||0)>=5&&(S.age||0)<=19&&name===teacherFor110()) return 'Teacher' }catch(e){}
     try{ if(S.tod&&S.tod.rels&&S.tod.rels.teacher&&S.tod.rels.teacher.name===name) return 'Teacher' }catch(e){}
     if(S.location==='school'&&['Ms. Alvarez','Mr. Chen','Ms. Rivera','Mr. Okafor','Ms. Novak','Mr. Byrne','Ms. Kato','Mr. Delgado','Ms. Carter','Mrs. Lindqvist','Ms. Park'].indexOf(name)>=0) return 'Teacher';
