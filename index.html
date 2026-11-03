@@ -7401,8 +7401,8 @@ try{
 /* ---------- sheet/modal copy sweep (baby sheets, tutorial ladder step) ---------- */
 var PHRASES193C=[
   ['from the 💒 Marriage & Family card in ❤️ Social','from the 💒 Marriage & Family card in ❤️ Social'],
-  ['in 👽 Me → 💖 Dating & Relationships','in ❤️ Social → 💖 Relationships & Dating'],
-  ['in 👽 Me → 💖 Dating &amp; Relationships','in ❤️ Social → 💖 Relationships & Dating']
+  ['in 👽 Me → 💖 Dating & Relationships','in ❤️ Social → ❤️ Relationships'],
+  ['in 👽 Me → 💖 Dating &amp; Relationships','in ❤️ Social → ❤️ Relationships']
 ];
 function phraseSweep193C(root){
   try{
@@ -7472,12 +7472,7 @@ try{
           }
           if(hub&&!hub.dataset.v193c){
             hub.dataset.v193c='1';
-            var head=document.createElement('div'); head.className='hubHead193c';
-            head.innerHTML='<h3>❤️ Family · Relationships · Dating</h3><p>Everyone in your life, one home — family, relationships and dating all live here in ❤️ Social now.</p>';
-            hub.insertBefore(head,hub.firstChild);
-            var gF=document.createElement('div'); gF.className='hubGroup193c'; gF.textContent='👨‍👩‍👧 Family';
-            var gR=document.createElement('div'); gR.className='hubGroup193c'; gR.textContent='💖 Relationships & Dating';
-            if(famEl){ var fw=cardWrapOf193C(famEl); hub.insertBefore(gF,fw); }
+            /* v199 hotfix (Social reorganization): NO hub header and NO group headers — the people surface is ONE section, ❤️ Relationships (the roster card carries the title). The old "Family · Relationships · Dating" head and the Family / Relationships & Dating group labels are gone for good. */
             if(coEl){ var cw=cardWrapOf193C(coEl); if(famEl&&cw.parentNode===hub){ /* keep co-parents right after the tree */ } }
             /* 💒 Marriage & Family — rendered here from the shipped builder */
             try{
@@ -7489,17 +7484,10 @@ try{
                 }
               }
             }catch(e){}
-            if(datingEl){
-              var dw=cardWrapOf193C(datingEl);
-              hub.insertBefore(gR,dw);
-              var sm=dw.querySelector?dw.querySelector(':scope > summary'):null;
-              if(sm)sm.textContent='💖 Relationships & Dating';
-            }
-            /* order: header, Family group (+tree, marriage, co-parents), Relationships group (+dating) */
-            if(famEl)hub.appendChild(gF),hub.appendChild(cardWrapOf193C(famEl));
+            /* order inside the hub's family area: family tree, marriage & family, co-parents (the ❤️ Relationships roster leads the hub — v196b inserts it first, and the final Social pass keeps the tree right under it) */
+            if(famEl)hub.appendChild(cardWrapOf193C(famEl));
             var mf2=findCard193C(hub,/Marriage & Family/); if(mf2)hub.appendChild(cardWrapOf193C(mf2));
             if(coEl)hub.appendChild(cardWrapOf193C(coEl));
-            if(datingEl)hub.appendChild(gR),hub.appendChild(cardWrapOf193C(datingEl));
           }
         }
       }catch(e){}
@@ -11635,7 +11623,7 @@ const _rs136=randomStyle123;
 randomStyle123=function(q,g){ const r=_rs136(q,g); try{ if(!q){ pvCap136(); if(typeof drawPreview==='function')drawPreview() } }catch(e){} return r };
 
 if(typeof TIPS!=='undefined'){ TIPS['ql136']={t:'⚡ Quick Life asks now',b:'Quick Life is a five-question questionnaire: kids, single-or-taken, rich-or-broke, job, and starting age (the age question is the builder\u2019s addition). The life is BUILT from your answers — taken starts with a partner, rich starts with the shipped rich-family money ($500 and the fancy kit), a job answer starts you hired off the job board, and a parent answer starts you with kids in the family system. Anything skipped rolls random.'};
- TIPS['hub136']={t:'❤️ Social is the hub now',b:'💖 Dating & Relationships, 🐾 Pets Around You and the 🌳 Family Tree all live in ❤️ Social. Your own pets left 👽 Me entirely — see, feed and manage them at the 🐾 Pet Store & Vet in 🚗 Travel. In ⚡ Actions, 🎮 Play and 📺 Watch TV share one 🎬 Entertainment dropdown.'};
+ TIPS['hub136']={t:'❤️ Social is the hub now',b:'Everyone in your life lives in ❤️ Social under one ❤️ Relationships list — family first, like the tree, then the people closest to you — and the 🌳 Family Tree is there too. Your own pets left 👽 Me entirely — see, feed and manage them at the 🐾 Pet Store & Vet in 🚗 Travel. In ⚡ Actions, 🎮 Play and 📺 Watch TV share one 🎬 Entertainment dropdown.'};
  TIPS['sleep136']={t:'💤 Toddlers sleep STILL',b:'Little kids have real sleep now: 🌙 Put to bed from the kids card and a toddler stays in the crib/bed — asleep, still, not moving — until the 7 AM wake. They also sleep at night on their own schedule (bedtime 7 PM under 2, 8 PM at 2–4). Nobody picks up, carries or crawls a sleeping toddler.'};
  TIPS['traits136']={t:'🎂 Traits on fifth birthdays only',b:'The 🌱 traits box appears ONLY on fifth birthdays — ages 5, 10, 15, 20… Ordinary birthdays bank nothing and pop nothing. Bonus trait offers from real accomplishments still arrive whenever they are earned.'} }
 const _wn136=whatsNewHtml124;
@@ -18135,9 +18123,40 @@ function locOf196(name){
  if(tr)return {school:'🎓 School',work:'💼 Work',street:'🌆 Maple Street',college:'🏛️ Campus',house:'🏠 Home',boarding:'🛏️ The dorm',orphanage:'🏠 Hope House'}[tr.haunt]||'🌆 Around town';
  return '🌆 Around town' }
 /* ---------- the roster card, inside the Social hub ---------- */
-function rosterHtml196(){ var V=ensureRels196(); if(!V)return ''; var names=Object.keys(V.rels); names.sort(function(a,b){ var d=(isFam196(a)?0:1)-(isFam196(b)?0:1); return d!==0?d:a.localeCompare(b) });
- var rows=names.map(function(n){ return '<div class="kv"><span><b>'+n+'</b> — '+identOf196(n)+'</span><b>📍 '+locOf196(n)+'</b></div>' }).join('');
- return '<div class="card" id="relRoster196"><h3>💞 Relationships — '+names.length+'</h3><p class="small" style="margin-top:0">Everyone you have actually talked with — family, your babysitter, classmates, neighbours. People land here from real conversations, not from standing nearby.</p>'+(names.length?rows:'<p class="small">Nobody yet — talk to the people around you and they will show up here, with who they are to you and where they are.</p>')+'</div>' }
+/* ---------- v199 hotfix (Social reorganization): the roster is ONE ❤️ Relationships list — family first, arranged like a family tree (generations), then everyone else ranked by closeness (bond), dating partners included with their labels ---------- */
+function famGen199s(name){ try{ var l=null; try{ l=(typeof relLabel193==='function')?relLabel193(name):null }catch(e){}
+ if(l==='Grandma'||l==='Grandpa')return 0;
+ if(l==='Mom'||l==='Dad'||l==='Step-Mom'||l==='Step-Dad')return 1;
+ if(l==='Wife'||l==='Husband')return 2;
+ if(l==='Sister'||l==='Brother'||l==='Step-Sister'||l==='Step-Brother'||l==='Half-Sister'||l==='Half-Brother')return 3;
+ if(l==='Son'||l==='Daughter'||l==='Child')return 4;
+ if(l==='Grandson'||l==='Granddaughter'||l==='Grandchild')return 5;
+ try{ var f=S.fam78; if(f){ if(f.grandma&&f.grandma.name===name)return 0; if(f.grandpa&&f.grandpa.name===name)return 0; if(f.siblings&&f.siblings.some(function(sb){ return sb.name===name }))return 3 } }catch(e){}
+ try{ if(typeof parentRoleOf47==='function'&&parentRoleOf47(name))return 1 }catch(e){}
+ try{ if(S.kids&&S.kids.some(function(k){ return k.name===name }))return 4 }catch(e){}
+ if(S.spouse===name)return 2;
+ return -1 }catch(e){ return -1 } }
+function bondScore199s(name){ try{
+ if(S.spouse===name)return 100;
+ var r=(S.romance&&S.romance[name])||null;
+ if(r)return (r.meter||0)+(S.partner===name?0.5:0);
+ try{ if(!S.movedOut&&typeof householdPeople==='function'&&householdPeople().some(function(p){ return p.name===name }))return (S.bond||50) }catch(e){}
+ var pb=''; try{ pb=personBond(name) }catch(e){}
+ var m=/(\d+)\s*(?:%|\/100)/.exec(pb||''); if(m)return parseInt(m[1],10);
+ var cv=(S.v93&&S.v93.convos&&S.v93.convos[name])||0;
+ return Math.min(45,cv*9);
+}catch(e){ return 0 } }
+function rosterRow199s(n,gen){ var pb=''; try{ pb=personBond(n) }catch(e){} if(pb==='—')pb=''; var chat=''; try{ if(typeof hasContact==='function'&&hasContact(n)){ chat='<button class="btn" data-nm="'+n.replace(/"/g,'')+'" style="width:auto;margin:0 0 0 6px;padding:6px 11px" onclick="openConvo(this.getAttribute(\'data-nm\'))">💬</button>' } }catch(e){}
+ return '<div class="kv"'+(gen>=0?(' style="margin-left:'+(gen*9)+'px"'):'')+'><span><b>'+n+'</b> — '+identOf196(n)+(pb?(' · '+pb):'')+'</span><b>📍 '+locOf196(n)+'</b>'+chat+'</div>' }
+function rosterHtml196(){ var V=ensureRels196(); if(!V)return ''; var names=Object.keys(V.rels);
+ var fam=[], rest=[];
+ names.forEach(function(n){ var g=famGen199s(n); if(g>=0)fam.push({n:n,g:g}); else rest.push(n) });
+ fam.sort(function(a,b){ if(a.g!==b.g)return a.g-b.g; var d=bondScore199s(b.n)-bondScore199s(a.n); return d!==0?d:a.n.localeCompare(b.n) });
+ rest.sort(function(a,b){ var d=bondScore199s(b)-bondScore199s(a); return d!==0?d:a.localeCompare(b) });
+ var rows='';
+ if(fam.length)rows+='<div class="famTree199s">'+fam.map(function(f){ return rosterRow199s(f.n,f.g) }).join('')+'</div>';
+ rows+=rest.map(function(n){ return rosterRow199s(n,-1) }).join('');
+ return '<div class="card" id="relRoster196"><h3>❤️ Relationships — '+names.length+'</h3><p class="small" style="margin-top:0">Everyone you have actually talked with — your family first, like the tree, then the people closest to you. People land here from real conversations, not from standing nearby.</p>'+(names.length?rows:'<p class="small">Nobody yet — talk to the people around you and they will show up here, with who they are to you and where they are.</p>')+'</div>' }
 function injectRoster196(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; if(typeof curTab==='undefined'||curTab!=='life')return; var panel=document.getElementById('panel'); if(!panel)return; var ex=document.getElementById('relRoster196'); if(ex){ var t0=document.createElement('div'); t0.innerHTML=rosterHtml196(); if(t0.firstChild)ex.replaceWith(t0.firstChild); return } var tmp=document.createElement('div'); tmp.innerHTML=rosterHtml196(); var card=tmp.firstChild; if(!card)return; var hub=panel.querySelector('.hub136'); if(hub){ var head=hub.querySelector('.hubHead193c'); if(head&&head.nextSibling)hub.insertBefore(card,head.nextSibling); else hub.insertBefore(card,hub.firstChild) } else { var grid=panel.querySelector('.grid')||panel; grid.appendChild(card) } }catch(e){} }
 try{ var _rt196b=renderTabs; renderTabs=function(active){ var r=_rt196b.apply(this,arguments); injectRoster196(); return r } }catch(e){}
 /* ---------- the registration hooks ---------- */
@@ -18868,6 +18887,41 @@ try{ const _dr199=drawRoom; drawRoom=function(){ const r=_dr199(); try{ if(!S||!
 window.__v199={ensure:ensure199,stockOf:stockOf199,openStore:openStore199,shoppers:shoppers199,dramaPresent:dramaPresent199,dramaAbsent:dramaAbsent199,tutShow:tutShow199,bedHere:bedHere199,version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 THE WORLD IS ALIVE: 💔 drama as real street events (fights → hospital) • 🛒 living stores: aisles + counter, shared stock, NPC shoppers, queues • 📱 kid phone to spec (store-bought, given at 2–3, locked teaser, no service age door, report-card & field-trip offers) • 💬 real texting (typed only, one at a time, phone required) • 🚪 knocking labels + 🚗🐕 street life in the curb band • ☀️ summer school gated by the report card • 🌐 browser grows video + job board + one real-web door • ❓ 12 just-in-time tutorials + full directory • ✏️ name your character • 🎒 your bag on you and on the dock • 🛏️ floor < sleeping bag < bed • 🧪 playtester fixes (school exit card, classmate "busy", sheet readability)');
 
+</script>
+<style>
+.famTree199s{border-left:2.5px solid #ec489966;margin:2px 0 8px;padding-left:4px}
+.famTree199s .kv:last-child{border-bottom:1px dashed var(--line)}
+</style>
+<script>
+/* ================= v199 hotfix — ❤️ SOCIAL IS ONE LIST NOW: "Relationships" (Howard's order, Nov 2, 2026). GAME_VERSION stays 199; SAVE_KEY untouched; silent.
+   The people surface in the ❤️ Social tab is ONE section titled ❤️ Relationships (the v196 roster card, re-sorted at the source): family first, arranged like a family tree (grandparents → parents → spouse → siblings → children, indented down the generations inside a tree rail), then EVERYONE else ranked by closeness (bond) descending — dating partners included in that same ranking, wearing their Girlfriend/Boyfriend label. This final pass runs last on every Social render and guarantees the end state no matter which shipped layer built the hub:
+   · any leftover hub header (.hubHead193c) or group header (.hubGroup193c) is removed — no "Family · Relationships · Dating" naming anywhere;
+   · the separate 💖 Dating & Relationships card is removed from Social — dating lives in the one list now, and every dating action stays reachable from the person's entry (💬 opens their chat, where flirt / ask / dates live, exactly as shipped);
+   · the 🌳 Family Tree card sits in the top family area, directly under the Relationships list;
+   · registration by conversation, identity + live location on every entry, and all other per-person actions are untouched. ================= */
+(function(){
+try{
+function socialFinal199s(){
+  var panel=document.getElementById('panel'); if(!panel)return;
+  Array.prototype.slice.call(panel.querySelectorAll('.hubHead193c,.hubGroup193c')).forEach(function(el){ el.remove() });
+  Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(c){
+    var h=c.querySelector('h3'); if(h&&/Dating & Relationships/.test(h.textContent||'')){ var dd=c.closest('details.dd132'); (dd||c).remove() }
+  });
+  var roster=document.getElementById('relRoster196');
+  var hub=panel.querySelector('.hub136');
+  if(roster&&hub&&roster.parentNode!==hub)hub.insertBefore(roster,hub.firstChild);
+  var tree=null;
+  Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(c){ if(tree)return; var h=c.querySelector('h3'); if(h&&(h.textContent||'').indexOf('Family Tree')>=0)tree=c });
+  if(tree&&roster&&roster.parentNode){
+    var tw=tree.closest('details.dd132')||tree;
+    if(roster.nextSibling!==tw)roster.parentNode.insertBefore(tw,roster.nextSibling);
+  }
+}
+try{ var _rt199s=renderTabs; renderTabs=function(active){ var r=_rt199s.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&typeof inGame!=='undefined'&&inGame){ var cur=(typeof curTab!=='undefined'&&curTab)?curTab:active; if(cur==='life')socialFinal199s() } }catch(e){} return r } }catch(e){}
+window.__v199s={socialFinal:socialFinal199s,version:function(){ return GAME_VERSION }};
+console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix: ❤️ Social is one list — ❤️ Relationships (family like a tree at the top, then closest-first by bond; dating partners ranked in the same list); the Family · Relationships · Dating hub naming and the separate Dating section are gone; 🌳 Family Tree stays in the top family area');
+}catch(e){}
+})();
 </script>
 </body>
 </html>
