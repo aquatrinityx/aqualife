@@ -11803,11 +11803,11 @@ const _hl137=homeLoc; homeLoc=function(){ if(S&&S.origin==='alley')return 'stree
 const _sg137=startGame; startGame=function(mode,origin){ _sg137(mode,origin); try{ if(S&&S.origin==='alley'){ S.homeless80=true; if(S.location==='house')S.location='street'; try{ LOC_LABELS92.street='🧺 the alleyway' }catch(e){} log('🧺 THE ALLEYWAY — this is where the story starts: a cardboard-flat corner behind the shops, sky for a ceiling. No house was rolled for this life, because there is no house — the alley is the start, and it stays the start until '+S.name+' earns a real place by the usual rules.'); save(); try{ render() }catch(e){} } else { try{ if(LOC_LABELS92.street!=='🌳 Maple Street & Park')LOC_LABELS92.street='🌳 Maple Street & Park' }catch(e){} } }catch(e){} };
 /* ---------- 💼 WORK = JUST THE JOB (items 8 + 10): name + one dropdown. The 💼 Careers & Jobs browser is out of Work. ---------- */
 function workCard137(){ if(!S)return ''; if(S.age<5)return '<div class="foldhead" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin:2px 0 8px">📁 Work</div><div class="card"><h3 style="margin-top:0">💼 Work</h3><p class="small">Jobs & chores start at age 5.</p></div>'; const head='<div class="foldhead" style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin:2px 0 8px">📁 Work</div>';
- if(S.jobInfo){ const ji=S.jobInfo; return head+'<div class="card"><h3 style="margin-top:0">'+jobHead144(ji)+'</h3><details class="dd132"><summary>▸ Job actions</summary><div class="ddBody">'+String(jobBoardHtml()).replace(/<h3[^>]*>[\s\S]*?<\/h3>/,'')+'</div></details></div>' }
- if(S.age>=5&&S.age<18){ return head+'<div class="card"><h3 style="margin-top:0">💼 No job yet</h3><details class="dd132"><summary>▸ Ways to earn</summary><div class="ddBody">'+(typeof kidJobsChores56==='function'?kidJobsChores56():'<p class="small">Kid jobs open up as you grow.</p>')+'</div></details></div>' }
+ if(S.jobInfo){ const ji=S.jobInfo; return head+'<div class="card"><h3 style="margin-top:0">'+jobHead144(ji)+'</h3><details class="dd132"><summary>Job actions</summary><div class="ddBody">'+String(jobBoardHtml()).replace(/<h3[^>]*>[\s\S]*?<\/h3>/,'')+'</div></details></div>' }
+ if(S.age>=5&&S.age<18){ return head+'<div class="card"><h3 style="margin-top:0">💼 No job yet</h3><details class="dd132"><summary>Ways to earn</summary><div class="ddBody">'+(typeof kidJobsChores56==='function'?kidJobsChores56():'<p class="small">Kid jobs open up as you grow.</p>')+'</div></details></div>' }
  let inner=''; try{ const apps=jobAppsCardHtml43(); if(apps&&String(apps).trim())inner=apps }catch(e){}
  if(!inner)inner='<p class="small">No job right now — and nothing pending. Work shows your job when you have one; this tab is the job, and only the job.</p>';
- return head+'<div class="card"><h3 style="margin-top:0">💼 No job right now</h3><details class="dd132"><summary>▸ Details</summary><div class="ddBody">'+inner+'</div></details></div>' }
+ return head+'<div class="card"><h3 style="margin-top:0">💼 No job right now</h3><details class="dd132"><summary>Details</summary><div class="ddBody">'+inner+'</div></details></div>' }
 /* ---------- 🚶 WALKING + 📞 RIDES (items 11 + 21) ---------- */
 const WALKABLE137=['street','store','grocery'];
 function canWalkTo137(id){ if(!S)return false; if(id===homeLoc())return true; return WALKABLE137.indexOf(id)>=0 }
@@ -11827,7 +11827,7 @@ function rideGo137(i){ if(!S)return; const d=(window._rideDrivers137||[])[i]; co
 /* the no-car sheet gains the two shipped answers: walk (close only) or call a ride */
 try{ const _dl137=driverLaw98; driverLaw98=function(id){ if(window._walk137||window._ride137)return true; window._lawDest137=id; return _dl137(id) } }catch(e){}
 function needCarText98(){ if(!S)return ''; const car=S.car||{}; return 'Going places runs on wheels now: travel takes <b>your own car</b> and a <b>driver\'s license</b>. You have '+(car.license?'the license, but no car':'neither yet')+'. Lessons are 16+ — $30 each, two earn the license — and cars start at <b>$280</b>, both in the \uD83D\uDE97 Cars card in \uD83D\uDE97 Travel. (You can always still get home on foot.)' }
-const _ncs137=noCarSheet98; noCarSheet98=function(dest){ if(!S)return _ncs137(dest); dest=dest||window._lawDest137; if(dest&&canWalkTo137(dest)){ const label=(TRAVEL_OPTS.find(function(o){ return o[0]===dest })||[])[1]||dest; openSheet('<h2>🚗 No wheels</h2><p>'+needCarText98()+'</p><p class="small">Walk it: ~20 min, −8 energy. Energy at zero = pass out on the spot.</p><button class="btn gold" onclick="closeModal();walkTo137(\''+dest+'\')">🚶 Walk to '+label+'</button><button class="btn outline" style="margin-top:8px" onclick="rideSheet137(\''+dest+'\')">📞 Call someone for a ride instead</button>'); return } openSheet('<h2>🚗 No wheels</h2><p>'+needCarText98()+'</p><button class="btn gold" onclick="rideSheet137()">📞 Call someone for a ride</button><p class="small">In walking range always: 🌳 park + close places.</p>') };
+const _ncs137=noCarSheet98; noCarSheet98=function(dest){ if(!S)return _ncs137(dest); dest=dest||window._lawDest137; if(dest&&canWalkTo137(dest)){ const label=(TRAVEL_OPTS.find(function(o){ return o[0]===dest })||[])[1]||dest; openSheet('<h2>🚗 No wheels</h2><p>'+needCarText98()+'</p><p class="small">Walk it: ~20 min, −8 energy. Energy at zero = pass out on the spot.</p><button class="btn gold" onclick="closeModal();walkTo137(\''+dest+'\')">🚶 Walk to '+label+'</button><button class="btn outline" style="margin-top:8px" onclick="rideSheet137(\''+dest+'\')">📞 Call someone for a ride instead</button>'); return } openSheet('<h2>🚗 No wheels</h2><p>'+needCarText98()+'</p><button class="btn gold" onclick="rideSheet137(\''+(dest||'')+'\')">📞 Call someone for a ride</button><p class="small">In walking range always: 🌳 park + close places.</p>') };
 /* ---------- 📬 SPONSORSHIP INBOX + PO BOX (item 19) ---------- */
 const SPON_ITEM137=[['📦 a product box','samples & swag'],['🎧 review unit','gear to unbox on camera'],['🧴 care package','the good stuff, boxed'],['👕 merch drop','tees & channel swag']];
 function sponsorFee137(kind){ if(!S)return 0; const f=Math.max(1,S.fame||1); const base=30+f*45+Math.floor((S.followers||0)/15)+Math.floor(Math.random()*40); const fee=Math.max(10,Math.round(base/5)*5); return kind==='item'?Math.round(fee/2):fee }
@@ -12145,7 +12145,7 @@ const _as140=appSub; appSub=function(id){ if(id==='jobs'){ if(!S)return ''; try{
 function findWorkHtml140(){ if(!S||jobsJailed140())return '';
  if(S.age<5)return ''; if(S.age<12)return '<div class="card findWork140"><h3 style="margin-top:0">🧒 Kid Jobs</h3>'+jobsKid140('work')+'</div>';
  if(S.age<18)return '<div class="card findWork140"><h3 style="margin-top:0">🔎 Find work — kid & teen jobs, youth tracks</h3>'+jobsKid140('work')+'<h4 style="margin:14px 0 4px">🗂️ Youth career tracks — the 💼 Jobs app board</h4>'+jobsBoard140('work')+'</div>';
- if(S.jobInfo)return '<details class="dd132 findWork140"><summary>▸ 🔎 Find other work</summary><div class="ddBody"><p class="small" style="margin-top:0">Same listings as the 💼 Jobs app. Taking a new job replaces this one.</p>'+jobsBoard140('work')+'</div></details>';
+ if(S.jobInfo)return '<details class="dd132 findWork140"><summary>🔎 Find other work</summary><div class="ddBody"><p class="small" style="margin-top:0">Same listings as the 💼 Jobs app. Taking a new job replaces this one.</p>'+jobsBoard140('work')+'</div></details>';
  return '<div class="card findWork140" style="border:2px solid var(--accent2)"><h3 style="margin-top:0">🔎 Find work — apply here, or in the 💼 Jobs app</h3>'+jobsBoard140('work')+'</div>' }
 const _rt140=renderTabs; renderTabs=function(active){ const r=_rt140(active); try{ if(S&&inGame&&active==='work'&&!S.deadFlag){ const panel=document.getElementById('panel'); if(panel&&!panel.querySelector('.findWork140')){ const d=document.createElement('div'); d.innerHTML=findWorkHtml140(); if(d.firstChild)panel.appendChild(d.firstChild) } } }catch(e){} return r };
 if(typeof TIPS!=='undefined'){ TIPS['jobs140']={t:'💼 The Jobs app — apply from your phone OR from Work',b:'Job-hunting has two doors on ONE system: the 💼 <b>Jobs app</b> on your phone (résumé, Kid/Teen jobs, the Job Board, applications, training, taxes) and the 🔎 <b>Find work</b> section in the 💼 Work tab. Apply in one place and it shows in the other — applications resolve daily, and offers can be accepted from either side.'} }
@@ -20365,5 +20365,151 @@ try{ const _rf205=roomFolks106; roomFolks106=function(rid){ let here=[]; try{ he
   } } }catch(e){} return here } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 5: cone course retuned (140→215 px/s, spawns 1.15→0.85s, hitbox = the car\'s real body, drag holds the lane; simulation of the shipped frame math: old tuning 0.3% pass, this tuning ~81% per attempt) — same rules, ≤2 hits + quiz 2/3, $30 • NPC decision sheets are bound to their own event by title (household / world / toddler moments — a queued, re-shown sheet can no longer lose its handler to the next moment) • Quick Life has ONE toddler entry and the builder age readout agrees with the life • rides say local-only, never a car substitute • jury mail = Show up / Ignore, journaled by the act taken • Bag Use on food eats it, same as Eat • branch bank sheet (incl. post-deposit) carries Withdraw • contextual card (Hug & co.) renders on the real Actions/Social tabs with a union people-here • shifts seat coworkers in the work scene and pay Social feedback • toddler rooms list the household','color:#0ea5e9;font-weight:bold') }catch(e){}
 </script>
+
+<script>
+/* ================= v200 HOTFIX 6 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard picked menu Option B from the mockups + approved the ride-popup cleanup.
+   1) OPTION B MENU LANGUAGE, GAME-WIDE: every .dd132 disclosure row (Travel Locations categories &
+      location rows, the Vacations dropdown, Getting Around, folder-sheet sections, store aisles,
+      bank sections, Settings sections — everything wrapDropdowns132 & friends produce) now carries
+      ONE gold chevron in a circle at the right edge of its summary. Closed: a gold-outlined circle
+      with ▾. Open: the circle FILLS gold and the chevron flips to ▴. The old doubled pattern — a
+      stray ▸ span inside the summary (class ddChev132) PLUS the CSS ▾ — is gone: the spans are
+      removed from the DOM on every render and CSS-hides any straggler, and leading ▸/▶ prefixes
+      baked into summary text are stripped. Where sibling rows form a group (same parent — Travel
+      categories, location rows inside a category, accordion lists on any tab/sheet), opening one
+      closes the others, exactly like the mock. Labels, counts and actions are untouched.
+   2) RIDE POPUP CLEANUP, as mocked: the destination is already chosen in Travel — the sheet never
+      re-asks where when a destination is known (the no-wheels sheet now passes its destination
+      through — source edit above — and this wrapper also resolves a pending Travel destination);
+      each driver's price / favor terms sit UP FRONT on their row before anyone is picked; the
+      gold "Ride with …" confirm stays the primary button (and Travel's 🚗 Go here stays gold);
+      a real "Never mind" button is guaranteed exactly once. Every existing ride rule is kept:
+      v201c single presentation + no re-prompt, gas-money-or-favor pricing, free rides from close
+      relationships, and the steal-the-car bad action (added by rideSheetExtras201) untouched. */
+(function(){
+'use strict';
+try{
+ /* ---------- Option B styles ---------- */
+ var st=document.createElement('style'); st.id='style206';
+ st.textContent=
+  '.ddChev132{display:none!important}'
+ +'.dd132>summary::after{content:\'\u25BE\';flex:none;margin-left:auto;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent2,#ffb703);color:var(--accent2,#ffb703);background:transparent;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;line-height:1;opacity:1;transform:none;transition:background .18s ease,color .18s ease,border-color .18s ease}'
+ +'details.dd132[open]>summary::after{content:\'\u25B4\';background:var(--accent2,#ffb703);color:#111;transform:none}'
+ +'#panel details:not(.dd132):not(.chatMenu151)>summary::after,#sheet details:not(.dd132):not(.chatMenu151)>summary::after{content:\'\u25BE\';float:right;width:26px;height:26px;border-radius:50%;border:2px solid var(--accent2,#ffb703);color:var(--accent2,#ffb703);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;line-height:1;margin-left:8px}'
+ +'#panel details:not(.dd132):not(.chatMenu151)[open]>summary::after,#sheet details:not(.dd132):not(.chatMenu151)[open]>summary::after{content:\'\u25B4\';background:var(--accent2,#ffb703);color:#111}'
+ +'.chatMenu151>summary::after{content:\'\u25BE\';float:right;width:22px;height:22px;border-radius:50%;border:2px solid var(--accent2,#ffb703);color:var(--accent2,#ffb703);background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;line-height:1;opacity:1}'
+ +'.chatMenu151[open]>summary::after{content:\'\u25B4\';background:var(--accent2,#ffb703);color:#111}';
+ document.head.appendChild(st);
+
+ /* ---------- strip stray arrows: ddChev132 spans out, leading ▸/▶ off summary text ---------- */
+ function cleanChev206(root){
+  try{
+   var sc=root||document; if(!sc.querySelectorAll)return;
+   sc.querySelectorAll('.ddChev132').forEach(function(sp){ if(sp.parentNode)sp.parentNode.removeChild(sp) });
+   sc.querySelectorAll('summary').forEach(function(sm){
+    var n=sm.firstChild;
+    while(n&&n.nodeType!==3)n=n.nextSibling;
+    if(n&&n.nodeType===3){
+     var v=n.nodeValue.replace(/^[\s▸▶►▾▴]+/,'');
+     if(v!==n.nodeValue)n.nodeValue=v;
+    }
+   });
+  }catch(e){}
+ }
+ window._cleanChev206=cleanChev206;
+
+ /* ---------- accordion: opening one sibling row closes the others in its group ---------- */
+ function forget206(d){
+  try{ if(typeof sig162==='function'&&window._menu162&&window._menu162.open){ var sg=sig162(d); if(sg)delete window._menu162.open[sg] } }catch(e){}
+  try{ if(typeof menuKey135==='function'&&window._open135)delete window._open135[menuKey135(d)] }catch(e){}
+  try{ if(typeof S!=='undefined'&&S&&S.v149&&S.v149.menus&&typeof S.v149.menus==='object'){ var sm=d.querySelector('summary'); var tx=sm?sm.textContent.trim():''; if(tx)Object.keys(S.v149.menus).forEach(function(k){ if(k.indexOf(tx)>=0)delete S.v149.menus[k] }) } }catch(e){}
+ }
+ document.addEventListener('toggle',function(e){
+  try{
+   var d=e.target; if(!d||d.tagName!=='DETAILS'||!d.open)return;
+   if(!d.classList||!d.classList.contains('dd132'))return;
+   var inPanel=false; try{ var pn=document.getElementById('panel'), sh=document.getElementById('sheet'); inPanel=!!((pn&&pn.contains(d))||(sh&&sh.contains(d))) }catch(e2){}
+   if(!inPanel)return;
+   var par=d.parentElement; if(!par)return;
+   Array.prototype.slice.call(par.children).forEach(function(el){
+    if(el!==d&&el.tagName==='DETAILS'&&el.open&&el.classList&&el.classList.contains('dd132')){ el.removeAttribute('open'); forget206(el) }
+   });
+  }catch(e){}
+ },true);
+
+ /* ---------- ride sheet cleanup: never re-ask, terms up front, one Never mind ---------- */
+ function rideClean206(){
+  try{
+   var sh=document.getElementById('sheet'); if(!sh)return;
+   if((sh.textContent||'').indexOf('Call for a ride')<0)return;
+   var dest=window._rideDest137||null;
+   var ds=window._rideDrivers137||[];
+   var hasDrivers=!!sh.querySelector('button[onclick*="rideGo137("]');
+   if(dest&&hasDrivers){
+    /* a destination is chosen and drivers are listed — no "Where to?" picker may linger */
+    sh.querySelectorAll('button').forEach(function(b){
+     var oc=b.getAttribute('onclick')||'';
+     if(oc.indexOf('rideSheet137(')>=0&&oc.indexOf('rideGo137')<0)b.remove();
+    });
+    sh.querySelectorAll('p,div').forEach(function(el){
+     if(el.children.length===0&&(el.textContent||'').trim()==='Where to?')el.remove();
+    });
+   }
+   /* each driver's terms, up front on their row */
+   sh.querySelectorAll('.msg').forEach(function(row){
+    var btn=row.querySelector('button[onclick*="rideGo137("]'); if(!btn)return;
+    var m=(btn.getAttribute('onclick')||'').match(/rideGo137\((\d+)\)/); if(!m)return;
+    var d=ds[+m[1]]; if(!d||d.decline)return;
+    var txt=row.textContent||'';
+    var ok = d.favor ? /favor/i.test(txt) : (d.price>0 ? txt.indexOf('$'+d.price)>=0 : /free/i.test(txt));
+    if(!ok){
+     var s=document.createElement('div'); s.className='small term206'; s.style.marginTop='4px'; s.style.fontWeight='800';
+     s.textContent = d.favor ? '🤝 Terms: a favor in return — no cash, but you will owe them one.' : (d.price>0 ? '⛽ Terms: $'+d.price+' for gas, paid when you ride.' : '💛 Terms: free — no hesitation, that is what close people do.');
+     row.insertBefore(s,btn);
+    }
+   });
+   /* exactly one real Never mind */
+   var nms=Array.prototype.slice.call(sh.querySelectorAll('.neverMind203,.neverMind201,.neverMind206')).filter(function(b){ return (b.textContent||'').trim()==='Never mind' });
+   if(nms.length>1)nms.slice(1).forEach(function(b){ b.remove() });
+   if(!nms.length){
+    var b=document.createElement('button'); b.className='btn outline neverMind206'; b.style.marginTop='8px'; b.textContent='Never mind'; b.setAttribute('onclick','closeModal()'); sh.appendChild(b);
+   }
+  }catch(e){}
+ }
+ window._rideClean206=rideClean206;
+ try{
+  var _rs206=rideSheet137;
+  rideSheet137=function(dest){
+   try{
+    if(!dest&&typeof window!=='undefined'&&window._lawDest137&&window._lawDest137!==(typeof S!=='undefined'&&S?S.location:null)){
+     var okd=true;
+     try{ if(typeof TRAVEL_OPTS!=='undefined')okd=TRAVEL_OPTS.some(function(o){ return o[0]===window._lawDest137 }) }catch(e){}
+     if(okd)dest=window._lawDest137;
+    }
+   }catch(e){}
+   var r=_rs206(dest);
+   try{ rideClean206(); setTimeout(rideClean206,160); setTimeout(rideClean206,420) }catch(e){}
+   return r;
+  };
+ }catch(e){}
+
+ /* ---------- run the cleanup after every render / sheet, and watch for late mutations ---------- */
+ function pass206(){
+  try{ cleanChev206(document.getElementById('panel')); cleanChev206(document.getElementById('sheet')); rideClean206() }catch(e){}
+ }
+ try{ var _rt206=renderTabs; renderTabs=function(a){ var r=_rt206.apply(this,arguments); try{ pass206(); setTimeout(pass206,70); setTimeout(pass206,220) }catch(e){} return r } }catch(e){}
+ try{ var _os206=openSheet; openSheet=function(h,o){ var r=_os206.apply(this,arguments); try{ setTimeout(pass206,70); setTimeout(pass206,220) }catch(e){} return r } }catch(e){}
+ try{
+  var _pend206=false;
+  var mo206=new MutationObserver(function(){ if(_pend206)return; _pend206=true; setTimeout(function(){ _pend206=false; pass206() },90) });
+  ['panel','sheet'].forEach(function(id){ var el=document.getElementById(id); if(el)mo206.observe(el,{childList:true,subtree:true}) });
+ }catch(e){}
+ try{ pass206() }catch(e){}
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 6: Option B menus game-wide (one gold chevron in a circle on every dropdown row, fills gold + flips ▾→▴ when open, stray ▸ spans removed, sibling groups accordion — opening one closes the others) • ride popup cleaned as mocked (destination already chosen in Travel — never re-asked, driver price/favor terms up front, gold ride confirm stays primary, exactly one real Never mind; single-presentation, favor & free-ride rules and steal-the-car untouched)','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
 </body>
 </html>
