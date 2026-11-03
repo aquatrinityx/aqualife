@@ -21065,16 +21065,17 @@ try{
  +'.crewChip209 .cFace209{font-size:19px;line-height:1}'
  +'.crewChip209 small{display:block;font-size:10.5px;font-weight:700;opacity:.75;line-height:1.25}'
   /* 4B — the town map */
- +'.townMap209{position:relative;height:300px;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#a8d98a,#8fce74 55%,#7cc464);border:2px solid #5d8f3e}'
+ +'.townMap209{position:relative;height:640px;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#a8d98a,#8fce74 55%,#7cc464);border:2px solid #5d8f3e}'
  +'.townMap209 .road209{position:absolute;background:#e8e0c8;box-shadow:inset 0 0 0 2px #d8cba6}'
  +'.townMap209 .roadH209{left:0;right:0;height:26px}'
  +'.townMap209 .roadV209{top:0;bottom:0;width:24px}'
- +'.townMap209 .park209{position:absolute;left:56%;top:44%;width:26%;height:24%;background:#6db355;border-radius:12px;box-shadow:inset 0 0 0 2px #5da047}'
+ +'.townMap209 .park209{position:absolute;left:53%;top:44.5%;width:21%;height:13%;background:#6db355;border-radius:12px;box-shadow:inset 0 0 0 2px #5da047}'
  +'.townMap209 .river209{position:absolute;left:0;right:0;bottom:0;height:16px;background:linear-gradient(180deg,#7cc4e8,#4aa3d8)}'
  +'.townMap209 .night209{position:absolute;inset:0;background:#101a4a55;pointer-events:none}'
  +'.mapSpot209{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:0;background:transparent;border:0;cursor:pointer;font:inherit;padding:0;z-index:3;-webkit-tap-highlight-color:transparent}'
  +'.mapSpot209 .msIc209{font-size:19px;line-height:1.15;background:#fffdf4;border:2px solid #8a6d2f;border-radius:10px;padding:2px 5px;box-shadow:0 2px 6px #00000045}'
- +'.mapSpot209 .msLb209{font-size:8.5px;font-weight:900;color:#20300f;background:#fffdf4cc;border-radius:99px;padding:1px 5px;margin-top:1px;white-space:nowrap;max-width:74px;overflow:hidden;text-overflow:ellipsis}'
+ +'.mapSpot209 .msLb209{font-size:9px;font-weight:900;color:#20300f;background:#fffdf4e6;border-radius:99px;padding:1px 6px;margin-top:1px;white-space:normal;max-width:82px;text-align:center;line-height:1.2;overflow:visible}'
+ +'.mapSpot209 .msHere209{font-size:7.5px;font-weight:900;letter-spacing:.04em;color:#111;background:var(--accent2,#ffb703);border-radius:99px;padding:1px 6px;margin-top:1px;white-space:nowrap;box-shadow:0 1px 4px #00000040}'
  +'.mapSpot209:active .msIc209{transform:scale(.92)}'
  +'.mapSpot209.here209 .msIc209{border-color:var(--accent2,#ffb703);box-shadow:0 0 0 3px var(--accent2,#ffb703),0 2px 8px #00000055}'
  +'.mapSpot209 .msCar209{position:absolute;top:-11px;right:-13px;font-size:13px;filter:drop-shadow(0 1px 2px #00000088)}'
@@ -21184,7 +21185,7 @@ try{
  try{ const _os209=openSettings121; openSettings121=function(){ const r=_os209.apply(this,arguments); try{ setTimeout(settingsPass209,70); setTimeout(settingsPass209,380); setTimeout(settingsPass209,700) }catch(e){} return r } }catch(e){}
 
  /* ================= 4) MAP = 4B MAP ON TOP, LIST BELOW ================= */
- const MAP_SPOTS209={house:[9,13],orphanage:[26,9],boarding:[43,8],school:[60,11],mall:[80,13],bank:[88,32],store:[11,36],library:[31,33],buffet:[52,36],grocery:[28,57],hospital:[50,60],restaurant:[13,72],street:[74,55],club:[90,74],arcade:[36,80],cinema:[60,82],pawn:[84,90],grandparents:[8,89],vet:[70,26],spa:[44,22],fair:[95,52],concert:[66,68],barber:[20,22],salon:[20,22],liquor:[95,20],bar:[78,86],tattoo:[48,90],townhall:[40,48],music:[58,48],daycare:[18,50],beach:[50,97],city:[30,97],mountains:[70,97],park:[88,97],work:[64,30],college:[36,18],jail:[4,60]};
+ const MAP_SPOTS209={house:[13,6.5],orphanage:[38,6.5],boarding:[63,6.5],school:[88,6.5],barber:[13,17.5],salon:[13,17.5],spa:[38,17.5],college:[63,17.5],mall:[88,17.5],store:[13,28.5],library:[38,28.5],vet:[63,28.5],liquor:[88,28.5],daycare:[13,39.5],townhall:[38,39.5],buffet:[63,39.5],bank:[88,39.5],grocery:[13,50.5],music:[38,50.5],street:[63,50.5],fair:[88,50.5],restaurant:[13,61.5],hospital:[38,61.5],concert:[63,61.5],club:[88,61.5],grandparents:[13,72.5],arcade:[38,72.5],cinema:[63,72.5],bar:[88,72.5],jail:[13,83.5],tattoo:[38,83.5],pawn:[63,83.5],work:[88,83.5],beach:[13,94],city:[38,94],mountains:[63,94],park:[88,94]};
  const MAP_SHORT209={house:'Home',orphanage:'Hope House',boarding:'Dorm',school:'School',mall:'The Mall',bank:'First River Bank',store:'Corner Store',library:'Library',buffet:'Endless Table',grocery:'FreshMart',hospital:'Hospital',restaurant:'Salty Cup',street:'Maple St & Park',club:'Club Nova',arcade:'Arcade',cinema:'Cinema',pawn:'Pawn Shop',grandparents:'Grandparents',vet:'The Vet',spa:'Spa',fair:'Amusement Park',concert:'Concert Hall',barber:'Barbershop',salon:'Salon',liquor:'Bottle & Vine',bar:'Velvet Fox',tattoo:'Tattoo',townhall:'Town Hall',music:'Music Store',daycare:'Daycare',beach:'Beach',city:'City',mountains:'Mountains',park:'Theme Park',work:'Workplace',college:'College',jail:'Jail'};
  function mapCard209(){ if(!S)return ''; let opts=[]; try{ opts=travelOpts45() }catch(e){} const ids={}; opts.forEach(function(o){ ids[o[0]]=1 });
   const night=(S.hour>=19||S.hour<6);
@@ -21192,13 +21193,13 @@ try{
   let spots='',used={};
   Object.keys(MAP_SPOTS209).forEach(function(id){ if(!ids[id])return; used[id]=1; const p=MAP_SPOTS209[id]; const here=S.location===id;
    const ic=(opts.find(function(o){ return o[0]===id })||[])[1]||''; const em=(ic.match(/\S+/g)||['📍'])[0];
-   spots+='<button type="button" class="mapSpot209'+(here?' here209':'')+'" style="left:'+p[0]+'%;top:'+p[1]+'%" onclick="goLoc(\''+id+'\')" aria-label="Travel to '+(MAP_SHORT209[id]||id)+(here?' — you are here':'')+'"><span class="msIc209">'+em+'</span>'+(hasCar&&here?'<span class="msCar209">🚗</span>':'')+(here?'<span class="msYou209">📍</span>':'')+'<span class="msLb209">'+(MAP_SHORT209[id]||id)+(here?' • you are here':'')+'</span></button>' });
+   spots+='<button type="button" class="mapSpot209'+(here?' here209':'')+'" style="left:'+p[0]+'%;top:'+p[1]+'%" onclick="goLoc(\''+id+'\')" aria-label="Travel to '+(MAP_SHORT209[id]||id)+(here?' — you are here':'')+'"><span class="msIc209">'+em+'</span>'+(hasCar&&here?'<span class="msCar209">🚗</span>':'')+(here?'<span class="msYou209">📍</span>':'')+'<span class="msLb209">'+(MAP_SHORT209[id]||id)+'</span>'+(here?'<span class="msHere209">YOU ARE HERE</span>':'')+'</button>' });
   const extra=opts.filter(function(o){ return !used[o[0]] });
   const chips=extra.length?'<div class="mapChips209"><span class="small" style="align-self:center;font-weight:800">More places:</span>'+extra.map(function(o){ return '<button class="btn outline" style="width:auto;margin:0;padding:7px 11px" onclick="goLoc(\''+o[0]+'\')">'+o[1].split('—')[0].trim()+(S.location===o[0]?' • you are here':'')+'</button>' }).join('')+'</div>':'';
   return '<div class="card" id="townMapCard209" style="border:2px solid var(--accent2)"><h3>🗺️ '+esc209(placeOf().city)+' — tap a place to go</h3>'
    +'<div class="townMap209" role="group" aria-label="Town map — tap a place to travel there">'
-   +'<div class="road209 roadH209" style="top:24%"></div><div class="road209 roadH209" style="top:66%"></div>'
-   +'<div class="road209 roadV209" style="left:20%"></div><div class="road209 roadV209" style="left:68%"></div>'
+   +'<div class="road209 roadH209" style="top:34%"></div><div class="road209 roadH209" style="top:67%"></div>'
+   +'<div class="road209 roadV209" style="left:22%"></div><div class="road209 roadV209" style="left:72%"></div>'
    +'<div class="park209"></div><div class="river209"></div>'
    +spots+(night?'<div class="night209"></div><span style="position:absolute;top:6px;right:9px;font-size:15px;z-index:2">🌙</span>':'')
    +'</div>'
@@ -22328,6 +22329,77 @@ try{
  }catch(e){} },4000);
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 18: 🚗 road + world cars paint inside the scene canvas (same bitmap, same camera — they follow every zoom/pan, world scale) • ⚡ contextual cards un-pinned into the panel flow • 😶 stray cheek/waist/feet glyphs + emoji floor clutter gone • 📱 utility row wraps so Change rooms + Bag + Scrapbook always fit • 🖐️ pull-to-refresh killed, fullscreen on entry tap • 👽 Me: Today + house + Expressions cards removed • 😊 expressions all unlocked, bubble colour + font in Settings, random ambient pops','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 19 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's two orders (Nov 3, 2026):
+   1) 🗺️ TRAVEL MAP DECLUTTERED (done at the source in the v209 layer above): every place now sits on a
+      wide 4-column grid over a taller map — no icon touches another icon or label, place names wrap to
+      two centred lines in FULL (the old 74px ellipsis truncation is gone, so Bottle & Vine, Amusement
+      Park and First River Bank read whole at the right edge), and "you are here" moved out of the name
+      label into its own gold pill underneath, so Dorm no longer crowds School. Barbershop/Salon share
+      one cell — they are gender-exclusive in travelOpts45, so they never render together. Every spot
+      still calls the same goLoc().
+   2) 🌳 MAPLE ST & PARK — DUAL NATURE: "drug central and a nice friendly park, known for bad
+      activities." The friendly layer is untouched (streetMoment, ducks, kite, snack cart — everyone,
+      every age). Underneath, the park is now wired into the game's EXISTING street systems as the
+      place where that activity lives: adults (18+) at the park can be approached by a corner seller
+      working the benches for the shipped dealer Marcus "Pockets" Reed — buying runs through the
+      shipped streetBuy53 (same prices, stash, Dealing XP, heat and maybeBust) — and a holder can be
+      approached by a buyer asking, which sells through the shipped buyerSell38 (same regulars,
+      dealFallout and bust rules). No new drug mechanics, prices or effects were invented. The layer
+      fires on arrival (after the friendly streetMoment) and while lingering, capped at 2 a day, and
+      never while a sheet is already open. MINORS: the whole shady layer is gated 18+ in this layer —
+      under-18s get the friendly park only; every existing protection elsewhere (buyerTick38's 13+
+      floor, the Streets card's 16+ teaser, troubleGate55) is untouched. The place's own words carry
+      both reputations: the Travel list line for Maple Street & Park and a note on its 📍 Only here
+      Actions card. */
+(function(){ 'use strict';
+try{
+ function ensure219(){ if(typeof S==='undefined'||!S)return null; if(!S.v219||typeof S.v219!=='object')S.v219={}; var V=S.v219; if(V.parkDay==null)V.parkDay=0; if(V.parkHits==null)V.parkHits=0; return V }
+ /* ---------- the dual reputation, in the place's own words ---------- */
+ try{ if(typeof TRAVEL_OPTS!=='undefined'){ var so219=TRAVEL_OPTS.find(function(o){ return o[0]==='street' }); if(so219)so219[1]='🌳 Maple Street & Park — benches, ducks & the snack cart by day; known after dark for deals & bad activities' } }catch(e){}
+ /* ---------- the shady layer (adults only, shipped systems only) ---------- */
+ function parkAdult219(){ try{ return !!(S&&S.age>=18&&!(S.jail&&S.jail.in)&&!S.deadFlag) }catch(e){ return false } }
+ function modalOpen219(){ try{ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }catch(e){ return false } }
+ window.parkDealerBuy219=function(k){ try{ closeModal(); if(typeof streetBuy53==='function'){ var p=(typeof DRUG_PRODUCTS!=='undefined')?DRUG_PRODUCTS[k]:null; if(p)streetBuy53('dealer',k,1,p.buy) } }catch(e){} };
+ window.parkWalkAway219=function(who){ try{ closeModal(); log('🌳 You kept walking — '+who+' shrugged and melted back toward the far benches. Maple Street minded its business, the way it does.'); save(); render() }catch(e){} };
+ function parkShady219(){ try{
+   if(!parkAdult219()||!S||S.location!=='street')return false;
+   var V=ensure219(); if(!V)return false;
+   if(V.parkDay!==S.day){ V.parkDay=S.day; V.parkHits=0 }
+   if(V.parkHits>=2)return false;
+   if(modalOpen219())return false;
+   if(typeof DRUG_PRODUCTS==='undefined')return false;
+   V.parkHits=(V.parkHits||0)+1;
+   var keys=Object.keys(DRUG_PRODUCTS);
+   var held=keys.filter(function(k){ return (S.stash[k]||0)>0 });
+   var corner='Dre'; try{ if(typeof CORNER53!=='undefined'&&CORNER53.length)corner=CORNER53[(S.day*3+1)%CORNER53.length] }catch(e){}
+   var night=(S.hour>=18||S.hour<6);
+   if(held.length&&Math.random()<0.5){
+    var k=held[Math.floor(Math.random()*held.length)]; var p=DRUG_PRODUCTS[k];
+    var buyer='someone'; try{ buyer=nameForGender(Math.random()<0.5) }catch(e){}
+    try{ if(typeof showTip==='function')showTip('dealing') }catch(e){}
+    openSheet('<h2>🌳🌙 The park, after dark</h2><p>Maple Street & Park is two places in one: ducks and kites by day — and everybody in town knows the far benches run the other trade'+(night?' after dark':'')+'. <b>'+buyer+'</b> drifts over, casual as weather, and keeps their voice down: <i>“You holding any '+p.icon+' '+p.name+'? Heard this is the park for it. Cash, no drama.”</i></p><p class="small">You are holding <b>'+(S.stash[k]||0)+'</b> '+p.unit+'(s) of '+p.name+'. Same street rules as everywhere — same prices, same heat, same chances.</p><button class="btn gold" onclick="buyerSell38(\''+k+'\',\''+buyer+'\',1)">🤝 Sell 1 — $'+(typeof dealPrice==='function'?dealPrice(p):p.price)+'</button><button class="btn outline" style="margin-top:8px" onclick="parkWalkAway219(\''+buyer+'\')">🚶 Keep walking</button>',{sfx:'pop'});
+    save(); return true;
+   }
+   var k2=keys[Math.floor(Math.random()*keys.length)]; var p2=DRUG_PRODUCTS[k2];
+   openSheet('<h2>🌳🌙 The park, after dark</h2><p>Maple Street & Park is two places in one: a nice, friendly park by day — and the benches by the fountain are where the town\'s other economy clocks in. <b>'+corner+'</b>, who works this park for Marcus “Pockets” Reed, clocks you lingering and keeps it quiet: <i>“'+p2.icon+' '+p2.name+', $'+p2.buy+'. Right here, right now — this park is where it moves.”</i></p><p class="small">Dealer prices, dealer weight — the shipped street deal, at the park: the money, the stash, the heat and the bust chance are exactly the 🌆 Streets rules.</p><button class="btn gold" onclick="parkDealerBuy219(\''+k2+'\')">📥 Buy 1 '+p2.icon+' '+p2.name+' — $'+p2.buy+'</button><button class="btn outline" style="margin-top:8px" onclick="parkWalkAway219(\''+corner+'\')">🚶 Keep walking</button>',{sfx:'pop'});
+   save(); return true;
+ }catch(e){ return false } }
+ window.parkShady219=parkShady219;
+ /* arrival: the friendly streetMoment runs first, untouched; the other park answers after */
+ try{ var _sm219=streetMoment; streetMoment=function(){ var r=_sm219.apply(this,arguments); try{ if(parkAdult219()&&S.location==='street'){ var V=ensure219(); if(V&&V.parkDay!==S.day&&Math.random()<0.3)setTimeout(function(){ try{ if(S&&S.location==='street'){ log('🌳🌙 By the far benches, a handoff changed hands in the shadow of the fountain — nobody looked up. This park has a reputation, and it earns it nightly.'); save() } }catch(e){} },1000); setTimeout(function(){ try{ if(Math.random()<0.55)parkShady219() }catch(e){} },1500) } }catch(e){} return r } }catch(e){}
+ /* lingering: time spent standing in the park can draw the layer too */
+ var parkNext219=0;
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; if(!parkAdult219()||S.location!=='street')return; var now=performance.now(); if(now<parkNext219)return; parkNext219=now+45000; if(modalOpen219())return; if(typeof activity!=='undefined'&&activity)return; if(Math.random()<0.5)parkShady219() }catch(e){} },4000);
+ /* the reputation note on the park's own 📍 Only here card */
+ function parkNote219(){ try{ if(!S||S.location!=='street'||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return; var card=panel.querySelector('.dynCard217'); if(!card||card.querySelector('.parkRep219'))return; var p=document.createElement('p'); p.className='small parkRep219'; p.style.marginTop='6px'; p.innerHTML='🌳 <b>Two reputations:</b> a nice, friendly park — ducks, kites, neighbours — and, around town, <b>the</b> known spot for bad activities after dark.'+(S.age>=18?' Grown-ups get approached here, and the street rules (and the heat) are the real ones.':''); card.appendChild(p) }catch(e){} }
+ setInterval(parkNote219,1100);
+ window.__v219={ensure:ensure219,parkShady:parkShady219,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 19: 🗺️ Travel town map decluttered (tall 4-column grid, full unwrapped place names, YOU ARE HERE pill out of the name label — no icon/label overlaps, no edge clipping) • 🌳 Maple St & Park dual nature: friendly park for everyone + an 18+ shady layer wired into the shipped street systems (park dealer buys via streetBuy53, buyer asks via buyerSell38 — same prices/heat/bust), dual reputation in the Travel line and the park\'s Only here card; minors get the friendly park only','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
