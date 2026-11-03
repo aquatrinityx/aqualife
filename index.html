@@ -21460,5 +21460,102 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v214: 📊 ANONYMOUS STATS TRACKER + 💬 IN-GAME FEEDBACK — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard approved (Nov 3, 2026): "Lets do it and add a feedback to that Google sheet too."
+   The mailbox is the Google Form "AquaLife — Stats & Feedback" in Howard's own Drive (responses land
+   in its Google Sheet). The game POSTs fire-and-forget (fetch, mode:'no-cors', URLSearchParams body)
+   to the form's formResponse endpoint — no await anywhere in game flow, everything wrapped in
+   try/catch, no retries: a missed ping is just missed, and gameplay can never block or break on it.
+   WHAT FLIES: a random install ID (generated once, kept in its OWN localStorage key — never inside
+   the save), the event name, the current in-game Day and Level numbers, and the version. That's all:
+   no names, no character names, no save data, nothing personal. Events: install (exactly once),
+   daily_open (first open of each real calendar day), day (each new in-game day), level (each
+   level-up, detail = the new level), license_passed, phone_bought, laptop_bought. Milestone markers
+   live outside the save too, and they ADVANCE even while sharing is off, so turning it back on never
+   replays stale moments — and anything already true when the tracker first looks (an old license, an
+   owned phone) is baselined silently, never pinged as if it just happened.
+   OPT-OUT: ⚙️ Settings → 💾 Data & Save gains "Share anonymous stats" (default ON) with a plain
+   disclosure line under it. OFF = zero stats pings, full stop.
+   FEEDBACK: 💬 Send feedback in the same section opens a sheet — type dropdown (Bug report / Idea /
+   How I'm doing / Other), a message box, Send. It posts the type + message + an auto-filled
+   "Day N, Level N" progress line to the same form/sheet, then thanks the player in the sheet; if the
+   send can't go out (offline), it says so plainly and keeps their words in the box. Feedback is
+   player-initiated, so it works regardless of the stats toggle — pressing Send IS the choice. */
+(function(){ 'use strict';
+ var EP214='https://docs.google.com/forms/d/e/1FAIpQLSerzlldqjpGD9zX0P6X80U7ujMLMJSJFrksiVV9Ui4isbC8eA/formResponse';
+ var K_ID214='aqualifeStatsId_v1', K_OPT214='aqualifeStatsOpt_v1', K_SENT214='aqualifeStatsSent_v1';
+ function lsGet214(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+ function lsSet214(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+ function statsOn214(){ return lsGet214(K_OPT214)!=='off' }
+ function installId214(){ var id=lsGet214(K_ID214); if(!id){ id='aq-'+Math.random().toString(36).slice(2,10)+'-'+Date.now().toString(36); lsSet214(K_ID214,id) } return id }
+ function sent214(){ try{ return JSON.parse(lsGet214(K_SENT214)||'{}') }catch(e){ return {} } }
+ function markSent214(k,v){ var s=sent214(); s[k]=v; lsSet214(K_SENT214,JSON.stringify(s)) }
+ function curDay214(){ try{ return (typeof S!=='undefined'&&S&&S.day!=null)?String(S.day):'' }catch(e){ return '' } }
+ function curLvl214(){ try{ return (typeof S!=='undefined'&&S&&S.level!=null)?String(S.level):'' }catch(e){ return '' } }
+ function post214(params){ try{ var body=new URLSearchParams(); Object.keys(params).forEach(function(k){ body.append(k,params[k]) }); var p=fetch(EP214,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}); if(p&&p.catch)p.catch(function(){}) }catch(e){} }
+ function ping214(ev,detail){ try{ if(!statsOn214())return; post214({'entry.810057987':installId214(),'entry.1257175784':ev,'entry.1820728039':curDay214(),'entry.686270592':curLvl214(),'entry.1069628396':String((typeof GAME_VERSION!=='undefined')?GAME_VERSION:200),'entry.1917171974':detail||''}) }catch(e){} }
+ function openCheck214(){ try{ if(!statsOn214())return; var s=sent214(); var today=new Date().toDateString(); if(s.openDay!==today){ ping214('daily_open',''); markSent214('openDay',today) } }catch(e){} }
+ function bootStats214(){ try{ installId214(); if(!statsOn214())return; var s=sent214(); if(!s.install){ ping214('install',''); markSent214('install',1) } openCheck214() }catch(e){} }
+ function watch214(){ try{ if(typeof S==='undefined'||!S)return; var s=sent214(); var on=statsOn214();
+  if(s.pingDay==null)markSent214('pingDay',S.day||1);
+  else if((S.day||1)>s.pingDay){ if(on)ping214('day',''); markSent214('pingDay',S.day) }
+  if(s.pingLvl==null)markSent214('pingLvl',S.level||1);
+  else if((S.level||1)>s.pingLvl){ if(on)ping214('level','Level '+S.level); markSent214('pingLvl',S.level) }
+  var lic=!!(S.car&&S.car.license);
+  if(s.lic==null)markSent214('lic',lic?1:0); else if(lic&&!s.lic){ if(on)ping214('license_passed',''); markSent214('lic',1) }
+  var ph=!!S.hasPhone;
+  if(s.phone==null)markSent214('phone',ph?1:0); else if(ph&&!s.phone){ if(on)ping214('phone_bought',''); markSent214('phone',1) }
+  var lap=false; try{ lap=(typeof hasLaptop200==='function')?hasLaptop200():false }catch(e){}
+  if(s.lap==null)markSent214('lap',lap?1:0); else if(lap&&!s.lap){ if(on)ping214('laptop_bought',''); markSent214('lap',1) }
+ }catch(e){} }
+ try{ var _ax214=addXp; addXp=function(){ var before=null; try{ if(typeof S!=='undefined'&&S)before=S.level||1 }catch(e){} var r=_ax214.apply(this,arguments); try{ if(before!=null&&S&&S.level>before){ if(statsOn214())ping214('level','Level '+S.level); markSent214('pingLvl',S.level) } }catch(e){} return r } }catch(e){}
+ try{ var _nd214=nextDay; nextDay=function(){ var r=_nd214.apply(this,arguments); try{ watch214() }catch(e){} return r } }catch(e){}
+
+ /* ================= ⚙️ SETTINGS → 💾 Data & Save: the toggle + the feedback door ================= */
+ function statsBlock214(){ var on=statsOn214();
+  return '<div class="kv" style="margin-top:10px"><span>📊 Share anonymous stats</span><b>'+(on?'ON':'OFF')+'</b></div>'
+  +'<p class="small" style="margin-top:6px">Anonymous counts only — installs, days &amp; levels reached, and big moments like passing your driving test or getting a phone or laptop. No name, no save data, nothing about your characters ever leaves this device.</p>'
+  +'<button class="btn '+(on?'outline':'gold')+'" style="margin-top:8px" onclick="statsToggle214()">📊 Anonymous stats: '+(on?'ON — tap to turn off':'OFF — tap to turn on')+'</button>'
+  +'<button class="btn gold" style="margin-top:8px" onclick="openFeedback214()">💬 Send feedback</button>' }
+ function injectStats214(){ try{ var sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.statsBlock214'))return;
+  var wrap=document.createElement('div'); wrap.className='statsBlock214'; wrap.innerHTML=statsBlock214();
+  var body=sh.querySelector('.acc209[data-sec="data"] .accBody209');
+  if(body){ body.appendChild(wrap); return }
+  var card=document.createElement('div'); card.className='card'; card.innerHTML='<h3>📊 Stats &amp; Feedback</h3>'; card.appendChild(wrap); sh.appendChild(card);
+ }catch(e){} }
+ try{ var _os214=openSettings121; openSettings121=function(){ var r=_os214.apply(this,arguments); try{ setTimeout(injectStats214,80); setTimeout(injectStats214,420); setTimeout(injectStats214,760) }catch(e){} return r } }catch(e){}
+ window.statsToggle214=function(){ try{ var on=statsOn214(); lsSet214(K_OPT214,on?'off':'on'); if(on){ try{ toast('📊 Anonymous stats OFF — nothing more gets sent') }catch(e){} }
+  else { bootStats214(); try{ toast('📊 Anonymous stats ON — thank you!') }catch(e){} }
+  var b=document.querySelector('.statsBlock214'); if(b)b.innerHTML=statsBlock214();
+ }catch(e){} };
+
+ /* ================= 💬 FEEDBACK — written in the game, lands in the same sheet ================= */
+ window.openFeedback214=function(){ try{ var prog=curDay214()?('Day '+curDay214()+', Level '+curLvl214()):'';
+  openSheet('<h2>💬 Send feedback</h2><p>Tell the maker what you think — a bug, an idea, or just how your life is going. It lands straight in the AquaLife feedback sheet, where it actually gets read.'+(prog?' Your progress (<b>'+prog+'</b>) rides along so it makes sense.':'')+'</p>'
+  +'<label style="display:block;font-weight:800;margin-top:12px">Type</label>'
+  +'<select id="fbType214" style="width:100%;padding:11px;border-radius:10px;font:inherit;margin-top:5px;box-sizing:border-box"><option>Bug report</option><option>Idea</option><option>How I\'m doing</option><option>Other</option></select>'
+  +'<label style="display:block;font-weight:800;margin-top:12px">Your message</label>'
+  +'<textarea id="fbMsg214" rows="5" placeholder="Type it like you\'d say it…" style="width:100%;padding:11px;border-radius:10px;font:inherit;margin-top:5px;box-sizing:border-box"></textarea>'
+  +'<div id="fbStatus214"></div>'
+  +'<button class="btn gold" style="margin-top:12px" onclick="sendFeedback214()">📨 Send feedback</button>'
+  +'<button class="btn outline" onclick="closeModal()">Cancel</button>',{quiet:true}) }catch(e){} };
+ window.sendFeedback214=function(){ try{ var t=document.getElementById('fbType214'); var m=document.getElementById('fbMsg214'); var st=document.getElementById('fbStatus214');
+  var msg=(m&&m.value)?m.value.trim():'';
+  if(!msg){ if(st)st.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">Write a little something first — even one line helps.</p>'; return }
+  var fail=function(){ try{ var s2=document.getElementById('fbStatus214'); if(s2)s2.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">📡 Couldn\'t send — looks like you\'re offline. Your words are still in the box above; try again when you\'re back online.</p>' }catch(e){} };
+  if(typeof fetch!=='function'||(typeof navigator!=='undefined'&&navigator.onLine===false)){ fail(); return }
+  var body=new URLSearchParams(); body.append('entry.2083096370',t?t.value:'Other'); body.append('entry.1048300260',msg); body.append('entry.2144211601',curDay214()?('Day '+curDay214()+', Level '+curLvl214()):'');
+  fetch(EP214,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
+   .then(function(){ try{ openSheet('<h2>💬 Thank you!</h2><p>Your feedback is in — it goes straight to the AquaLife feedback sheet. Happy living! 🌊</p><button class="btn gold" onclick="closeModal()">Back to life</button>',{quiet:true}) }catch(e){} })
+   .catch(fail);
+ }catch(e){} };
+
+ bootStats214();
+ setInterval(function(){ try{ openCheck214(); watch214() }catch(e){} },2500);
+ window.__v214={ping:ping214,statsOn:statsOn214,installId:installId214,watch:watch214,version:function(){ return (typeof GAME_VERSION!=='undefined')?GAME_VERSION:0 }};
+ try{ console.log('🌊 AquaLife v'+GAME_VERSION+' — v214: 📊 anonymous stats (install / daily open / days / levels / license / phone / laptop) post quietly to the Stats & Feedback sheet — random install ID outside the save, Settings → Data & Save opt-out (default ON), zero names or save data • 💬 in-game feedback sheet posts type + message + Day/Level progress to the same sheet') }catch(e){}
+})();
+</script>
 </body>
 </html>
