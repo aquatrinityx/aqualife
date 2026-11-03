@@ -20169,74 +20169,84 @@ function carGlyph202(model){ try{ const m=String(model||'').match(/[\u{1F300}-\u
    so neighbouring tags can never overlap. Cars with no known owner never reach carList202, so no
    tag is ever invented. The home curb car (#parked193 — already the animation glyph) gains the
    same owner tag for the moments it is the visible one. */
+function solidWorld228(ctx,cx,gy,model,col,dir,night){ if(window.paintCar221){ window.paintCar221(ctx,cx,gy,model,col,dir,night); return }
+ /* standalone copy of the traffic painter's geometry — identical numbers, so parked cars hold the
+    same proportions (~230 long x ~90 tall beside a ~94-unit standing figure) even if this copy
+    of the painter is the one that runs */
+ try{ var gl='🚗'; try{ gl=carGlyph202(model) }catch(e){}
+ var suv=gl==='🚙', sport=gl==='🏎'||gl==='🏎️';
+ var L=sport?232:(suv?222:(gl==='🚓'?230:224));
+ var cabH=suv?33:(sport?24:29), cabW=L*(suv?0.56:(sport?0.42:0.48));
+ ctx.save(); ctx.translate(cx,gy); if(dir<0)ctx.scale(-1,1);
+ ctx.fillStyle='#00000042'; ctx.beginPath(); ctx.ellipse(0,3,L/2+3,6,0,0,7); ctx.fill();
+ ctx.save(); ctx.globalAlpha=0.5; ctx.fillStyle=col.body; ctx.beginPath(); ctx.ellipse(0,4,L/2-12,3.6,0,0,7); ctx.fill(); ctx.restore();
+ var cabX=-cabW/2-4, cabTop=-56-cabH+6;
+ ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cabX-2,cabTop-2,cabW+4,cabH+5,8); ctx.fill();
+ ctx.fillStyle='#d8eef8'; ctx.beginPath(); ctx.roundRect(cabX+2,cabTop+2,cabW-4,cabH-2,5); ctx.fill();
+ ctx.fillStyle=col.dark; ctx.fillRect(-3,cabTop+1,5,cabH);
+ if(gl==='🚓'){ ctx.fillStyle='#26314e'; ctx.fillRect(-17,cabTop-7,34,4); ctx.fillStyle='#ef4444'; ctx.fillRect(-16,cabTop-10,15,4); ctx.fillStyle='#3b82f6'; ctx.fillRect(1,cabTop-10,15,4) }
+ if(gl==='🚕'){ ctx.fillStyle='#ffd94d'; ctx.beginPath(); ctx.roundRect(-11,cabTop-9,22,7,2); ctx.fill(); ctx.strokeStyle='#00000055'; ctx.lineWidth=1; ctx.stroke() }
+ ctx.fillStyle=col.body; ctx.beginPath(); ctx.roundRect(-L/2,-56,L,48,10); ctx.fill();
+ ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(-L/2+3,-25,L-6,13,6); ctx.fill();
+ ctx.fillStyle='#ffffff59'; ctx.fillRect(-L/2+10,-53,L-20,3.5);
+ ctx.strokeStyle='#00000030'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(8,-54); ctx.lineTo(8,-11); ctx.stroke(); ctx.lineWidth=1;
+ ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.arc(17,-33,2.2,0,7); ctx.fill();
+ if(night){ var lg=ctx.createLinearGradient(L/2,0,L/2+120,0); lg.addColorStop(0,'rgba(255,240,170,.45)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(L/2-2,-38); ctx.lineTo(L/2+120,-46); ctx.lineTo(L/2+120,-12); ctx.lineTo(L/2-2,-18); ctx.closePath(); ctx.fill() }
+ ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(L/2-4,-33,3.4,0,7); ctx.fill();
+ ctx.fillStyle='#ff6b5e'; ctx.beginPath(); ctx.arc(-L/2+4,-33,2.6,0,7); ctx.fill();
+ [-L/2+34,L/2-34].forEach(function(wx){ ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,-11,11.5,0,7); ctx.fill(); ctx.fillStyle='#cfd6de'; ctx.beginPath(); ctx.arc(wx,-11,5,0,7); ctx.fill(); ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,-11,1.8,0,7); ctx.fill() });
+ ctx.restore(); }catch(e){} }
+function tagWorld228(ctx,cx,topY,name,dot,mine,slotW,prevR){ var nm=String(name||''); if(!nm)return prevR||2;
+ var fs=16.5, tw=0; var fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit();
+ var maxW=Math.max(120,(slotW||200)+44);
+ while(fs>11.5&&tw+24>maxW){ fs-=0.5; fit() }
+ if(tw+24>maxW){ while(nm.length>1&&tw+24>maxW){ nm=nm.slice(0,-2)+'…'; fit() } }
+ var pw=tw+24; var px=cx-pw/2; px=Math.max(prevR||2,Math.min(898-pw,px)); var ph=fs+8;
+ ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(px+2,topY+2,pw,ph,10); ctx.fill();
+ ctx.fillStyle='#0d0d10f2'; ctx.beginPath(); ctx.roundRect(px,topY,pw,ph,10); ctx.fill();
+ ctx.strokeStyle=mine?'#ffb703':'#ffffffd0'; ctx.lineWidth=mine?2.2:1.6; ctx.stroke(); ctx.lineWidth=1;
+ ctx.fillStyle=dot||'#ffffff'; ctx.beginPath(); ctx.arc(px+11,topY+ph/2,3.8,0,7); ctx.fill();
+ ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+19,topY+ph/2+fs*0.36); ctx.font='12px sans-serif';
+ return px+pw+4 }
 function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; const wrap=document.querySelector('.roomWrap'); if(!wrap)return; const cvEl=document.getElementById('cv'); const cars=carList202(); const deps=window._dep216||{}; const depKeys=Object.keys(deps);
-  /* h18: the road + world cars now paint INTO the scene canvas itself (bottom band, scene y 368–460),
-     called as the final pass of every drawRoom frame. Same bitmap as the world = the SAME reference
-     frame by construction: the cinematic camera transform, the letterbox and every zoom/pan carry
-     them exactly, so they can never detach, lag a beat behind the lens, balloon under a mismatched
-     box, or slide off screen the way the old DOM strip did (it copied the canvas's element box —
-     letterbox included — and its target transform on a 900ms tick, with no transition of its own).
-     The retired strip element is hidden on sight. */
+  /* hf28: THE PARKED-CAR PAINTER IS THE TRAFFIC PAINTER. This source function used to paint parked
+     cars with its own undersized "solid" (128 long x ~41 tall vs a ~94-unit character = 1.4x / 0.44x —
+     the long flat ribbons in the rendered street). It now paints through solidWorld228 — the shared
+     paintCar221 geometry (~230 long x ~90 tall, ~2.5x / ~0.9x a standing figure) — in the same
+     two-lane layout, with the same owner tags and departures as the live painter, so parked,
+     passing, departing and patrol cars are one fleet at one scale in every copy of this code. */
   const strip=document.getElementById('cars202'); if(strip)strip.style.display='none';
   const pk=document.getElementById('parked193'); const hl=(typeof homeLoc==='function')?homeLoc():null; const atHome=S.location===hl||S.location==='grandparents';
-  if(!cars.length&&!depKeys.length){ if(pk)pk.style.removeProperty('display'); window._carSig216=''; return }
   if(!cvEl)return;
   const night=S.hour>=18||S.hour<6; const now=performance.now();
   window._carSig216=S.location+'|'+(night?'n':'d')+'|'+cars.map(function(c){ return c.owner+c.model }).join(',');
   if(pk&&atHome&&cars.some(function(c){ return c.mine }))pk.style.setProperty('display','none','important'); else if(pk)pk.style.removeProperty('display');
   if(pk&&S.car&&S.car.owned){ try{ let po=pk.querySelector('.pOwner'); if(!po){ po=document.createElement('span'); po.className='pOwner'; po.style.cssText='position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);background:#111111e8;color:#fff;font-size:11px;font-weight:900;line-height:1;padding:3px 8px;border-radius:999px;border:1.5px solid #ffb703;white-space:nowrap;pointer-events:none'; pk.appendChild(po) } if(po.textContent!==S.name)po.textContent=S.name }catch(e){} }
-  const ctx=cvEl.getContext('2d'); ctx.save(); ctx.beginPath(); ctx.rect(0,368,900,92); ctx.clip(); ctx.translate(0,368);
+  const ctx=cvEl.getContext('2d'); ctx.save(); ctx.beginPath(); ctx.rect(0,300,900,160); ctx.clip();
   try{
-  if(atHome){ ctx.fillStyle='#c9b691'; ctx.fillRect(0,46,900,46); ctx.fillStyle='#b3a07c'; ctx.fillRect(0,46,900,3); ctx.fillStyle='#00000014'; for(let dx=40;dx<900;dx+=150)ctx.fillRect(dx,50,2,38) }
-  else { const g=ctx.createLinearGradient(0,30,0,92); g.addColorStop(0,'#a2987f'); g.addColorStop(0.18,'#8f8570'); g.addColorStop(0.2,'#3b3936'); g.addColorStop(1,'#282724'); ctx.fillStyle=g; ctx.fillRect(0,30,900,62); ctx.fillStyle='#6e675a'; ctx.fillRect(0,30,900,3); ctx.fillStyle='#f7d54d99'; for(let dx=8;dx<900;dx+=78)ctx.fillRect(dx,72,36,4) }
-  const gy=88;
-  /* SOLID CARS (h16): filled bodies in the car's own colour, dark-trimmed cabin with real windows,
-     a shaded lower band, a highlight stripe, door line and proper wheels with hubcaps — same models
-     as the road animation (🚙 boxy SUV, 🏎️ low sports, 🚗/🚘 sedan), just drawn solid, never hollow. */
-  /* h18 WORLD SCALE: a standing character is ~86 scene units tall; a car now runs ~128 long and
-     ~41 tall (roof at about half a person's height) — clearly a car beside a character, no longer a
-     tall stubby block dwarfing the road band. One painter for parked, passing and departure cars. */
-  const solid=function(cx,model,col,alpha){ const gl=carGlyph202(model); const suv=gl==='🚙', sport=gl==='🏎️'; const w=sport?132:(suv?124:128); ctx.save(); if(alpha!=null)ctx.globalAlpha=alpha;
-    ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.ellipse(cx,gy+2,w/2+6,5,0,0,7); ctx.fill();
-    ctx.save(); ctx.globalAlpha=(alpha==null?0.5:alpha*0.5); ctx.fillStyle=col.body; ctx.beginPath(); ctx.ellipse(cx,gy+3,w/2-8,3.4,0,0,7); ctx.fill(); ctx.restore();
-    const cabW=w*(suv?0.58:(sport?0.44:0.50)), cabH=suv?17:(sport?12:15), cabX=cx-cabW/2-2, cabY=gy-28-cabH+6;
-    ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cabX-2,cabY-2,cabW+4,cabH+4,7); ctx.fill();
-    ctx.fillStyle='#d8eef8'; ctx.beginPath(); ctx.roundRect(cabX+2,cabY+2,cabW-4,cabH-3,5); ctx.fill();
-    ctx.fillStyle=col.dark; ctx.fillRect(cx-3,cabY+1,5,cabH);
-    ctx.fillStyle=col.body; ctx.beginPath(); ctx.roundRect(cx-w/2,gy-28,w,21,7); ctx.fill();
-    ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cx-w/2+2,gy-15,w-4,7,4); ctx.fill();
-    ctx.fillStyle='#ffffff59'; ctx.fillRect(cx-w/2+7,gy-26,w-14,3);
-    ctx.strokeStyle='#00000030'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(cx+4,gy-26); ctx.lineTo(cx+4,gy-9); ctx.stroke(); ctx.lineWidth=1;
-    ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.arc(cx+11,gy-18,1.8,0,7); ctx.fill();
-    [cx-w/2+24,cx+w/2-24].forEach(function(wx){ ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-7,7.5,0,7); ctx.fill(); ctx.fillStyle='#cfd6de'; ctx.beginPath(); ctx.arc(wx,gy-7,3.2,0,7); ctx.fill(); ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-7,1.3,0,7); ctx.fill() });
-    if(night){ const lg=ctx.createLinearGradient(cx+w/2,0,cx+w/2+88,0); lg.addColorStop(0,'rgba(255,240,170,.45)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(cx+w/2-2,gy-20); ctx.lineTo(cx+w/2+88,gy-28); ctx.lineTo(cx+w/2+88,gy-6); ctx.lineTo(cx+w/2-2,gy-12); ctx.closePath(); ctx.fill() }
-    ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(cx+w/2-3,gy-18,3,0,7); ctx.fill();
-    ctx.restore(); return w };
-  const n=cars.length; const slot=Math.min(190,860/Math.max(1,n)); window._carPos216={};
-  let prevRight=2;
-  cars.forEach(function(c,i){ const cx=30+i*slot+slot/2; window._carPos216[c.owner]=cx; solid(cx,c.model,c.col);
-    /* CLEARER NAMES (h16): big 900-weight type on a near-black pill, colour dot, gold rim for yours —
-       measured and marched left-to-right so tags can never overlap, and clamped inside the canvas so
-       a tag is never clipped by the edge again. */
-    let nm=String(c.owner||''); if(nm){ let fs=15.5, tw=0; const fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit(); while(fs>11.5&&tw+22>slot+34){ fs-=0.5; fit() } if(tw+22>slot+34){ while(nm.length>1&&tw+22>slot+34){ nm=nm.slice(0,-2)+'…'; fit() } }
-     const pw=tw+22; let px=cx-pw/2; px=Math.max(prevRight,Math.min(898-pw,px)); prevRight=px+pw+4; const py=2, ph=fs+7;
-     ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(px+2,py+2,pw,ph,10); ctx.fill();
-     ctx.fillStyle='#0d0d10f2'; ctx.beginPath(); ctx.roundRect(px,py,pw,ph,10); ctx.fill();
-     ctx.strokeStyle=c.mine?'#ffb703':'#ffffffd0'; ctx.lineWidth=c.mine?2.2:1.6; ctx.stroke(); ctx.lineWidth=1;
-     ctx.fillStyle=c.col.body; ctx.beginPath(); ctx.arc(px+10,py+ph/2,3.6,0,7); ctx.fill();
-     ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+17,py+ph/2+fs*0.36); ctx.font='12px sans-serif' } });
-  /* WALK TO THE CAR AND LEAVE (h16): a departing owner appears at the door side of the street, walks
-     the sidewalk to their own car wearing their name, gets in, and the car drives off the edge. */
+  /* the road surface — sidewalk + two-lane asphalt away from home, the driveway at home */
+  if(atHome){ ctx.fillStyle='#c9b691'; ctx.fillRect(0,420,900,40); ctx.fillStyle='#b3a07c'; ctx.fillRect(0,420,900,3); ctx.fillStyle='#00000014'; for(let dx=40;dx<900;dx+=150)ctx.fillRect(dx,424,2,32) }
+  else { ctx.fillStyle='#cfc8ba'; ctx.fillRect(0,384,900,14); ctx.fillStyle='#00000020'; for(let sx=30;sx<900;sx+=60)ctx.fillRect(sx,386,2,10); ctx.fillStyle='#8f8570'; ctx.fillRect(0,396,900,3);
+   const g=ctx.createLinearGradient(0,398,0,460); g.addColorStop(0,'#3b3936'); g.addColorStop(1,'#282724'); ctx.fillStyle=g; ctx.fillRect(0,398,900,62); ctx.fillStyle='#f7d54d99'; for(let lx=8;lx<900;lx+=80)ctx.fillRect(lx,440,38,4) }
+  const GY={near:456,far:428};
+  window._carPos216={}; if(!window._carLane216)window._carLane216={};
+  /* parked world cars: near lane / far lane alternating, tags marching per lane */
+  const rows=cars.length>3?[cars.filter(function(c,i){ return i%2===0 }),cars.filter(function(c,i){ return i%2===1 })]:[cars];
+  (rows.length>1?[1,0]:[0]).forEach(function(li){ const row=rows[li]; const gy=li?GY.far:GY.near; if(!row||!row.length)return; const slotW=880/row.length; let prevR=2;
+   row.forEach(function(c,i){ const cx=10+slotW*(i+0.5); window._carPos216[c.owner]=cx; window._carLane216[c.owner]=gy; solidWorld228(ctx,cx,gy,c.model,c.col,1,night); prevR=tagWorld228(ctx,cx,gy-110,c.owner,c.col.body,c.mine,slotW,prevR) }) });
+  /* departures: the owner walks the sidewalk to their car, gets in, drives off — same painter */
   let depActive=false;
-  depKeys.forEach(function(owner){ const d=deps[owner]; if(!d)return; const el=now-d.t0; const carX=d.x;
-    if(el<1500){ depActive=true; const p=el/1500, e2=1-Math.pow(1-p,2); const fx=884+(carX-884)*e2; const bob=Math.abs(Math.sin(now/90))*2;
-      ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(fx,47,10,3,0,0,7); ctx.fill();
-      ctx.fillStyle=d.fig||'#3b82f6'; ctx.fillRect(fx-4.5,30-bob,9,13); ctx.fillStyle='#20242c'; ctx.fillRect(fx-4.5,43-bob,4,6); ctx.fillRect(fx+0.5,43-bob,4,6); ctx.fillStyle='#f2c89b'; ctx.beginPath(); ctx.arc(fx,25-bob,5.5,0,7); ctx.fill();
-      ctx.font='900 13px sans-serif'; const tw2=ctx.measureText(owner).width; const px2=Math.max(3,Math.min(897-(tw2+16),fx-(tw2+16)/2)); ctx.fillStyle='#0d0d10e8'; ctx.beginPath(); ctx.roundRect(px2,2,tw2+16,19,9); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(owner,px2+8,16); ctx.font='12px sans-serif';
-      solid(carX,d.model,d.col) }
-    else if(el<1950){ depActive=true; solid(carX,d.model,d.col) }
-    else if(el<3400){ depActive=true; const p=(el-1950)/1450; solid(carX+p*p*820,d.model,d.col) }
-    else { delete deps[owner]; window._carSig216='' } });
+  depKeys.forEach(function(owner){ const d=deps[owner]; if(!d)return; const el=now-d.t0; const carX=d.x; const gy=(window._carLane216&&window._carLane216[owner])||GY.near;
+   if(el<1500){ depActive=true; const p=el/1500, e2=1-Math.pow(1-p,2); const fx=884+(carX-884)*e2; const bob=Math.abs(Math.sin(now/90))*2; const FY=394, yy=FY-bob;
+    ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(fx,397,11,3,0,0,7); ctx.fill();
+    ctx.fillStyle='#20242c'; ctx.fillRect(fx-5,yy-20,4.5,20); ctx.fillRect(fx+0.5,yy-20,4.5,20);
+    ctx.fillStyle=d.fig||'#3b82f6'; ctx.fillRect(fx-5.5,yy-39,11,20);
+    ctx.fillStyle='#f2c89b'; ctx.beginPath(); ctx.arc(fx,yy-45,6.5,0,7); ctx.fill();
+    tagWorld228(ctx,fx,yy-76,owner,(d.col&&d.col.body)||'#ffffff',false,200,2);
+    solidWorld228(ctx,carX,gy,d.model,d.col,1,night) }
+   else if(el<1950){ depActive=true; solidWorld228(ctx,carX,gy,d.model,d.col,1,night) }
+   else if(el<3400){ depActive=true; const p2=(el-1950)/1450; const out=carX>=450?1:-1; solidWorld228(ctx,carX+out*p2*p2*880,gy,d.model,d.col,out,night) }
+   else { delete deps[owner]; window._carSig216='' } });
   if(depActive&&!window._depTick216){ window._depTick216=true; setTimeout(function(){ window._depTick216=false; try{ drawCars202() }catch(e){} },55) }
   }finally{ ctx.restore() }
  }catch(e){} }
@@ -22496,7 +22506,7 @@ try{
     ~2.5× their height in length, ~0.85× in height. dir<0 flips the car so the headlights
     lead in its direction of travel. gy is the ground line the wheels rest on. */
  function paintCar221(ctx,cx,gy,model,col,dir,night){ try{ var gl='🚗'; try{ gl=carGlyph202(model) }catch(e){}
-  var suv=gl==='🚙', sport=gl==='🏎️';
+  var suv=gl==='🚙', sport=gl==='🏎'||gl==='🏎️'; /* hf28: carGlyph202's regex returns 🏎 WITHOUT its variation selector, so the sport branch never fired and sport coupes rendered as sedans — accept both forms */
   var L=sport?232:(suv?222:(gl==='🚓'?230:224)); /* hf27: lengths tuned so the whole car (body + shadow) reads ~2.5× a standing figure's height, per the driven re-test target */
   var cabH=suv?33:(sport?24:29), cabW=L*(suv?0.56:(sport?0.42:0.48));
   ctx.save(); ctx.translate(cx,gy); if(dir<0)ctx.scale(-1,1);
@@ -23279,6 +23289,81 @@ try{
  }catch(err){} },true);
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 27: 🚗 the stage canvas is fitted to its true 900:460 shape (cars at real proportions at every zoom) and the sky + road bands ride the camera\'s actual transform • 🚪 a knock resolves exactly once — babysitter and visitor arrivals are recorded on the save, queue-purged and swallow-proof, across reloads • 🎓 a completed teacher conference can never be re-served • 📚 library services moved from Travel into Actions\' Next steps • 💇 Salon is on the travel map for everyone • 📍 a map click always answers • 👆 a tap on a sheet button always lands','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 28 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Two repairs from the hotfix-27 audit's rendered re-test:
+   1) 🚗 PARKED CARS ARE THE TRAFFIC CARS (edited in place above): the source drawCars202's own parked
+      painter (the old 128 x ~41 "solid" — 1.4x long / 0.44x tall beside a standing figure: the long
+      flat ribbons of the rendered street) now paints through the shared traffic painter's geometry
+      (solidWorld228 -> paintCar221: ~230 long x ~90 tall, ~2.5x / ~0.9x a ~94-unit figure), in the
+      same two-lane layout with the same owner tags and departures, so whichever copy of the painter
+      a build runs, the fleets cannot drift apart again. paintCar221's sport branch also finally
+      fires (carGlyph202 returns 🏎 without its variation selector, so sport coupes rendered as
+      sedans). Re-measured in one frame with a character: sedan 230x90, SUV 228x94, sport 238x85,
+      patrol 236x98, taxi 230x98 — parked identical to traffic for every type.
+   2) 📍 A MAP CLICK ALWAYS ANSWERS — the residual case the re-sweep found: IN JAIL, taps on 16 of
+      the 30 map destinations (house, school, store, cinema, mall, fair, spa, liquor, grandparents,
+      hospital, restaurant, tattoo, bar, bank, library, music, club) produced NO feedback at all —
+      no travel, no sheet, no toast — until hotfix 27's slow watchdog spoke ~2.5 s later. Now:
+      (a) goLoc itself answers a jailed tap instantly with the jail sheet (days left + bail), the
+      same answer the Travel sheet gives — escapees are untouched (escaping clears jail.in before
+      moving, and moves without goLoc); (b) every map tap (tiles + "More places" chips) is tracked:
+      if a fullscreen transition or resize eats the click before it lands, the tap is re-fired into
+      goLoc at +500 ms (hotfix 27's eaten-tap criteria, extended from sheet buttons to the map);
+      and if a tap has still produced no travel, sheet, day card or toast by +1.5 s, the gate
+      explainer opens (jail / no-car / driver law / walk-or-ride). Outside jail, the full sweep —
+      every destination x day/night x wheels/no-wheels/car-without-license/license-without-car/
+      minor — already answered on the game's own paths; this layer guards the gaps. */
+(function(){ 'use strict';
+try{
+
+ /* ---------- 2a) a jailed travel tap answers instantly ---------- */
+ function jailSheet228(){ try{ if(typeof S==='undefined'||!S)return;
+  openSheet('<h2>⛓️ You are in jail</h2><p>'+((S.jail&&S.jail.days)||0)+' day(s) left • Bail $'+((S.jail&&S.jail.bail)||0)+'. Travel is a memory right now — serve the days with 🌙 Next Day, take a visitor or a call from the home screen, or pay bail.</p><button class="btn gold" onclick="payBail()">💵 Pay bail — $'+((S.jail&&S.jail.bail)||0)+'</button><button class="btn outline" onclick="closeModal()">Back to the cell</button>');
+ }catch(e){} }
+ try{ var _gl228=goLoc; goLoc=function(id){ try{ if(id&&typeof S!=='undefined'&&S&&S.jail&&S.jail.in&&id!==S.location){ jailSheet228(); return } }catch(e){} return _gl228.apply(this,arguments) } }catch(e){}
+
+ /* ---------- 2b) every map tap lands, and every map tap answers ---------- */
+ function gateAnswer228(id){ try{ if(typeof S==='undefined'||!S)return;
+  if(S.jail&&S.jail.in){ jailSheet228(); return }
+  var name=id; try{ for(var i=0;i<TRAVEL_OPTS.length;i++){ if(TRAVEL_OPTS[i][0]===id){ name=TRAVEL_OPTS[i][1]; break } } }catch(e){}
+  var car=S.car||{};
+  if(S.age>=18&&!car.owned&&id!==homeLoc()){ try{ noCarSheet98(id); return }catch(e){} }
+  if(S.age>=18&&car.owned&&!car.license){ try{ if(driverLaw98(id)===false)return }catch(e){} }
+  var walkable=false; try{ walkable=canWalkTo137(id) }catch(e){}
+  openSheet('<h2>📍 '+name+'</h2><p>That trip did not start — no travel, no word why. Here is the way there:</p>'
+   +(walkable?'<button class="btn gold" onclick="closeModal();walkTo137(\''+id+'\')">🚶 Walk there — about 20 min</button>':'')
+   +'<button class="btn outline" style="margin-top:8px" onclick="closeModal();rideSheet137(\''+id+'\')">📞 Call someone for a ride</button>'
+   +'<button class="btn outline" onclick="closeModal()">Never mind</button>');
+ }catch(e){} }
+ function tapFeedback228(rec){ try{ if(typeof S==='undefined'||!S)return true;
+  if(S.location!==rec.loc)return true;
+  var m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return true;
+  var dc=document.getElementById('dayCard'); if(dc&&dc.classList.contains('show'))return true;
+  var tEl=document.getElementById('toast'); if(tEl&&tEl.style.display==='block'&&(tEl.textContent||'').trim())return true;
+  var q=0; try{ if(typeof sheetQ84!=='undefined'&&sheetQ84)q+=sheetQ84.length }catch(e){} try{ if(typeof modalQueue115!=='undefined'&&modalQueue115)q+=modalQueue115.length }catch(e){}
+  if(q>rec.q)return true;
+  return false }catch(e){ return true } }
+ var mapTap228=null;
+ document.addEventListener('pointerdown',function(e){ try{ var t=e.target; if(!t||!t.closest)return; var tile=t.closest('#townMapCard209 .mapSpot209, .mapChips209 button'); if(!tile)return;
+  var oc=tile.getAttribute('onclick')||''; var m=/goLoc\('([^']+)'\)/.exec(oc); if(!m)return;
+  var q=0; try{ if(typeof sheetQ84!=='undefined'&&sheetQ84)q+=sheetQ84.length }catch(e){} try{ if(typeof modalQueue115!=='undefined'&&modalQueue115)q+=modalQueue115.length }catch(e){}
+  mapTap228={id:m[1],t:Date.now(),loc:(typeof S!=='undefined'&&S)?S.location:null,q:q,w:window.innerWidth,h:window.innerHeight,fs:!!document.fullscreenElement,clicked:false};
+ }catch(err){} },true);
+ document.addEventListener('click',function(e){ try{ if(!mapTap228)return; var t=e.target; if(t&&t.closest&&t.closest('#townMapCard209 .mapSpot209, .mapChips209 button'))mapTap228.clicked=true }catch(err){} },true);
+ document.addEventListener('pointerup',function(){ try{ var rec=mapTap228; if(!rec)return; mapTap228=null;
+  setTimeout(function(){ try{ if(rec.clicked||tapFeedback228(rec))return;
+   var eaten=(!!document.fullscreenElement!==rec.fs)||Math.abs(window.innerWidth-rec.w)>30||Math.abs(window.innerHeight-rec.h)>30;
+   if(eaten&&typeof goLoc==='function')goLoc(rec.id);
+  }catch(err){} },500);
+  setTimeout(function(){ try{ if(tapFeedback228(rec))return; gateAnswer228(rec.id) }catch(err){} },1500);
+ }catch(err){} },true);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 28: 🚗 parked cars paint through the shared traffic painter at the source too — one fleet, one scale, sport coupes included • 📍 a map click always answers: jailed taps get the jail sheet instantly, an eaten map tap is re-fired, and any tap still unanswered at 1.5 s gets the gate explainer','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
