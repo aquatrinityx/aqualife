@@ -2310,6 +2310,24 @@ function drawCrawlFigure(ctx,x,y,look,phase,actIcon,nowMs,expr){
  else if(hat==='beanie'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.arc(x+21,y+4,15,Math.PI,0); ctx.fill(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x+21,y-12,4,0,7); ctx.fill() }
  else if(hat==='party'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.moveTo(x+13,y-4); ctx.lineTo(x+29,y-4); ctx.lineTo(x+21,y-22); ctx.closePath(); ctx.fill(); ctx.fillStyle='#ffb703'; ctx.beginPath(); ctx.arc(x+21,y-23,3.6,0,7); ctx.fill() }
  else if(hat==='crown'){ ctx.fillStyle='#f59e0b'; ctx.fillRect(x+9,y-13,24,9); ctx.beginPath(); ctx.moveTo(x+9,y-13); ctx.lineTo(x+14,y-20); ctx.lineTo(x+19,y-13); ctx.lineTo(x+24,y-20); ctx.lineTo(x+29,y-13); ctx.lineTo(x+33,y-13); ctx.closePath(); ctx.fill() }
+ /* v210: THE OTHER 11 HATS — drawFigure (standing) always drew all 16 hats, but this crawl
+    pass only ever had cap / beanie / party / crown, so on a toddler (creation preview at
+    age 1, the 🎨 style-sheet preview and the scene for any not-yet-walking toddler — all
+    route through drawAged159 → here) picking Cowboy, Sun, Top hat, Headphones, Bandana,
+    Halo, Backwards cap, Beret, Bucket, Flower crown or Hard hat showed NOTHING on the
+    character. The recipes below mirror drawFigure's own, refitted to the crawl head
+    (skin x+6..x+36, y-2..y+26; dome centre x+21). No ids added or removed. */
+ else if(hat==='cowboy'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.ellipse(x+21,y-1,21,4.6,0,0,7); ctx.fill(); ctx.beginPath(); ctx.roundRect(x+11,y-14,20,12,4); ctx.fill(); ctx.fillStyle='#5b3413'; ctx.fillRect(x+11,y-5,20,3.2) }
+ else if(hat==='sun'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.ellipse(x+21,y-1,22,5,0,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(x+21,y-1,10,Math.PI,0); ctx.fill(); ctx.fillStyle='#e2547a'; ctx.fillRect(x+11,y-3.2,20,2.6) }
+ else if(hat==='tophat'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.ellipse(x+21,y-3,20,4.4,0,0,7); ctx.fill(); ctx.fillRect(x+11,y-24,20,22); ctx.fillStyle='#dc2626'; ctx.fillRect(x+11,y-9,20,4) }
+ else if(hat==='phones'){ ctx.strokeStyle=hc; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(x+21,y+9,16,Math.PI*1.05,Math.PI*1.95); ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle=hc; ctx.beginPath(); ctx.roundRect(x+1.5,y+1,7.5,12,2.5); ctx.fill(); ctx.beginPath(); ctx.roundRect(x+33,y+1,7.5,12,2.5); ctx.fill(); ctx.fillStyle='#111827'; ctx.fillRect(x+3.8,y+4.4,3,5.4); ctx.fillRect(x+35.3,y+4.4,3,5.4) }
+ else if(hat==='bandana'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.arc(x+21,y+4,15,Math.PI,0); ctx.fill(); ctx.fillRect(x+6,y+2,30,4); ctx.beginPath(); ctx.moveTo(x+8,y+3); ctx.lineTo(x-1,y+11); ctx.lineTo(x+9,y+12); ctx.closePath(); ctx.fill(); ctx.fillStyle='#ffffff88'; ctx.beginPath(); ctx.arc(x+13,y-4,1.5,0,7); ctx.arc(x+21,y-7,1.5,0,7); ctx.arc(x+28,y-3,1.5,0,7); ctx.fill() }
+ else if(hat==='halo'){ ctx.strokeStyle=hc; ctx.lineWidth=2.6; ctx.beginPath(); ctx.ellipse(x+21,y-19,10,3.4,0,0,7); ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#fef08a88'; ctx.beginPath(); ctx.ellipse(x+21,y-19,10,3.4,0,0,7); ctx.fill() }
+ else if(hat==='capback'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.arc(x+21,y+4,15,Math.PI,0); ctx.fill(); ctx.fillRect(x+6,y+2,30,4); ctx.fillRect(x-2,y+1,18,4.4); ctx.fillStyle='#11182733'; ctx.fillRect(x+18,y-10,6,11) }
+ else if(hat==='beret'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.ellipse(x+17,y-7,15,6.5,-0.12,0,7); ctx.fill(); ctx.fillRect(x+19.5,y-15,2.8,4.4) }
+ else if(hat==='bucket'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.moveTo(x+11,y-13); ctx.lineTo(x+31,y-13); ctx.lineTo(x+34.5,y+2); ctx.lineTo(x+7.5,y+2); ctx.closePath(); ctx.fill(); ctx.beginPath(); ctx.ellipse(x+21,y+2,18.5,3.8,0,0,7); ctx.fill() }
+ else if(hat==='flowercrown'){ const fc6c=['#f472b6','#facc15','#ffffff','#c084fc','#fb923c','#4ade80']; for(let fi=0;fi<7;fi++){ ctx.fillStyle=fc6c[fi%6]; ctx.beginPath(); ctx.arc(x+8.5+fi*4.2,y-5-Math.sin(fi/6*Math.PI)*2.8,2.5,0,7); ctx.fill() } ctx.fillStyle='#f59e0b'; for(let fi=0;fi<7;fi++){ ctx.beginPath(); ctx.arc(x+8.5+fi*4.2,y-5-Math.sin(fi/6*Math.PI)*2.8,1,0,7); ctx.fill() } }
+ else if(hat==='hardhat'){ ctx.fillStyle=hc; ctx.beginPath(); ctx.arc(x+21,y+2,14.5,Math.PI,0); ctx.fill(); ctx.fillRect(x+15,y-15,12,4); ctx.beginPath(); ctx.ellipse(x+21,y+2,19,3.6,0,0,7); ctx.fill() }
 }
 // CREATION PREVIEW — paints the live preview panel from the current creation picks (gender + swatches)
 function drawPreview(){
@@ -21228,6 +21246,31 @@ try{
  window.__v209={ensure209:ensure209,workHubHtml209:workHubHtml209,mapCard209:mapCard209,todayHtml209:todayHtml209,familyPortrait209:familyPortrait209,briefPush209:briefPush209,version:function(){ return GAME_VERSION }};
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 9: ⚡ Actions = 1A big tiles + the 🌤️ Right here, right now card PINNED on top • 💼 Work = 2B hub (title/rung/pay/promotion progress/warnings + Work/Finish/Fast-forward) with a named crew strip • ⚙️ Settings = 3A gold-chevron accordion (Gameplay / Looks & Trails / Sound / Data & Save — trail picker two taps in) • 🗺️ Travel = 4B drawn town map on top (same goLoc gates), list below untouched • 📅 Today = 5C live summary at the top of Me with one suggested move • 📰 Briefing = 6A overnight news stacked into ONE section of the morning card, informational spotlights folded in, decisions untouched • 📸 Portrait = 7C automatic family portraits on birthdays, babies, weddings & parties — drawn, shown, and saved to the Camera album with date + names','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
+})();
+</script>
+<script>
+/* ================= v210: 🎵 MUSIC STARTS ON ENTRY — EVERY TIME (Howard, Nov 3, 2026: "make sure the music starts as soon as you enter the app — it's working off and on") • 🧢 EVERY HAT DRAWS ON A TODDLER (drawCrawlFigure hat pass completed at the source above)
+   WHY IT WAS OFF AND ON: the shipped unlock chain only ever resumed the AudioContext when its state was exactly 'suspended', and only from one capture-phase pointerdown listener. On iOS the context also parks in 'interrupted' (after Siri / calls / lock-screen / webview relaunches) — a state nothing in the game ever resumed, so the graph sat built-but-frozen and the first bars never sounded; whether you got music depended on which state the OS happened to hand back that launch. Two slower traps compounded it: (1) while the app is backgrounded the 240ms scheduler is throttled but the context clock keeps running on some platforms, so on return the scheduler tried to burst-play every missed bar at once; (2) a rotation crossfade (v165/v174) whose fade-back timer got throttled while backgrounded could strand the shared bus at ~0 gain — engine "started", total silence.
+   THE FIX (this layer only ADDS retries & repairs around the shipped engine — LOFI81, startMusic81, the toggle and the rotation are untouched): (a) an unlock that resumes the context in ANY non-running state ('suspended', 'interrupted', anything else) and starts the engine, attempted immediately at load (browsers that allow autoplay-with-engagement start before the first tap; the rest flip live on the first interaction, exactly as policy requires), re-attempted on pointerdown / touchend / click / keydown, and hooked into the two explicit entry taps — the age gate's Enter (ageOk162) and ▶️ Play in browser (enterGame71); (b) a watchdog (800ms, visible pages only) that resumes a parked context, restarts a stopped engine, re-anchors a scheduler that fell behind while backgrounded (missed bars are SKIPPED, never burst-played) and lifts a crossfade-stranded bus back to full volume when no fade is actually running. The 🎵 Music OFF choice (musicOff81) gates every path — off stays off. */
+(function(){ 'use strict';
+ function ac210(){ try{ var ACtx=window.AudioContext||window.webkitAudioContext; if(!ACtx)return null; if(typeof AC==='undefined'||!AC){ try{ AC=new ACtx() }catch(e){ return null } } return AC }catch(e){ return null } }
+ function resume210(ac){ try{ if(ac&&ac.state!=='running'){ var p=ac.resume(); if(p&&p.catch)p.catch(function(){}) } }catch(e){} }
+ function unlock210(){ try{ if(typeof musicOff81==='function'&&musicOff81())return; var ac=ac210(); resume210(ac); if(typeof startMusic81==='function')startMusic81(); resume210(ac210()) }catch(e){} }
+ function fading210(){ try{ return !!(window.__v174rot&&__v174rot.fading()) }catch(e){ return false } }
+ function repair210(){ try{ if(typeof LOFI81==='undefined'||!LOFI81.started)return; var ac=(typeof AC!=='undefined')?AC:null; if(!ac||ac.state!=='running')return;
+   if(LOFI81.nextT&&LOFI81.nextT<ac.currentTime-0.25)LOFI81.nextT=ac.currentTime+0.06;
+   if(!fading210()&&LOFI81.bus){ var g=LOFI81.bus.gain; if(g.value<0.5){ var t=ac.currentTime; try{ g.cancelScheduledValues(t); g.setValueAtTime(Math.max(g.value,0.0001),t); g.linearRampToValueAtTime(1.0,t+0.3) }catch(e){} } }
+ }catch(e){} }
+ unlock210();
+ ['pointerdown','touchend','click','keydown'].forEach(function(ev){ try{ document.addEventListener(ev,unlock210,true) }catch(e){} });
+ document.addEventListener('visibilitychange',function(){ if(!document.hidden){ unlock210(); repair210() } });
+ window.addEventListener('focus',function(){ unlock210(); repair210() });
+ window.addEventListener('pageshow',function(){ unlock210(); repair210() });
+ setInterval(function(){ try{ if(document.hidden)return; if(typeof musicOff81==='function'&&musicOff81())return; var ac=(typeof AC!=='undefined')?AC:null; if(ac&&ac.state!=='running'){ unlock210(); return } if(typeof LOFI81!=='undefined'&&!LOFI81.started){ unlock210(); return } repair210() }catch(e){} },800);
+ try{ var _ageOk210=ageOk162; ageOk162=function(){ var r=_ageOk210.apply(this,arguments); unlock210(); return r } }catch(e){}
+ try{ var _eg210=enterGame71; enterGame71=function(){ var r=_eg210.apply(this,arguments); unlock210(); return r } }catch(e){}
+ window.__v210={unlock:unlock210,repair:repair210,version:function(){ return (typeof GAME_VERSION!=='undefined')?GAME_VERSION:0 }};
+ try{ console.log('🌊 AquaLife v'+GAME_VERSION+' — v210: 🎵 music unlock now resumes the audio context in ANY parked state (incl. iOS interrupted), retries on every entry tap + the age-gate Enter + Play in browser, and a watchdog repairs backgrounding stalls (skipped-beat re-anchor, crossfade-strand volume restore) — Music OFF still rules • 🧢 the toddler crawl figure now draws all 16 hats, not just 4') }catch(e){}
 })();
 </script>
 
