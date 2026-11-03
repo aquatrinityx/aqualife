@@ -18972,5 +18972,160 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v199 hotfix 5 (h5) — 🩹 FIRST TAPS, THE ROOM SWITCHER & TWO FRONT-DOOR FIXES (Howard's walkthrough rulings, Nov 2, 2026). GAME_VERSION stays 199; SAVE_KEY untouched; silent.
+   1) 📂 FOLDER PANELS OPEN ON THE FIRST TAP + NEVER COVER "CHANGE ROOMS": folder taps were being eaten two ways — a re-render landing between pointerdown and click replaced the tapped dock button before its click ever fired (the tap simply vanished), and the same-millisecond rebuild could hand the click to the fresh button and toggle the panel straight back shut. The dock tabs (folders + ⚡ Actions) and the 🚪 Change rooms switch now activate on POINTERDOWN — the press itself is the tap, immune to rebuilds — and the trailing synthetic click for that same control is swallowed once, so nothing double-toggles. And the room switcher can no longer be buried: .tabsRow100 paints/taps above the folder sheet, and while a panel is open a light poll keeps --sheetH51 matched to the sheet's REAL height as its content settles (injected cards, portraits), so the reserved space is always exact and the switcher row is never underneath the panel.
+   2) 📱 THE KID PHONE REGISTERS ON THE TOP BAR: owning a Kid Phone (in your Bag via hasKidPhone162, or given to your child — k.kidPhone162) while you have NO full phone now paints the phone pill as "🧒📱 Kid Phone ✓" instead of "No phone yet". paintTop162/paintTop123 are wrapped so every repaint path (render, the +90 ms deferred pass, battery pass) ends in the kid state; the pill's tap routing is untouched — the shipped noPhoneSheet/openPhone wrappers already open the Kid Phone when one is owned. A real phone (S.hasPhone) paints exactly as before, and with no kid phone owned the "No phone yet" state is byte-for-byte the shipped one.
+   3) ⚡ QUICK LIFE'S START BUTTON IS PINNED: the Quick Life questionnaire sheet (quickSheet136) is a long inner scroll on small screens and its ⚡ Start button sat at the very bottom of it. The Start + 🎲 fully-random buttons now move into a sticky footer pinned to the sheet's bottom edge — reachable before, during and after scrolling, at any screen height; answering questions re-opens the sheet through the same wrapper, so the footer is re-pinned every time. Nothing else about the questionnaire changes.
+   Protected, untouched: per-person mood events with choices on character sheets, and the toddler milestone set. ================= */
+(function(){
+try{
+ var st=document.createElement('style'); st.id='style199h5';
+ st.textContent='.tabsRow100{position:relative;z-index:46}'
+ +'.qlFoot199h5{position:sticky;bottom:-18px;margin:16px -18px -18px;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:2px solid var(--line);z-index:6}'
+ +'.qlFoot199h5 .btn{margin-top:0}'
+ +'.qlFoot199h5 .btn + .btn{margin-top:8px}'
+ +'.sheet.qlSheet199h5 h4{margin-top:10px!important}';
+ document.head.appendChild(st);
+
+ /* ---------- 1a) first-tap activation for the dock + room switcher ---------- */
+ var h5Tap={key:'',until:0};
+ function h5KeyFor(t){
+  if(!t||!t.closest)return null;
+  var rb=t.closest('button.roomSwitch106'); if(rb){ var roc=rb.getAttribute('onclick')||''; if(roc.indexOf('openAreaPick123')>=0)return 'areas'; return 'rooms' }
+  var db=t.closest('#menuDock .dockTab'); if(!db)return null;
+  if(db.classList.contains('actBtn101'))return 'dock:actions101';
+  var oc=db.getAttribute('onclick')||''; var m=oc.match(/dockGo\('([^']+)'\)/);
+  return m?('dock:'+m[1]):null;
+ }
+ document.addEventListener('pointerdown',function(e){
+  try{
+   if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+   if(e.button!==undefined&&e.button!==0)return;
+   var key=h5KeyFor(e.target); if(!key)return;
+   var fire=null;
+   if(key==='rooms'){ if(typeof openRoomPick106!=='function')return; fire=function(){ openRoomPick106() } }
+   else if(key==='areas'){ if(typeof openAreaPick123!=='function')return; fire=function(){ openAreaPick123() } }
+   else if(key==='dock:actions101'){ if(typeof dockGo101!=='function')return; fire=function(){ dockGo101() } }
+   else { if(typeof dockGo!=='function')return; var id=key.slice(5); fire=function(){ dockGo(id) } }
+   h5Tap={key:key,until:Date.now()+900};
+   fire();
+  }catch(err){}
+ },true);
+ document.addEventListener('click',function(e){
+  try{
+   if(!h5Tap.until||Date.now()>h5Tap.until)return;
+   var key=h5KeyFor(e.target);
+   if(key&&key===h5Tap.key){ h5Tap.until=0; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation() }
+  }catch(err){}
+ },true);
+
+ /* ---------- 1b) keep the reserved space matched to the open sheet's real height ---------- */
+ setInterval(function(){
+  try{
+   if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+   if(typeof dockOpen==='undefined'||!dockOpen)return;
+   var sh=document.getElementById('dockSheet'); if(!sh)return;
+   var h=sh.offsetHeight; if(!h)return;
+   var cur=parseInt((document.documentElement.style.getPropertyValue('--sheetH51')||'0'),10)||0;
+   if(Math.abs(cur-h)>1)document.documentElement.style.setProperty('--sheetH51',h+'px');
+  }catch(err){}
+ },300);
+
+ /* ---------- 2) the Kid Phone shows on the phone pill ---------- */
+ function kidOwned199h5(){
+  try{
+   if(!S||S.hasPhone)return false;
+   if(typeof hasKidPhone162==='function'&&hasKidPhone162())return true;
+   return (S.kids||[]).some(function(k){ return !!(k&&k.kidPhone162) });
+  }catch(e){ return false }
+ }
+ function paintKidPill199h5(){
+  try{
+   if(!kidOwned199h5())return;
+   var pb=document.getElementById('phoneBtn'); if(!pb)return;
+   var want='🧒📱 Kid Phone ✓';
+   if(pb.getAttribute('data-t162')==='kid199h5')return;
+   var batt=pb.querySelector('.battPct133e'); if(batt)batt.remove();
+   pb.textContent=''; pb.appendChild(document.createTextNode(want));
+   pb.setAttribute('data-t162','kid199h5');
+   pb.setAttribute('aria-label','Kid Phone — you have a Kid Phone, no full phone yet. Tap to open it.');
+  }catch(e){}
+ }
+ try{
+  var _pt199h5=paintTop162;
+  var wrappedPt199h5=function(){ var r=_pt199h5.apply(this,arguments); paintKidPill199h5(); return r };
+  paintTop162=wrappedPt199h5; paintTop123=wrappedPt199h5;
+ }catch(e){}
+ try{ var _r199h5=render; render=function(){ var r=_r199h5.apply(this,arguments); try{ paintKidPill199h5() }catch(e){} return r } }catch(e){}
+
+ /* ---------- 3) Quick Life: pin the start actions to the sheet's bottom ---------- */
+ function pinQuick199h5(){
+  try{
+   var sheet=document.getElementById('sheet'); if(!sheet)return;
+   var startBtn=null, skipBtn=null;
+   Array.prototype.slice.call(sheet.querySelectorAll('button')).forEach(function(b){
+    var oc=b.getAttribute('onclick')||'';
+    if(oc.indexOf('quickStart136(')>=0)startBtn=b;
+    else if(oc.indexOf('quickRandom136(')>=0)skipBtn=b;
+   });
+   if(!startBtn)return;
+   sheet.classList.add('qlSheet199h5');
+   var foot=document.createElement('div'); foot.className='qlFoot199h5';
+   foot.appendChild(startBtn); if(skipBtn)foot.appendChild(skipBtn);
+   sheet.appendChild(foot);
+  }catch(e){}
+ }
+ try{ var _qs199h5=quickSheet136; quickSheet136=function(){ var r=_qs199h5.apply(this,arguments); pinQuick199h5(); return r } }catch(e){}
+ try{ var _os199h5=openSheet; openSheet=function(){ var r=_os199h5.apply(this,arguments); try{ var sh=document.getElementById('sheet'); if(sh&&!sh.querySelector('button[onclick*="quickStart136"]'))sh.classList.remove('qlSheet199h5') }catch(e){} return r } }catch(e){}
+
+ window.__v199h5={kidOwned:kidOwned199h5,paintKidPill:paintKidPill199h5,pinQuick:pinQuick199h5,version:function(){ return GAME_VERSION }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix 5: 📂 folder panels + the 🚪 Change rooms switch fire on the press itself — first tap always lands, no double-toggle — and an open panel can never cover the Change rooms row (switcher raised above the sheet + the reserved space tracks the sheet\u2019s real height) • 📱 owning a Kid Phone now reads "🧒📱 Kid Phone ✓" on the top bar instead of "No phone yet" (a real phone still wins, no kid phone still reads No phone yet) • ⚡ the Quick Life sheet pins ⚡ Start + 🎲 fully-random to its bottom edge — reachable at any scroll, any screen');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v199 hotfix 5b — 🏷️ ABOVE-NAME TAGS: A BIGGER STATUS LINE + DE-COLLISION (Howard's rulings, Nov 2, 2026). GAME_VERSION stays 199; SAVE_KEY untouched; silent.
+   4) 🔠 THE STATUS LINE GROWS +2px: every above-name STATUS line — the 🌈 relationship label (relLabel193) and the dynamic statuses (🍺 Buzzed → 🥴 Tipsy → 🤪 Wasted · 🌿 Hazy…, statusOf198) — flows through the single painter rainTag193. It now renders +2px larger (on top of the shipped v197 step: 12.5 → 14.5 at the main call sites, kids 11.5 → 13.5); the pill is measured from the same fs, so box, wave and wording scale together. NAMES DO NOT CHANGE: the name itself is the white-on-dark pill painted inside drawNPCSprite at its shipped 14px — untouched.
+   5) 🧩 TAG DE-COLLISION: in crowded scenes (a full classroom, a club floor) the two-line tags used to stack on top of each other unreadably. Now every frame's drawn characters are registered (every drawNPCSprite call, plus the player and the at-home kids, whose label spots mirror the shipped kid pass); at the next frame's drawRoom the tag boxes (measured name + label + status widths, real stacked heights) are tested pairwise, nearest-to-the-player first: a character whose tag box would overlap an already-kept nearer character's tag is faded to NAME-ONLY for that frame — its rainbow status line is simply not painted (the rainTag193 wrapper drops calls landing on a faded character's label baselines), while its name pill — painted by the sprite itself — stays. The characters nearest the player always keep full name + status. One frame of lag, invisible in motion; as people spread out, full tags return on their own.
+   6) 🚫 NO CHARACTER TAP INTERACTION IS ADDED — tapping or holding a character stays inert, per Howard's standing law; this block adds no pointer/click handlers on characters at all. ================= */
+(function(){
+try{
+ var TAGREG={list:[],fade:[]};
+ var mctx=document.createElement('canvas').getContext('2d');
+ function tagBox199h5b(e){
+  var nameW=0, relW=0, stW=0, hasRel=false, hasSt=false;
+  try{ mctx.font='bold 20px sans-serif'; nameW=mctx.measureText(e.name||'').width }catch(_){}
+  if(e.kid){ return {x:e.x,y:e.y,hw:Math.max(nameW+24,76)/2,top:e.y-88,bottom:e.y-26,baselines:[e.y-68]} }
+  try{ var lb=(typeof relLabel193==='function')?relLabel193(e.name):null; if(lb){ hasRel=true; mctx.font='900 15px sans-serif'; relW=mctx.measureText(lb).width } }catch(_){}
+  try{ var st=(typeof statusOf198==='function')?statusOf198(e.name):null; if(st&&st.txt){ hasSt=true; mctx.font='900 15px sans-serif'; stW=mctx.measureText(st.txt).width } }catch(_){}
+  return {x:e.x,y:e.y,hw:Math.max(nameW+24,relW+12,stW+12)/2,top:e.y-(hasSt?118:(hasRel?96:76)),bottom:e.y-40,baselines:(hasSt||hasRel)?[e.y-78,e.y-100]:[e.y-78]};
+ }
+ function computeFade199h5b(){
+  var px=(typeof charX!=='undefined')?charX:450, py=(typeof charY!=='undefined')?charY:260;
+  var boxes=TAGREG.list.map(tagBox199h5b);
+  boxes.forEach(function(b){ var dx=b.x-px, dy=b.y-py; b.d=dx*dx+dy*dy });
+  boxes.sort(function(a,b){ return a.d-b.d });
+  var kept=[], fade=[];
+  boxes.forEach(function(b){ var hit=false; for(var i=0;i<kept.length;i++){ var k=kept[i]; if(Math.abs(b.x-k.x)<(b.hw+k.hw)&&b.top<k.bottom&&k.top<b.bottom){ hit=true; break } } if(hit)fade.push(b); else kept.push(b) });
+  TAGREG.fade=fade;
+ }
+ try{ var _dnH5b=drawNPCSprite; drawNPCSprite=function(ctx,n,now,stepping){ try{ if(n&&n.name)TAGREG.list.push({name:n.name,x:n.x,y:n.y}) }catch(e){} return _dnH5b(ctx,n,now,stepping) } }catch(e){}
+ try{ var _drH5b=drawRoom; drawRoom=function(){
+   try{ computeFade199h5b() }catch(e){}
+   TAGREG.list=[];
+   try{ if(typeof S!=='undefined'&&S&&typeof charX!=='undefined')TAGREG.list.push({name:S.name,x:charX,y:charY}) }catch(e){}
+   try{ if(typeof S!=='undefined'&&S&&S.kids&&S.kids.length&&typeof homeLoc==='function'&&S.location===homeLoc()){ var nowMs=performance.now(); S.kids.forEach(function(k,i){ var aslp=(typeof kidAsleep136==='function')?kidAsleep136(k):false; var preWalk=k.age<2&&!k.canWalk; var inCrib=preWalk&&!(k.cribOutUntil&&nowMs<k.cribOutUntil); var kx,ky; if(aslp||inCrib){ kx=688+(i%2)*52; ky=302 } else { kx=180+i*52; ky=368 } TAGREG.list.push({name:k.name,x:kx,y:ky,kid:true}) }) } }catch(e){}
+   return _drH5b.apply(null,arguments);
+ } }catch(e){}
+ try{ var _rtH5b=rainTag193; rainTag193=function(ctx,cx,baseY,text,now,fs){
+   try{ var F=TAGREG.fade; for(var i=0;i<F.length;i++){ var b=F[i]; if(Math.abs(cx-b.x)<32){ for(var j=0;j<b.baselines.length;j++){ if(Math.abs(baseY-b.baselines[j])<18)return } } } }catch(e){}
+   return _rtH5b(ctx,cx,baseY,text,now,(fs||10.5)+2);
+ } }catch(e){}
+ window.__v199h5b={fade:function(){ return TAGREG.fade },registry:function(){ return TAGREG.list },version:function(){ return GAME_VERSION }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix 5b: 🏷️ the above-name STATUS line (relationship label + dynamic statuses) renders +2px — names stay exactly their shipped size • 🧩 crowded-scene tag de-collision: background characters fade to NAME-ONLY when their tag would overlap a nearer character\u2019s — the player\u2019s nearest keep full name + status, and tags never stack unreadably • 🚫 no tap/hold interaction on characters was added — tapping a character still does nothing');
+}catch(e){}
+})();
+</script>
 </body>
 </html>
