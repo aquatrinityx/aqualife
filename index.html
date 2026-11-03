@@ -8570,13 +8570,16 @@ goLoc=function(id){ if(!S||driving119||id===S.location||(S.jail&&S.jail.in))retu
  setTimeout(function(){ driving119=false; try{ closeModal() }catch(e){} const from=S.location; _goLoc119(id); try{ if(S.location===id&&from!==id)menuDown119() }catch(e){} },2350) };
 /* ---------- 💤 SLEEPING IS VISIBLE + 🚗 EQUIPPED VEHICLES RIDE ALONGSIDE ---------- */
 const _dr119=drawRoom;
-drawRoom=function(){ _dr119(); try{ if(!S||!inGame)return; const cv=document.getElementById('cv'); if(!cv)return; const ctx=cv.getContext('2d'); ctx.save(); ctx.textAlign='center';
+drawRoom=function(){ _dr119(); if(!S||!inGame)return; const cv=document.getElementById('cv'); if(!cv)return; const ctx=cv.getContext('2d'); ctx.save(); ctx.textAlign='center';
+ /* hf29: the restore used to sit inside the same try as the loop — one throwing person record skipped it and the leaked textAlign='center' stayed on the shared room canvas for good, shifting every left-anchored name tag in the game half a name-width out of its pill. The restore is now unconditional. */
+ try{
  const folks=[]; if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ folks.push(n) }); if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ folks.push(p) });
  const atHome=S.location===(typeof homeLoc==='function'?homeLoc():null);
  folks.forEach(function(n){ if(n.state!=='in')return; if(typeof npcs!=='undefined'&&npcs&&npcs.indexOf(n)>=0&&typeof npcHere86==='function'&&!npcHere86(n))return;
   if(asleep119(n.name)){ ctx.font='17px sans-serif'; ctx.fillText('💤',n.x+24,n.y-58); ctx.font='bold 10px sans-serif'; ctx.fillStyle='#93c5fd'; ctx.fillText('asleep',n.x+24,n.y-43) }
   else if(!atHome){ const veh=vehOf119(n.name); if(veh.equipped){ ctx.font='15px sans-serif'; ctx.fillText(veh.equipped.split(' ')[0],n.x-26,n.y-52) } } });
- ctx.restore() }catch(e){} };
+ }catch(e){}
+ ctx.restore() };
 /* ---------- 📄 RÉSUMÉ — the shipped sheet, extended with age, schedule, sleep & vehicles ---------- */
 const _res119=openNpcResume54;
 openNpcResume54=function(name){ _res119(name); try{ if(!S||!name)return; const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.res119'))return;
@@ -19819,8 +19822,10 @@ try{ for(let i=PHONE_APPS.length-1;i>=0;i--){ if(['snake','blocks','chomp','memo
  ['snake','blocks','chomp','memory','flap'].forEach(function(id){ try{ delete PHONE_LAUNCH[id] }catch(e){} }) }catch(e){}
 function g200(){ const V=ensure200(); if(!V)return null; return V.g }
 /* ---------- PocketPal REDO: many pals, they grow, they need feeding, they notify ---------- */
-function palState200(){ const G=g200(); if(!G)return null; if(!G.pal)G.pal={pals:[{name:'Pip',sp:'🐣',hun:70,day:0,stage:0}],lastDay:S.day}; return G.pal }
-function phoneTama(){ if(!S)return; const P=palState200(); if(!P)return; let h='<div style="text-align:center"><div style="font-size:15px;opacity:.9">🥚 <b>PocketPal</b> — they live here now. They grow, they get hungry, and they WILL let you know.</div></div>';
+function palState200(create){ const G=g200(); if(!G)return null; if(!G.pal){ if(!create)return null; G.pal={pals:[{name:'Pip',sp:'🐣',hun:70,day:0,stage:0}],lastDay:S.day} } return G.pal }
+/* hf29: a PocketPal only EXISTS once the player has a phone and opens the app — readers and the day tick must never conjure one into being for a phoneless life (a 3-year-old with no phone was being told Pip was starving). palLive200 is the only door readers use: no phone, or no pal ever adopted in the app, means no pal — full stop. */
+function palLive200(){ try{ if(!S||!S.hasPhone)return null; const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; return (P&&P.pals&&P.pals.length)?P:null }catch(e){ return null } }
+function phoneTama(){ if(!S)return; const P=palState200(true); if(!P)return; let h='<div style="text-align:center"><div style="font-size:15px;opacity:.9">🥚 <b>PocketPal</b> — they live here now. They grow, they get hungry, and they WILL let you know.</div></div>';
  h+=P.pals.map(function(p,i){ const stage=['🥚 Egg','🐣 Hatchling','🐥 Young','🐓 Grown','🦚 Magnificent'][Math.min(4,p.stage||0)]; return '<div class="kv" style="display:block;margin-top:9px"><b style="font-size:19px">'+p.sp+'</b> <b>'+p.name+'</b> — '+stage+'<br><span class="small">Fullness: '+Math.round(p.hun)+'%\u2003·\u2003Day '+(p.day||0)+' with you</span><br><button class="btn gold" style="width:auto;margin:6px 6px 0 0;padding:7px 13px" onclick="palFeed200('+i+')">🍽️ Feed — $2</button><button class="btn" style="width:auto;margin:6px 0 0;padding:7px 13px;background:#334155;color:#fff" onclick="palPlay200('+i+')">🎾 Play</button></div>' }).join('');
  if(P.pals.length<3)h+='<button class="btn outline" style="color:#fff;border-color:#ffffff88;margin-top:10px" onclick="palAdopt200()">🥚 Adopt another pal — $15</button>';
  h+='<p style="font-size:12px;opacity:.8;margin-top:10px">Pals lose fullness every day. A hungry pal pings you. A fed, played-with pal grows a stage every few days — all the way to Magnificent.</p>';
@@ -19828,7 +19833,7 @@ function phoneTama(){ if(!S)return; const P=palState200(); if(!P)return; let h='
 function palFeed200(i){ const P=palState200(); const p=P&&P.pals[i]; if(!p)return; if((S.money||0)<2){ toast('🍽️ Need $2 for pal food'); return } money(-2,'🥚 PocketPal food'); p.hun=Math.min(100,p.hun+35); log('🥚 '+p.name+' ate happily — fullness '+Math.round(p.hun)+'%.'); save(); phoneTama() }
 function palPlay200(i){ const P=palState200(); const p=P&&P.pals[i]; if(!p)return; p.hun=Math.max(0,p.hun-6); adj('fun',5); log('🎾 Played with '+p.name+' — your real Fun went up too. That is the deal with pals.'); save(); phoneTama() }
 function palAdopt200(){ const P=palState200(); if(!P||P.pals.length>=3)return; if((S.money||0)<15){ toast('🥚 Adoption is $15'); return } money(-15,'🥚 PocketPal adoption'); const opts=[['Momo','🦉'],['Biscuit','🐹'],['Noodle','🦎'],['Puddles','🐸'],['Ziggy','🦜']]; const o=opts[Math.floor(Math.random()*opts.length)]; P.pals.push({name:o[0],sp:o[1],hun:60,day:0,stage:1}); log('🥚 A new pal moved in: '+o[0]+' '+o[1]+'. The pocket is getting crowded in the best way.'); save(); phoneTama() }
-function palTick200(){ try{ const P=palState200(); if(!P||P.lastDay===S.day)return; P.lastDay=S.day; P.pals.forEach(function(p){ p.day=(p.day||0)+1; p.hun=Math.max(0,p.hun-28); if(p.hun<25)log('🥚📣 POCKETPAL — '+p.name+' is HUNGRY ('+Math.round(p.hun)+'% full). Feed them from the phone before it becomes a whole thing.'); if(p.hun>=55&&p.day>=3&&(p.stage||0)<4&&p.day%3===0){ p.stage=(p.stage||0)+1; log('🥚✨ '+p.name+' GREW — stage '+(p.stage+1)+' of 5. Care compounds.') } }); save() }catch(e){} }
+function palTick200(){ try{ const P=palLive200(); if(!P||P.lastDay===S.day)return; P.lastDay=S.day; P.pals.forEach(function(p){ p.day=(p.day||0)+1; p.hun=Math.max(0,p.hun-28); if(p.hun<25)log('🥚📣 POCKETPAL — '+p.name+' is HUNGRY ('+Math.round(p.hun)+'% full). Feed them from the phone before it becomes a whole thing.'); if(p.hun>=55&&p.day>=3&&(p.stage||0)<4&&p.day%3===0){ p.stage=(p.stage||0)+1; log('🥚✨ '+p.name+' GREW — stage '+(p.stage+1)+' of 5. Care compounds.') } }); save() }catch(e){} }
 /* ---------- the new suite: one honest little economy each ---------- */
 function appHead200(icon,name,sub){ return '<div style="text-align:center"><div style="font-size:38px">'+icon+'</div><h3 style="margin:2px">'+name+'</h3><p style="font-size:12.5px;opacity:.9">'+sub+'</p></div>' }
 function creatorSim200(){ const G=g200(); if(!G)return; if(!G.creator)G.creator={subs:0,posts:0,earned:0}; const C=G.creator;
@@ -20758,7 +20763,7 @@ try{
   if(id==='social')return (typeof dmUnread==='function')?dmUnread():0;
   if(id==='jobs')return (S.jobApps||[]).filter(function(a){ return a&&a.status==='offer' }).length;
   if(id==='bank'){ try{ ensure108() }catch(e){} return ((S.bank63&&S.bank63.checks108)||[]).length }
-  if(id==='tama'){ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; if(P&&P.pals)return P.pals.filter(function(p){ return (p.hun||0)<25 }).length; return 0 }
+  if(id==='tama'){ const P=(typeof palLive200==='function')?palLive200():null; if(P&&P.pals)return P.pals.filter(function(p){ return (p.hun||0)<25 }).length; return 0 }
   if(id==='shelter'){ const G=(typeof g200==='function')?g200():null; return (G&&G.shelter&&G.shelter.foster&&(G.shelter.days||0)>=5)?1:0 }
   if(id==='windowsill'){ const G=(typeof g200==='function')?g200():null; const W=G&&G.garden; return (W&&W.pots&&W.pots.some(function(p){ return p&&p.grow>=100 }))?1:0 }
  }catch(e){} return 0 }
@@ -21236,7 +21241,7 @@ try{
   else if(lowK&&lowV<35)sug={t:NEEDL[lowK][0]+' '+NEEDL[lowK][1]+' is down to '+Math.round(lowV)+'% — that is the fire to put out first',k:'act',b:'⚡ Open Actions'};
   else if(mailN>0)sug={t:'📬 '+mailN+' piece'+(mailN===1?'':'s')+' of mail waiting at home',k:'mail',b:'📬 Open mail'};
   else if(unread>0)sug={t:'💬 '+unread+' unread message'+(unread===1?'':'s')+' on your phone',k:'phone',b:'📱 Open phone'};
-  else { try{ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; const hungry=P&&P.pals&&P.pals.find(function(p){ return (p.hun||0)<25 }); if(hungry)sug={t:'🐾 '+hungry.name+' is hungry in PocketPal ('+Math.round(hungry.hun||0)+'% fed)',k:'phone',b:'📱 Open phone'} }catch(e){} }
+  else { try{ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; const hungry=(S.hasPhone&&P&&P.pals)?P.pals.find(function(p){ return (p.hun||0)<25 }):null; if(hungry)sug={t:'🐾 '+hungry.name+' is hungry in PocketPal ('+Math.round(hungry.hun||0)+'% fed)',k:'phone',b:'📱 Open phone'} }catch(e){} }
   if(!sug&&S.jobInfo){ try{ if(typeof isWorkDay57==='function'&&isWorkDay57(S.jobInfo)&&!(S.sched57&&S.sched57.doneDay===S.day))sug={t:'💼 You have a '+S.jobInfo.title+' shift today — it pays $'+S.jobInfo.pay, k:'work', b:'💼 Open Work'} }catch(e){} }
   if(!sug)sug={t:'🌤️ Nothing is on fire — needs are fed, mail is quiet. A good day to chase something fun.',k:'act',b:'⚡ Open Actions'};
   return '<div class="card today209" id="todayCard209" style="border:2px solid var(--accent2)"><h3>📅 Today — Day '+S.day+' · 🕐 '+esc209(typeof clockStr==='function'?clockStr():'')+'</h3>'
@@ -21249,7 +21254,7 @@ try{
 
  /* ================= 6) BRIEFING = 6A ONE STACKED CARD ================= */
  function briefSnap209(){ if(!S)return null; const V=(typeof ensure200==='function')?ensure200():null; let palHun=null;
-  try{ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; if(P&&P.pals&&P.pals.length)palHun=Math.min.apply(null,P.pals.map(function(p){ return p.hun||0 })) }catch(e){}
+  try{ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; if(S&&S.hasPhone&&P&&P.pals&&P.pals.length)palHun=Math.min.apply(null,P.pals.map(function(p){ return p.hun||0 })) }catch(e){}
   return {mail:(V&&V.mail)?V.mail.length:0, debt:(V&&V.billDebt)||0, bond:S.bond||0, palHun:palHun, post:(S.posts&&S.posts[0])?(S.posts[0].text||''):''} }
  function briefPush209(icon,text,jump){ try{ const V=ensure209(); if(!V)return; if(V.brief.some(function(l){ return l.text===text }))return; V.brief.push({icon:icon,text:text,jump:jump||''}); if(V.brief.length>8)V.brief.shift() }catch(e){} }
  function briefAssemble209(){ try{ if(!S)return; const V=ensure209(); if(!V)return; const now=briefSnap209(); const old=V.snap;
@@ -21470,9 +21475,10 @@ try{
    out.push({icon:'🧾',text:debt?('Bills — $'+debt+' of household debt is waiting. Settle it from your mail before it grows.'):(rentLine?('Bills — '+rentLine):'Bills — none due.'),jump:debt?'mail':''}) }catch(e){ out.push({icon:'🧾',text:'Bills — none due.',jump:''}) }
   try{ const posts=S.posts||[]; let head=''; for(let i=0;i<posts.length;i++){ if(/NEWS/.test(posts[i].text||'')){ head=String(posts[i].text).replace(/^📰 NEWS: /,'').slice(0,120); break } }
    out.push({icon:'🗞️',text:head?('Headline — '+head):'Headlines — a quiet night in town.',jump:head?'phone':''}) }catch(e){ out.push({icon:'🗞️',text:'Headlines — a quiet night in town.',jump:''}) }
-  try{ let palTxt=''; const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; if(P&&P.pals&&P.pals.length){ let hp=P.pals[0]; P.pals.forEach(function(p){ if((p.hun||0)<(hp.hun||0))hp=p }); palTxt='PocketPal — '+hp.name+' is at '+Math.round(hp.hun||0)+'% fed'+((hp.hun||0)<40?' — hungry, feed it':'')+'.' }
+  try{ let palTxt='',palJump=''; const P=(typeof palLive200==='function')?palLive200():null; if(P){ let hp=P.pals[0]; P.pals.forEach(function(p){ if((p.hun||0)<(hp.hun||0))hp=p }); palTxt='PocketPal — '+hp.name+' is at '+Math.round(hp.hun||0)+'% fed'+((hp.hun||0)<40?' — hungry, feed it':'')+'.'; palJump='phone' }
    else if(S.pets&&S.pets.length)palTxt='Pets — '+S.pets.map(function(p){ return p.name }).join(', ')+' '+(S.pets.length===1?'is':'are')+' home and fed.';
-   out.push({icon:'🐾',text:palTxt||'PocketPal — no pal yet, nobody to feed.',jump:palTxt?'phone':''}) }catch(e){ out.push({icon:'🐾',text:'PocketPal — no pal yet, nobody to feed.',jump:''}) }
+   else if(S.hasPhone)palTxt='PocketPal — no pal yet, nobody to feed.';
+   out.push({icon:'🐾',text:palTxt||'Pets — none at home, nobody to feed.',jump:palJump}) }catch(e){ out.push({icon:'🐾',text:'Pets — none at home, nobody to feed.',jump:''}) }
   try{ const prev=V?V.prevBond:null; const b=S.bond||0; let t='Relationships — no change overnight.'; if(prev!=null&&b!==prev)t='Relationships — family bond '+(b>prev?'warmed':'cooled')+' overnight, now at '+b+'%.'; if(V)V.prevBond=b;
    out.push({icon:'❤️',text:t,jump:''}) }catch(e){ out.push({icon:'❤️',text:'Relationships — no change overnight.',jump:''}) }
   return out }
@@ -23364,6 +23370,45 @@ try{
  }catch(err){} },true);
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 28: 🚗 parked cars paint through the shared traffic painter at the source too — one fleet, one scale, sport coupes included • 📍 a map click always answers: jailed taps get the jail sheet instantly, an eaten map tap is re-fired, and any tap still unanswered at 1.5 s gets the gate explainer','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 29 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Two fixes from Howard's screenshots (Nov 3, 2026):
+   1) 🏷️ NAMES FALLING OFF THEIR BLACK PILLS: every name/label painter in the game — the player pill,
+      NPC pills, housemate & kid tags, pet tags, the 🌈 relationship labels, car owner tags, speech
+      bubbles — measures its pill for LEFT-anchored text but never sets the canvas alignment itself.
+      The room canvas is shared by every painter in every layer, so the moment any painter leaves
+      textAlign='center' behind (the v119 overlay above now restores unconditionally — it used to
+      skip its restore when a person record threw), EVERY tag in the game shifts half a name-width
+      left: text hanging off the pill's edge, the pill's right half empty ("…erxes Marsh", "Quentin"
+      spilling out of his bubble). Fix at the cause, in two parts: (a) each frame of drawRoom now
+      starts AND ends with the room canvas (and its offscreen background twin) reset to the alignment
+      the tag family is built on, so no leak from any layer can survive into a frame or out of one;
+      (b) the tag painters that can be wrapped — drawNPCSprite, rainTag193, drawSpeechBubble and
+      drawCars202 — pin the alignment for the duration of their own call, so even a leak that happens
+      mid-frame cannot reach them.
+   2) 🥚 THE PHANTOM POCKETPAL (source edits in the v200 pal block + the two briefing builders):
+      palState200 used to CREATE Pip the first time anything so much as looked at it — the daily tick
+      included — so a 3-year-old with no phone and no app had a pal starving to 0% and the morning
+      briefing reported it as fact. Now the pal is only created when the player opens PocketPal on a
+      phone they own (palState200(true) in phoneTama), the day tick runs through palLive200 (no phone
+      or no adopted pal = no tick, no hunger logs), and every reader — the morning briefing, the
+      overnight brief snapshot, the Today suggestion and the app attention badge — reads through the
+      same gate. No phone, no pal, no line: the briefing's 🐾 slot falls back to real pets, or to
+      "Pets — none at home" for a phoneless life. ================= */
+(function(){
+try{
+ function pinAlign(ctx){ try{ ctx.textAlign='left'; ctx.textBaseline='alphabetic' }catch(e){} }
+ function roomCtxs(){ var out=[]; try{ var cv=document.getElementById('cv'); if(cv&&cv.getContext)out.push(cv.getContext('2d')) }catch(e){} try{ if(typeof drawRoom==='function'&&drawRoom._bg&&drawRoom._bg.getContext)out.push(drawRoom._bg.getContext('2d')) }catch(e){} return out }
+ try{ if(typeof drawRoom==='function'){ var _dr229=drawRoom; drawRoom=function(){ roomCtxs().forEach(pinAlign); try{ return _dr229.apply(null,arguments) } finally { roomCtxs().forEach(pinAlign) } } } }catch(e){}
+ try{ if(typeof drawNPCSprite==='function'){ var _dn229=drawNPCSprite; drawNPCSprite=function(ctx,n,now,stepping){ if(!ctx||!ctx.save)return _dn229(ctx,n,now,stepping); ctx.save(); pinAlign(ctx); try{ return _dn229(ctx,n,now,stepping) } finally { try{ ctx.restore() }catch(e){} } } } }catch(e){}
+ try{ if(typeof rainTag193==='function'){ var _rt229=rainTag193; rainTag193=function(ctx,cx,baseY,text,now,fs){ if(!ctx||!ctx.save)return _rt229(ctx,cx,baseY,text,now,fs); ctx.save(); pinAlign(ctx); try{ return _rt229(ctx,cx,baseY,text,now,fs) } finally { try{ ctx.restore() }catch(e){} } } } }catch(e){}
+ try{ if(typeof drawSpeechBubble==='function'){ var _db229=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ if(!ctx||!ctx.save)return _db229(ctx,cx,bottomY,text); ctx.save(); pinAlign(ctx); try{ return _db229(ctx,cx,bottomY,text) } finally { try{ ctx.restore() }catch(e){} } } } }catch(e){}
+ try{ if(typeof drawCars202==='function'){ var _dc229=drawCars202; drawCars202=function(){ roomCtxs().forEach(pinAlign); try{ return _dc229.apply(null,arguments) } finally { roomCtxs().forEach(pinAlign) } } } }catch(e){}
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 29: 🏷️ name tags can no longer fall out of their pills — the room canvas alignment is reset every frame and the tag painters pin it for their own call, so a leaked center-align from any layer reaches nothing • 🥚 PocketPal is real only when you have it: no phone and no app opened means no pal, no hunger, and no briefing line about one','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
