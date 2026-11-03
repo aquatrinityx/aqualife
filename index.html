@@ -2393,8 +2393,7 @@ function drawNPCSprite(ctx,n,now,stepping){
  ctx.fillStyle=n.skin||'#fcd7b0'; ctx.beginPath(); ctx.roundRect(nx-14,yy-22,28,26,8); ctx.fill();
  ctx.fillStyle=n.hair; ctx.fillRect(nx-14,yy-22,28,9);
  drawFace(ctx,nx,yy-9,npcExpr(n,now),0.66,4.5);
- ctx.font='15px sans-serif'; ctx.fillText(n.icon,nx+13,yy-6);
- if(n.hatEmoji){ ctx.font='14px sans-serif'; ctx.fillText(n.hatEmoji,nx-27,yy-6) }
+ /* h18: NO cheek-level glyphs — n.icon / n.hatEmoji used to print at (nx+13 / nx-27, yy-6), which read as stray tiny faces peeking out beside characters. The ONLY emoji anchored to a character now is the over-head expression (exprNpc216, below) and the asleep 💤. */
  ctx.font='bold 15px sans-serif'; const nw=ctx.measureText(n.name).width; const tl216=Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw+18),nx-nw/2-9));
  ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl216+2,yy-49,nw+18,22,10); ctx.fill();
  ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl216,yy-51,nw+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1;
@@ -3000,7 +2999,7 @@ function drawRoom(){
    ctx.strokeStyle='#ffffffcc'; ctx.lineWidth=1.4; for(let i=0;i<4;i++){ const ph=(nowMs/1500+i/4)%1; ctx.globalAlpha=1-ph; ctx.beginPath(); ctx.arc(x-16+i*11,y+6-ph*46,3+ph*2.6,0,7); ctx.stroke() } ctx.globalAlpha=1; ctx.lineWidth=1;
    ctx.fillStyle='#ffffff88'; for(let i=0;i<3;i++){ const ph=(nowMs/1200+i/3)%1; ctx.beginPath(); ctx.ellipse(x-14+i*14,y-44-ph*22,8+ph*5,5+ph*3,0,0,7); ctx.fill() }
    ctx.fillStyle='#f472b6'; ctx.font='bold 13px sans-serif'; const notePh=(nowMs/800)%1; ctx.globalAlpha=1-notePh; ctx.fillText('♪',x+26,y-30-notePh*20); ctx.globalAlpha=1 }
-  if(['🍪','🥤','🍔','🍦'].indexOf(actIcon)>=0){ ctx.font='16px sans-serif'; ctx.fillText(actIcon,x+14,y+38); ctx.fillStyle='#b45309'; for(let i=0;i<4;i++){ const cyy=((i*31+nowMs/6)%26); ctx.fillRect(x+4+i*5,y+34+cyy,2.2,2.2) } } // standing snack: food in hand, crumbs falling
+  if(['🍪','🥤','🍔','🍦'].indexOf(actIcon)>=0){ ctx.fillStyle='#b45309'; for(let i=0;i<4;i++){ const cyy=((i*31+nowMs/6)%26); ctx.fillRect(x+4+i*5,y+34+cyy,2.2,2.2) } } // standing snack: crumbs only (h18: the waist-level food glyph is gone — the over-head activity bubble already says what you're eating)
   if(actIcon==='🍽️'){ ctx.fillStyle='#ffffff90'; for(let i=0;i<3;i++){ const ph=(nowMs/1000+i/3)%1; ctx.beginPath(); ctx.ellipse(x-10+i*11,y-46-ph*20,6+ph*4,4+ph*3,0,0,7); ctx.fill() } }
   if(actIcon==='📱'){ ctx.fillStyle='#111'; ctx.fillRect(x+15,y+16,11,19); ctx.fillStyle='#7dd3fc'; ctx.fillRect(x+17,y+19,7,12) }
  }
@@ -4857,8 +4856,18 @@ function cleanCardHtml81(){ if(!S)return ''; ensure81(); if(S.homeless80)return 
 function drawDirt81(ctx,loc){ if(!S||S.homeless80)return; if(loc!==homeLoc())return; ensure81(); const lv=S.clean81.level; if(lv>=88)return; const d=100-lv;
  const stains=[[168,398,34],[520,410,42],[706,392,28],[330,428,38],[618,432,24]]; const ns=Math.min(5,Math.floor(d/14)); for(let i=0;i<ns;i++){ const st=stains[i]; ctx.fillStyle='rgba(40,26,12,'+(0.10+0.02*i)+')'; ctx.beginPath(); ctx.ellipse(st[0],st[1],st[2],st[2]*0.32,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(40,26,12,0.10)'; ctx.beginPath(); ctx.ellipse(st[0]+10,st[1]+3,st[2]*0.5,st[2]*0.16,0,0,Math.PI*2); ctx.fill() }
  if(d>18){ ctx.fillStyle='#0000002c'; for(let i=0;i<10;i++){ ctx.fillRect((i*83+((i*37)%50)),246+((i*53)%150),3,2) } }
- ctx.font='17px sans-serif'; const clutter=[[150,356,'🧦'],[646,372,'🥤'],[764,344,'📰'],[238,306,'👕'],[566,300,'🍌'],[424,414,'🧻']]; const nc=Math.min(6,Math.floor(d/13)); for(let i=0;i<nc;i++)ctx.fillText(clutter[i][2],clutter[i][0],clutter[i][1]); ctx.font='12px sans-serif';
- if(d>52){ ctx.font='26px sans-serif'; ctx.fillText('🗑️',812,404); ctx.font='15px sans-serif'; ctx.fillText('📄',788,398); ctx.fillText('🍌',836,412); ctx.font='12px sans-serif' }
+ /* h18: floor clutter renders as little items RESTING on the floor (contact shadow + flat shape) — never as floating emoji glyphs near characters' feet */
+ const clutter=[[150,356,'sock'],[646,372,'cup'],[764,344,'paper'],[238,306,'shirt'],[566,300,'banana'],[424,414,'paper']]; const nc=Math.min(6,Math.floor(d/13));
+ for(let i=0;i<nc;i++){ const cx2=clutter[i][0], cy2=clutter[i][1], kind=clutter[i][2]; ctx.fillStyle='#00000022'; ctx.beginPath(); ctx.ellipse(cx2,cy2+3,13,3.4,0,0,7); ctx.fill();
+  if(kind==='banana'){ ctx.strokeStyle='#e8b93b'; ctx.lineWidth=3.4; ctx.beginPath(); ctx.arc(cx2,cy2-3,8,Math.PI*0.15,Math.PI*0.95); ctx.stroke(); ctx.lineWidth=1 }
+  else if(kind==='cup'){ ctx.fillStyle='#d8d3c8'; ctx.beginPath(); ctx.moveTo(cx2-5,cy2-9); ctx.lineTo(cx2+5,cy2-9); ctx.lineTo(cx2+3.4,cy2+2); ctx.lineTo(cx2-3.4,cy2+2); ctx.closePath(); ctx.fill(); ctx.fillStyle='#b9b2a4'; ctx.fillRect(cx2-5.6,cy2-11,11.2,2.6) }
+  else if(kind==='paper'){ ctx.save(); ctx.translate(cx2,cy2-2); ctx.rotate(0.22); ctx.fillStyle='#e8e4da'; ctx.fillRect(-10,-4,20,8); ctx.fillStyle='#c9c4b8'; ctx.fillRect(-10,-4,20,2); ctx.restore() }
+  else { ctx.fillStyle=kind==='sock'?'#8ea3b8':'#a8b39a'; ctx.beginPath(); ctx.ellipse(cx2,cy2-2,11,4.6,0.35,0,7); ctx.fill(); ctx.fillStyle='#00000014'; ctx.beginPath(); ctx.ellipse(cx2-3,cy2-3,5,2.2,0.35,0,7); ctx.fill() } }
+ if(d>52){ /* the trash pile, drawn: a bin with paper balls resting beside it */
+  ctx.fillStyle='#00000026'; ctx.beginPath(); ctx.ellipse(812,408,17,4,0,0,7); ctx.fill();
+  ctx.fillStyle='#5b6068'; ctx.beginPath(); ctx.moveTo(800,380); ctx.lineTo(824,380); ctx.lineTo(821,406); ctx.lineTo(803,406); ctx.closePath(); ctx.fill(); ctx.fillStyle='#454a51'; ctx.fillRect(798,376,28,5); ctx.fillStyle='#ffffff22'; ctx.fillRect(803,384,3,18);
+  ctx.fillStyle='#e8e4da'; ctx.beginPath(); ctx.arc(788,402,5.4,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(836,406,4.6,0,7); ctx.fill(); ctx.fillStyle='#00000018'; ctx.beginPath(); ctx.arc(789,403,2,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(837,407,1.7,0,7); ctx.fill();
+  ctx.strokeStyle='#e8b93b'; ctx.lineWidth=3.2; ctx.beginPath(); ctx.arc(848,404,6.4,Math.PI*0.15,Math.PI*0.95); ctx.stroke(); ctx.lineWidth=1 }
  if(d>42){ ctx.strokeStyle='#ffffff55'; ctx.lineWidth=1; for(let r2=0;r2<3;r2++){ const rr=14+r2*11; ctx.beginPath(); ctx.arc(2,2,rr,0,Math.PI/2); ctx.stroke(); ctx.beginPath(); ctx.arc(898,2,rr,Math.PI/2,Math.PI); ctx.stroke() } ctx.beginPath(); ctx.moveTo(2,2); ctx.lineTo(38,38); ctx.moveTo(898,2); ctx.lineTo(862,38); ctx.stroke(); ctx.lineWidth=1 }
 }
 const _fg45_81=drawLocFg45; drawLocFg45=function(ctx,loc,nowMs){ _fg45_81(ctx,loc,nowMs); try{ drawDirt81(ctx,loc) }catch(e){} };
@@ -18567,7 +18576,7 @@ function drawScene198(){ if(!S||typeof inGame==='undefined'||!inGame)return; con
  const frame=[];
  const spr=function(name,x,y,sayKey){ if(!name||present[name])return; let gd={icon:'🧑',col:'#64748b',hair:'#1f2937'}; try{ gd=guestDef(name) }catch(e){} drawNPCSprite(ctx,{name:name,icon:gd.icon,col:gd.col,hair:gd.hair,x:x,y:y,state:'in',bubble:'',say:sayKey?sayFor198(sayKey):'',sayUntil:now+4200},now,false); frame.push({name:name,x:x,y:y}) };
  if(S.location==='friendhouse'&&V.playerAway&&V.plan){ const p=V.plan;
-  ctx.save(); ctx.fillStyle='#fde68a'; ctx.font='13px sans-serif'; ctx.fillText('🌙',charX-14,charY+80); ctx.restore();
+  /* h18: the stray 🌙 that used to print at the player's feet here is removed — nothing emoji-like renders at feet level */
   spr(p.friend,charX+(charX>470?-88:88),charY+16,'friend'); spr(p.parent,268,336,'host') }
  if(S.location==='club'){ ctx.save(); for(let i=0;i<14;i++){ const dx=(hash198('dot'+i)%860)+20, dy=36+(hash198('doty'+i)%120); ctx.fillStyle='hsla('+((now/9+i*47)%360)+',95%,65%,.5)'; ctx.beginPath(); ctx.arc(dx,dy,3.4,0,7); ctx.fill() } ctx.fillStyle='#e9d5ff'; ctx.font='900 17px sans-serif'; ctx.fillText('🌃 CLUB NOVA',352,30); ctx.restore();
   crowd198().forEach(function(n,i){ const sp=CLUB_SPOTS198[i%CLUB_SPOTS198.length]; spr(n,sp[0],sp[1],'club:'+n) }) }
@@ -20160,46 +20169,48 @@ function carGlyph202(model){ try{ const m=String(model||'').match(/[\u{1F300}-\u
    so neighbouring tags can never overlap. Cars with no known owner never reach carList202, so no
    tag is ever invented. The home curb car (#parked193 — already the animation glyph) gains the
    same owner tag for the moments it is the visible one. */
-function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; const wrap=document.querySelector('.roomWrap'); if(!wrap)return; const cvEl=document.getElementById('cv'); const cars=carList202(); const deps=window._dep216||{}; const depKeys=Object.keys(deps); let strip=document.getElementById('cars202');
+function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; const wrap=document.querySelector('.roomWrap'); if(!wrap)return; const cvEl=document.getElementById('cv'); const cars=carList202(); const deps=window._dep216||{}; const depKeys=Object.keys(deps);
+  /* h18: the road + world cars now paint INTO the scene canvas itself (bottom band, scene y 368–460),
+     called as the final pass of every drawRoom frame. Same bitmap as the world = the SAME reference
+     frame by construction: the cinematic camera transform, the letterbox and every zoom/pan carry
+     them exactly, so they can never detach, lag a beat behind the lens, balloon under a mismatched
+     box, or slide off screen the way the old DOM strip did (it copied the canvas's element box —
+     letterbox included — and its target transform on a 900ms tick, with no transition of its own).
+     The retired strip element is hidden on sight. */
+  const strip=document.getElementById('cars202'); if(strip)strip.style.display='none';
   const pk=document.getElementById('parked193'); const hl=(typeof homeLoc==='function')?homeLoc():null; const atHome=S.location===hl||S.location==='grandparents';
-  if(!cars.length&&!depKeys.length){ if(strip)strip.style.display='none'; if(pk)pk.style.removeProperty('display'); window._carSig216=''; return }
-  if(!strip){ strip=document.createElement('div'); strip.id='cars202'; strip.setAttribute('aria-hidden','true'); strip.style.cssText='position:absolute;z-index:6;pointer-events:none;overflow:hidden'; strip.innerHTML='<canvas width="900" height="92" style="width:100%;height:100%;display:block"></canvas>'; wrap.appendChild(strip) }
-  strip.style.display='block';
-  /* h16 ROAD FIX: the strip is pinned to the CANVAS box (never the wrap's bottom edge, which drifts
-     whenever the wrap is taller than the canvas) and wears the SAME camera transform as the scene
-     canvas, so the road rides the cinematic lens with the scene — no detach, no jump, no shimmer. */
-  if(cvEl){ const ch=cvEl.offsetHeight||460, cw=cvEl.offsetWidth||900; const sh=ch*(92/460); strip.style.left=cvEl.offsetLeft+'px'; strip.style.width=cw+'px'; strip.style.top=(cvEl.offsetTop+ch-sh)+'px'; strip.style.height=sh+'px'; strip.style.right='auto'; strip.style.bottom='auto';
-    const tr=cvEl.style.transform||''; if(strip.style.transform!==tr)strip.style.transform=tr;
-    const og=cvEl.style.transformOrigin||''; if(og){ const mm=/([\d.]+)%\s+([\d.]+)%/.exec(og); if(mm){ const oy=((parseFloat(mm[2])/100*460)-368)/92*100; const no=mm[1]+'% '+oy+'%'; if(strip.style.transformOrigin!==no)strip.style.transformOrigin=no } else if(strip.style.transformOrigin!==og)strip.style.transformOrigin=og }
-    const ts=cvEl.style.transition||''; if(strip.style.transition!==ts)strip.style.transition=ts }
-  /* redraw ONLY when something actually changed — the old 900ms blind repaint was the visible flicker */
+  if(!cars.length&&!depKeys.length){ if(pk)pk.style.removeProperty('display'); window._carSig216=''; return }
+  if(!cvEl)return;
   const night=S.hour>=18||S.hour<6; const now=performance.now();
-  const sig=S.location+'|'+(night?'n':'d')+'|'+cars.map(function(c){ return c.owner+c.model }).join(',')+'|'+(depKeys.length?Math.floor(now/55):'');
-  if(sig===window._carSig216&&strip.dataset.ok==='1')return; window._carSig216=sig; strip.dataset.ok='1';
+  window._carSig216=S.location+'|'+(night?'n':'d')+'|'+cars.map(function(c){ return c.owner+c.model }).join(',');
   if(pk&&atHome&&cars.some(function(c){ return c.mine }))pk.style.setProperty('display','none','important'); else if(pk)pk.style.removeProperty('display');
   if(pk&&S.car&&S.car.owned){ try{ let po=pk.querySelector('.pOwner'); if(!po){ po=document.createElement('span'); po.className='pOwner'; po.style.cssText='position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);background:#111111e8;color:#fff;font-size:11px;font-weight:900;line-height:1;padding:3px 8px;border-radius:999px;border:1.5px solid #ffb703;white-space:nowrap;pointer-events:none'; pk.appendChild(po) } if(po.textContent!==S.name)po.textContent=S.name }catch(e){} }
-  const cv=strip.querySelector('canvas'); const ctx=cv.getContext('2d'); ctx.clearRect(0,0,900,92);
+  const ctx=cvEl.getContext('2d'); ctx.save(); ctx.beginPath(); ctx.rect(0,368,900,92); ctx.clip(); ctx.translate(0,368);
+  try{
   if(atHome){ ctx.fillStyle='#c9b691'; ctx.fillRect(0,46,900,46); ctx.fillStyle='#b3a07c'; ctx.fillRect(0,46,900,3); ctx.fillStyle='#00000014'; for(let dx=40;dx<900;dx+=150)ctx.fillRect(dx,50,2,38) }
   else { const g=ctx.createLinearGradient(0,30,0,92); g.addColorStop(0,'#a2987f'); g.addColorStop(0.18,'#8f8570'); g.addColorStop(0.2,'#3b3936'); g.addColorStop(1,'#282724'); ctx.fillStyle=g; ctx.fillRect(0,30,900,62); ctx.fillStyle='#6e675a'; ctx.fillRect(0,30,900,3); ctx.fillStyle='#f7d54d99'; for(let dx=8;dx<900;dx+=78)ctx.fillRect(dx,72,36,4) }
   const gy=88;
   /* SOLID CARS (h16): filled bodies in the car's own colour, dark-trimmed cabin with real windows,
      a shaded lower band, a highlight stripe, door line and proper wheels with hubcaps — same models
      as the road animation (🚙 boxy SUV, 🏎️ low sports, 🚗/🚘 sedan), just drawn solid, never hollow. */
-  const solid=function(cx,model,col,alpha){ const gl=carGlyph202(model); const suv=gl==='🚙', sport=gl==='🏎️'; const w=sport?110:(suv?98:102); ctx.save(); if(alpha!=null)ctx.globalAlpha=alpha;
+  /* h18 WORLD SCALE: a standing character is ~86 scene units tall; a car now runs ~128 long and
+     ~41 tall (roof at about half a person's height) — clearly a car beside a character, no longer a
+     tall stubby block dwarfing the road band. One painter for parked, passing and departure cars. */
+  const solid=function(cx,model,col,alpha){ const gl=carGlyph202(model); const suv=gl==='🚙', sport=gl==='🏎️'; const w=sport?132:(suv?124:128); ctx.save(); if(alpha!=null)ctx.globalAlpha=alpha;
     ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.ellipse(cx,gy+2,w/2+6,5,0,0,7); ctx.fill();
     ctx.save(); ctx.globalAlpha=(alpha==null?0.5:alpha*0.5); ctx.fillStyle=col.body; ctx.beginPath(); ctx.ellipse(cx,gy+3,w/2-8,3.4,0,0,7); ctx.fill(); ctx.restore();
-    const cabW=w*(suv?0.60:(sport?0.46:0.52)), cabH=suv?21:(sport?13:17), cabX=cx-cabW/2-2, cabY=gy-30-cabH+8;
+    const cabW=w*(suv?0.58:(sport?0.44:0.50)), cabH=suv?17:(sport?12:15), cabX=cx-cabW/2-2, cabY=gy-28-cabH+6;
     ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cabX-2,cabY-2,cabW+4,cabH+4,7); ctx.fill();
     ctx.fillStyle='#d8eef8'; ctx.beginPath(); ctx.roundRect(cabX+2,cabY+2,cabW-4,cabH-3,5); ctx.fill();
     ctx.fillStyle=col.dark; ctx.fillRect(cx-3,cabY+1,5,cabH);
-    ctx.fillStyle=col.body; ctx.beginPath(); ctx.roundRect(cx-w/2,gy-30,w,23,7); ctx.fill();
-    ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cx-w/2+2,gy-15,w-4,8,4); ctx.fill();
-    ctx.fillStyle='#ffffff59'; ctx.fillRect(cx-w/2+7,gy-28,w-14,3);
-    ctx.strokeStyle='#00000030'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(cx+4,gy-28); ctx.lineTo(cx+4,gy-10); ctx.stroke(); ctx.lineWidth=1;
-    ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.arc(cx+11,gy-19,1.8,0,7); ctx.fill();
-    [cx-w/2+21,cx+w/2-21].forEach(function(wx){ ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-8,8.5,0,7); ctx.fill(); ctx.fillStyle='#cfd6de'; ctx.beginPath(); ctx.arc(wx,gy-8,3.6,0,7); ctx.fill(); ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-8,1.4,0,7); ctx.fill() });
-    if(night){ const lg=ctx.createLinearGradient(cx+w/2,0,cx+w/2+96,0); lg.addColorStop(0,'rgba(255,240,170,.45)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(cx+w/2-2,gy-22); ctx.lineTo(cx+w/2+96,gy-30); ctx.lineTo(cx+w/2+96,gy-8); ctx.lineTo(cx+w/2-2,gy-13); ctx.closePath(); ctx.fill() }
-    ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(cx+w/2-3,gy-20,3.2,0,7); ctx.fill();
+    ctx.fillStyle=col.body; ctx.beginPath(); ctx.roundRect(cx-w/2,gy-28,w,21,7); ctx.fill();
+    ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cx-w/2+2,gy-15,w-4,7,4); ctx.fill();
+    ctx.fillStyle='#ffffff59'; ctx.fillRect(cx-w/2+7,gy-26,w-14,3);
+    ctx.strokeStyle='#00000030'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(cx+4,gy-26); ctx.lineTo(cx+4,gy-9); ctx.stroke(); ctx.lineWidth=1;
+    ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.arc(cx+11,gy-18,1.8,0,7); ctx.fill();
+    [cx-w/2+24,cx+w/2-24].forEach(function(wx){ ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-7,7.5,0,7); ctx.fill(); ctx.fillStyle='#cfd6de'; ctx.beginPath(); ctx.arc(wx,gy-7,3.2,0,7); ctx.fill(); ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-7,1.3,0,7); ctx.fill() });
+    if(night){ const lg=ctx.createLinearGradient(cx+w/2,0,cx+w/2+88,0); lg.addColorStop(0,'rgba(255,240,170,.45)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(cx+w/2-2,gy-20); ctx.lineTo(cx+w/2+88,gy-28); ctx.lineTo(cx+w/2+88,gy-6); ctx.lineTo(cx+w/2-2,gy-12); ctx.closePath(); ctx.fill() }
+    ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(cx+w/2-3,gy-18,3,0,7); ctx.fill();
     ctx.restore(); return w };
   const n=cars.length; const slot=Math.min(190,860/Math.max(1,n)); window._carPos216={};
   let prevRight=2;
@@ -20207,13 +20218,13 @@ function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='und
     /* CLEARER NAMES (h16): big 900-weight type on a near-black pill, colour dot, gold rim for yours —
        measured and marched left-to-right so tags can never overlap, and clamped inside the canvas so
        a tag is never clipped by the edge again. */
-    let nm=String(c.owner||''); if(nm){ let fs=19, tw=0; const fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit(); while(fs>14&&tw+26>slot+34){ fs-=0.5; fit() } if(tw+26>slot+34){ while(nm.length>1&&tw+26>slot+34){ nm=nm.slice(0,-2)+'…'; fit() } }
-     const pw=tw+26; let px=cx-pw/2; px=Math.max(prevRight,Math.min(898-pw,px)); prevRight=px+pw+4; const py=2, ph=fs+8;
+    let nm=String(c.owner||''); if(nm){ let fs=15.5, tw=0; const fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit(); while(fs>11.5&&tw+22>slot+34){ fs-=0.5; fit() } if(tw+22>slot+34){ while(nm.length>1&&tw+22>slot+34){ nm=nm.slice(0,-2)+'…'; fit() } }
+     const pw=tw+22; let px=cx-pw/2; px=Math.max(prevRight,Math.min(898-pw,px)); prevRight=px+pw+4; const py=2, ph=fs+7;
      ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(px+2,py+2,pw,ph,10); ctx.fill();
      ctx.fillStyle='#0d0d10f2'; ctx.beginPath(); ctx.roundRect(px,py,pw,ph,10); ctx.fill();
      ctx.strokeStyle=c.mine?'#ffb703':'#ffffffd0'; ctx.lineWidth=c.mine?2.2:1.6; ctx.stroke(); ctx.lineWidth=1;
-     ctx.fillStyle=c.col.body; ctx.beginPath(); ctx.arc(px+12,py+ph/2,4.2,0,7); ctx.fill();
-     ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+20,py+ph/2+fs*0.36); ctx.font='12px sans-serif' } });
+     ctx.fillStyle=c.col.body; ctx.beginPath(); ctx.arc(px+10,py+ph/2,3.6,0,7); ctx.fill();
+     ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+17,py+ph/2+fs*0.36); ctx.font='12px sans-serif' } });
   /* WALK TO THE CAR AND LEAVE (h16): a departing owner appears at the door side of the street, walks
      the sidewalk to their own car wearing their name, gets in, and the car drives off the edge. */
   let depActive=false;
@@ -20227,6 +20238,7 @@ function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='und
     else if(el<3400){ depActive=true; const p=(el-1950)/1450; solid(carX+p*p*820,d.model,d.col) }
     else { delete deps[owner]; window._carSig216='' } });
   if(depActive&&!window._depTick216){ window._depTick216=true; setTimeout(function(){ window._depTick216=false; try{ drawCars202() }catch(e){} },55) }
+  }finally{ ctx.restore() }
  }catch(e){} }
 setInterval(drawCars202,900);
 /* ---------- 4) sleep tiers — a real tier table inside the sleep system ---------- */
@@ -21043,7 +21055,7 @@ try{
  +'#panel.actions209 .actCard101{padding:8px}'
  +'#panel.actions209 .actCard101>.furn{width:100%;min-height:84px;font-size:17px;border-radius:15px}'
  +'#panel.actions209 .actCard101 .btn{margin-top:8px}'
- +'.ctxPin209{position:sticky;top:0;z-index:8;box-shadow:0 8px 22px #00000030}'
+ +'.ctxPin209{position:static;box-shadow:0 8px 22px #00000030}' /* h18: was position:sticky — the card HOVERED over the options under it. It now sits in the panel flow, first in line, and scrolls with everything else */
   /* 2B — work hub + crew strip */
  +'.hubGrid209{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:6px}'
  +'.hubBtns209{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}'
@@ -21222,11 +21234,7 @@ try{
    +'<span class="hudPill207">📬 Mail waiting: '+mailN+(unread?' · 💬 '+unread+' unread':'')+'</span></div>'
    +'<p style="margin-top:9px;font-size:13.5px"><b>👉 Next move:</b> '+sug.t+'</p>'
    +'<button class="btn gold" style="width:auto;margin:2px 0 0;padding:9px 15px" onclick="todayGo209(\''+sug.k+'\')">'+sug.b+'</button></div>' }
- function mePass209(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='home')return; const panel=document.getElementById('panel'); if(!panel)return; const grid=panel.querySelector('.grid')||panel;
-  const tmp=document.createElement('div'); tmp.innerHTML=todayHtml209(); const card=tmp.firstChild; if(!card)return;
-  const old=document.getElementById('todayCard209'); if(old)old.remove();
-  grid.insertBefore(card,grid.children[0]||null);
- }catch(e){} }
+ function mePass209(){ try{ const old=document.getElementById('todayCard209'); if(old)old.remove() }catch(e){} } /* h18: the 📅 Today card is REMOVED from the Me tab (Howard's order) — this pass no longer injects it; it only sweeps any stale copy. todayHtml209 stays defined but is never rendered. */
 
  /* ================= 6) BRIEFING = 6A ONE STACKED CARD ================= */
  function briefSnap209(){ if(!S)return null; const V=(typeof ensure200==='function')?ensure200():null; let palHun=null;
@@ -21411,7 +21419,7 @@ try{
  +'#panel.act213 .actGrid101>details.dd132{grid-column:1/-1}'
  +'#panel.act213 .actCard101{padding:8px}'
  +'#panel.act213 .actCard101>.furn{width:100%;min-height:84px;font-size:17px;border-radius:15px}'
- +'.ctxPin213{position:sticky;top:0;z-index:9;box-shadow:0 8px 22px #00000030}'
+ +'.ctxPin213{position:static;box-shadow:0 8px 22px #00000030}' /* h18: un-pinned like ctxPin209 — in-flow, never floating over panel options */
  +'#panel.travelPad213{padding-bottom:150px}';
  document.head.appendChild(stl);
  function actionsFix213(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='actions101')return; const panel=document.getElementById('panel'); if(!panel)return; panel.classList.add('act213');
@@ -21837,7 +21845,7 @@ var EXPR_UNLOCK216=[
  {lv:8,feel:{love:'😍',cool:'😎',proud:'😤'},bubbles:['main character energy today','watch and learn','I was born for this']},
  {lv:12,feel:{rich:'🤑',zen:'😌',star:'🤩'},bubbles:['another day, another era','the grind never lies','legacy loading…']}];
 window.EXPR_UNLOCK216=EXPR_UNLOCK216;
-function exprUnlocked216(){ var lv=(typeof S!=='undefined'&&S&&S.level)||1; var feel={},bub=[]; EXPR_UNLOCK216.forEach(function(t){ if(lv>=t.lv){ Object.keys(t.feel).forEach(function(k){ feel[k]=t.feel[k] }); bub=bub.concat(t.bubbles) } }); return {feel:feel,bubbles:bub} }
+function exprUnlocked216(){ var feel={},bub=[]; EXPR_UNLOCK216.forEach(function(t){ Object.keys(t.feel).forEach(function(k){ feel[k]=t.feel[k] }); bub=bub.concat(t.bubbles) }); return {feel:feel,bubbles:bub} } /* h18: EVERYTHING UNLOCKED for everyone (Howard's order) — the Lv 3/5/8/12 gates are deleted; the tiers remain only as the content catalog, and saved per-feeling picks (S.v216.expr.feel) still win */
 window.exprPlayer216=function(){ try{ if(typeof S==='undefined'||!S||S.deadFlag)return null; var V=ensure216(); if(!V)return null; var un=exprUnlocked216(); var pick=function(k){ return (V.expr.feel&&V.expr.feel[k])||un.feel[k]||null };
   if(S.healthSys&&S.healthSys.sick)return pick('sick'); if(S.healthSys&&S.healthSys.injured)return pick('hurt');
   var n=S.needs||{}; if((n.hunger==null?50:n.hunger)<=15)return pick('hungry'); if((n.energy==null?50:n.energy)<=12)return pick('tired'); if((n.fun==null?50:n.fun)<=12)return pick('bored'); if((n.social==null?50:n.social)<=12)return pick('lonely'); if((S.wanted||0)>=3)return pick('scared');
@@ -21847,7 +21855,8 @@ window.exprNpc216=function(n){ try{ if(typeof S==='undefined'||!S||!n)return nul
   var rec=(S.town&&S.town.people)?S.town.people[n.name]:null; if(rec&&rec.trait&&typeof TOWN_TRAITS!=='undefined'&&TOWN_TRAITS[rec.trait])return TOWN_TRAITS[rec.trait].e;
   if(typeof isParentNpc==='function'&&isParentNpc(n.name)){ if((S.bond||50)<28)return '😟'; return null }
   return null }catch(e){ return null } };
-function exprCard216(){ if(typeof S==='undefined'||!S)return ''; var V=ensure216(); if(!V)return ''; var un=exprUnlocked216(); var locked=EXPR_UNLOCK216.filter(function(t){ return (S.level||1)<t.lv });
+function exprCard216(){ return '' } /* h18: the 😊 Expressions card is REMOVED from the Me tab (Howard's order) — the controls live in ⚙️ Settings now (exprSettings218). The original card builder is retired below, never called. */
+function _exprCard216Retired(){ if(typeof S==='undefined'||!S)return ''; var V=ensure216(); if(!V)return ''; var un=exprUnlocked216(); var locked=[];
   return '<div class="card exprCard216"><h3>😊 Expressions — your face, your rules</h3><p>The emoji over your head is your real state talking — sick, starving, wiped out, thriving. No box, no random faces: it means what you are feeling. Customise which emoji each feeling wears, and which custom text bubbles you blurt out mid-conversation.</p><div class="kv"><span>🎭 Emojis unlocked</span><b>'+Object.keys(un.feel).length+'</b></div><div class="kv"><span>💬 Custom bubbles chosen</span><b>'+V.expr.bubbles.length+'</b></div>'+(locked.length?'<p class="small">🔒 More emojis and bubbles unlock as you level — next drop at <b>Lv '+locked[0].lv+'</b>.</p>':'<p class="small">Every emoji and bubble is unlocked. Icon behaviour.</p>')+'<button class="btn gold" onclick="exprSheet216()">😊 Customise expressions</button></div>' }
 window.exprSheet216=function(){ try{ if(typeof S==='undefined'||!S)return; var V=ensure216(); var un=exprUnlocked216(); var slots=[['happy','Happy / thriving'],['sad','Feeling low'],['sick','Sick'],['hurt','Hurt / injured'],['tired','Wiped out'],['hungry','Starving'],['bored','Bored'],['lonely','Lonely'],['scared','Hunted / wanted'],['love','Loved up'],['angry','Angry']];
   var rows=slots.map(function(sl){ var k=sl[0]; var tierLv=0; EXPR_UNLOCK216.forEach(function(t){ if(t.feel[k])tierLv=t.lv }); var has=(k in un.feel)||!!(V.expr.feel&&V.expr.feel[k]); var cur=(V.expr.feel&&V.expr.feel[k])||un.feel[k]||EXPR_BASE216[k];
@@ -21859,7 +21868,7 @@ window.exprCycle216=function(k){ try{ var V=ensure216(); if(!V)return; var un=ex
 window.exprBubble216=function(btn){ try{ var V=ensure216(); if(!V||!btn)return; var b=btn.getAttribute('data-b'); if(!b)return; var ix=V.expr.bubbles.indexOf(b); if(ix>=0)V.expr.bubbles.splice(ix,1); else V.expr.bubbles.push(b); save(); exprSheet216() }catch(e){} };
 if(typeof renderTabs==='function'){ var _rt216=renderTabs; renderTabs=function(active){ var r=_rt216.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&active==='home'){ var p=document.getElementById('panel'); var grid=p?p.querySelector('.grid'):null; if(grid&&!grid.querySelector('.exprCard216')){ var d=document.createElement('div'); d.innerHTML=exprCard216(); while(d.firstChild)grid.appendChild(d.firstChild) } } }catch(e){} return r } }
 var lastSay216=null;
-setInterval(function(){ try{ if(typeof playerSay==='undefined'||!playerSay){ lastSay216=null; return } if(playerSay!==lastSay216){ lastSay216=playerSay; var V=(typeof S!=='undefined'&&S)?ensure216():null; if(V&&V.expr.bubbles.length&&Math.random()<0.55)playerSay.text=V.expr.bubbles[Math.floor(Math.random()*V.expr.bubbles.length)] } }catch(e){} },700);
+/* h18: the custom-TEXT-bubble swap is retired — "custom bubbles" now means bubble COLOUR + FONT (Howard's clarification), applied to the player's speech bubbles by the h18 drawSpeechBubble wrap; ambient pops (random lines in your colours) are the h18 layer's job. Saved V.expr.bubbles picks are simply no longer read. */
 
 /* ================= ⭐ 10) LEVEL-UP SPOTLIGHT — exclusive, persistent, acknowledged ================= */
 window._lvSpot216=null; var lvSpotPend216=null; var holdQ216=[];
@@ -22165,6 +22174,160 @@ try{
  setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; passes217() }catch(e){} },900);
  window.__v217={ensure:ensure217,set:dynSet217,data:dynData217,acts:DYNACT217,version:function(){ return GAME_VERSION }};
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 17: 📸 Photo together REMOVED from Actions (event portraits + Scrapbook untouched) • 📍 dynamic per-place actions ("Only here" card under Right here, right now — audited zero-overlap verbs per place, age-gated, real effects, rebuilt on place/hour/age change) • 🧊 fixtures stay in their place: fridge rows + Restock door stripped from Actions away from home (Bag food travels), Sleep/Shower/TV cards only where those fixtures live, fridge handlers refuse away from home • 🎓 at school the Actions panel leads with the school day (preschool set for toddlers) + school-only verbs','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 18 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's live-play repair batch (Nov 3, 2026) — seven reports, one layer (plus source edits above):
+   1) 🚗 ROAD + CARS FOLLOW THE WORLD — root cause found in drawCars202: the road lived in a DOM strip
+      that copied the scene canvas's ELEMENT box (letterbox included, so on a tall phone wrap the cars
+      ballooned ~3× and sat below the drawn scene) and its target transform on a 900ms tick, with no
+      transition of its own — so every cinematic zoom/pan (idle 1.24×, conversation 1.52×/1.34×) left
+      the road a beat behind, snapped ahead, or slid off frame. FIXED AT THE SOURCE: road + cars now
+      paint into the scene canvas itself as the final drawRoom pass (hooked below) — same bitmap, same
+      transform, same letterbox: they follow by construction. Cars also re-proportioned to world scale
+      (~128 long × ~41 tall vs a character's ~86) with tags to match. Anti-flicker kept: the scene
+      redraws every frame anyway, and the paint is clipped to the road band.
+   2) ⚡ ACTIONS PANEL — the 🌤️ contextual card was position:sticky (ctxPin209/213): it hovered over
+      the options scrolling beneath it. Un-pinned at the source; the guard below keeps both it and the
+      📍 Only here card static in the flow, first in line, forever.
+   3) 😶 STRAY GLYPHS — drawNPCSprite printed n.icon / n.hatEmoji at cheek level (the tiny faces
+      peeking out at waist height), the player pass printed snack food at waist level, a 🌙 sat at the
+      player's feet, and house-dirt clutter was raw emoji on the floor (the lone banana). All removed
+      at the source; clutter now draws as small items resting on the floor. The ONLY emoji anchored
+      to a character is the single clean over-head expression (feeling/activity) + the asleep 💤.
+   4) 📱 BOTTOM UTILITY ROW — Change rooms / Bag / Scrapbook could not fit a narrow phone once both
+      NEW badges showed: the quick bar was flex:none and the room bar overflowed visibly underneath
+      it. The row now wraps and tightens (CSS below): worst case, the quick bar takes its own line —
+      every control whole and tappable, badges included.
+   5) 🖐️ NO PULL-TO-REFRESH + FULLSCREEN — overscroll-behavior:none at the root, a touch guard that
+      swallows the pull-past-the-top gesture on the game surface and inside panels (panel scrolling
+      itself untouched), and fullscreen requested on the entry tap (and re-offered on later taps
+      wherever the platform allows). The manifest already ships display:fullscreen (verified).
+   6) 👽 ME TAB CLEANUP — the 📅 Today card (mePass209 gutted at the source), the 🏠 The house,
+      honestly card, and the 😊 Expressions card (returns '' at the source) are all removed; the
+      sweep below clears any stale copy. Mail stays safe in the phone; storybook/journal buttons
+      lived only on that card (features themselves untouched).
+   7) 😊 EXPRESSIONS, REDEFINED — everything unlocked for everyone (level gates deleted at the
+      source); "custom bubbles" now means bubble COLOUR + FONT STYLE, chosen in ⚙️ Settings (new
+      section below) along with the per-feeling emoji picker; the player's speech bubbles render in
+      the chosen colour/font (drawSpeechBubble wrap below); ambient bubble pops surface randomly
+      in free moments wearing those colours. The over-head emoji stays state-driven, as always. */
+(function(){ 'use strict';
+try{
+ /* ---------- shared CSS: overscroll off, utility row fit, panel un-pin insurance ---------- */
+ var st=document.createElement('style'); st.id='style218';
+ st.textContent=
+  'html,body{overscroll-behavior:none}'
+  +'#panel,.sheet,.setup,.topPin{overscroll-behavior:contain}'
+  +'.tabsRow100{flex-wrap:wrap;row-gap:5px}'
+  +'.tabsRow100 .roomBar86{flex:1 1 140px;min-width:0}'
+  +'.roomSwitch106{min-width:0;max-width:100%}'
+  +'.rsName106{min-width:0}'
+  +'.tabsRow100 .quickBar91{flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end;min-width:0}'
+  +'.tabsRow100 .quickBtn91{padding:6px 9px;font-size:12px;gap:5px;white-space:nowrap}'
+  +'.tabsRow100 .quickCnt91{padding:1px 6px}'
+  +'.tabsRow100 .quickNew91{padding:1px 6px;font-size:10px}'
+  +'@media(max-width:460px){.tabsRow100 .quickBar91{flex:1 1 100%;margin-left:0}.tabsRow100 .quickBtn91{flex:1 1 auto}}'
+  +'#panel .ctxCard200,#panel .dynCard217{position:static!important;top:auto!important;z-index:auto!important}';
+ document.head.appendChild(st);
+
+ /* ---------- 1) road + cars: paint as the final scene pass, every frame ---------- */
+ try{ var _dr218=drawRoom; drawRoom=function(){ var r=_dr218.apply(this,arguments); try{ drawCars202() }catch(e){} return r } }catch(e){}
+ /* trip bookend overlay stays glued to the room frame while it plays */
+ setInterval(function(){ try{ var d=document.getElementById('bk193'); if(!d)return; var wrap=document.querySelector('.roomWrap'); if(!wrap)return; var r=wrap.getBoundingClientRect(); if(r.width<40)return; d.style.left=r.left+'px'; d.style.top=r.top+'px'; d.style.width=r.width+'px'; d.style.height=r.height+'px' }catch(e){} },300);
+
+ /* ---------- 2) + 6) Me-tab sweep & panel hygiene ---------- */
+ function sweep218(){ try{ var p=document.getElementById('panel'); if(p){ ['.today209','.mailCard200','.exprCard216'].forEach(function(sel){ var el=p.querySelector(sel); if(el)el.remove() }) } var tc=document.getElementById('todayCard209'); if(tc)tc.remove() }catch(e){} }
+ try{ var _ci218=ctxInject200; ctxInject200=function(){ var r=_ci218.apply(this,arguments); sweep218(); return r } }catch(e){}
+ setInterval(sweep218,1200);
+
+ /* ---------- 5a) no pull-to-refresh, ever ---------- */
+ var pullY218=null;
+ document.addEventListener('touchstart',function(e){ try{ pullY218=(e.touches&&e.touches.length===1)?e.touches[0].clientY:null }catch(err){ pullY218=null } },{passive:true});
+ document.addEventListener('touchend',function(){ pullY218=null },{passive:true});
+ document.addEventListener('touchmove',function(e){ try{
+   if(pullY218===null||!e.touches||e.touches.length!==1||!e.cancelable)return;
+   var t=e.target; if(!t||t.nodeType!==1||t.tagName==='CANVAS')return;
+   var cs0=null; try{ cs0=getComputedStyle(t) }catch(err){}
+   if(cs0&&cs0.touchAction==='none')return;
+   var dy=e.touches[0].clientY-pullY218;
+   var el=t, scroller=null;
+   while(el&&el!==document.body&&el!==document.documentElement){ var cs=getComputedStyle(el); if((cs.overflowY==='auto'||cs.overflowY==='scroll')&&el.scrollHeight>el.clientHeight+2){ scroller=el; break } el=el.parentElement }
+   if(scroller){ if(dy>0&&scroller.scrollTop<=0)e.preventDefault(); return }
+   var docScrollable=document.documentElement.scrollHeight>window.innerHeight+2;
+   if(!docScrollable||(dy>0&&window.scrollY<=0))e.preventDefault();
+ }catch(err){} },{passive:false});
+
+ /* ---------- 5b) fullscreen on the entry tap, re-offered on later taps ---------- */
+ function fsGo218(){ try{
+   if(document.fullscreenElement||document.webkitFullscreenElement)return;
+   if(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)return;
+   if(window.navigator&&window.navigator.standalone===true)return;
+   var el=document.documentElement; var fn=el.requestFullscreen||el.webkitRequestFullscreen; if(!fn)return;
+   var done=false;
+   try{ var p=fn.call(el,{navigationUI:'hide'}); if(p&&p.catch)p.catch(function(){}); done=true }catch(e2){}
+   if(!done){ try{ fn.call(el) }catch(e3){} }
+ }catch(e){} }
+ document.addEventListener('pointerdown',function(){ fsGo218() },true);
+
+ /* ---------- 7) expressions: bubble colour + font, Settings controls, ambient pops ---------- */
+ var BUB_COLORS218={classic:['#ffffff','#14100c'],sky:['#dbeafe','#172554'],mint:['#dcfce7','#052e16'],rose:['#ffe4e6','#4c0519'],sunny:['#fef9c3','#422006'],lilac:['#ede9fe','#2e1065'],peach:['#ffedd5','#431407'],night:['#1f2937','#f8fafc']};
+ var BUB_FONTS218={rounded:'bold 13.5px system-ui,sans-serif',comic:'bold 13.5px "Comic Sans MS","Comic Neue",sans-serif',type:'bold 13px "Courier New",monospace',hand:'bold 14.5px "Segoe Print","Bradley Hand",cursive',clean:'600 13.5px "Segoe UI",Roboto,sans-serif'};
+ window.BUB_COLORS218=BUB_COLORS218; window.BUB_FONTS218=BUB_FONTS218;
+ function bubStyle218(){ var d={bg:'#ffffff',fg:'#14100c',font:BUB_FONTS218.rounded}; try{ var V=(typeof window.ensure216==='function')?window.ensure216():null; var ex=(V&&V.expr)||{}; var C=BUB_COLORS218[ex.bubColor]; if(C){ d.bg=C[0]; d.fg=C[1] } var F=BUB_FONTS218[ex.bubFont]; if(F)d.font=F }catch(e){} return d }
+ window.bubStyle218=bubStyle218;
+ try{ var _dsb218=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){
+   var mine=false; try{ mine=(typeof playerSay!=='undefined'&&playerSay&&String(text)===playerSay.text&&performance.now()<playerSay.until) }catch(e){}
+   if(!mine)return _dsb218.apply(this,arguments);
+   var sty=bubStyle218(); ctx.font=sty.font;
+   var words=String(text).split(' '); var lines=[]; var line='';
+   words.forEach(function(w){ var t=line?line+' '+w:w; if(t.length>20&&line){ lines.push(line); line=w } else line=t });
+   if(line)lines.push(line); var show=lines.slice(0,3);
+   var w=0; show.forEach(function(l){ w=Math.max(w,ctx.measureText(l).width) }); w+=24; var h=show.length*17+14;
+   var x=Math.max(4,Math.min(896-w,cx-w/2)); var y=bottomY-h;
+   ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.roundRect(x+2,y+3,w,h,10); ctx.fill();
+   ctx.fillStyle=sty.bg; ctx.beginPath(); ctx.roundRect(x,y,w,h,10); ctx.fill(); ctx.strokeStyle='#14100c'; ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+   ctx.beginPath(); ctx.moveTo(cx-6,y+h-1); ctx.lineTo(cx+6,y+h-1); ctx.lineTo(cx,y+h+8); ctx.closePath(); ctx.fillStyle=sty.bg; ctx.fill();
+   ctx.fillStyle=sty.fg; show.forEach(function(l,i){ ctx.fillText(l,x+11,y+20+i*17) });
+ } }catch(e){}
+ window.exprSettings218=function(){ try{ if(typeof S==='undefined'||!S)return; var V=window.ensure216(); if(!V)return; if(!V.expr.feel)V.expr.feel={};
+   var pool={}; (window.EXPR_UNLOCK216||[]).forEach(function(t){ Object.keys(t.feel||{}).forEach(function(k){ pool[k]=t.feel[k] }) });
+   var BASE={happy:'😊',sad:'😢',sick:'🤒',hurt:'🤕',tired:'😴',hungry:'😫',bored:'🥱',lonely:'😔',scared:'😰',love:'😍',angry:'😠'};
+   var slots=[['happy','Happy / thriving'],['sad','Feeling low'],['sick','Sick'],['hurt','Hurt / injured'],['tired','Wiped out'],['hungry','Starving'],['bored','Bored'],['lonely','Lonely'],['scared','Hunted / wanted'],['love','Loved up'],['angry','Angry']];
+   var rows=slots.map(function(sl){ var k=sl[0]; var cur=(V.expr.feel&&V.expr.feel[k])||pool[k]||BASE[k]; return '<div class="kv"><span>'+sl[1]+'</span><span style="font-size:20px">'+cur+'</span><button class="btn" style="width:auto;margin:0;padding:6px 12px;flex:none" onclick="exprCycleSet218(\''+k+'\')">Change</button></div>' }).join('');
+   var cols=[['classic','Classic white'],['sky','Sky blue'],['mint','Mint'],['rose','Rose'],['sunny','Sunny'],['lilac','Lilac'],['peach','Peach'],['night','Night']];
+   var curC=V.expr.bubColor||'classic';
+   var colBtns=cols.map(function(c){ var pal=BUB_COLORS218[c[0]]; var on=curC===c[0]; return '<button class="btn '+(on?'gold':'outline')+'" style="width:auto;margin:0 6px 8px 0;padding:8px 12px" onclick="exprBubSet218(\'color\',\''+c[0]+'\')"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:'+pal[0]+';border:1.5px solid #00000040;vertical-align:-2px;margin-right:6px"></span>'+c[1]+(on?' ✓':'')+'</button>' }).join('');
+   var fonts=[['rounded','Rounded'],['comic','Comic'],['type','Typewriter'],['hand','Handwritten'],['clean','Clean']];
+   var curF=V.expr.bubFont||'rounded';
+   var fontBtns=fonts.map(function(f){ var on=curF===f[0]; return '<button class="btn '+(on?'gold':'outline')+'" style="width:auto;margin:0 6px 8px 0;padding:8px 12px" onclick="exprBubSet218(\'font\',\''+f[0]+'\')">'+f[1]+(on?' ✓':'')+'</button>' }).join('');
+   var sty=bubStyle218();
+   openSheet('<h2>😊 Expressions & bubbles</h2><p>One clean emoji over your head, straight from your real state — and all of it is yours to style. <b>Everything here is unlocked for everyone</b>; nothing waits on levels.</p>'
+   +'<h4 style="margin:12px 0 2px">🎭 Feeling emojis</h4>'+rows
+   +'<h4 style="margin:14px 0 2px">💬 Speech-bubble colour</h4><div>'+colBtns+'</div>'
+   +'<h4 style="margin:12px 0 2px">💬 Speech-bubble font</h4><div>'+fontBtns+'</div>'
+   +'<div style="margin-top:10px;background:'+sty.bg+';color:'+sty.fg+';border:2px solid #14100c;border-radius:12px;padding:9px 13px;font:'+sty.font+';max-width:270px">Your bubbles look like this 💬</div>'
+   +'<button class="btn gold" style="margin-top:12px" onclick="closeModal()">Done</button>');
+ }catch(e){} };
+ window.exprCycleSet218=function(k){ try{ var V=window.ensure216(); if(!V)return; if(!V.expr.feel)V.expr.feel={}; var pool=[]; (window.EXPR_UNLOCK216||[]).forEach(function(t){ Object.keys(t.feel||{}).forEach(function(key){ if(pool.indexOf(t.feel[key])<0)pool.push(t.feel[key]) }) }); if(!pool.length)return; var cur=(V.expr.feel&&V.expr.feel[k])||pool[0]; var i=pool.indexOf(cur); V.expr.feel[k]=pool[((i<0?0:i)+1)%pool.length]; save(); exprSettings218() }catch(e){} };
+ window.exprBubSet218=function(kind,val){ try{ var V=window.ensure216(); if(!V)return; if(kind==='color')V.expr.bubColor=val; else V.expr.bubFont=val; save(); exprSettings218() }catch(e){} };
+ try{ var _sch218=settingsCardHtml121; settingsCardHtml121=function(){ var c=_sch218.apply(this,arguments); try{ if(c&&c.indexOf('exprSettings218')<0){ var blk='<div style="margin-top:12px;border-top:1.5px dashed #80808040;padding-top:10px"><b>😊 Expressions & speech bubbles</b><p class="small" style="margin:4px 0 8px">The emoji over your head is your real state talking. Choose what each feeling wears, plus your speech bubbles\' colour and font — everything unlocked, for everyone.</p><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="exprSettings218()">😊 Customise expressions & bubbles</button></div>'; var ix=c.lastIndexOf('</div>'); if(ix>0)c=c.slice(0,ix)+blk+c.slice(ix) } }catch(e){} return c } }catch(e){}
+ /* ambient pops: at random free moments your character blurts a line — in YOUR bubble colours */
+ var ambNext218=performance.now()+20000+Math.random()*20000;
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; var now=performance.now(); if(now<ambNext218)return; ambNext218=now+22000+Math.random()*26000;
+   if(Math.random()>0.45)return;
+   var m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return;
+   if(typeof activity!=='undefined'&&activity)return;
+   if(window._b128)return;
+   if(typeof playerSay!=='undefined'&&playerSay&&now<playerSay.until)return;
+   var pool=[]; (window.EXPR_UNLOCK216||[]).forEach(function(t){ (t.bubbles||[]).forEach(function(b){ pool.push(b) }) });
+   if(!pool.length)return;
+   playerSay={text:pool[Math.floor(Math.random()*pool.length)],until:now+2600};
+ }catch(e){} },4000);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 18: 🚗 road + world cars paint inside the scene canvas (same bitmap, same camera — they follow every zoom/pan, world scale) • ⚡ contextual cards un-pinned into the panel flow • 😶 stray cheek/waist/feet glyphs + emoji floor clutter gone • 📱 utility row wraps so Change rooms + Bag + Scrapbook always fit • 🖐️ pull-to-refresh killed, fullscreen on entry tap • 👽 Me: Today + house + Expressions cards removed • 😊 expressions all unlocked, bubble colour + font in Settings, random ambient pops','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
