@@ -13597,18 +13597,10 @@ try{ const _dg149=dateGo128; dateGo128=function(nm,loc){ const r=_dg149(nm,loc);
 try{ if(typeof heistGo141==='function'){ const _hg149=heistGo141; heistGo141=function(){ playScene149('crime',450,300,3000); return _hg149() } } }catch(e){}
 try{ const _dr149=drawRoom; drawRoom=function(){ const r=_dr149(); try{ if(!scene149)return r; const now=performance.now(); if(now>scene149.until){ skipScene149(); return r } const cv=document.getElementById('cv'); if(!cv)return r; const ctx=cv.getContext('2d'); const F=SCENE_FAM149[scene149.fam]; const t=(now-scene149.t0)/1000; const bob=Math.sin(t*5)*5; const x=scene149.x, y=scene149.y;
  ctx.save(); ctx.textAlign='center';
- /* the second figure — a co-worker / classmate / date / crewmate — acting it out beside you */
- const nx=Math.max(60,Math.min(840,x+92)), ny=y+8+bob*0.4;
- ctx.fillStyle='#00000026'; ctx.beginPath(); ctx.ellipse(nx,ny+64,20,5,0,0,7); ctx.fill();
- ctx.fillStyle='#f5d0b0'; ctx.beginPath(); ctx.arc(nx,ny,11,0,7); ctx.fill();
- ctx.fillStyle='#334155'; ctx.beginPath(); ctx.roundRect(nx-10,ny+10,20,30,6); ctx.fill();
- ctx.fillStyle='#475569'; ctx.fillRect(nx-10,ny+40,8,20); ctx.fillRect(nx+2,ny+40,8,20);
- /* family props, animated */
- ctx.font='26px serif'; const lift=scene149.fam==='workout'?Math.abs(Math.sin(t*3.2))*13:(Math.sin(t*2.6)*4);
- ctx.fillText(F.prop,nx+26,ny-8-lift); ctx.font='19px serif'; ctx.fillText(F.prop2,x-58,y-26+Math.sin(t*3.4)*5);
+ /* v199h4 (Howard): NO SECOND PERFORMER — an action is performed by the player's own sprite only. The generic stick-figure double that used to act out every scene family (work / school / workout / cooking / social / crime / park) beside the real character is REMOVED, along with the prop it held. What remains is atmosphere around the PLAYER: their own scene prop and the ambient glyphs (cooking steam, music notes), anchored to the player's position. */
+ ctx.font='19px serif'; ctx.fillText(F.prop2,x-58,y-26+Math.sin(t*3.4)*5);
  if(scene149.fam==='cooking'){ ctx.font='15px serif'; for(let i=0;i<3;i++)ctx.fillText('~',x-20+i*16,y-58-Math.abs(Math.sin(t*2+i))*10) }
  if(scene149.fam==='social'){ ctx.font='16px serif'; for(let i=0;i<3;i++)ctx.fillText('♪',x-40+i*34,y-64-Math.abs(Math.sin(t*2.4+i*1.3))*12) }
- if(scene149.fam==='crime'){ ctx.font='17px serif'; ctx.fillText('…',nx+4,ny-30) }
  ctx.restore() }catch(e){} return r } }catch(e){}
 /* ---------- 3) MENUS STAY OPEN — the general rule ---------- */
 let restoring149=false;
@@ -17665,7 +17657,9 @@ try{ var _gp193=goWithParent; goWithParent=function(){
 
 /* ---------------- boot + housekeeping ---------------- */
 try{ var _rd193=render; render=function(){ var r=_rd193.apply(this,arguments); try{ syncStage193() }catch(e){} return r } }catch(e){}
-setInterval(function(){ try{ syncStage193(); if(ST193.stageOn)skyDraw193() }catch(e){} },140);
+/* v199h4 (Howard): THE SKY RUNS ON THE FRAME CLOCK — the band used to redraw on a 140 ms interval (~7 fps) while the scene below it ran at full frame rate, and its rain phase stepped ~17 px per tick (over half the band's height), so precipitation teleported and the whole sky visibly juddered against the smooth room. The band now redraws every animation frame (its phases are continuous functions of performance.now(), so they flow), while the heavier stage sync keeps its ~150 ms cadence. */
+var _skySync193=0;
+(function skyLoop193(){ try{ var t193=performance.now(); if(t193-_skySync193>150){ _skySync193=t193; syncStage193() } if(ST193.stageOn)skyDraw193() }catch(e){} requestAnimationFrame(skyLoop193) })();
 window.__v193={version:function(){ return GAME_VERSION },state:ST193,syncStage193:syncStage193,cuKind193:cuKind193,carTrip193:carTrip193};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v193: STAGE + CURB (all four phases, presentation only) — live sky band + curb with the parked car at home; stage floor + Eat/TV/Play/Sleep close-ups on the shipped camera; household routines that pause behind sheets; walk-to-curb / pull-out / pull-in bookends on car trips home & away. Dock + top functions untouched; no economy, math or save changes.');
 })();
@@ -18920,6 +18914,61 @@ function socialFinal199s(){
 try{ var _rt199s=renderTabs; renderTabs=function(active){ var r=_rt199s.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&typeof inGame!=='undefined'&&inGame){ var cur=(typeof curTab!=='undefined'&&curTab)?curTab:active; if(cur==='life')socialFinal199s() } }catch(e){} return r } }catch(e){}
 window.__v199s={socialFinal:socialFinal199s,version:function(){ return GAME_VERSION }};
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix: ❤️ Social is one list — ❤️ Relationships (family like a tree at the top, then closest-first by bond; dating partners ranked in the same list); the Family · Relationships · Dating hub naming and the separate Dating section are gone; 🌳 Family Tree stays in the top family area');
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v199 hotfix 4 (h4) — 🩹 THE REPAIR BATCH (Howard's play reports, Nov 2, 2026). GAME_VERSION stays 199; SAVE_KEY untouched.
+   1) 🗨️ SPEECH-BUBBLE TEXT HANGING OFF THE BUBBLE (worst in class, toddler years): every NPC bubble is painted inside drawNPCSprite's 1.43× scale transform, but the shipped bubble clamped its box in UNSCALED canvas coordinates — so for any speaker standing away from the room's centre (a classroom full of classmates at their spots, sprites entering at the door) the scaled bubble ran off the scene edge and its text was sliced mid-line; the wrap was also by CHARACTER COUNT (20/line), which under-measures wide-glyph lines. The painter below replaces drawSpeechBubble outright (same look: white bubble, dark rim, amber speaker-name header from bubbleName191): it wraps by MEASURED width, converts the speaker anchor to device pixels through the live transform, draws under the identity transform at the caller's visual scale, and clamps the whole bubble — text included — inside the canvas on all four sides, tail tracking the speaker.
+   2) 📐 THE GAME SCREEN SHRANK TO A SLIVER WITH THE MENU UP: the folder sheet could claim 56dvh on wide screens (46dvh on phones) on top of the pinned HUD and the dock, leaving the live room ~55–100 px tall. The sheet is now capped at 42dvh (38dvh on short screens), the room keeps a 150 px floor, and the pinned HUD compacts further (20dvh) on wide screens while a menu is open — the room stays a real, watchable scene; syncSheetH51 measures the sheet's real height, so the column reflows to match automatically.
+   (Companion in-place fixes in this batch: the v193 sky band now redraws on the frame clock instead of a 140 ms interval — its rain no longer teleports and the sky no longer judders against the scene; the v149 action-scene pass no longer draws its generic stick-figure second performer — actions are performed by the player's own sprite only.) ================= */
+(function(){
+try{
+ /* ---------- 2) layout: the menu stops eating the game screen ---------- */
+ var st=document.createElement('style'); st.id='style199h4';
+ st.textContent='body.inGame51 .dockSheet{max-height:min(42dvh,560px)}'
+ +'body.inGame51 .roomWrap{min-height:150px}'
+ +'@media(max-height:700px){body.inGame51 .dockSheet{max-height:38dvh}body.inGame51 .roomWrap{min-height:110px}}'
+ +'@media(min-width:1180px){body.inGame51.dockOpen47 .topPin{max-height:20dvh}}';
+ document.head.appendChild(st);
+ /* ---------- 1) the bubble painter: measured wrap, device-space clamp ---------- */
+ function wrapBubble199h4(ctx,text,maxW){
+  var raw=String(text).split(/\s+/).filter(Boolean), words=[];
+  raw.forEach(function(w){ while(w.length>1&&ctx.measureText(w).width>maxW){ var cut=w.length-1; while(cut>1&&ctx.measureText(w.slice(0,cut)).width>maxW)cut--; words.push(w.slice(0,cut)); w=w.slice(cut) } words.push(w) });
+  var lines=[], line='';
+  words.forEach(function(w){ var t=line?line+' '+w:w; if(line&&ctx.measureText(t).width>maxW){ lines.push(line); line=w } else line=t });
+  if(line)lines.push(line);
+  return lines.slice(0,3);
+ }
+ drawSpeechBubble=function(ctx,cx,bottomY,text){
+  try{
+   var tr=(ctx.getTransform?ctx.getTransform():null);
+   var s=tr?Math.abs(tr.a):1; if(!isFinite(s)||s<=0)s=1;
+   var devX=tr?(tr.a*cx+tr.e):cx, devBY=tr?(tr.d*bottomY+tr.f):bottomY;
+   var CW=(ctx.canvas&&ctx.canvas.width)||900, CH=(ctx.canvas&&ctx.canvas.height)||460;
+   var nm=''; try{ if(typeof bubbleName191==='function')nm=bubbleName191(text)||'' }catch(e){}
+   var bodyF=13.5*s, nameF=10.5*s, padX=11*s, lineH=17*s, headH=nm?15*s:0;
+   ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+   ctx.font='bold '+bodyF+'px sans-serif';
+   var lines=wrapBubble199h4(ctx,text,Math.min(190*s,Math.max(60,CW-30)));
+   var w=0; lines.forEach(function(l){ w=Math.max(w,ctx.measureText(l).width) });
+   if(nm){ ctx.font='900 '+nameF+'px sans-serif'; w=Math.max(w,ctx.measureText(nm.toUpperCase()).width) }
+   w+=24*s;
+   var h=lines.length*lineH+14*s+headH;
+   var x=Math.max(3,Math.min(CW-w-3,devX-w/2));
+   var y=Math.max(3,Math.min(CH-h-3,devBY-h));
+   var tailX=Math.max(x+12*s,Math.min(x+w-12*s,devX));
+   ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.roundRect(x+2*s,y+3*s,w,h,10*s); ctx.fill();
+   ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.roundRect(x,y,w,h,10*s); ctx.fill(); ctx.strokeStyle='#14100c'; ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+   ctx.beginPath(); ctx.moveTo(tailX-6*s,y+h-1); ctx.lineTo(tailX+6*s,y+h-1); ctx.lineTo(tailX,Math.min(CH-2,y+h+8*s)); ctx.closePath(); ctx.fillStyle='#ffffff'; ctx.fill();
+   if(nm){ ctx.font='900 '+nameF+'px sans-serif'; ctx.fillStyle='#b45309'; ctx.fillText(nm.toUpperCase(),x+padX,y+14*s) }
+   ctx.font='bold '+bodyF+'px sans-serif'; ctx.fillStyle='#14100c';
+   lines.forEach(function(l,i){ ctx.fillText(l,x+padX,y+20*s+headH+i*lineH) });
+   ctx.restore();
+  }catch(e){ try{ ctx.restore() }catch(_){} }
+ };
+ window.__v199h4={version:function(){ return GAME_VERSION }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix 4: 🗨️ speech bubbles wrap by measured width and clamp inside the scene under any sprite scale — text can no longer hang off a bubble or the screen edge (class / toddler years included) • 🌤️ the home sky band redraws on the frame clock — rain flows, no more sky judder • 📐 with a menu open the folder sheet caps at 42dvh and the live room keeps a real share of the screen • 🎭 action scenes have ONE performer — your own character (the generic stick-figure double is gone)');
 }catch(e){}
 })();
 </script>
