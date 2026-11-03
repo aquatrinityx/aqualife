@@ -3702,7 +3702,7 @@ function rideDef50(id){ return RIDES50.find(function(r){ return r.id===id }) }
 function bestRide50(){ ensure50(); let best=null; S.rides50.forEach(function(o){ const d=rideDef50(o.id); if(!d)return; if(o.cond<20)return; if(d.motor&&(o.charge||0)<10)return; if(!best||d.tier>best.d.tier)best={o:o,d:d} }); return best }
 let lastLoc50=null;
 function rideTrip50(loc){ ensure50(); const townLocs=['house','grandparents','school','street','work','college','pawn','spa','barber','salon','vet','orphanage','boarding','liquor']; if(townLocs.indexOf(loc)<0)return; const b=bestRide50(); if(!b)return; adj('energy',-b.d.ecost); if(b.d.motor)b.o.charge=Math.max(0,(b.o.charge||0)-b.d.drain); if(Math.random()<0.22)b.o.cond=Math.max(5,(b.o.cond===undefined?90:b.o.cond)-2); if(Math.random()<0.45)log(b.d.line+' Energy -'+b.d.ecost+(b.d.motor?' • battery '+b.o.charge+'%':'')+'.'); save() }
-function ridesCardHtml50(){ ensure50(); const owned={}; S.rides50.forEach(function(o){ owned[o.id]=o }); const rows=RIDES50.map(function(d){ const o=owned[d.id]; if(o){ const low=d.motor&&(o.charge||0)<10, worn=(o.cond===undefined?90:o.cond)<20; return '<div style="border:1.5px solid #80808035;border-radius:12px;padding:9px 12px;margin-top:9px;text-align:left"><b>'+d.icon+' '+d.name+'</b> — yours'+(d.motor?' • 🔋 '+(o.charge||0)+'%':'')+' • 🔧 '+(o.cond===undefined?90:o.cond)+'%'+(low?' • <b>flat battery</b>':'')+(worn?' • <b>needs repair</b>':'')+'<br>'+(d.motor?'<button class="btn outline" style="width:auto;margin:6px 6px 0 0;padding:7px 12px" onclick="chargeRide50(\''+d.id+'\')">🔋 Charge — $2</button>':'')+'<button class="btn outline" style="width:auto;margin:6px 0 0;padding:7px 12px" onclick="repairRide50(\''+d.id+'\')">🔧 Repair — $15</button></div>' } if(S.age<d.minAge)return '<button class="btn outline" disabled style="opacity:.55">🔒 '+d.icon+' '+d.name+' — $'+d.price+' • unlocks at '+d.minAge+'</button>'; return '<button class="btn outline" onclick="buyRide50(\''+d.id+'\')">'+d.icon+' '+d.name+' — $'+d.price+(d.motor?' • motorized':'')+'</button>' }).join(''); return '<div class="card"><h3>🛹 Rides — no license needed</h3><p>Boards, bikes and motors for the rest of us: NO license, NO lessons — those stay a 🚗 car thing. Rides roll you around town with their own speed and flavor, cost a little energy per trip, and the motorized two run on battery. Cars keep every rule they already have.</p>'+moneyBar54()+rows+'</div>' }
+function ridesCardHtml50(){ ensure50(); const owned={}; S.rides50.forEach(function(o){ owned[o.id]=o }); const rows=RIDES50.map(function(d){ const o=owned[d.id]; if(o){ const low=d.motor&&(o.charge||0)<10, worn=(o.cond===undefined?90:o.cond)<20; return '<div style="border:1.5px solid #80808035;border-radius:12px;padding:9px 12px;margin-top:9px;text-align:left"><b>'+d.icon+' '+d.name+'</b> — yours'+(d.motor?' • 🔋 '+(o.charge||0)+'%':'')+' • 🔧 '+(o.cond===undefined?90:o.cond)+'%'+(low?' • <b>flat battery</b>':'')+(worn?' • <b>needs repair</b>':'')+'<br>'+(d.motor?'<button class="btn outline" style="width:auto;margin:6px 6px 0 0;padding:7px 12px" onclick="chargeRide50(\''+d.id+'\')">🔋 Charge — $2</button>':'')+'<button class="btn outline" style="width:auto;margin:6px 0 0;padding:7px 12px" onclick="repairRide50(\''+d.id+'\')">🔧 Repair — $15</button></div>' } if(S.age<d.minAge)return '<button class="btn outline" disabled style="opacity:.55">🔒 '+d.icon+' '+d.name+' — $'+d.price+' • unlocks at '+d.minAge+'</button>'; return '<button class="btn outline" onclick="buyRide50(\''+d.id+'\')">'+d.icon+' '+d.name+' — $'+d.price+(d.motor?' • motorized':'')+'</button>' }).join(''); return '<div class="card"><h3>🛹 Rides — no license needed (around town only)</h3><p>Boards, bikes and motors for the rest of us: NO license, NO lessons — those stay a 🚗 car thing. Rides roll you around <b>town</b> with their own speed and flavor, cost a little energy per trip, and the motorized two run on battery. <b>Local only, though:</b> a ride is NOT a car and does NOT count as one — far-off places that ask for 🚗 wheels + a 🪪 license (the 🛍️ Mall run, road trips) still need the real car and the real license. Cars keep every rule they already have.</p>'+moneyBar54()+rows+'</div>' }
 function buyRide50(id){ ensure50(); const d=rideDef50(id); if(!d)return; if(S.age<d.minAge){ toast('🔒 '+d.name+' unlocks at '+d.minAge); return } if(S.money<d.price){ toast('Need $'+d.price); return } money(-d.price,d.icon+' Bought '+d.name); S.rides50.push({id:id,cond:92,charge:d.motor?85:100}); log(d.icon+' YOURS — a '+d.name+'! No license, no lessons: it lives in the 🚗 Travel tab, and every trip around town from here rides on it (energy -'+d.ecost+'/trip'+(d.motor?', battery drains as you go':'')+').'); toast(d.icon+' '+d.name+' is yours!'); save(); render(); if(window._dockTab)renderTabs(window._dockTab) }
 function chargeRide50(id){ ensure50(); const o=S.rides50.find(function(r){ return r.id===id }); if(!o)return; if(S.money<2){ toast('Need $2'); return } money(-2,'🔋 Ride charge'); o.charge=100; log('🔋 Charged to 100% — plugged in, patient, ready.'); save(); render(); if(window._dockTab)renderTabs(window._dockTab) }
 function repairRide50(id){ ensure50(); const o=S.rides50.find(function(r){ return r.id===id }); if(!o)return; if(S.money<15){ toast('Need $15'); return } money(-15,'🔧 Ride repair'); o.cond=100; log('🔧 Repaired — condition back to 100%.'); save(); render(); if(window._dockTab)renderTabs(window._dockTab) }
@@ -11546,7 +11546,7 @@ const QL136_QS=[
  {k:'job',t:'💼 Job or no job?',opts:[['yes','💼 Yes — start employed'],['no','🌴 No job — figure it out live'],['random','🎲 Random']]},
  {k:'stage',t:'🎂 Start at what age? ⭐ (builder-added question)',opts:[['toddler','🧸 Toddler (3)'],['kid','🧒 Kid (5–12)'],['teen','🎒 Teen (13–17)'],['adult','🧑 Adult (21–35)'],['random','🎲 Random']]} ];
 let QL136={};
-function qlSet136(k,v){ QL136[k]=v; quickSheet136() }
+function qlSet136(k,v){ QL136[k]=v; try{ if(k==='stage'&&typeof agePick==='function'){ const rep={toddler:3,kid:8,teen:15,adult:26}[v]; if(rep)agePick(rep) } }catch(e){} quickSheet136() }
 function quickSheet136(){ let h='<h2>⚡ Quick Life</h2><p>Answer what you care about; anything you skip rolls 🎲 random. Then the life is <b>built from your answers</b> — partner, kids and job set up to match, through the game\u2019s normal systems.</p>';
  QL136_QS.forEach(function(q){ h+='<h4 style="margin:14px 0 4px;text-align:left">'+q.t+'</h4><div style="display:flex;gap:6px;flex-wrap:wrap">'+q.opts.map(function(o){ const on=QL136[q.k]===o[0]; return '<button class="btn '+(on?'gold':'outline')+'" style="width:auto;margin:0" onclick="qlSet136(\''+q.k+'\',\''+o[0]+'\')">'+o[1]+'</button>' }).join('')+'</div>' });
  h+='<button class="btn gold" style="margin-top:16px" onclick="quickStart136()">⚡ Start this life</button><button class="btn outline" style="margin-top:8px" onclick="quickRandom136()">🎲 Skip it all — fully random life</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Back</button>';
@@ -11564,6 +11564,7 @@ function quickStart136(){ const A={}; QL136_QS.forEach(function(q){ A[q.k]=QL136
  if(jobWanted&&age<18&&A.stage!=='toddler')age=21+Math.floor(Math.random()*8);
  if(takenWanted&&age<16&&A.stage!=='toddler')age=16+Math.floor(Math.random()*4);
  const g=Math.random()<0.5?'girl':'boy'; selGender=g; selName=nameForGender(g==='girl'); selAge=age;
+ try{ if(typeof agePick==='function')agePick(age) }catch(e){} /* h5: the builder behind the modal (age readout, stage line, preview caption) must agree with the age this life actually starts at — never a stale "Age 1" */
  selOrigin=(A.stage==='toddler')?pickArr(ORIGINS.filter(function(o){ return ['two','mom','dad','step','rich','orphan','boarding'].indexOf(o.id)>=0 })).id:pickArr(ORIGINS).id; /* v159: the family is DEALT, never picked — uniform across ORIGINS; the old money question steered the family start and is gone • h3: a TODDLER start is always dealt a family home (parents / Hope House / dorm) — a 3-year-old starts IN a family, never self-raised */
  rollPlace44(); randomStyle123(true,g); tmpMom47=''; tmpDad47='';
  const el=document.getElementById('pname'); if(el)el.value=selName;
@@ -13947,7 +13948,7 @@ function travelPass151(){ if(!S)return; const panel=document.getElementById('pan
  /* 15: Cars + Rides → 🚗 Vehicles */
  const carsU=findUnit151(grid,'🚗 Cars'), ridesU=findUnit151(grid,'Rides — no license');
  if(carsU&&ridesU&&carsU!==ridesU){ const cc=unitCard151(carsU), rc=unitCard151(ridesU); if(cc&&rc){ const h=cc.querySelector('h3'); if(h)h.textContent='🚗 Vehicles'; if(carsU.tagName==='DETAILS'){ const cs=carsU.querySelector('summary'); if(cs)cs.textContent='🚗 Vehicles' }
-  const sub=document.createElement('h4'); sub.style.margin='14px 0 4px'; sub.textContent='🛹 Rides — no license needed'; cc.appendChild(sub);
+  const sub=document.createElement('h4'); sub.style.margin='14px 0 4px'; sub.textContent='🛹 Rides — no license needed (around town only — not a car, and no substitute for one)'; cc.appendChild(sub);
   Array.prototype.slice.call(rc.children).forEach(function(ch){ if(ch.tagName!=='H3'&&!(ch.classList&&ch.classList.contains('moneyBar54')))cc.appendChild(ch) });
   if(ridesU.parentNode)ridesU.parentNode.removeChild(ridesU) } }
  /* 16: Vacations + High-Status Vacations → one Vacations */
@@ -14313,6 +14314,7 @@ try{ const _ar158=appRemove110; appRemove110=function(id){ const r=_ar158(id); t
 /* ================= v158 ITEM 8: 🚗 THE DRIVING TEST — DODGE CONES + THE ROAD QUIZ =================
    WHAT WAS THERE: no test at all. drivingLesson() (16+, $30 a lesson) simply counted to two and granted S.car.license on the second click. THE REBUILD keeps that economics and eligibility EXACTLY — 16+, $30 per attempt, no cooldown, license = S.car.license, already-licensed players untouched — but the second lesson is now THE TEST, in two parts, and BOTH must be passed:
    PART 1 — 🚧 DODGE CONES: a 35-second course on a canvas road. Cones (🚧) stream down at the car; steer with touch-drag on the road, the ◀ ▶ hold buttons, or the keyboard (◀/▶ / A/D). Speed ramps 190→320 px/s; cones spawn every 0.72s, tightening to 0.48s. A hit is counted once per cone (the cone is cleared). Finish with at most 2 hits to pass this part; a 3rd hit ends the course (and the test) on the spot.
+   v200 HOTFIX 5 RETUNE (Playthrough #2: 8 careful attempts ALL failed at exactly 3 hits — the quiz was never reached, blocking license → car → Mall → phone → laptop): the course is gentler on every axis while the RULES stay identical (35 seconds, ≤2 hits to pass, 3rd hit ends it, then the quiz at 2 of 3, $30 an attempt). Speed now ramps 140→215 px/s; cones spawn every 1.15s easing to 0.85s; the second-cone roll drops to 10%→22%; the hitbox shrinks to the car's real body (|Δy|<28, |Δx|<21 — the old box was wider than the drawn car and taller than the cone zone, so clean dodges still clipped). Verified by simulation of the exact frame math with a careful-player steering model: the old tuning passed 0.3% of 300 runs (every run dying at 3 hits, exactly as QA saw); this tuning passes ~81% per attempt, ~96% within two tries; the first cone waits ~0.9s; drag steering now HOLDS the lane (a tracked drag flag + window-level release, instead of relying on pointermove button state that touch browsers report inconsistently); hold-button steering is quicker (300 px/s) and the car answers faster (lerp ×16).
    PART 2 — 📋 THE ROAD QUIZ: 3 questions drawn at random from a pool of 8 road-rules questions (signs, lights, right-of-way, school zones, phones, rain, tailgating, passing lines), 3 options each; at least 2 of 3 correct to pass.
    PASS = license granted exactly as the old flow granted it (S.car.license=true, same toast). FAIL = no license; a retake is the same $30 driving-lesson step (Cars screen), no cooldown — the existing fee structure, unchanged. Walking away mid-test ends the attempt. */
 const QUIZ158=[
@@ -14326,13 +14328,15 @@ const QUIZ158=[
  {q:'🚗 Following the car ahead THIS close — bumper to bumper — is called tailgating. It is…',opts:['Fine if your brakes are good','Dangerous — keep a safe gap so you can stop in time','Only a problem on the highway'],a:1}];
 let dtest158=null;
 function driveStop158(){ if(dtest158){ dtest158.over=true; if(dtest158.raf)cancelAnimationFrame(dtest158.raf); if(dtest158.keyFn)document.removeEventListener('keydown',dtest158.keyFn); dtest158=null } }
-function driveTestOpen158(){ if(!S)return; driveStop158(); const st={hits:0,cones:[],carX:160,targetX:160,dir:0,spawn:0,t0:performance.now(),over:false,raf:0,keyFn:null}; dtest158=st;
+function driveTestOpen158(){ if(!S)return; driveStop158(); const st={hits:0,cones:[],carX:160,targetX:160,dir:0,spawn:0.9,t0:performance.now(),over:false,raf:0,keyFn:null,drag:false}; dtest158=st;
  openSheet('<div style="text-align:center"><h2 style="margin:2px 0">🚗 The Driving Test — Part 1 of 2</h2><p style="font-size:13px;line-height:1.5;margin:4px 0">🚧 <b>DODGE CONES.</b> 35 seconds. Steer around every cone: drag, hold ◀ ▶, or arrow keys. <b>≤2 hits to finish</b> — 3rd hit ends it. Then: 📋 road quiz.</p><div id="driveHud158" style="font-weight:900;font-size:14px;margin:6px 0">🚧 Hits: 0 / 2 allowed &nbsp;•&nbsp; 🏁 0%</div><canvas id="driveCv158" width="320" height="420" style="width:min(320px,86vw);height:auto;border-radius:14px;border:2px solid #ffb703;background:#1f2937;touch-action:none"></canvas><div style="display:flex;gap:10px;justify-content:center;margin-top:10px"><button class="btn" id="driveL158" style="width:110px;margin:0;font-size:22px">◀</button><button class="btn" id="driveR158" style="width:110px;margin:0;font-size:22px">▶</button></div><button class="btn outline" style="margin-top:10px" onclick="driveAbort158()">✋ Stop the test (ends this attempt)</button></div>');
  const cv=document.getElementById('driveCv158'); if(!cv){ driveStop158(); return }
  const ctx=cv.getContext('2d');
  function ptX(e){ const r=cv.getBoundingClientRect(); const cx=(e.touches&&e.touches[0])?e.touches[0].clientX:e.clientX; return (cx-r.left)*(cv.width/r.width) }
- cv.addEventListener('pointerdown',function(e){ st.targetX=ptX(e); e.preventDefault() });
- cv.addEventListener('pointermove',function(e){ if(e.buttons||(e.touches&&e.touches.length))st.targetX=ptX(e) });
+ cv.addEventListener('pointerdown',function(e){ st.drag=true; st.targetX=ptX(e); e.preventDefault() });
+ cv.addEventListener('pointermove',function(e){ if(st.drag||e.buttons||(e.touches&&e.touches.length))st.targetX=ptX(e) });
+ cv.addEventListener('pointerup',function(){ st.drag=false }); cv.addEventListener('pointercancel',function(){ st.drag=false });
+ window.addEventListener('pointerup',function wp(){ if(!dtest158||dtest158!==st){ window.removeEventListener('pointerup',wp); return } st.drag=false });
  const bl=document.getElementById('driveL158'), br=document.getElementById('driveR158');
  if(bl){ bl.addEventListener('pointerdown',function(e){ st.dir=-1; e.preventDefault() }); bl.addEventListener('pointerup',function(){ st.dir=0 }); bl.addEventListener('pointerleave',function(){ st.dir=0 }) }
  if(br){ br.addEventListener('pointerdown',function(e){ st.dir=1; e.preventDefault() }); br.addEventListener('pointerup',function(){ st.dir=0 }); br.addEventListener('pointerleave',function(){ st.dir=0 }) }
@@ -14342,12 +14346,12 @@ function driveTestOpen158(){ if(!S)return; driveStop158(); const st={hits:0,cone
  let last=performance.now(), roadOff=0;
  function frame(now){ if(!dtest158||dtest158!==st||st.over)return; if(!document.getElementById('driveCv158')){ driveStop158(); return }
   const dt=Math.min(0.05,(now-last)/1000); last=now; const el=(now-st.t0)/1000; const prog=Math.min(1,el/35);
-  const speed=190+130*prog; roadOff=(roadOff+speed*dt)%48;
-  if(st.dir)st.targetX=Math.max(28,Math.min(292,st.targetX+st.dir*260*dt));
-  st.carX+=(st.targetX-st.carX)*Math.min(1,dt*14); st.carX=Math.max(28,Math.min(292,st.carX));
-  st.spawn-=dt; if(st.spawn<=0){ st.cones.push({x:36+Math.random()*248,y:-30}); if(Math.random()<0.25+0.3*prog)st.cones.push({x:36+Math.random()*248,y:-70}); st.spawn=0.72-0.24*prog }
+  const speed=140+75*prog; roadOff=(roadOff+speed*dt)%48;
+  if(st.dir)st.targetX=Math.max(28,Math.min(292,st.targetX+st.dir*300*dt));
+  st.carX+=(st.targetX-st.carX)*Math.min(1,dt*16); st.carX=Math.max(28,Math.min(292,st.carX));
+  st.spawn-=dt; if(st.spawn<=0){ st.cones.push({x:36+Math.random()*248,y:-30}); if(Math.random()<0.10+0.12*prog)st.cones.push({x:36+Math.random()*248,y:-70}); st.spawn=1.15-0.30*prog }
   const carY=420-86;
-  st.cones=st.cones.filter(function(c){ c.y+=speed*dt; if(c.y>450)return false; if(Math.abs(c.y-carY)<44&&Math.abs(c.x-st.carX)<36){ st.hits++; try{ buzz([90]) }catch(e){} try{ sfx('hit') }catch(e){} return false } return true });
+  st.cones=st.cones.filter(function(c){ c.y+=speed*dt; if(c.y>450)return false; if(Math.abs(c.y-carY)<28&&Math.abs(c.x-st.carX)<21){ st.hits++; try{ buzz([90]) }catch(e){} try{ sfx('hit') }catch(e){} return false } return true });
   ctx.fillStyle='#1f2937'; ctx.fillRect(0,0,320,420);
   ctx.fillStyle='#111827'; ctx.fillRect(0,0,14,420); ctx.fillRect(306,0,14,420);
   ctx.strokeStyle='#fbbf24'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(14,0); ctx.lineTo(14,420); ctx.moveTo(306,0); ctx.lineTo(306,420); ctx.stroke();
@@ -19716,13 +19720,15 @@ function mailTick200(){ try{ if(!S||S.deadFlag||Math.random()>0.3)return; const 
 function openMail200(){ const V=ensure200(); if(!V)return; let h='<h2>📬 Your mail</h2>';
  if(V.billDebt)h+='<div class="kv" style="display:block"><b>🧾 Household debt: $'+V.billDebt+'</b><br><span class="small">Missed bills and tax, with late fees. It does not forgive itself.</span><br><button class="btn gold" style="margin-top:6px" onclick="payDebt200()">💵 Pay it off — $'+V.billDebt+'</button></div>';
  if(!V.mail.length)h+='<p>No mail right now. The doorstep is quiet.</p>';
- V.mail.forEach(function(m,i){ h+='<div class="kv" style="display:block;margin-top:8px"><b>'+m.icon+' '+m.title+'</b><br><span class="small">'+m.text+'</span><br><button class="btn gold" style="margin-top:6px" onclick="claimMail200('+i+')">'+(m.jury?'⚖️ Deal with it':'Open it')+'</button></div>' });
+ V.mail.forEach(function(m,i){ h+='<div class="kv" style="display:block;margin-top:8px"><b>'+m.icon+' '+m.title+'</b><br><span class="small">'+m.text+'</span><br>'+(m.jury?'<button class="btn gold" style="margin-top:6px" onclick="claimMail200('+i+',\'serve\')">⚖️ Show up &amp; serve</button> <button class="btn outline" style="margin-top:6px" onclick="claimMail200('+i+',\'ignore\')">🙈 Ignore it</button>':'<button class="btn gold" style="margin-top:6px" onclick="claimMail200('+i+')">Open it</button>')+'</div>' });
  h+='<button class="btn outline" style="margin-top:12px" onclick="closeModal()">Close</button>'; openSheet(h) }
 function payDebt200(){ const V=ensure200(); if(!V||!V.billDebt)return; if(pay63(V.billDebt,'🧾 Household debt — caught up',true)){ log('🧾✅ DEBT CLEARED — $'+V.billDebt+' of missed bills, settled. The house breathes again.'); V.billDebt=0; try{ credit63(4,'caught up on household debt') }catch(e){} } else toast('💵 Cannot cover it yet'); save(); openMail200() }
-function claimMail200(i){ const V=ensure200(); if(!V)return; const m=V.mail[i]; if(!m)return; V.mail.splice(i,1);
+function claimMail200(i,act){ const V=ensure200(); if(!V)return; const m=V.mail[i]; if(!m)return; V.mail.splice(i,1);
  if(m.amt)money(m.amt,'📦 Package — found value');
  if(m.social)adj('social',m.social); if(m.fun)adj('fun',m.fun); if(m.fans)gainFollowers(m.fans,'fan mail');
- if(m.jury){ if((S.money||0)>=40&&Math.random()<0.5){ money(-40,'⚖️ Jury summons — ignored, fined'); S.record=(S.record||0)+1; log('⚖️ You ignored the summons: $40 fine, record +1. The court remembers being ignored.') } else { adj('fun',-4); log('⚖️ Civic duty done — a long Tuesday in a wood-panelled room. The system thanks you, quietly.') } }
+ if(m.jury){ /* h5: the journal now names the action the player ACTUALLY took — Show up serves (stipend, a long day), Ignore risks the fine; the old single "Deal with it" roll journaled half its servings as "ignored, fined?" */
+  if(act==='ignore'){ if(Math.random()<0.5){ money(-40,'⚖️ Jury summons — ignored, fined'); S.record=(S.record||0)+1; log('⚖️ YOU IGNORED THE SUMMONS — the court noticed: $40 contempt fine, record +1. The court remembers being ignored the way it remembers everything: in writing.') } else { log('⚖️ You ignored the jury summons — and this time the court let it slide. The envelope goes in a drawer with the other brave decisions.') } }
+  else { try{ const V128=ensure128(); if(V128)V128.juryDoneDay=S.day }catch(e){} money(30,'🧑‍⚖️ Jury duty stipend'); adj('fun',-4); adj('social',4); log('⚖️ JURY DUTY — you showed up: a long Tuesday in a wood-panelled room, evidence, arguments, eleven strangers. $30 stipend, civic duty done, and the system thanks you, quietly.') } }
  log('📬 Opened: '+m.icon+' '+m.title); save(); openMail200() }
 /* ---------- things break ---------- */
 function breakTick200(){ try{ if(!S||S.deadFlag||Math.random()>0.06)return; const V=ensure200(); if(!V||V.broken)return; const opts=[];
@@ -20006,7 +20012,7 @@ try{ const _bp200=buyPhone40; buyPhone40=function(id){ try{ const m=(typeof phon
 /* ---------- slim the intro tour: JIT tutorials + the ❓ directory carry the teaching ---------- */
 try{ if(typeof TUT102!=='undefined'&&Array.isArray(TUT102)&&TUT102.length>4)TUT102.splice(4) }catch(e){}
 /* ---------- toddler start (youngest was Kid 5–12): a Toddler (3) pick on the setup screen ---------- */
-setInterval(function(){ try{ const inp=document.getElementById('pname'); if(!inp||document.getElementById('toddlerBtn200'))return; const btns=Array.prototype.slice.call(document.querySelectorAll('button')); const anchor=btns.find(function(b){ return /Kid|Teen|Adult/.test(b.textContent||'')&&/selAge|age/i.test(b.getAttribute('onclick')||'') })||btns.find(function(b){ return /5\s?[–-]\s?12/.test(b.textContent||'') });
+setInterval(function(){ try{ const inp=document.getElementById('pname'); if(!inp||document.getElementById('toddlerBtn200'))return; const btns=Array.prototype.slice.call(document.querySelectorAll('button')).filter(function(b){ return !(b.closest&&b.closest('#modal')) }); const anchor=btns.find(function(b){ return /Kid|Teen|Adult/.test(b.textContent||'')&&/selAge/.test(b.getAttribute('onclick')||'') })||btns.find(function(b){ return /5\s?[–-]\s?12/.test(b.textContent||'') });
  if(!anchor||!anchor.parentNode)return; const b=document.createElement('button'); b.id='toddlerBtn200'; b.className=anchor.className||'btn outline'; b.style.cssText='width:auto;margin:4px;padding:8px 14px'; b.textContent='🧸 Toddler — start at 3'; b.onclick=function(){ try{ selAge=3 }catch(e){} try{ toast('🧸 Toddler start — age 3. The world is big and everyone is tall.') }catch(e){} }; anchor.parentNode.insertBefore(b,anchor.nextSibling) }catch(e){} },1200);
 /* ---------- visual round: time-of-day light, weather that lands, seasonal dressing, mood faces ---------- */
 function sceneFx200(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; const cvs=document.querySelector('canvas'); if(!cvs||!cvs.getBoundingClientRect)return; const r=cvs.getBoundingClientRect(); if(r.width<50)return;
@@ -20244,6 +20250,120 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 3: driving lesson
 /* ---------- 🔒 v200 HOTFIX 4 — PURCHASE LOCKS: the legacy shop path checks the lock BEFORE the payment picker opens ---------- */
 try{ const _sb204=shopBuy128; shopBuy128=function(loc,i){ try{ const it=(typeof SHOP128!=='undefined'&&SHOP128[loc])?SHOP128[loc][i]:null; if(it&&typeof buyLock204==='function'){ const lk=buyLock204(it[0],it[2]); if(lk){ toast(lk.why); return } } }catch(e){} return _sb204(loc,i) } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 4: purchase locks — 👛 wallet is one-time per character (owned = 🔒 locked at the store shelves, the bank counter and every payment method) • 📱 Kid Phone is age-locked by recipient: no adult self-buy anywhere, parents buy it for their child (age 2–3) through the buy-and-give flow only • swept with the same lock: 💻 AquaBook laptop + 🛌 sleeping bag (one-time gear)','color:#0ea5e9;font-weight:bold') }catch(e){}
+</script>
+<script>
+/* ================= v200 HOTFIX 5 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   From QA Playthrough #2 of the v200h3 build (the cone-course retune, the Quick Life dedupe, the
+   rides wording and the jury-mail choices are source edits above; this layer carries the rest):
+   • 🎒 BAG USE AGREES WITH EAT — a food-kind Bag item (🍟 Chips, 🥤 Soda, groceries…) used to fall
+     into useItem's "for selling, not using" bin while Actions → Eat offered the very same item.
+     Bag → Use on a food item now eats it: the identical effect to eatInv132 (the Eat path) —
+     same hunger, same journal line — then the bag re-opens the way every other Use does.
+   • 🏦 WITHDRAW AT THE BRANCH — the bank-visit sheet (the one a branch check deposit lands you
+     back on) had no way out for money: deposits in, nothing out, unless you already knew the
+     phone Bank app's counter. The branch sheet now carries the counter's own withdraw row
+     ($50 / $200 / all) whenever a debit card is held and the balance is positive; the math is
+     withdraw63's, mirrored exactly (bank → cash, ledger line, journal cause via txn63).
+   • 🤗 CONTEXTUAL ACTIONS REACHABLE — the v200 "Right here, right now" card (Hug included) was
+     injected only when curTab==='actions', but the Actions folder's tab id is 'actions101' —
+     the card could never appear where the player looks for it. ctxInject200 is re-issued below
+     with the real tab ids (Actions folder + ❤️ Social), and peopleHere200 now unions every
+     presence source (household defs, housemate list, in-scene NPCs, siblings, guest, partner)
+     so "family is in the room" reads true whenever it is true anywhere in the game.
+   • 💼 SHIFTS ARE WORKPLACES — jobShift now seats the shift: coworkers203 runs first (the
+     job's named coworkers exist as work-haunt townsfolk), the work scene's townsfolk are
+     (re)seated as the shift starts, and when the shift lands, the shift gives Social feedback:
+     a named coworker moment + the boss's mood, Social up, the coworker remembers it (mem200).
+   • 🧸 TODDLER ROOMS SHOW FAMILY — roomFolks106 read only scene NPCs, so a toddler's room
+     picker said "Nobody else here" in every room even with family home (their care is
+     dialog-driven, and schedule presence parks the grown-ups' sprites elsewhere). For a
+     toddler at home, the room the toddler is standing in now also lists the household —
+     caregiver first — the same treatment h3 gave adult homes. */
+function ensure205(){ if(!S)return null; if(!S.v205||typeof S.v205!=='object')S.v205={}; return S.v205 }
+/* ---------- 🎒 Bag → Use on food eats it (same effect as Actions → Eat) ---------- */
+try{ const _ui205=useItem; useItem=function(id){ try{ const it=S&&(S.inv||[]).find(function(x){ return x.id===id }); if(it&&it.kind==='food'&&!it.use){ const ix=S.inv.findIndex(function(x){ return x.id===id }); if(ix>=0)S.inv.splice(ix,1); const nm=it.name; startActivity('🍽️',1600,470,300,{hunger:18},function(){ log('🍽️ Ate '+nm+' from the Bag.'); save(); render(); if(window._bagPhone)phoneBag(); else openBag() }); return } }catch(e){} return _ui205(id) } }catch(e){}
+/* ---------- 🏦 Withdraw on the branch sheet (incl. right after a deposit) ---------- */
+function bankWithdraw205(n){ if(!S)return; try{ ensure63() }catch(e){} const b=S.bank63; if(!b||!b.debit){ toast('💳 Withdrawals need your debit card — the counter issues it right here'); return } const amt=n<0?b.bank:Math.min(n,b.bank); if(!(amt>0)){ toast('🏦 Nothing in the bank to withdraw'); return } b.bank-=amt; S.money+=amt; try{ txn63('🏧 Withdrawal — at the branch counter',-amt) }catch(e){} log('🏧 Withdrew $'+amt+' at the branch counter — bank money to cash in hand, no phone required.'); save(); bankVisit108() }
+try{ const _bv205=bankVisit108; bankVisit108=function(){ const r=_bv205.apply(this,arguments); try{ if(!S)return r; try{ ensure63(); ensure108() }catch(e){} const b=S.bank63; const sh=document.getElementById('sheet'); if(!sh||!b||!b.debit||!(b.bank>0)||sh.querySelector('.wdBank205'))return r;
+  const d=document.createElement('div'); d.className='wdBank205'; d.innerHTML='<h4 style="margin:14px 0 4px">🏧 Cash out — withdraw</h4><p class="small">Bank balance: <b>$'+b.bank+'</b> — withdrawals land as 💵 cash in hand, right here at the counter (no trip to the phone app needed).</p><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn" style="width:auto;margin:0;padding:8px 12px;background:#1f2937;color:#fff" onclick="bankWithdraw205(50)">⬆️ Withdraw $50</button><button class="btn" style="width:auto;margin:0;padding:8px 12px;background:#1f2937;color:#fff" onclick="bankWithdraw205(200)">⬆️ Withdraw $200</button><button class="btn" style="width:auto;margin:0;padding:8px 12px;background:#1f2937;color:#fff" onclick="bankWithdraw205(-1)">⬆️ Withdraw all</button></div>';
+  const btns=sh.querySelectorAll('button'); let back=null; for(let i=0;i<btns.length;i++){ if((btns[i].getAttribute('onclick')||'').indexOf('closeModal()')>=0){ back=btns[i]; break } }
+  if(back&&back.parentNode)back.parentNode.insertBefore(d,back); else sh.appendChild(d) }catch(e){} return r } }catch(e){}
+/* ---------- 🤗 Contextual actions: real tab ids + a people-here that unions every presence source ---------- */
+peopleHere200=function(){ const out=[]; const push=function(nm){ if(nm&&out.indexOf(nm)<0)out.push(nm) };
+ try{ (householdPeopleBase47(S.location)||[]).forEach(function(p){ push(p.name) }) }catch(e){}
+ try{ if(S.guest&&S.guest.name)push(S.guest.name) }catch(e){}
+ try{ if(S.partner)push(S.partner); if(S.spouse)push(S.spouse) }catch(e){}
+ try{ (S.housemates||[]).forEach(push) }catch(e){}
+ try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')push(n.name) }) }catch(e){}
+ try{ const f=S.fam78; if(f&&(f.siblings||[]))f.siblings.forEach(function(s){ if(s&&s.name)push(s.name) }) }catch(e){}
+ try{ (S.kids||[]).forEach(function(k){ if(S.location===(typeof homeLoc==='function'?homeLoc():''))push(k.name) }) }catch(e){}
+ return out };
+ctxInject200=function(){ try{ if(!S||typeof curTab==='undefined')return; const panel=document.getElementById('panel'); if(!panel)return; const grid=panel.querySelector('.grid')||panel;
+  if((curTab==='actions'||curTab==='actions101'||curTab==='social')&&!panel.querySelector('.ctxCard200')){ const acts=ctxActs200(); if(acts.length){ const d=document.createElement('div'); d.className='card ctxCard200'; d.style.borderColor='var(--accent2)';
+    d.innerHTML='<h3>🌤️ Right here, right now</h3><p class="small">Contextual actions — these exist only because of where you are, what time it is, and who is with you.</p>'+acts.map(function(a){ return '<button class="btn outline" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="ctxAct200(\''+a[0]+'\')">'+a[1]+' '+a[2]+'</button>' }).join('')
+    +((S.location===(typeof homeLoc==='function'?homeLoc():''))?'<button class="btn gold" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="cookSheet200()">👨‍🍳 Cook a real meal</button>':'')
+    +(hasLaptop200()?'<button class="btn outline" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="openLaptop200(\'desk\')">💻 Set up laptop</button>':'');
+    grid.insertBefore(d,grid.children[0]||null) } }
+  if(curTab==='home'&&!panel.querySelector('.mailCard200')){ const V=ensure200(); if(!V)return; const d=document.createElement('div'); d.className='card mailCard200';
+   let wants=''; try{ const ks=Object.keys(V.wants||{}); if(ks.length)wants='<p class="small" style="margin-top:6px">💭 <b>Wants going around:</b> '+ks.slice(0,3).map(function(nm){ return nm.split(' ')[0]+' wants '+V.wants[nm].text+(V.wants[nm].done?' ✓':'') }).join(' · ')+'</p>' }catch(e){}
+   d.innerHTML='<h3>🏠 The house, honestly</h3>'
+    +'<button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="openMail200()">📬 Mail'+(V.mail.length?' ('+V.mail.length+' waiting)':'')+'</button>'
+    +(V.billDebt?' <span class="small" style="color:#f87171;font-weight:800">🧾 Debt: $'+V.billDebt+'</span>':'')
+    +(V.broken?'<div style="margin-top:8px"><span class="small">💥 Broken: <b>'+V.broken.what+'</b> — repair $'+V.broken.cost+'</span> <button class="btn" style="width:auto;margin:0;padding:7px 12px" onclick="repair200()">🔧 Fix it</button></div>':'')
+    +wants
+    +'<div style="margin-top:8px"><button class="btn outline" style="width:auto;margin:0;padding:7px 12px" onclick="openStory200()">📖 Life storybook ('+(V.pages?V.pages.length:0)+' pages)</button> <button class="btn outline" style="width:auto;margin:0;padding:7px 12px" onclick="openJournal200()">💵 Money journal</button></div>';
+   grid.insertBefore(d,grid.children[0]||null) }
+ }catch(e){} };
+/* the Actions folder repaints itself after renderTabs returns (paintActions101 / paintQCards101) — re-run the injector after those paints too, or the card lands under a repaint */
+['paintActions101','paintQCards101'].forEach(function(nm){ try{ const fn=window[nm]; if(typeof fn!=='function'||fn.__ctx205)return; const w=function(){ const r=fn.apply(this,arguments); try{ ctxInject200() }catch(e){} return r }; w.__ctx205=true; window[nm]=w }catch(e){} });
+/* ---------- 💼 Shifts: the workplace is populated, and the shift talks back (Social) ---------- */
+function shiftSocial205(){ try{ if(!S||!S.jobInfo)return; const V=(typeof ensure200==='function')?ensure200():null; const w=V&&V.work?V.work[S.jobInfo.title]:null; const mates=(w&&w.mates)||[]; const mate=mates.length?mates[Math.floor(Math.random()*mates.length)]:null; const mood=w?(w.bossMood||50):50;
+ if(mate){ try{ if(window.__v196b)window.__v196b.register(mate) }catch(e){} try{ mem200(mate,1) }catch(e){} }
+ adj('social',4);
+ const mateLine=mate?pickArr(['☕ Break-room debrief with '+mate+' — the shift, the gossip, the good stuff.','🤝 '+mate+' covered your rush without being asked — that is a coworker becoming a person.','💬 You and '+mate+' ran the floor like you had rehearsed it.','😄 '+mate+' kept the whole shift laughing through the worst hour of it.']):'☕ A shift with actual people on it — faces, names, break-room talk.';
+ const bossLine=mood>68?' The boss was in a rare golden mood and the whole floor felt lighter for it.':mood<32?' The boss was storming today — heads down, short answers — and the crew quietly looked out for each other.':'';
+ log('💼 '+mateLine+bossLine+' (Social up — shifts are social, not just wages.)'); save() }catch(e){} }
+try{ const _js205=jobShift; jobShift=function(){ try{ if(typeof coworkers203==='function')coworkers203() }catch(e){} const before=(S&&S.jobInfo)?(S.careerShifts||0):-1; const r=_js205.apply(this,arguments);
+  try{ [350,1400].forEach(function(ms){ setTimeout(function(){ try{ if(S&&S.location==='work'&&typeof initTownsfolk==='function')initTownsfolk() }catch(e){} },ms) });
+   if(before>=0){ const t0=Date.now(); const iv=setInterval(function(){ try{ if(!S){ clearInterval(iv); return } if((S.careerShifts||0)>before){ clearInterval(iv); shiftSocial205() } else if(Date.now()-t0>120000)clearInterval(iv) }catch(e){ clearInterval(iv) } },700) } }catch(e){}
+  return r } }catch(e){}
+/* ---------- 🏠 MOMENT BINDING — a decision sheet resolves ITS event, not whichever fired last ----------
+   THE DEFECT (Playthrough #2: Mr. Chen's "Ask what's wrong" / "Learn it" / "I'm in!" did nothing;
+   only "Decide later" dismissed — while the same dialogs for June and Riley resolved, and Chen's
+   own "Spot the $10" worked): every NPC decision sheet — household moments (houseChoice /
+   houseExtra), world moments (worldChoice49), toddler moments (todEventGo72) — reads ONE shared
+   global slot (window._houseEv / _worldEv49 / _todEv72) at click time. But a sheet can be QUEUED
+   before it is shown (the v115 popup queue files a sheet whenever a popup or the day card is up;
+   the v84 sheet queue does the same behind an open modal) and re-shown later by a drain that
+   bypasses the current openSheet chain. While it waits, the NEXT moment fires and overwrites the
+   slot — that newer moment resolves fine (which is why the other NPCs "worked"), and the re-shown
+   sheet's buttons then read a slot that is null or belongs to a different event: the click lands,
+   the handler sees nothing to do, and the sheet just sits there. "Decide later" is an inline
+   closeModal() that needs no slot, so it is the only button that ever answered. It is not
+   Chen-specific — he is simply whose sheets kept losing the race.
+   THE FIX: at the moment a moment FIRES, its event is snapshotted into a title-keyed store; at
+   click time, if the shared slot is empty or its title does not match the sheet actually on
+   screen (read from the sheet's own <h2>), the sheet's own event is restored into the slot
+   before the shipped handler runs. Matching sheets take the shipped path untouched, so nothing
+   about rewards, cooldowns (v162's one-ask-a-day included) or event content changes. */
+window._evByTitle205={};
+function evSheetTitle205(){ try{ const h=document.querySelector('#sheet h2'); return h?(h.textContent||'').trim():'' }catch(e){ return '' } }
+function evRestore205(slot){ try{ const t=evSheetTitle205(); if(!t)return; const cur=window[slot]; if(cur&&cur.t===t)return; const rec=window._evByTitle205[slot+':'+t]; if(rec)window[slot]=rec }catch(e){} }
+try{ const _mhe205=maybeHouseholdEvent; maybeHouseholdEvent=function(){ const r=_mhe205.apply(this,arguments); try{ const ev=window._houseEv; if(ev&&ev.t)window._evByTitle205['_houseEv:'+ev.t]=ev }catch(e){} return r } }catch(e){}
+try{ const _hc205=houseChoice; houseChoice=function(i){ evRestore205('_houseEv'); return _hc205(i) } }catch(e){}
+try{ const _hx205=houseExtra; houseExtra=function(){ evRestore205('_houseEv'); return _hx205.apply(this,arguments) } }catch(e){}
+try{ const _mwe205=maybeWorldEvent49; maybeWorldEvent49=function(){ const r=_mwe205.apply(this,arguments); try{ const ev=window._worldEv49; if(ev&&ev.t)window._evByTitle205['_worldEv49:'+ev.t]=ev }catch(e){} return r } }catch(e){}
+try{ const _wc205=worldChoice49; worldChoice49=function(i){ evRestore205('_worldEv49'); return _wc205(i) } }catch(e){}
+try{ const _te205=todEvent72; todEvent72=function(){ const r=_te205.apply(this,arguments); try{ const ev=window._todEv72; if(ev&&ev.t)window._evByTitle205['_todEv72:'+((typeof todFill72==='function')?todFill72(ev.t):ev.t)]=ev }catch(e){} return r } }catch(e){}
+try{ const _tg205=todEventGo72; todEventGo72=function(ci){ evRestore205('_todEv72'); return _tg205(ci) } }catch(e){}
+/* ---------- 🧸 Toddler rooms: the room the toddler is in lists the household that is home ---------- */
+try{ const _rf205=roomFolks106; roomFolks106=function(rid){ let here=[]; try{ here=_rf205(rid)||[] }catch(e){}
+  try{ if(S&&S.age>=1&&S.age<=4&&typeof homeLoc==='function'&&S.location===homeLoc()){ const rm=(typeof curRoom86==='function')?curRoom86():null; if(rm&&rm.id===rid){ const add=function(nm){ if(nm&&here.indexOf(nm)<0)here.push(nm) };
+    try{ const cg=(typeof todCare82==='function')?todCare82():null; if(cg)add(cg) }catch(e){}
+    try{ (typeof householdPeople==='function'?householdPeople():[]).forEach(function(p){ if(p&&p.name)add(p.name) }) }catch(e){}
+    try{ const f=S.fam78; if(f&&(f.siblings||[]))f.siblings.forEach(function(s){ if(s&&s.name)add(s.name) }) }catch(e){}
+  } } }catch(e){} return here } }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 5: cone course retuned (140→215 px/s, spawns 1.15→0.85s, hitbox = the car\'s real body, drag holds the lane; simulation of the shipped frame math: old tuning 0.3% pass, this tuning ~81% per attempt) — same rules, ≤2 hits + quiz 2/3, $30 • NPC decision sheets are bound to their own event by title (household / world / toddler moments — a queued, re-shown sheet can no longer lose its handler to the next moment) • Quick Life has ONE toddler entry and the builder age readout agrees with the life • rides say local-only, never a car substitute • jury mail = Show up / Ignore, journaled by the act taken • Bag Use on food eats it, same as Eat • branch bank sheet (incl. post-deposit) carries Withdraw • contextual card (Hug & co.) renders on the real Actions/Social tabs with a union people-here • shifts seat coworkers in the work scene and pay Social feedback • toddler rooms list the household','color:#0ea5e9;font-weight:bold') }catch(e){}
 </script>
 </body>
 </html>
