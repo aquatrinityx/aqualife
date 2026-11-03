@@ -7539,6 +7539,8 @@ try{ console.log('[AquaLife v193] Social single-home + creator letter armed: '+A
 })();
 </script>
 
+
+
 </body>
 </html>
 <style>
@@ -20902,6 +20904,331 @@ function toddlerFamDraw208(){ if(!S||typeof inGame==='undefined'||!inGame)return
 try{ const _dr208=drawRoom; drawRoom=function(){ const r=_dr208.apply(null,arguments); try{ toddlerFamDraw208() }catch(e){} return r } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 8: 📱 phone counter takes the full wallet picker (cash / debit+PIN / tap / credit+PIN) and the Mall $300 "Smartphone" is honestly a display-model resale gadget now • 🐦 Birdy deleted from the App Store • 📝 BookSmith counts words live as you type • 💻 AquaOS Start opens a real menu and every AquaSurf page loads • 💵 header money refreshes the moment money moves, dialog open or not • 💼 Finish Work Shift completes & pays like fast-forward, and shifts seat named coworkers in the workplace scene • 🤗 Hug (and every contextual action) confirms out loud, target named • 🚧 cone course: every lane threatened + aimed cones — a pass always takes steering • 🧸 toddler room scenes draw the family the room list names','color:#0ea5e9;font-weight:bold') }catch(e){}
 
+</script>
+
+<script>
+/* ================= v200 HOTFIX 9 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's seven picks from mockup round 3, applied exactly as mocked ("I like details"):
+   1) ACTIONS = 1A TILES + PINNED FAMILY CARD: the ⚡ Actions panel becomes a grid of big tappable
+      tiles (the core furn actions as full-size tiles; the grouped lists — Eat, Sleep, Shower,
+      Entertainment, Bad Actions & the rest — as full-width rows under them), and the contextual
+      🌤️ "Right here, right now" card is PINNED at the very top of the Actions panel (sticky, first
+      child, moved back up after every repaint) whenever people are present — it can never be buried
+      again. Tiles fire the same shipped handlers; no mechanic, cost or effect changes.
+   2) WORK = 2B HUB + CREW STRIP: a hub card tops the 💼 Work panel — job title + rung, shift pay,
+      schedule, shifts-to-promotion progress (career Job XP 50/rung = 5 shifts, or the board-ladder
+      count), warnings & missed counts, and the three shift choices side by side (Work shift /
+      Finish shift / Fast-forward, with honest disabled states) — PLUS a crew strip naming this
+      shift's coworkers (the coworkers203 set) with each one's relationship standing, and the boss's
+      mood. Pay, promotion, warning and firing rules untouched.
+   3) SETTINGS = 3A CHEVRON ACCORDION: the ⚙️ Settings sheet reorganizes into Option B gold-chevron
+      accordion sections — 🎮 Gameplay / 🎨 Looks & Trails / 🔊 Sound / 💾 Data & Save — one open at
+      a time (the shipped h6 accordion does the closing), the ✨ touch-trail picker living in Looks
+      & Trails, two taps from the gear. Every shipped setting keeps its own button and handler.
+   4) MAP = 4B MAP ON TOP, LIST BELOW: the 🚗 Travel panel gains a drawn town map at the top —
+      streets, blocks, a park green — with the town's standing places as tappable spots (Home,
+      School, The Mall, First River Bank, Corner Store, Library, Endless Table, Club Nova, the park
+      and every other place on the live travel list; overflow places ride as chips under the map).
+      A spot tap calls the very same goLoc() the list rows call — same options, same gates, same
+      no-wheels/ride flow. The categorized list below is untouched; Vacations stays its own section.
+      Your current place is ringed gold; your car rides on your spot when you own one; after dark
+      the map wears night shading.
+   5) TODAY = 5C BUILT INTO ME: the top of the 👽 Me panel gains a Today block — Day + time, cash
+      and bank, the lowest need flagged by name, mail waiting, and ONE suggested next move derived
+      from real state (due bill → lowest need → unread mail → hungry PocketPal → today's shift),
+      with a button that goes there. It rebuilds on every render, so it is always live. Me only —
+      no popup, no banner.
+   6) BRIEFING = 6A ONE STACKED CARD: overnight information — physical mail arrived, a bill came
+      due, an NPC drama headline, PocketPal got hungry, family bond shifted, rent/board posted —
+      collects into ONE stacked section inside the morning day card, one icon per line, dismissed
+      with the card's one button; tapping a line jumps (mail → the mail card, pal → the phone).
+      Informational spotlights fired during the overnight roll are folded into the briefing instead
+      of stacking over the screen; DECISION flows (knocks, moments, jury choices) never pass through
+      the spotlight path and are untouched.
+   7) PORTRAIT = 7C AUTOMATIC ON FAMILY EVENTS: birthdays (yours and your kids'), a new baby, a
+      wedding, a thrown party — the game composes a family portrait on the spot: everyone present
+      drawn together with the real figure renderer on a framed photo card, shown at the event, and
+      saved into the 📷 Camera Scrapbook with the date and the names of who's in it. No button —
+      Howard picked automatic. */
+(function(){
+'use strict';
+try{
+ var st=document.createElement('style'); st.id='style209';
+ st.textContent=
+  /* 1A — big tiles on the Actions panel */
+  '#panel.actions209 .actGrid101{grid-template-columns:1fr 1fr;gap:10px}'
+ +'#panel.actions209 .actGrid101>details.dd132{grid-column:1/-1}'
+ +'#panel.actions209 .actCard101{padding:8px}'
+ +'#panel.actions209 .actCard101>.furn{width:100%;min-height:84px;font-size:17px;border-radius:15px}'
+ +'#panel.actions209 .actCard101 .btn{margin-top:8px}'
+ +'.ctxPin209{position:sticky;top:0;z-index:8;box-shadow:0 8px 22px #00000030}'
+  /* 2B — work hub + crew strip */
+ +'.hubGrid209{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:6px}'
+ +'.hubBtns209{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}'
+ +'.hubBtns209 .btn{width:auto;margin:0;padding:10px 14px;flex:1 1 30%}'
+ +'.crewStrip209{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}'
+ +'.crewChip209{display:inline-flex;align-items:center;gap:7px;background:#0000000d;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px 6px 8px;font-size:12.5px;font-weight:800}'
+ +'.crewChip209 .cFace209{font-size:19px;line-height:1}'
+ +'.crewChip209 small{display:block;font-size:10.5px;font-weight:700;opacity:.75;line-height:1.25}'
+  /* 4B — the town map */
+ +'.townMap209{position:relative;height:300px;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#a8d98a,#8fce74 55%,#7cc464);border:2px solid #5d8f3e}'
+ +'.townMap209 .road209{position:absolute;background:#e8e0c8;box-shadow:inset 0 0 0 2px #d8cba6}'
+ +'.townMap209 .roadH209{left:0;right:0;height:26px}'
+ +'.townMap209 .roadV209{top:0;bottom:0;width:24px}'
+ +'.townMap209 .park209{position:absolute;left:56%;top:44%;width:26%;height:24%;background:#6db355;border-radius:12px;box-shadow:inset 0 0 0 2px #5da047}'
+ +'.townMap209 .river209{position:absolute;left:0;right:0;bottom:0;height:16px;background:linear-gradient(180deg,#7cc4e8,#4aa3d8)}'
+ +'.townMap209 .night209{position:absolute;inset:0;background:#101a4a55;pointer-events:none}'
+ +'.mapSpot209{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:0;background:transparent;border:0;cursor:pointer;font:inherit;padding:0;z-index:3;-webkit-tap-highlight-color:transparent}'
+ +'.mapSpot209 .msIc209{font-size:19px;line-height:1.15;background:#fffdf4;border:2px solid #8a6d2f;border-radius:10px;padding:2px 5px;box-shadow:0 2px 6px #00000045}'
+ +'.mapSpot209 .msLb209{font-size:8.5px;font-weight:900;color:#20300f;background:#fffdf4cc;border-radius:99px;padding:1px 5px;margin-top:1px;white-space:nowrap;max-width:74px;overflow:hidden;text-overflow:ellipsis}'
+ +'.mapSpot209:active .msIc209{transform:scale(.92)}'
+ +'.mapSpot209.here209 .msIc209{border-color:var(--accent2,#ffb703);box-shadow:0 0 0 3px var(--accent2,#ffb703),0 2px 8px #00000055}'
+ +'.mapSpot209 .msCar209{position:absolute;top:-11px;right:-13px;font-size:13px;filter:drop-shadow(0 1px 2px #00000088)}'
+ +'.mapSpot209 .msYou209{position:absolute;top:-12px;left:-8px;font-size:11px}'
+ +'.mapChips209{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}'
+  /* 5C — Today block */
+ +'.today209 .tdRow209{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}'
+  /* 6A — briefing stack inside the day card */
+ +'.briefBox209{margin-top:12px;background:#ffffff10;border:1.5px solid #ffb70366;border-radius:14px;padding:10px 12px;text-align:left}'
+ +'.briefLine209{display:flex;gap:9px;align-items:center;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px dashed #ffffff26;padding:7px 2px;color:#fff;font:inherit;font-size:13.5px;line-height:1.45;cursor:pointer}'
+ +'.briefLine209:last-child{border-bottom:0}'
+ +'.briefLine209 .bIc209{font-size:18px;flex:none}'
+  /* 7C — portrait frame */
+ +'.portFrame209{border:6px solid #8a5a1e;outline:3px solid var(--accent2,#ffb703);border-radius:10px;overflow:hidden;background:#2b1c10}'
+ +'.portFrame209 img{width:100%;display:block}';
+ document.head.appendChild(st);
+
+ function ensure209(){ if(!S)return null; if(!S.v209||typeof S.v209!=='object')S.v209={}; const V=S.v209;
+  if(!Array.isArray(V.brief))V.brief=[];
+  if(!V.snap)V.snap=null;
+  if(!V.portraits||typeof V.portraits!=='object')V.portraits={};
+  return V }
+ function esc209(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
+
+ /* ================= 1) ACTIONS = 1A TILES + PINNED FAMILY CARD ================= */
+ function actionsPass209(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='actions101')return; const panel=document.getElementById('panel'); if(!panel)return;
+  panel.classList.add('actions209');
+  try{ if(typeof ctxInject200==='function')ctxInject200() }catch(e){}
+  const ctx=panel.querySelector('.ctxCard200'); if(!ctx)return;
+  const host=ctx.closest('details.dd132')||ctx;
+  if(host.parentNode!==panel||panel.firstElementChild!==host)panel.insertBefore(host,panel.firstChild);
+  ctx.classList.add('ctxPin209');
+ }catch(e){} }
+ ['paintActions101','paintQCards101'].forEach(function(nm){ try{ const fn=window[nm]; if(typeof fn!=='function'||fn.__h209)return; const w=function(){ const r=fn.apply(this,arguments); try{ actionsPass209(); setTimeout(actionsPass209,120) }catch(e){} return r }; w.__h209=true; window[nm]=w }catch(e){} });
+
+ /* ================= 2) WORK = 2B HUB + CREW STRIP ================= */
+ function crewStrip209(){ try{ if(typeof coworkers203==='function')coworkers203() }catch(e){}
+  const V=(typeof ensure200==='function')?ensure200():null; const w=V&&V.work?V.work[S.jobInfo.title]:null; const mates=(w&&w.mates)||[];
+  if(!mates.length)return '';
+  const stand=function(nm){ let s=45; try{ s=relScore137(nm) }catch(e){} const lbl=s>=75?'❤️ Close — real friends':s>=55?'🤝 Warm — good shifts together':s>=35?'👋 Getting to know you':'🆕 New face'; return {s:s,lbl:lbl} };
+  return '<div style="margin-top:12px"><b style="font-size:13px">👥 On this shift — your crew</b><div class="crewStrip209">'
+   +mates.map(function(nm){ const st2=stand(nm); const rec=(S.town&&S.town.people)?S.town.people[nm]:null; return '<span class="crewChip209"><span class="cFace209">'+((rec&&rec.icon)||'🧑')+'</span><span>'+esc209(nm)+'<small>'+st2.lbl+' · '+st2.s+'/100</small></span></span>' }).join('')
+   +'</div><p class="small" style="margin-top:6px">The boss is '+(w?(w.bossMood>68?'in a rare golden mood today — the floor feels lighter':w.bossMood<32?'storming today — heads down, crew looking out for each other':'steady today — business as usual'):'around')+'. Shifts are social: working alongside your crew moves these numbers.</p></div>' }
+ function workHubHtml209(){ if(!S||!S.jobInfo)return ''; const j=S.jobInfo;
+  let tr=null,lvl=0,rungs=0,field='',shiftsTo=null,progPct=0,progTxt='';
+  try{ if(j.track&&typeof trackById127==='function'){ tr=trackById127(j.track); if(tr){ lvl=j.level||0; rungs=tr.rungs.length; field=tr.field; const cx=Math.min(50,j.cxp||0); progPct=cx*2; shiftsTo=Math.max(0,Math.ceil((50-cx)/10)); progTxt='⭐ Job XP '+cx+' / 50 — promotion at 50 (+10 a shift)' } } }catch(e){}
+  if(!tr){ try{ const L=(typeof ladderOf84==='function')?ladderOf84(j.title):null; if(L){ lvl=L.rung; rungs=L.rungs.length; field=L.base.replace(/^\S+\s+/,''); const need=(L.rung+1)*6; if(L.rung>=L.rungs.length-1){ shiftsTo=0; progPct=100; progTxt='🏆 Top rung of this ladder' } else { shiftsTo=Math.max(0,need-(j.shifts||0)); progPct=Math.min(100,Math.round((j.shifts||0)/need*100)); progTxt='🪜 '+j.shifts+' / '+need+' shifts toward the next rung' } } }catch(e){} }
+  let sch=null,wd=false,doneT=false;
+  try{ if(typeof ensure57==='function')ensure57(); if(typeof schedOf57==='function')sch=schedOf57(j); if(typeof isWorkDay57==='function')wd=isWorkDay57(j); doneT=!!(S.sched57&&S.sched57.doneDay===S.day) }catch(e){}
+  const top=tr?(lvl>=rungs-1):(shiftsTo===0&&progPct===100);
+  const btns='<div class="hubBtns209">'
+   +'<button class="btn" onclick="jobShift()">💼 Work shift — $'+j.pay+'</button>'
+   +(wd&&!doneT?'<button class="btn gold" onclick="finishShift113()">✅ Finish shift</button><button class="btn outline" onclick="shiftFF57()">⏩ Fast-forward</button>':'<button class="btn" disabled style="opacity:.45;filter:grayscale(1)">✅ Finish shift<br><span style="font-size:11px;font-weight:600">'+(doneT?'today\'s shift is worked':'no shift today')+'</span></button><button class="btn outline" disabled style="opacity:.45;filter:grayscale(1)">⏩ Fast-forward</button>')
+   +'</div>';
+  return '<div class="card" id="workHub209" style="border:2px solid var(--accent2)"><h3>💼 Work Hub — '+esc209(j.title)+'</h3>'
+   +'<div class="hubGrid209">'
+   +'<div class="kv" style="border:0;padding:2px 0"><span>🪜 Rung</span><b>'+(rungs?('Level '+(lvl+1)+' of '+rungs+(field?' · '+esc209(field):'')):'—')+'</b></div>'
+   +'<div class="kv" style="border:0;padding:2px 0"><span>💵 Shift pay</span><b>$'+j.pay+' / shift</b></div>'
+   +'<div class="kv" style="border:0;padding:2px 0"><span>📋 Shifts worked</span><b>'+(j.shifts||0)+'</b></div>'
+   +'<div class="kv" style="border:0;padding:2px 0"><span>⚠️ Warnings</span><b>'+(j.warnings||0)+' / 3'+((j.warnings||0)>=2?' — one more and you are fired':'')+'</b></div>'
+   +'<div class="kv" style="border:0;padding:2px 0"><span>🕳️ Missed shifts</span><b>'+(j.missed||0)+'</b></div>'
+   +'<div class="kv" style="border:0;padding:2px 0"><span>🗓️ Schedule</span><b>'+(sch&&typeof schedText57==='function'?esc209(schedText57(j)):'—')+'</b></div>'
+   +'</div>'
+   +(progTxt?'<div class="kv" style="margin-top:6px"><span>'+progTxt+'</span><b>'+(top?'🏆 Top rung':(shiftsTo+' shift'+(shiftsTo===1?'':'s')+' to promotion'))+'</b></div><div class="progress" style="margin:4px 0 2px"><i style="width:'+progPct+'%"></i></div>':'')
+   +'<p class="small" style="margin-top:8px">'+(wd?(doneT?'✅ <b>Today\'s shift is worked</b> — the next one lands on your next scheduled day.':'<b>Shift today</b>'+(sch?' — '+esc209(fmtHour(sch.start))+'–'+esc209(fmtHour(sch.end)):'')+': work it in person, finish it, or fast-forward straight through. Ignore it past the end and it counts as missed.'):'💤 <b>No shift today</b> — a scheduled day off. The choices wake up on your next shift day.')+'</p>'
+   +btns
+   +crewStrip209()
+   +'</div>' }
+ function workPass209(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='work'||!S.jobInfo)return; const panel=document.getElementById('panel'); if(!panel)return; const grid=panel.querySelector('.grid')||panel;
+  const tmp=document.createElement('div'); tmp.innerHTML=workHubHtml209(); const hub=tmp.firstChild; if(!hub)return;
+  const old=document.getElementById('workHub209'); if(old)old.remove();
+  grid.insertBefore(hub,grid.children[0]||null);
+ }catch(e){} }
+
+ /* ================= 3) SETTINGS = 3A CHEVRON ACCORDION ================= */
+ let setSec209='game';
+ document.addEventListener('toggle',function(e){ try{ const d=e.target; if(d&&d.classList&&d.classList.contains('acc209')&&d.open)setSec209=d.getAttribute('data-sec')||setSec209 }catch(e){} },true);
+ function settingsPass209(){ try{ if(!S)return; const sh=document.getElementById('sheet'); if(!sh)return;
+  const trail=sh.querySelector('#trailCard193');
+  if(sh.querySelector('.accSet209')){ if(trail&&!trail.closest('.accSet209')){ const looks=sh.querySelector('.acc209[data-sec="looks"] .accBody209'); if(looks){ looks.appendChild(trail); trail.style.marginTop='10px' } } return }
+  let card=null; sh.querySelectorAll('.card').forEach(function(c){ if(!card&&c.querySelector('h3')&&(c.querySelector('h3').textContent||'').indexOf('Settings')>=0)card=c });
+  if(!card)return;
+  const secs={game:[],looks:[],sound:[],data:[]};
+  Array.prototype.slice.call(card.childNodes).forEach(function(n){
+   if(n.nodeType===1&&n.tagName==='H3')return;
+   if(n.nodeType===1&&n.tagName==='BUTTON'){ const oc=n.getAttribute('onclick')||'';
+    if(/toggleSfx|toggleMusic81/.test(oc))secs.sound.push(n);
+    else if(/openThemeSheet|toggleTapFx/.test(oc))secs.looks.push(n);
+    else secs.game.push(n); return }
+   if(n.nodeType===1||(n.nodeType===3&&n.textContent.trim()))secs.game.push(n);
+  });
+  if(trail)secs.looks.push(trail);
+  const ver=document.createElement('div'); ver.innerHTML='<div class="kv"><span>🌊 Version</span><b>'+(typeof verTag124==='function'?verTag124():('AquaLife v'+GAME_VERSION))+'</b></div><p class="small" style="margin-top:6px">Your life saves in this browser, on this device — it is written as you play, every action, automatically.</p><button class="btn outline" style="margin-top:8px" onclick="confirmNewLife()">↻ Start a New Life</button>';
+  secs.data.push(ver);
+  const mk=function(id,ic,title,nodes,extra){ const d=document.createElement('details'); d.className='dd132 acc209'; d.setAttribute('data-sec',id); if(setSec209===id)d.setAttribute('open','');
+   const sm=document.createElement('summary'); sm.textContent=ic+' '+title; d.appendChild(sm);
+   const body=document.createElement('div'); body.className='accBody209'; body.style.padding='4px 2px 10px';
+   nodes.forEach(function(n){ body.appendChild(n) }); if(extra)body.innerHTML+=extra;
+   d.appendChild(body); return d };
+  const wrap=document.createElement('div'); wrap.className='accSet209';
+  wrap.appendChild(mk('game','🎮','Gameplay',secs.game));
+  wrap.appendChild(mk('looks','🎨','Looks & Trails',secs.looks,'<p class="small" style="margin-top:8px">✨ The touch-trail picker lives right here — two taps from the ⚙️ gear: Settings → Looks & Trails.</p>'));
+  wrap.appendChild(mk('sound','🔊','Sound',secs.sound));
+  wrap.appendChild(mk('data','💾','Data & Save',secs.data));
+  card.replaceWith(wrap);
+ }catch(e){} }
+ try{ const _os209=openSettings121; openSettings121=function(){ const r=_os209.apply(this,arguments); try{ setTimeout(settingsPass209,70); setTimeout(settingsPass209,380); setTimeout(settingsPass209,700) }catch(e){} return r } }catch(e){}
+
+ /* ================= 4) MAP = 4B MAP ON TOP, LIST BELOW ================= */
+ const MAP_SPOTS209={house:[9,13],orphanage:[26,9],boarding:[43,8],school:[60,11],mall:[80,13],bank:[88,32],store:[11,36],library:[31,33],buffet:[52,36],grocery:[28,57],hospital:[50,60],restaurant:[13,72],street:[74,55],club:[90,74],arcade:[36,80],cinema:[60,82],pawn:[84,90],grandparents:[8,89],vet:[70,26],spa:[44,22],fair:[95,52],concert:[66,68],barber:[20,22],salon:[20,22],liquor:[95,20],bar:[78,86],tattoo:[48,90],townhall:[40,48],music:[58,48],daycare:[18,50],beach:[50,97],city:[30,97],mountains:[70,97],park:[88,97],work:[64,30],college:[36,18],jail:[4,60]};
+ const MAP_SHORT209={house:'Home',orphanage:'Hope House',boarding:'Dorm',school:'School',mall:'The Mall',bank:'First River Bank',store:'Corner Store',library:'Library',buffet:'Endless Table',grocery:'FreshMart',hospital:'Hospital',restaurant:'Salty Cup',street:'Maple St & Park',club:'Club Nova',arcade:'Arcade',cinema:'Cinema',pawn:'Pawn Shop',grandparents:'Grandparents',vet:'The Vet',spa:'Spa',fair:'Amusement Park',concert:'Concert Hall',barber:'Barbershop',salon:'Salon',liquor:'Bottle & Vine',bar:'Velvet Fox',tattoo:'Tattoo',townhall:'Town Hall',music:'Music Store',daycare:'Daycare',beach:'Beach',city:'City',mountains:'Mountains',park:'Theme Park',work:'Workplace',college:'College',jail:'Jail'};
+ function mapCard209(){ if(!S)return ''; let opts=[]; try{ opts=travelOpts45() }catch(e){} const ids={}; opts.forEach(function(o){ ids[o[0]]=1 });
+  const night=(S.hour>=19||S.hour<6);
+  const hasCar=!!(S.car&&S.car.owned);
+  let spots='',used={};
+  Object.keys(MAP_SPOTS209).forEach(function(id){ if(!ids[id])return; used[id]=1; const p=MAP_SPOTS209[id]; const here=S.location===id;
+   const ic=(opts.find(function(o){ return o[0]===id })||[])[1]||''; const em=(ic.match(/\S+/g)||['📍'])[0];
+   spots+='<button type="button" class="mapSpot209'+(here?' here209':'')+'" style="left:'+p[0]+'%;top:'+p[1]+'%" onclick="goLoc(\''+id+'\')" aria-label="Travel to '+(MAP_SHORT209[id]||id)+(here?' — you are here':'')+'"><span class="msIc209">'+em+'</span>'+(hasCar&&here?'<span class="msCar209">🚗</span>':'')+(here?'<span class="msYou209">📍</span>':'')+'<span class="msLb209">'+(MAP_SHORT209[id]||id)+(here?' • you are here':'')+'</span></button>' });
+  const extra=opts.filter(function(o){ return !used[o[0]] });
+  const chips=extra.length?'<div class="mapChips209"><span class="small" style="align-self:center;font-weight:800">More places:</span>'+extra.map(function(o){ return '<button class="btn outline" style="width:auto;margin:0;padding:7px 11px" onclick="goLoc(\''+o[0]+'\')">'+o[1].split('—')[0].trim()+(S.location===o[0]?' • you are here':'')+'</button>' }).join('')+'</div>':'';
+  return '<div class="card" id="townMapCard209" style="border:2px solid var(--accent2)"><h3>🗺️ '+esc209(placeOf().city)+' — tap a place to go</h3>'
+   +'<div class="townMap209" role="group" aria-label="Town map — tap a place to travel there">'
+   +'<div class="road209 roadH209" style="top:24%"></div><div class="road209 roadH209" style="top:66%"></div>'
+   +'<div class="road209 roadV209" style="left:20%"></div><div class="road209 roadV209" style="left:68%"></div>'
+   +'<div class="park209"></div><div class="river209"></div>'
+   +spots+(night?'<div class="night209"></div><span style="position:absolute;top:6px;right:9px;font-size:15px;z-index:2">🌙</span>':'')
+   +'</div>'
+   +'<p class="small" style="margin-top:8px">Same trip as the list below — same gates, same ride flow if you have no wheels. 📍 marks where you stand'+(hasCar?' · 🚗 your car is with you':'')+(night?' · 🌙 Night over '+esc209(placeOf().city):'')+'.</p>'
+   +chips+'</div>' }
+ function travelPass209(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='travel')return; const panel=document.getElementById('panel'); if(!panel||document.getElementById('townMapCard209'))return; const grid=panel.querySelector('.grid')||panel;
+  const tmp=document.createElement('div'); tmp.innerHTML=mapCard209(); if(tmp.firstChild)grid.insertBefore(tmp.firstChild,grid.children[0]||null);
+ }catch(e){} }
+
+ /* ================= 5) TODAY = 5C BUILT INTO ME ================= */
+ window.todayGo209=function(kind){ try{
+  if(kind==='act'){ if(typeof dockGo101==='function')dockGo101(); else if(typeof openFolder==='function')openFolder('home'); return }
+  if(kind==='mail'){ if(typeof openMail200==='function')openMail200(); return }
+  if(kind==='phone'){ if(typeof openPhone==='function')openPhone(); return }
+  if(kind==='work'){ if(typeof dockGo==='function')dockGo('work'); else if(typeof openFolder==='function')openFolder('work'); return }
+ }catch(e){} };
+ function todayHtml209(){ if(!S)return ''; const V=(typeof ensure200==='function')?ensure200():null;
+  const NEEDL={hunger:['🍔','Hunger'],energy:['⚡','Energy'],fun:['🎮','Fun'],hygiene:['🚿','Hygiene'],social:['💬','Social'],health:['❤️','Health']};
+  let lowK=null,lowV=101; Object.keys(NEEDL).forEach(function(k){ const v=(S.needs&&S.needs[k]!=null)?S.needs[k]:100; if(v<lowV){ lowV=v; lowK=k } });
+  const mailN=((V&&V.mail)?V.mail.length:0); const unread=(S.phoneMsgs||[]).filter(function(m){ return !m.read&&m.from!=='You' }).length;
+  const bank=(S.bank63&&S.bank63.bank)||0;
+  let sug=null;
+  if(V&&V.billDebt>0)sug={t:'🧾 A bill is due — $'+V.billDebt+' of household debt is waiting in your mail',k:'mail',b:'📬 Open mail'};
+  else if(lowK&&lowV<35)sug={t:NEEDL[lowK][0]+' '+NEEDL[lowK][1]+' is down to '+Math.round(lowV)+'% — that is the fire to put out first',k:'act',b:'⚡ Open Actions'};
+  else if(mailN>0)sug={t:'📬 '+mailN+' piece'+(mailN===1?'':'s')+' of mail waiting at home',k:'mail',b:'📬 Open mail'};
+  else if(unread>0)sug={t:'💬 '+unread+' unread message'+(unread===1?'':'s')+' on your phone',k:'phone',b:'📱 Open phone'};
+  else { try{ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; const hungry=P&&P.pals&&P.pals.find(function(p){ return (p.hun||0)<25 }); if(hungry)sug={t:'🐾 '+hungry.name+' is hungry in PocketPal ('+Math.round(hungry.hun||0)+'% fed)',k:'phone',b:'📱 Open phone'} }catch(e){} }
+  if(!sug&&S.jobInfo){ try{ if(typeof isWorkDay57==='function'&&isWorkDay57(S.jobInfo)&&!(S.sched57&&S.sched57.doneDay===S.day))sug={t:'💼 You have a '+S.jobInfo.title+' shift today — it pays $'+S.jobInfo.pay, k:'work', b:'💼 Open Work'} }catch(e){} }
+  if(!sug)sug={t:'🌤️ Nothing is on fire — needs are fed, mail is quiet. A good day to chase something fun.',k:'act',b:'⚡ Open Actions'};
+  return '<div class="card today209" id="todayCard209" style="border:2px solid var(--accent2)"><h3>📅 Today — Day '+S.day+' · 🕐 '+esc209(typeof clockStr==='function'?clockStr():'')+'</h3>'
+   +'<div class="tdRow209"><span class="hudPill207">💵 $'+(S.money||0)+'</span><span class="hudPill207">🏦 $'+bank+'</span>'
+   +(lowK?'<span class="hudPill207" style="'+(lowV<35?'border-color:#ef4444;color:#ef4444;font-weight:900':'')+'">'+NEEDL[lowK][0]+' Lowest need: '+NEEDL[lowK][1]+' '+Math.round(lowV)+'%</span>':'')
+   +'<span class="hudPill207">📬 Mail waiting: '+mailN+(unread?' · 💬 '+unread+' unread':'')+'</span></div>'
+   +'<p style="margin-top:9px;font-size:13.5px"><b>👉 Next move:</b> '+sug.t+'</p>'
+   +'<button class="btn gold" style="width:auto;margin:2px 0 0;padding:9px 15px" onclick="todayGo209(\''+sug.k+'\')">'+sug.b+'</button></div>' }
+ function mePass209(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='home')return; const panel=document.getElementById('panel'); if(!panel)return; const grid=panel.querySelector('.grid')||panel;
+  const tmp=document.createElement('div'); tmp.innerHTML=todayHtml209(); const card=tmp.firstChild; if(!card)return;
+  const old=document.getElementById('todayCard209'); if(old)old.remove();
+  grid.insertBefore(card,grid.children[0]||null);
+ }catch(e){} }
+
+ /* ================= 6) BRIEFING = 6A ONE STACKED CARD ================= */
+ function briefSnap209(){ if(!S)return null; const V=(typeof ensure200==='function')?ensure200():null; let palHun=null;
+  try{ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; if(P&&P.pals&&P.pals.length)palHun=Math.min.apply(null,P.pals.map(function(p){ return p.hun||0 })) }catch(e){}
+  return {mail:(V&&V.mail)?V.mail.length:0, debt:(V&&V.billDebt)||0, bond:S.bond||0, palHun:palHun, post:(S.posts&&S.posts[0])?(S.posts[0].text||''):''} }
+ function briefPush209(icon,text,jump){ try{ const V=ensure209(); if(!V)return; if(V.brief.some(function(l){ return l.text===text }))return; V.brief.push({icon:icon,text:text,jump:jump||''}); if(V.brief.length>8)V.brief.shift() }catch(e){} }
+ function briefAssemble209(){ try{ if(!S)return; const V=ensure209(); if(!V)return; const now=briefSnap209(); const old=V.snap;
+  if(old){ const V2=(typeof ensure200==='function')?ensure200():null;
+   if(now.mail>old.mail)briefPush209('📬',(now.mail-old.mail)+' new piece'+(now.mail-old.mail===1?'':'s')+' of mail arrived overnight — waiting in 📬 Your mail','mail');
+   if(now.debt>old.debt)briefPush209('🧾','A bill came due — household debt is now $'+now.debt+'. Settle it from your mail before it grows.','mail');
+   try{ const J=(V2&&V2.journal)||[]; const seen={}; J.forEach(function(en){ if(en.day===S.day&&/rent|board/i.test(en.label||'')&&!seen[en.label]){ seen[en.label]=1; briefPush209('🏠',en.label+' — $'+Math.abs(en.amt)+' posted overnight.','') } }) }catch(e){}
+   if(old.palHun!==null&&now.palHun!==null&&now.palHun<25&&old.palHun>=25)briefPush209('🐾','Your PocketPal woke up hungry ('+Math.round(now.palHun)+'% fed) — a fed pal is a happy pal.','phone');
+   else if(now.palHun!==null&&now.palHun<25&&(V.briefDay||0)<S.day)briefPush209('🐾','Your PocketPal is hungry ('+Math.round(now.palHun)+'% fed).','phone');
+   if(now.post&&old.post&&now.post!==old.post&&/NEWS|📰/.test(now.post))briefPush209('🗞️','Overnight headline: '+now.post.replace(/^📰\s*NEWS:\s*/,'').slice(0,110),'phone');
+   if(now.bond!==old.bond)briefPush209('❤️','Family bond '+(now.bond>old.bond?'warmed':'cooled')+' overnight — it sits at '+now.bond+'% now.','');
+  }
+  V.snap=now;
+ }catch(e){} }
+ window.briefJump209=function(kind){ try{ dismissDayCard(); if(kind==='mail'&&typeof openMail200==='function')setTimeout(function(){ try{ openMail200() }catch(e){} },60); else if(kind==='phone'&&typeof openPhone==='function')setTimeout(function(){ try{ openPhone() }catch(e){} },60) }catch(e){} };
+ try{ const _ss209=showSpotlight; showSpotlight=function(icon,title,body,opts){ try{ if(window._briefWin209&&S&&!/Level Up|PROMOTION|Promoted/i.test(title||'')){ briefPush209(icon||'📰',String(title||'').replace(/^[🎥📸]\s*/,''),''); return } }catch(e){} return _ss209.apply(this,arguments) } }catch(e){}
+ try{ const _nd209=nextDay; nextDay=function(skip){ window._briefWin209=true; setTimeout(function(){ window._briefWin209=false },25000); const r=_nd209.apply(this,arguments); try{ setTimeout(briefAssemble209,2600) }catch(e){} return r } }catch(e){}
+ try{ const _sdc209=showDayCard; showDayCard=function(){ const r=_sdc209.apply(this,arguments); try{ briefAssemble209(); const V=ensure209(); const inner=document.getElementById('dayInner'); if(V&&inner&&V.brief.length&&!inner.querySelector('.briefBox209')){
+   const box=document.createElement('div'); box.className='briefBox209';
+   box.innerHTML='<div style="font-size:11px;font-weight:900;letter-spacing:.08em;color:#ffb703;margin-bottom:2px">📰 WHILE YOU WERE AWAY — THE BRIEFING</div>'+V.brief.map(function(l){ return '<button type="button" class="briefLine209" onclick="briefJump209(\''+(l.jump||'')+'\')"><span class="bIc209">'+l.icon+'</span><span>'+esc209(l.text)+'</span></button>' }).join('');
+   const btn=inner.querySelector('button'); if(btn)inner.insertBefore(box,btn); else inner.appendChild(box);
+   V.briefDay=S.day; V.brief=[];
+  } }catch(e){} return r } }catch(e){}
+ try{ const _ddc209=dismissDayCard; dismissDayCard=function(){ window._briefWin209=false; return _ddc209.apply(this,arguments) } }catch(e){}
+ try{ const _sw209=sleepWake71; sleepWake71=function(){ const r=_sw209.apply(this,arguments); try{ const V=ensure209(); const dc=document.getElementById('dayCard'); if(V&&V.brief.length&&dc&&!dc.classList.contains('show')&&!(document.getElementById('modal')&&document.getElementById('modal').classList.contains('open')))setTimeout(function(){ try{ showDayCard() }catch(e){} },600) }catch(e){} return r } }catch(e){}
+
+ /* ================= 7) PORTRAIT = 7C AUTOMATIC ON FAMILY EVENTS ================= */
+ function portraitNames209(extra){ const out=[]; const push=function(nm){ if(nm&&out.indexOf(nm)<0&&out.length<6)out.push(nm) };
+  push(S.name);
+  try{ (typeof peopleHere200==='function'?peopleHere200():[]).forEach(push) }catch(e){}
+  try{ (typeof currentRoommates==='function'?currentRoommates():[]).forEach(function(p){ push(p.name) }) }catch(e){}
+  (S.kids||[]).forEach(function(k){ push(k.name) });
+  if(S.spouse)push(S.spouse); if(S.partner)push(S.partner);
+  (extra||[]).forEach(push);
+  return out }
+ function portraitLook209(nm){ if(nm===S.name){ try{ return lookOf(S) }catch(e){} }
+  let look=null; try{ look=personLook(nm) }catch(e){}
+  if(!look)look={girl:false,skin:'#f7cf9f',hair:'#4a2c14',shirt:'#64748b',hat:'none',glasses:'none',shoes:'sneakers',face:'classic',hairStyle:'classic',gloves:'none',watch:'none',jewelry:'none'};
+  const known=(S.town&&S.town.people&&S.town.people[nm])||(typeof PEOPLE_DEFS!=='undefined'&&PEOPLE_DEFS[nm])||(typeof FRIEND_DEFS!=='undefined'&&FRIEND_DEFS[nm]);
+  if(!known){ const kid=(S.kids||[]).find(function(k){ return k.name===nm }); let h=0; for(let i=0;i<nm.length;i++)h=(h*31+nm.charCodeAt(i))|0; const pal=['#0ea5e9','#f59e0b','#22c55e','#ec4899','#8b5cf6','#ef4444'];
+   look=Object.assign({},look,{shirt:pal[Math.abs(h)%pal.length]}); if(kid)look.girl=(kid.gender==='girl') }
+  return look }
+ function composePortrait209(occasion,extra){ try{ if(!S)return null; const names=portraitNames209(extra); if(!names.length)return null;
+  const cv=document.createElement('canvas'); cv.width=460; cv.height=300; const ctx=cv.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,0,300); g.addColorStop(0,'#f7d9a0'); g.addColorStop(.72,'#eec27f'); g.addColorStop(.72,'#b07a45'); g.addColorStop(1,'#9a683a'); ctx.fillStyle=g; ctx.fillRect(0,0,460,300);
+  ctx.fillStyle='#fff3d6'; for(let i=0;i<9;i++){ ctx.beginPath(); ctx.moveTo(18+i*52,14); ctx.lineTo(34+i*52,34); ctx.lineTo(50+i*52,14); ctx.closePath(); ctx.fillStyle=['#ef4444','#f59e0b','#22c55e','#0ea5e9','#ec4899'][i%5]; ctx.fill() }
+  ctx.strokeStyle='#ffffff55'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(8,12); ctx.quadraticCurveTo(230,44,452,12); ctx.stroke();
+  const now=performance.now(); const n=names.length; const step=460/(n+1);
+  names.forEach(function(nm,i){ const look=portraitLook209(nm); ctx.save(); ctx.translate(step*(i+1),138); ctx.scale(1.22,1.22); try{ drawFigure(ctx,0,0,look,0,null,now,(typeof personExpr==='function')?personExpr(nm):null) }catch(e){} ctx.restore() });
+  ctx.fillStyle='#2b1c10'; ctx.fillRect(0,262,460,38); ctx.fillStyle='#ffe9b8'; ctx.font='900 14px system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText((occasion+' • Day '+S.day).slice(0,58),230,286);
+  ctx.strokeStyle='#8a5a1e'; ctx.lineWidth=10; ctx.strokeRect(5,5,450,290); ctx.strokeStyle='#ffb703'; ctx.lineWidth=3; ctx.strokeRect(12,12,436,276);
+  return {img:cv.toDataURL('image/jpeg',0.62),names:names};
+ }catch(e){ return null } }
+ function familyPortrait209(occasion,extra){ try{ if(!S||S.deadFlag)return; const V=ensure209(); if(!V)return; const key=occasion+'|'+S.day; if(V.portraits[key])return; V.portraits[key]=1;
+  setTimeout(function(){ try{ if(!S)return; const shot=composePortrait209(occasion,extra); if(!shot)return;
+   try{ const A=ensure149(); if(A&&A.scrap){ A.scrap.unshift({img:shot.img,cap:'📸 '+occasion+' — Day '+S.day+' · '+shot.names.join(', '),day:S.day,age:S.age,kind:'portrait'}); if(A.scrap.length>24)A.scrap.length=24 } }catch(e){}
+   try{ page200('📸',occasion,'Family portrait — '+shot.names.join(', ')+', Day '+S.day+'. Framed in the 📷 Camera album.') }catch(e){}
+   log('📸 FAMILY PORTRAIT — '+occasion+': '+shot.names.join(', ')+' together in one frame, saved to your 📷 Camera album (Day '+S.day+').');
+   save();
+   let tries=0; const show=function(){ tries++; const modalOpen=document.getElementById('modal')&&document.getElementById('modal').classList.contains('open'); const dc=document.getElementById('dayCard'); const dayOpen=dc&&dc.classList.contains('show');
+    if(modalOpen||dayOpen){ if(tries<9)setTimeout(show,900); return }
+    try{ openSheet('<h2>📸 '+esc209(occasion)+'</h2><div class="portFrame209"><img src="'+shot.img+'" alt="Family portrait — '+esc209(shot.names.join(', '))+'"/></div><p style="margin-top:10px">In the frame: <b>'+esc209(shot.names.join(', '))+'</b> • Day '+S.day+'. The camera caught this one by itself — it lives in your 📷 Camera album now, names and date on it.</p><button class="btn gold" onclick="closeModal()">📸 Keep it</button>') }catch(e){} };
+   setTimeout(show,650);
+  }catch(e){} },420);
+ }catch(e){} }
+ try{ const _ne209=noteEvent; noteEvent=function(type,detail){ const r=_ne209.apply(this,arguments); try{ if(type==='wedding')familyPortrait209('💒 Wedding portrait — you & '+detail,[detail]); else if(type==='baby')familyPortrait209('👶 Welcome, '+detail+' — first family portrait',[detail]) }catch(e){} return r } }catch(e){}
+ try{ const _tbp209=triggerBirthdayParty; triggerBirthdayParty=function(){ const r=_tbp209.apply(this,arguments); try{ familyPortrait209('🎂 Birthday portrait — '+S.name+' turns '+S.age) }catch(e){} return r } }catch(e){}
+ try{ const _kau209=kidsAgeUp; kidsAgeUp=function(){ const before={}; try{ (S.kids||[]).forEach(function(k){ before[k.name]=k.age }) }catch(e){} const r=_kau209.apply(this,arguments); try{ (S.kids||[]).forEach(function(k){ if(before[k.name]!=null&&k.age>before[k.name])familyPortrait209('🎂 '+k.name+' turns '+k.age+' — family portrait',[k.name]) }) }catch(e){} return r } }catch(e){}
+ try{ const _tp209=throwParty137; throwParty137=function(){ const guests=(typeof partyGuests137==='function')?partyGuests137():[]; const r=_tp209.apply(this,arguments); try{ if(S&&guests.length)familyPortrait209('🎉 Party portrait — the whole crew',guests.slice(0,4)) }catch(e){} return r } }catch(e){}
+
+ /* ================= shared post-render passes ================= */
+ function passes209(){ try{ actionsPass209() }catch(e){} try{ workPass209() }catch(e){} try{ travelPass209() }catch(e){} try{ mePass209() }catch(e){} }
+ try{ const _rt209=renderTabs; renderTabs=function(a){ const r=_rt209.apply(this,arguments); try{ passes209(); setTimeout(passes209,80); setTimeout(passes209,260) }catch(e){} return r } }catch(e){}
+ try{ const _r209=render; render=function(){ const r=_r209.apply(this,arguments); try{ setTimeout(passes209,60) }catch(e){} return r } }catch(e){}
+ try{ const V0=ensure209(); if(V0&&!V0.snap)V0.snap=briefSnap209() }catch(e){}
+
+ window.__v209={ensure209:ensure209,workHubHtml209:workHubHtml209,mapCard209:mapCard209,todayHtml209:todayHtml209,familyPortrait209:familyPortrait209,briefPush209:briefPush209,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 9: ⚡ Actions = 1A big tiles + the 🌤️ Right here, right now card PINNED on top • 💼 Work = 2B hub (title/rung/pay/promotion progress/warnings + Work/Finish/Fast-forward) with a named crew strip • ⚙️ Settings = 3A gold-chevron accordion (Gameplay / Looks & Trails / Sound / Data & Save — trail picker two taps in) • 🗺️ Travel = 4B drawn town map on top (same goLoc gates), list below untouched • 📅 Today = 5C live summary at the top of Me with one suggested move • 📰 Briefing = 6A overnight news stacked into ONE section of the morning card, informational spotlights folded in, decisions untouched • 📸 Portrait = 7C automatic family portraits on birthdays, babies, weddings & parties — drawn, shown, and saved to the Camera album with date + names','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
 </script>
 
 </body>
