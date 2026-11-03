@@ -22274,7 +22274,7 @@ try{
    try{ var p=fn.call(el,{navigationUI:'hide'}); if(p&&p.catch)p.catch(function(){}); done=true }catch(e2){}
    if(!done){ try{ fn.call(el) }catch(e3){} }
  }catch(e){} }
- document.addEventListener('pointerdown',function(){ fsGo218() },true);
+ document.addEventListener('pointerdown',function(e){ try{ var t=e&&e.target; if(t&&t.closest&&t.closest('input,textarea,select,[data-nofs218]'))return }catch(err){} fsGo218() },true); /* hf23: text-entry taps (the name field, the 🎲 randomize controls) skip the fullscreen grab — the fullscreen transition was eating the very tap that should focus the field and raise the keyboard */
 
  /* ---------- 7) expressions: bubble colour + font, Settings controls, ambient pops ---------- */
  var BUB_COLORS218={classic:['#ffffff','#14100c'],sky:['#dbeafe','#172554'],mint:['#dcfce7','#052e16'],rose:['#ffe4e6','#4c0519'],sunny:['#fef9c3','#422006'],lilac:['#ede9fe','#2e1065'],peach:['#ffedd5','#431407'],night:['#1f2937','#f8fafc']};
@@ -22755,6 +22755,99 @@ try{
 }catch(e){}
 })();
 
+</script>
+<script>
+/* ================= v200 HOTFIX 23 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   1) 🎬 THE MISSING CHOICE (Howard: "I also don't see the choice between make your own life and quick
+      life when first starting. Bug") — a fresh start (no life in progress) and ↺ Start a New Life now
+      land on a clean CHOICE screen first: ⚡ Quick Life or 🛠️ Make Your Own Life, and nothing else.
+      Picking Quick opens the shipped one-sheet questionnaire (quickSheet136) over the choice; picking
+      Make Your Own opens the shipped custom creator. The two flows no longer stack on one long page.
+      The pick resets the moment a life starts, so every later new-life reset lands on the choice
+      again. Resume / welcome-back and everything after creation (family reveal, welcome, traits) are
+      untouched.
+   2) 🎲🎨 RANDOMS COMBINED (Howard: "Normal life random style combine with random name. So they can
+      both work with each other") — inside Make Your Own Life, the old stacked .quick123 cards are
+      removed and the creator gains 🎲🎨 Randomize BOTH: the look rolls first, then a name is rolled
+      FOR the rolled gender, then one repaint — the name in the box, the selected swatches and the
+      preview always agree, and that is exactly what ▶ Start My Life reads. The solo rolls stay solo
+      and can never fight: 🎲 Randomize (name) never touches the look, 🎲 Random style (now in the
+      style section, where it belongs) never touches the name — roll name, roll look, roll both, in
+      any order, and what you see is what starts.
+   3) ⌨️ KEYBOARD AFTER A ROLL (Howard: "Hitting randomize doesn't bring up keyboard in selection
+      screen") — after 🎲 Randomize and after 🎲🎨 Randomize BOTH, the name field is focused
+      SYNCHRONOUSLY inside the tap handler (never a timer), caret at the end of the rolled name, so
+      the soft keyboard rises and the name is editable on the spot. The hotfix-18 fullscreen grab no
+      longer fires on taps landing on text fields or the randomize controls (see the data-nofs218
+      guard there), so nothing eats the tap that should raise the keyboard; tapping straight into
+      the name field focuses it natively, the same way.
+   startGame shim: the shipped startGame reads #pname unguarded; on the Quick path the creator form
+   is not on screen, so a hidden #pname carrying the rolled name is lent to it for the call only. */
+(function(){ 'use strict';
+try{
+ var flowPick23=null; /* null = choice not made yet · 'quick' = questionnaire opened · 'custom' = creator open */
+ window.chooseFlow23=function(which){
+   if(which==='quick'){ flowPick23='quick'; try{ quickLife123() }catch(e){} }
+   else if(which==='custom'){ flowPick23='custom'; try{ render() }catch(e){} }
+   else { flowPick23=null; try{ render() }catch(e){} }
+ };
+ function focusName23(){ var el=document.getElementById('pname'); if(!el)return; try{ el.focus({preventScroll:false}) }catch(e){ try{ el.focus() }catch(e2){} } try{ var v=el.value||''; el.setSelectionRange(v.length,v.length) }catch(e){} }
+ window.focusName23=focusName23;
+ window.randomBoth23=function(){
+   try{ randomStyle123(true) }catch(e){}
+   try{ randomizeName() }catch(e){}
+   try{ render() }catch(e){}
+   focusName23();
+ };
+ try{ var _rn23=randomizeName; randomizeName=function(){ var r=_rn23.apply(this,arguments); focusName23(); return r } }catch(e){}
+ function choiceHtml23(){
+   var h='<div class="setup"><div style="background:#111;color:#fff;padding:18px;border-radius:18px"><div style="font-weight:900">AQUA<span style="color:#ffb703">LIFE</span></div><h1 style="margin:8px 0 2px;font-size:28px;line-height:1">Run your life.</h1><p style="opacity:.85;font-size:12.5px;font-weight:700;letter-spacing:.02em;margin:6px 0 0">Made by AquaTechFantasy</p></div>'
+   +'<h3 style="margin-top:18px">How does this life start?</h3>'
+   +'<div style="display:grid;gap:10px;margin-top:10px">'
+   +'<div class="qCard123"><h3 style="margin:0 0 4px">⚡ Quick Life</h3><p>Four quick questions <b>build</b> the life — kids, partner, job and age — then you are placed straight into it. Your family is 🎲 dealt, never picked. Skip a question (or pick 🎲) and that part rolls random.</p><button type="button" class="btn gold" style="margin-top:8px" data-nofs218="1" onclick="chooseFlow23(\'quick\')">⚡ Quick Life — answer &amp; go</button></div>'
+   +'<div class="qCard123"><h3 style="margin:0 0 4px">🛠️ Make Your Own Life</h3><p>Pick name, look, place and age yourself — basics, look, details, family, age. Your family is 🎲 dealt. Roll the name, roll the style — or roll <b>both together</b>.</p><button type="button" class="btn" style="margin-top:8px" data-nofs218="1" onclick="chooseFlow23(\'custom\')">🛠️ Make Your Own Life</button></div>'
+   +'</div>';
+   try{ if(typeof verLineHtml124==='function')h+=verLineHtml124() }catch(e){}
+   return h+'</div>';
+ }
+ function surgery23(app){
+   var st=app.querySelector('.setup'); if(!st)return;
+   var q=st.querySelector('.quick123'); if(q)q.remove();
+   if(!st.querySelector('.backChoice23')){
+     var back=document.createElement('button'); back.type='button'; back.className='btn outline backChoice23'; back.style.cssText='width:auto;padding:8px 14px;margin-top:12px'; back.setAttribute('data-nofs218','1'); back.setAttribute('onclick',"chooseFlow23('')"); back.textContent='← Back — choose how to start';
+     var hero=st.firstElementChild; if(hero&&hero.nextSibling)st.insertBefore(back,hero.nextSibling); else st.appendChild(back);
+   }
+   var inp=st.querySelector('#pname');
+   if(inp){
+     var rb=st.querySelector('button[onclick="randomizeName()"]'); if(rb)rb.setAttribute('data-nofs218','1');
+     if(!st.querySelector('.bothRand23')){
+       var b=document.createElement('button'); b.type='button'; b.className='btn gold bothRand23'; b.style.cssText='margin-top:10px;padding:14px;font-size:15px'; b.setAttribute('data-nofs218','1'); b.setAttribute('onclick','randomBoth23()'); b.innerHTML='🎲🎨 Randomize BOTH — name &amp; style together';
+       var row=inp.parentElement; var hint=(row&&row.nextElementSibling&&row.nextElementSibling.tagName==='P')?row.nextElementSibling:null;
+       var anchor=hint||row; if(anchor&&anchor.parentNode)anchor.parentNode.insertBefore(b,anchor.nextSibling); else st.appendChild(b);
+     }
+   }
+   if(!st.querySelector('.styleRand23')){
+     var hs=st.querySelectorAll('h3');
+     for(var i=0;i<hs.length;i++){ if((hs[i].textContent||'').trim()==='Your style'){ var sb=document.createElement('button'); sb.type='button'; sb.className='btn styleRand23'; sb.style.cssText='width:auto;margin:2px 0 10px;padding:11px 14px'; sb.setAttribute('data-nofs218','1'); sb.setAttribute('onclick','randomStyle123()'); sb.textContent='🎲 Random style — roll just the look'; hs[i].parentNode.insertBefore(sb,hs[i].nextSibling); break } }
+   }
+ }
+ var _rs23=renderSetup;
+ renderSetup=function(app){
+   if(flowPick23!=='custom'){ inGame=false; app.innerHTML=choiceHtml23(); return }
+   var r=_rs23(app);
+   try{ surgery23(app) }catch(e){}
+   return r;
+ };
+ try{ var _sg23=startGame; startGame=function(){
+   var tmp=null;
+   if(!document.getElementById('pname')){ tmp=document.createElement('input'); tmp.type='hidden'; tmp.id='pname'; tmp.value=(typeof selName!=='undefined'&&selName)?selName:''; document.body.appendChild(tmp) }
+   var r; try{ r=_sg23.apply(this,arguments) }finally{ if(tmp&&tmp.parentNode)tmp.parentNode.removeChild(tmp) }
+   try{ if(typeof S!=='undefined'&&S)flowPick23=null }catch(e){}
+   return r;
+ } }catch(e){}
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 23: 🎬 first start is a clean choice — ⚡ Quick Life or 🛠️ Make Your Own Life, nothing else on the screen • 🎲🎨 Randomize BOTH rolls name + style together in the creator (solo rolls stay solo, never undo each other) • ⌨️ after any name roll the name field takes focus inside the tap itself, so the keyboard rises — and the fullscreen grab no longer eats text-entry taps','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
 </script>
 
 </body>
