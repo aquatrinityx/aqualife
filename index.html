@@ -21975,7 +21975,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 16: 🧸 tussle c
       dynamic verbs. */
 (function(){ 'use strict';
 try{
- function ensure217(){ if(typeof S==='undefined'||!S)return null; if(!S.v217||typeof S.v217!=='object')S.v217={}; var V=S.v217; if(!V.days||typeof V.days!=='object')V.days={}; if(V.shells==null)V.shells=0; if(V.wishes==null)V.wishes=0; return V }
+ function ensure217(){ if(typeof S==='undefined'||!S)return null; if(!S.v217||typeof S.v217!=='object')S.v217={}; var V=S.v217; if(!V.days||typeof V.days!=='object')V.days={}; if(!V.done||typeof V.done!=='object')V.done={}; if(V.shells==null)V.shells=0; if(V.wishes==null)V.wishes=0; try{ if(S.day!=null&&typeof DYNACT217!=='undefined'&&DYNACT217){ for(var _dk in V.days){ if(V.days[_dk]===S.day&&DYNACT217[_dk])V.done[_dk]=true } } }catch(e){} return V }
  function esc217(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
  function homeLike217(){ try{ if(!S)return false; var hl=(typeof homeLoc==='function')?homeLoc():null; if(hl&&S.location===hl)return true; return ['house','orphanage','boarding','jail'].indexOf(S.location)>=0 }catch(e){ return false } }
 
@@ -22080,10 +22080,10 @@ try{
   stationart:{icon:'🚇',label:'Station-art hop',needs:{fun:6},gain:'Fun +6',log:'🚇 STATION ART — rode one stop, got off, read the mosaics like a gallery that happens to have trains. The city hides its best art where everyone is in a hurry.'}
  };
  window.dynAct217=function(id){ try{ if(!S)return; var D=DYNACT217[id]; if(!D)return; var V=ensure217(); if(!V)return;
-  if(D.daily&&V.days[id]===S.day){ toast('✔ Done that today — it will be there tomorrow'); return }
+  if(V.done&&V.done[id]){ toast('✔ Already done — that one is a memory now, not a repeat'); return }
   if(id==='kite'&&/rain|storm/i.test(S.weather||'')){ toast('🪁 Not in this weather — kites and rain are enemies'); return }
   if(D.cost){ if((S.money||0)<D.cost){ toast('💵 Need $'+D.cost); return } money(-D.cost,'📍 '+D.label.replace(/ — \$\d+$/,'')) }
-  if(D.daily)V.days[id]=S.day;
+  if(!V.done||typeof V.done!=='object')V.done={}; V.done[id]=true; if(D.daily)V.days[id]=S.day;
   startActivity(D.icon,D.dur||2200,(typeof charX!=='undefined'?charX:450),(typeof charY!=='undefined'?charY:260),D.needs||{},function(){ var line=''; try{ if(D.fx)line=D.fx(V)||'' }catch(e){} if(!line)line=(typeof D.log==='function')?D.log():D.log; log(line); toast(D.icon+' '+D.label.replace(/ — \$\d+$/,'')+(D.gain?' — '+D.gain:'')); save(); render() });
   save() }catch(e){} };
  /* ---------- which dynamic verbs belong to this place, this age, this hour ---------- */
@@ -22130,18 +22130,21 @@ try{
   if(S.age>=5&&S.age<=17){ var acts=[['Attend Class',18,'study','🎒'],['Recess',10,'social','🛝'],['Eat Cafeteria Lunch',6,'social','🍽️'],['Library Study',14,'study','📚'],['Gym / Sports',12,'fitness','🏃']];
    return '<p class="small" style="margin:2px 0 4px"><b>School day:</b></p>'+acts.map(function(a){ return '<button class="btn" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="doGeneric(\''+a[0]+'\','+a[1]+',\''+a[2]+'\')">'+a[3]+' '+a[0]+'</button>' }).join('') }
   return '' }
- function dynData217(){ if(!S)return null; var ids=dynSet217(); var lead=(S.location==='school')?schoolLead217():'';
+ function dynData217(){ if(!S)return null; var ids=dynSet217(); var V217=null; try{ V217=ensure217() }catch(e){}
+  if(V217&&V217.done&&ids&&ids.length)ids=ids.filter(function(id){ return !V217.done[id] });
+  var lead=(S.location==='school')?schoolLead217():'';
   if((!ids||!ids.length)&&!lead)return null;
   var band=S.hour<6?'night':S.hour<12?'am':S.hour<18?'pm':S.hour<23?'eve':'night';
-  var sig=S.location+'|'+S.age+'|'+S.day+'|'+band+'|'+(S.weather||'');
+  var doneSig=''; try{ if(V217&&V217.done)doneSig=Object.keys(V217.done).filter(function(k){ return V217.done[k] }).sort().join(',') }catch(e){}
+  var sig=S.location+'|'+S.age+'|'+S.day+'|'+band+'|'+(S.weather||'')+'|done:'+doneSig;
   var label=S.location; try{ var dl=(typeof locDisplay144==='function')?locDisplay144(S.location):''; if(dl)label=String(dl).split('—')[0].trim() }catch(e){}
   if(S.location==='school'&&S.age>=3&&S.age<=4){ label='🧸 '+(function(){ try{ return schoolName('pre') }catch(e){ return 'Preschool' } })() }
   var btns=(ids||[]).map(function(id){ var D=DYNACT217[id]; if(!D)return ''; return '<button class="btn gold" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="dynAct217(\''+id+'\')">'+D.icon+' '+esc217(D.label)+'</button>' }).join('');
-  var counts=''; try{ var V=ensure217(); if(V&&(S.location==='beach'&&V.shells>0))counts='<p class="small" style="margin-top:2px">🐚 Shells collected: <b>'+V.shells+'</b></p>'; if(V&&(S.location==='mall'&&V.wishes>0))counts='<p class="small" style="margin-top:2px">⛲ Wishes made in this fountain: <b>'+V.wishes+'</b></p>' }catch(e){}
-  var html='<h3>📍 Only here — '+esc217(label)+'</h3><p class="small">These exist because of where you are standing. They are this place\'s own verbs — nothing here duplicates anything else you can do.</p>'
+  var counts=''; try{ var V=ensure217(); if(V&&btns&&(S.location==='beach'&&V.shells>0))counts='<p class="small" style="margin-top:2px">🐚 Shells collected: <b>'+V.shells+'</b></p>'; if(V&&btns&&(S.location==='mall'&&V.wishes>0))counts='<p class="small" style="margin-top:2px">⛲ Wishes made in this fountain: <b>'+V.wishes+'</b></p>' }catch(e){}
+  var html=btns?('<h3>📍 Only here — '+esc217(label)+'</h3><p class="small">These exist because of where you are standing. Each one is a one-time thing for this life — once you do it, it\'s done, and it becomes a memory.</p>'
    +lead
    +(lead&&btns?'<p class="small" style="margin:4px 0"><b>Only at this school:</b></p>':'')
-   +btns+counts;
+   +btns+counts):lead;
   return {sig:sig,html:html} }
  function positionDyn217(panel,card){ try{ var ctx=panel.querySelector('.ctxCard200'); var anchor=ctx?(ctx.closest('details.dd132')||ctx):null; var ref=anchor?anchor.nextSibling:panel.firstChild; if(ref!==card)panel.insertBefore(card,ref) }catch(e){} }
  function dynPass217(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return; var data=dynData217(); var card=panel.querySelector('.dynCard217');
@@ -22398,8 +22401,39 @@ try{
  /* the reputation note on the park's own 📍 Only here card */
  function parkNote219(){ try{ if(!S||S.location!=='street'||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return; var card=panel.querySelector('.dynCard217'); if(!card||card.querySelector('.parkRep219'))return; var p=document.createElement('p'); p.className='small parkRep219'; p.style.marginTop='6px'; p.innerHTML='🌳 <b>Two reputations:</b> a nice, friendly park — ducks, kites, neighbours — and, around town, <b>the</b> known spot for bad activities after dark.'+(S.age>=18?' Grown-ups get approached here, and the street rules (and the heat) are the real ones.':''); card.appendChild(p) }catch(e){} }
  setInterval(parkNote219,1100);
- window.__v219={ensure:ensure219,parkShady:parkShady219,version:function(){ return GAME_VERSION }};
+ window.__v219={ensure:ensure219,parkShady:parkShady219,version:function(){ return GAME_VERSION }}; /* hotfix 20 appends after this script */
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 19: 🗺️ Travel town map decluttered (tall 4-column grid, full unwrapped place names, YOU ARE HERE pill out of the name label — no icon/label overlaps, no edge clipping) • 🌳 Maple St & Park dual nature: friendly park for everyone + an 18+ shady layer wired into the shipped street systems (park dealer buys via streetBuy53, buyer asks via buyerSell38 — same prices/heat/bust), dual reputation in the Travel line and the park\'s Only here card; minors get the friendly park only','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 20 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's order (Nov 3, 2026): "Once you do action specific thing for that location you can't do it
+   again. Example once you do blanket fort you can't do it again."
+   RULE: the 📍 "Only here" per-place dynamic actions (hotfix 17's DYNACT217 set) are ONE-TIME per
+   character — once done, done for that character's life. Implemented at the source in the 217 layer:
+   completion persists in S.v217.done (in the save, like other per-character state), dynAct217 refuses
+   a done id, and dynData217 filters done ids out and folds the done-set into the card signature so a
+   finished action vanishes on the next paint and never returns — not on revisit, not on a new day,
+   not after reload. This supersedes the old once-a-day gates (samples / blood / suggestion box kept
+   their daily markers for compatibility, but the lifetime gate now rules); a daily action already
+   done TODAY under the old gate migrates into done in ensure217, where the state allows it. When a
+   place's whole Only here set is finished, dynData217 returns null and the card is gone — no dead
+   card, no filler (at school the repeatable school-day lead remains on its own). SCOPE: Only here
+   verbs only — core Actions, Right here right now, Social, Trouble, Travel and phone apps keep their
+   existing repeatability. Effects unchanged: shells still count, the fountain wish still counts —
+   once, as a memory. This layer is the safety net: it runs the migration for the live character and
+   prunes any stale done button a cached card might still be showing. */
+(function(){ 'use strict';
+try{
+ function prune220(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='actions101')return; if(!window.__v217||!window.__v217.ensure)return; var V=window.__v217.ensure(); if(!V||!V.done)return; var panel=document.getElementById('panel'); if(!panel)return; var card=panel.querySelector('.dynCard217'); if(!card)return; var btns=card.querySelectorAll('button'); var removed=false;
+  for(var i=0;i<btns.length;i++){ var oc=btns[i].getAttribute('onclick')||''; var m=oc.match(/dynAct217\('([^']+)'\)/); if(m&&V.done[m[1]]){ btns[i].remove(); removed=true } }
+  if(removed&&!card.querySelector('button'))card.remove();
+ }catch(e){} }
+ setInterval(prune220,1200);
+ window.__v220={prune:prune220,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 20: 📍 "Only here" per-place actions are now ONE-TIME per character (persisted in S.v217.done) — do Build a blanket fort once and it leaves the card for that life: no return on revisit, new day or reload; daily gates superseded, todays daily completions migrate where the state allows; a place with its whole set finished shows no card; everything outside the Only here set keeps its repeatability','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
