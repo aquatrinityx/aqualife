@@ -19127,5 +19127,94 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v199 hotfix 6 — 🏠 WHILE YOU WERE OUT: NEVER THE SAME THING TWICE, AND THE HOUSEHOLD RUNS ON REAL CAUSE & EFFECT (Howard, Nov 3 2026). GAME_VERSION stays 199; SAVE_KEY untouched; silent.
+   THE BUG: the away-recap generator picked at random, WITH replacement, from tiny fixed pools (four toddler acts, four argument topics), and several entries were one-shot stories told as repeatables — "🔧 X finally fixed the wobbly kitchen chair" could land in every single recap, forever. Nothing checked the queue, the day, or any history before pushing, so one recap could list the same moment two or three times and the same beats recycled day after day.
+   THE FIX — the household keeps a persistent STORY MEMORY on the save (S.wywo6):
+   • every away event carries a stable KEY: a key can never sit twice in one recap queue, never refires inside its cooldown (in game days), and ONE-SHOT events (the chair) are remembered forever once they have happened.
+   • events are generated from the household's REAL state — the actual cleanliness meter, the kids' real happiness, the real bond, who is actually home (daycare kids excluded) — and their effects land on that same real state.
+   • events open CAUSE THREADS that later events resolve: crayon on the wall STAYS on the wall until somebody scrubs it; a broken toy stays broken until somebody fixes it or replaces it; an argument leaves a tension that is either made up or goes cold first; lost keys stay lost until found. While a thread is open, its cause cannot repeat — the story can only move forward. Resolutions outrank new chaos.
+   • the recap sheet dedupes defensively (by key, then by text), so a queue saved by an older build can never show the same thing twice either. ================= */
+;(function(){ try{
+ function mem6(){ if(!S)return null; if(!S.wywo6||typeof S.wywo6!=='object')S.wywo6={}; var M=S.wywo6; if(!M.once||typeof M.once!=='object')M.once={}; if(!M.last||typeof M.last!=='object')M.last={}; if(!M.threads||typeof M.threads!=='object')M.threads={}; if(!Array.isArray(M.hist))M.hist=[]; return M }
+ function cleanGet6(){ try{ if(typeof ensure81==='function'){ ensure81(); if(S.clean81&&S.clean81.level!=null)return S.clean81.level } }catch(e){} return 80 }
+ function cleanAdd6(v){ try{ if(typeof ensure81==='function'){ ensure81(); if(S.clean81){ S.clean81.level=Math.max(0,Math.min(100,(S.clean81.level==null?80:S.clean81.level)+v)); if(typeof cleanBand81==='function')S.clean81.band=cleanBand81(S.clean81.level) } } }catch(e){} }
+ function adults6(){ try{ var V=(typeof ensure195==='function')?ensure195():null; var dc=(V&&V.dcKids)||[]; return currentRoommates().map(function(p){ return p.name }).filter(function(n){ if(dc.indexOf(n)>=0)return false; try{ var a=charAge79(n); return a===null||a>=13 }catch(e){ return true } }) }catch(e){ return [] } }
+ function kids6(){ try{ var V=(typeof ensure195==='function')?ensure195():null; var dc=(V&&V.dcKids)||[]; return (S.kids||[]).filter(function(k){ return k&&dc.indexOf(k.name)<0 }) }catch(e){ return [] } }
+ function norm6(t){ return String(t||'').replace(/^\S+\s+/,'').toLowerCase().replace(/\s+/g,' ').trim() }
+ function happy6(k,d){ try{ if(k)k.happy=Math.max(0,Math.min(100,(k.happy==null?70:k.happy)+d)) }catch(e){} }
+ function awayEvent6(){
+  var M=mem6(); if(!M)return null;
+  var adults=adults6(), kids=kids6(), T=M.threads, day=S.day||1;
+  var bond=(S.bond==null?50:S.bond), clean=cleanGet6();
+  var tots=kids.filter(function(k){ return k.age>=1&&k.age<=4 });
+  var bigs=kids.filter(function(k){ return k.age>=5 });
+  var queued={}; (S.away84||[]).forEach(function(it){ if(it&&it.key)queued[it.key]=1 });
+  function ready(key,cd){ if(queued[key])return false; if(M.once[key])return false; var l=M.last[key]; return l===undefined||(day-l)>=cd }
+  var cands=[];
+  function add(w,fn){ cands.push({w:w,fn:fn}) }
+  /* — RESOLUTIONS FIRST: an open thread is a cause still waiting for its effect — */
+  if(T.wall&&adults.length&&ready('scrub',1)){ var wBy=T.wall.by, wDay=T.wall.day; add(10,function(){ var a=pickArr(adults); delete T.wall; cleanAdd6(6);
+   return {key:'scrub',who:a,t:'🧽 '+a+' scrubbed the crayon off the living-room wall',why:'because the scribble '+wBy+' left there on Day '+wDay+' was still on the wall — it took a sponge, some patience, and most of a podcast, but the wall is a wall again'} }) }
+  if(T.toy&&adults.length&&ready('toyfix',1)){ var tKid=T.toy.kid, tDay=T.toy.day, tObj=kids.filter(function(k){ return k.name===tKid })[0]||null; add(10,function(){ var a=pickArr(adults); delete T.toy; happy6(tObj,14);
+   return {key:'toyfix',who:a,t:'🩹 '+a+' fixed '+tKid+'\u2019s favourite toy',why:'because it has been in two pieces since Day '+tDay+' and '+tKid+' kept carrying both halves around — glue, tape, and twenty quiet minutes later it is whole, and so is '+tKid} }) }
+  if(T.toy&&adults.length&&(day-(T.toy.day||day))>=1&&ready('toybuy',1)){ var bKid=T.toy.kid, bObj=kids.filter(function(k){ return k.name===bKid })[0]||null; add(6,function(){ var a=pickArr(adults); delete T.toy; happy6(bObj,16);
+   return {key:'toybuy',who:a,t:'🧸 '+a+' came home with a new toy for '+bKid,why:'because the broken favourite never really got fixed, and '+a+' decided a fresh one beat another evening of tears over the old one'} }) }
+  if(T.tension&&adults.length>=2&&ready('makeup',1)){ var mA=T.tension.a, mB=T.tension.b, mTop=T.tension.topic; add(10,function(){ delete T.tension; try{ S.bond=clamp((S.bond||50)+2) }catch(e){}
+   return {key:'makeup',who:mA,t:'🕊️ '+mA+' and '+mB+' made up over '+mTop,why:'because the row about '+mTop+' had been hanging over the house since it happened — '+mA+' said the actual sorry first, '+mB+' made tea, and it ended the way it should: boring and warm'} }) }
+  if(T.tension&&!T.tension.cold&&ready('cold',2)){ var cTop=T.tension.topic, cA=T.tension.a; add(5,function(){ if(T.tension)T.tension.cold=true;
+   return {key:'cold',who:cA,t:'🧊 The house went quiet and frosty for a stretch',why:'because nobody had actually apologised for the row about '+cTop+' yet — doors closed a little too carefully, and dinner was mostly fork noises'} }) }
+  if(T.keys&&adults.length&&ready('keysfound',1)){ var kWho=T.keys.by; add(9,function(){ delete T.keys;
+   return {key:'keysfound',who:kWho,t:'🔑 '+kWho+' found the house keys',why:'because they were in the coat pocket all along — the coat that was checked twice. The whole search party (everyone) has agreed to never speak of it'} }) }
+  if(T.plant&&adults.length&&ready('repot',1)){ var pBy=T.plant.by; add(8,function(){ var a=pickArr(adults); delete T.plant; cleanAdd6(3);
+   return {key:'repot',who:a,t:'🪴 '+a+' repotted the plant '+pBy+' knocked over',why:'because the soil on the carpet was not going to walk itself out — fresh pot, swept carpet, one slightly dramatic fern saved'} }) }
+  /* — ORIGINS: things that happen BECAUSE of the household's real state — */
+  if(tots.length&&adults.length&&!T.wall&&ready('scribble',4)){ add(5,function(){ var kid=pickArr(tots), a=pickArr(adults); T.wall={by:kid.name,day:day}; cleanAdd6(-5);
+   return {key:'scribble',who:kid.name,t:'🖍️ '+kid.name+' scribbled on the living-room wall with crayon',why:a+' is upset — '+kid.name+' got into the crayons while '+a+' was busy making lunch, and the wall took the hit. It is still there, waiting for somebody with a sponge'} }) }
+  if(tots.length&&adults.length&&ready('spill',3)){ add(5,function(){ var kid=pickArr(tots), a=pickArr(adults); cleanAdd6(-4);
+   return {key:'spill',who:kid.name,t:'🥤 '+kid.name+' spilled a whole cup of juice across the kitchen floor',why:a+' had to mop it up — '+kid.name+' carried the cup with both hands, very carefully, right up until the wobble'} }) }
+  if(tots.length&&adults.length&&ready('toiletroll',3)){ add(4,function(){ var kid=pickArr(tots), a=pickArr(adults);
+   return {key:'toiletroll',who:kid.name,t:'🧻 '+kid.name+' unrolled the entire toilet roll down the hallway',why:a+' followed the paper trail and found one very proud toddler at the end of it'} }) }
+  if(tots.length&&adults.length&&!T.plant&&ready('plant',5)){ add(4,function(){ var kid=pickArr(tots), a=pickArr(adults); T.plant={by:kid.name,day:day}; cleanAdd6(-4);
+   return {key:'plant',who:kid.name,t:'🪴 '+kid.name+' knocked the plant clean off the side table',why:a+' swept up what they could — '+kid.name+' was reaching for a leaf like it owed them money, and the pot lost. The fern is still sitting in a mixing bowl, waiting to be repotted'} }) }
+  if(kids.length&&!T.toy&&ready('toybreak',6)){ add(4,function(){ var kid=pickArr(kids), a=adults.length?pickArr(adults):null; T.toy={kid:kid.name,day:day}; happy6(kid,-8);
+   return {key:'toybreak',who:kid.name,t:'😢 '+kid.name+'\u2019s favourite toy broke today',why:'because it finally gave up mid-play — '+(a?a+' kept them close on the couch with cartoons until the worst passed':'there were cartoons and couch-cuddles until the worst passed')+', but the toy is still in two pieces, and '+kid.name+' knows it'} }) }
+  if(adults.length>=2&&!T.tension&&(bond<60||Math.random()<0.3)&&ready('argue',4)){ add(5,function(){ var a=adults[0], b=adults[1]; var topics=[['the dishes','left the whole lunch pile sitting in the sink'],['the thermostat','kept turning the heat up and down like a DJ'],['money','brought up the electric bill at exactly the wrong moment'],['the noise','had the TV up loud enough to hear through the walls']]; var tp=pickArr(topics); T.tension={a:a,b:b,topic:tp[0],day:day}; try{ S.bond=clamp((S.bond||50)-2) }catch(e){}
+   return {key:'argue',who:a,t:'🌩️ '+a+' and '+b+' argued about '+tp[0],why:a+' is upset — '+b+' '+tp[1]+', and it turned into a proper row about '+tp[0]+'. It blew over, but nobody has actually said sorry yet — the house can feel it'} }) }
+  if(adults.length&&!T.keys&&ready('keys',6)){ add(3,function(){ var a=pickArr(adults); T.keys={by:a,day:day};
+   return {key:'keys',who:a,t:'🔑 '+a+' lost the house keys somewhere in the house',why:'because pockets, the bowl by the door, and the car all came up empty — the search is officially ongoing, and every cushion in the front room is now a suspect'} }) }
+  if(adults.length&&ready('chair',1)){ add(4,function(){ var a=pickArr(adults);
+   return {key:'chair',once:true,who:a,t:'🔧 '+a+' finally fixed the wobbly kitchen chair',why:'because it has been rocking one leg short for a week, and nearly took '+(kids.length?kids[0].name:'somebody')+' down at breakfast — fixed properly this time, and it stays fixed'} }) }
+  if(adults.length&&clean<72&&ready('tidy',3)){ var cl0=Math.round(clean); add(6,function(){ var a=pickArr(adults); cleanAdd6(10);
+   return {key:'tidy',who:a,t:'🧹 '+a+' did a proper tidy of the front room',why:'because the home had slid to '+cl0+'% clean — that level of lived-in where it starts to weigh on everyone — and '+a+' could not look at it any more. Noticeably better now'} }) }
+  if(adults.length&&kids.length&&ready('story',3)){ add(5,function(){ var a=pickArr(adults), kid=pickArr(kids); happy6(kid,6);
+   return {key:'story',who:a,t:'📖 '+a+' read '+kid.name+' a story after lunch',why:'because '+kid.name+' was restless, and a story is this house\u2019s best reset button — it worked: '+kid.name+' came out of it happy'} }) }
+  if(adults.length&&bigs.length&&ready('homework',3)){ add(4,function(){ var a=pickArr(adults), kid=pickArr(bigs); happy6(kid,3);
+   return {key:'homework',who:a,t:'✏️ '+a+' sat with '+kid.name+' through the homework',why:'because '+kid.name+' was stuck on it and quietly going under — twenty minutes of actually explaining it, not just answering it, and it clicked'} }) }
+  if(kids.length>=2&&ready('kidplay',3)){ add(4,function(){ var a=kids[0], b=kids[1]; happy6(a,4); happy6(b,4);
+   return {key:'kidplay',who:a.name,t:'🎲 '+a.name+' and '+b.name+' built a whole game out of cushions and rules nobody wrote down',why:'because they had the run of the front room and used it — it ended in a draw, an argument about the draw, and then laughing about the argument'} }) }
+  if(adults.length&&(kids.length||adults.length>=2)&&ready('cook',3)){ add(4,function(){ var a=pickArr(adults);
+   return {key:'cook',who:a,t:'🍲 '+a+' cooked a proper big lunch for the house',why:'because the fridge was full, the day was slow, and '+a+' cooks when there is time to do it right — the house smelled incredible for hours'} }) }
+  if(adults.length&&ready('nap',3)){ add(3,function(){ var a=pickArr(adults);
+   return {key:'nap',who:a,t:'😴 '+a+' fell asleep on the couch mid-afternoon',why:'because the house went quiet for once and the couch did the rest — woke up twenty minutes later with cushion lines on one cheek'} }) }
+  if(adults.length&&ready('call',4)){ add(3,function(){ var a=pickArr(adults);
+   return {key:'call',who:a,t:'📞 '+a+' had a long phone call with family',why:'because it started as a two-minute check-in and turned into the full family news exchange — who is well, who is not, and what everybody is having for dinner'} }) }
+  if(adults.length&&ready('laundry',3)){ add(3,function(){ var a=pickArr(adults); cleanAdd6(3);
+   return {key:'laundry',who:a,t:'🧺 '+a+' ran a mountain of laundry',why:'because the basket had reached the height where it counts as furniture — two loads later the house smells like clean cotton'} }) }
+  if(!cands.length)return null;
+  var tot=0; for(var i=0;i<cands.length;i++)tot+=cands[i].w;
+  var r=Math.random()*tot, pick=cands[cands.length-1];
+  for(var j=0;j<cands.length;j++){ r-=cands[j].w; if(r<=0){ pick=cands[j]; break } }
+  var ev=pick.fn(); if(!ev)return null;
+  M.last[ev.key]=day; if(ev.once)M.once[ev.key]=day;
+  M.hist.push({key:ev.key,day:day}); if(M.hist.length>24)M.hist=M.hist.slice(M.hist.length-24);
+  return ev }
+ try{ var _mheH6=maybeHouseholdEvent; maybeHouseholdEvent=function(){ if(!S||!inGame)return; if(S.location!==homeLoc()&&!(S.jail&&S.jail.in)){ try{ if(typeof ensure84==='function')ensure84(); mem6(); if(Math.random()<0.65&&S.away84&&S.away84.length<5){ var ev=awayEvent6(); if(ev){ var dup=false; for(var i=0;i<S.away84.length;i++){ var it=S.away84[i]; if(it&&(it.key===ev.key||norm6(it.t)===norm6(ev.t))){ dup=true; break } } if(!dup){ S.away84.push({who:ev.who,t:ev.t,why:ev.why,key:ev.key,day:S.day,ctx:(typeof awayCtx193==='function')?awayCtx193():null}); save() } } } }catch(e){} return } return _mheH6() } }catch(e){}
+ try{ var _recapH6=recapShow84; recapShow84=function(){ try{ if(S&&S.away84&&S.away84.length>1){ var seenK={}, seenT={}, kept=[]; for(var i=0;i<S.away84.length;i++){ var it=S.away84[i]; if(!it||!it.t)continue; var nt=norm6(it.t); if(it.key&&seenK[it.key])continue; if(seenT[nt])continue; if(it.key)seenK[it.key]=1; seenT[nt]=1; kept.push(it) } if(kept.length!==S.away84.length)S.away84=kept } }catch(e){} return _recapH6() } }catch(e){}
+ window.__v199h6={mem:mem6,event:awayEvent6,version:function(){ return GAME_VERSION }};
+ console.log('🌊 AquaLife v'+GAME_VERSION+' — v199 hotfix 6: 🏠 WHILE YOU WERE OUT never repeats itself — every away event carries a key + a day-cooldown, one-shots happen exactly once ever, and the recap dedupes by key and text • 🔗 the household runs on real cause & effect: events are generated from the real state (cleanliness meter, kid happiness, bond, who is home) and open threads — crayon stays on the wall until scrubbed, a broken toy stays broken until fixed or replaced, an argument stays tense until made up or gone cold, lost keys stay lost until found');
+}catch(e){}
+})();
+</script>
 </body>
 </html>
