@@ -19979,7 +19979,7 @@ function ctxActs200(){ if(!S)return []; const out=[]; const loc=S.location, hr=S
  const kidHere=here.some(function(nm){ try{ return (typeof charAge79==='function'?(charAge79(nm)||99):99)<13 }catch(e){ return false } })||(S.kids&&S.kids.length&&home);
  if(loc==='street'||loc==='grandparents'||home||loc==='library')out.push(['meditate','🧘','Meditate']);
  if(home&&(S.needs?S.needs.energy<75:true))out.push(['nap','😴','Nap']);
- if(here.length)out.push(['photo','📸','Photo together']);
+ /* 📸 "Photo together" REMOVED from Actions (Howard, hotfix 17) — photos live in the automatic event portraits + the Scrapbook now; the button is gone for good (a filter in the h17 layer keeps it out even if a stale path re-adds it). */
  if(here.length&&(S.partner&&here.indexOf(S.partner)>=0)||(S.spouse&&here.indexOf(S.spouse)>=0)||(home&&here.length))out.push(['hug','🤗','Hug']);
  if((home||loc==='street')&&hr>=8&&hr<19&&kidHere)out.push(['catch','⚾','Play catch']);
  if(hr>=16&&hr<23&&(home||loc==='concert')&&here.length)out.push(['sing','🎤','Sing together']);
@@ -21933,6 +21933,238 @@ if(typeof window.sendFeedback214==='function'){ var _sf216=window.sendFeedback21
    fetch('https://docs.google.com/forms/d/e/1FAIpQLSerzlldqjpGD9zX0P6X80U7ujMLMJSJFrksiVV9Ui4isbC8eA/formResponse',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}).then(function(){ try{ openSheet('<h2>💬 Thank you!</h2><p>Your feedback is in — it goes straight to the AquaLife feedback sheet. Happy living! 🌊</p><button class="btn gold" onclick="closeModal()">Back to life</button>',{quiet:true}) }catch(e){} }).catch(fail);
   }catch(e){ return _sf216.apply(this,arguments) } } }
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 16: 🧸 tussle cause-first + battle anti-deadlock • 🚗 solid cars, clearer clamped name tags, lens-locked road, walk-to-car departures • 🚑 fight→hospital (recovery / broken parts / die78 death) • 🏠 recap day-on-top • 🕐 clock guardian under the Calendar • 😊 expressions (head-pops gone, customise + level unlocks) • ⭐ level-up spotlight exclusivity • 💬 feedback on Welcome + hourly ask','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 17 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's orders, one layer:
+   1) 📸 PHOTO TOGETHER IS OUT OF ACTIONS — the button is deleted at the source (in ctxActs200) and
+      filtered out again here, so no stale path can resurrect it. The automatic family portraits on
+      events (birthdays, babies, weddings, parties) and the 📷 Scrapbook are NOT touched — photos
+      happen at moments now, not as a button.
+   2) 📍 DYNAMIC ACTIONS PER PLACE — a new card in ⚡ Actions, right under 🌤️ Right here, right now:
+      "Only here" actions generated from the place you are standing in, rebuilt the moment the place
+      (or the hour, or your age bracket) changes. Every verb was audited against the whole existing
+      catalog — core Actions, the contextual set, the School & preschool sets, Social, Trouble, the
+      place services in Travel and the phone apps — and each one is something you cannot already do
+      anywhere else: feed the ducks & fly a kite on Maple Street, browse the stacks & ask the
+      librarian, tutor a classmate & be classroom helper at school (🧩 puzzle corner, 🧹 tidy-up
+      race & 🐞 garden bug hunt for preschoolers), fountain wishes at the mall, pool at the bar,
+      blood donation at the hospital, blanket forts at a friend's house, shells at the beach…
+      Each does something real: needs move, XP lands, money moves where it says, and a few keep
+      count (🐚 shells, ⛲ wishes) in S.v217. Once-a-day ones say so. Age gates hold: toddlers get
+      toddler-true verbs, the bar set is 18+, blood donation is 18+, the tasting wall is 21+.
+   3) 🧊 FIXTURES STAY IN THEIR PLACE — the Actions panel no longer leaks home fixtures across town:
+      the Eat card's fridge rows (and its Restock Fridge door) are stripped anywhere that is not
+      home — Bag food stays, because the Bag travels; the Sleep, Shower and TV cards only exist
+      where those fixtures exist (home; sleep also at a friend's house and in a jail cell, where
+      the shipped rules put beds). eatItem132 / fridgeSnack refuse away from home as a backstop.
+      At school the panel LEADS with school: the 🎓 card carries the school-day staples (the
+      shipped doGeneric / TOD_PRE72 actions, enrollment gates intact) on top of the school-only
+      dynamic verbs. */
+(function(){ 'use strict';
+try{
+ function ensure217(){ if(typeof S==='undefined'||!S)return null; if(!S.v217||typeof S.v217!=='object')S.v217={}; var V=S.v217; if(!V.days||typeof V.days!=='object')V.days={}; if(V.shells==null)V.shells=0; if(V.wishes==null)V.wishes=0; return V }
+ function esc217(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
+ function homeLike217(){ try{ if(!S)return false; var hl=(typeof homeLoc==='function')?homeLoc():null; if(hl&&S.location===hl)return true; return ['house','orphanage','boarding','jail'].indexOf(S.location)>=0 }catch(e){ return false } }
+
+ /* ================= 1) 📸 PHOTO TOGETHER — filtered out of the contextual set for good ================= */
+ try{ var _ca217=ctxActs200; ctxActs200=function(){ var out=_ca217.apply(this,arguments); try{ out=out.filter(function(a){ return a[0]!=='photo' }) }catch(e){} return out } }catch(e){}
+ try{ var _cx217=ctxAct200; ctxAct200=function(k){ if(k==='photo')return; return _cx217.apply(this,arguments) } }catch(e){}
+
+ /* ================= 2) 📍 DYNAMIC PER-PLACE ACTIONS ================= */
+ /* every entry audited against the shipped catalog — see the header note. fx(V) may return the log line. */
+ var DYNACT217={
+  /* 🎓 school — preschoolers (3–4) */
+  pz:{icon:'🧩',label:'Puzzle corner',needs:{fun:7},gain:'Fun +7',log:'🧩 PUZZLE CORNER — the big floor puzzle at preschool: fifteen pieces, one missing, found triumphantly under a chair. It counts as a summit.'},
+  tidy:{icon:'🧹',label:'Tidy-up race',needs:{fun:5,social:4},gain:'Fun +5, Social +4',log:'🧹 TIDY-UP RACE — the clean-up song came on and the whole class raced the blocks into the bin. You beat the song by four seconds. The teacher is still talking about it.'},
+  bughunt:{icon:'🐞',label:'Bug hunt in the garden corner',needs:{fun:8},gain:'Fun +8',log:'🐞 BUG HUNT — the preschool garden corner yielded one (1) magnificent beetle, studied at length and released with full honours.'},
+  /* 🎓 school — 5–17 */
+  tutor:{icon:'🤝',label:'Tutor a classmate',needs:{social:7,energy:-3},gain:'Social +7, grades +1',fx:function(){ try{ S.grades=clamp((S.grades||0)+1); addXp(10,'study') }catch(e){} },log:'🤝 TUTORED A CLASSMATE — walked them through the bit everyone pretends to understand. Teaching it taught you: grades nudge up, and so does your name in that class.'},
+  helper:{icon:'🧽',label:'Classroom helper',needs:{social:5},gain:'Social +5, grades +1',fx:function(){ try{ S.grades=clamp((S.grades||0)+1); addXp(6,'social') }catch(e){} },log:'🧽 CLASSROOM HELPER — boards erased, papers run, plant watered, teacher quietly delighted. The helper jobs are how a classroom decides who you are.'},
+  doodle:{icon:'✏️',label:'Doodle break',needs:{fun:7,energy:2},gain:'Fun +7',log:'✏️ DOODLE BREAK — five stolen minutes in the margin of the day: a tiny masterpiece of a dog driving a bus. The margin is where the real curriculum lives.'},
+  /* 🎓 college */
+  lecture:{icon:'🎓',label:'Sit in on a random lecture',needs:{energy:-4},gain:'Study XP +12',fx:function(){ try{ addXp(12,'study') }catch(e){} },log:'🎓 SAT IN — a lecture that is not your major, not your problem and weirdly fascinating. Zero progress, pure curiosity, brain fed.'},
+  quad:{icon:'🎪',label:'Browse the quad fair tables',needs:{fun:6,social:6},gain:'Fun +6, Social +6',log:'🎪 QUAD FAIR — table to table: flyers, sign-up sheets, free pens, three conversations you did not plan and one you will remember.'},
+  /* 📚 library */
+  stacks:{icon:'🔖',label:'Browse the stacks',needs:{fun:6},gain:'Fun +6',fx:function(){ try{ if(Math.random()<0.4){ addXp(6,'study'); return '🔖 THE STACKS GAVE ONE UP — spine-cracked browsing led to THE book, the one you did not know you were looking for. Study XP for a find like that.' } }catch(e){} },log:'🔖 BROWSED THE STACKS — no list, no plan, just shelf-serendipity: spines, dust, and three books you now need simultaneously.'},
+  librarian:{icon:'🙋',label:'Ask the librarian',needs:{social:5},gain:'Social +5, Study XP +8',fx:function(){ try{ addXp(8,'study') }catch(e){} },log:'🙋 ASKED THE LIBRARIAN — one question in, a perfect recommendation out. Librarians run the world\'s quietest superpower: knowing exactly what you should read next.'},
+  /* 🌳 Maple Street & Park */
+  ducks:{icon:'🦆',label:'Feed the ducks — $1',cost:1,needs:{fun:7,social:3},gain:'Fun +7, Social +3',log:'🦆 FED THE DUCKS — a dollar of bread, an honours guard of ducks, and one drake who has clearly done this before and expects tribute.'},
+  kite:{icon:'🪁',label:'Fly a kite',needs:{fun:9,energy:-2},gain:'Fun +9',log:'🪁 KITE UP — string humming, tail dancing, the whole park watching it ride the wind higher than the trees. Some technologies never improve.'},
+  /* 🏪 Corner Store */
+  board:{icon:'📌',label:'Read the community board',needs:{fun:4,social:3},gain:'Fun +4, Social +3',fx:function(){ try{ if(Math.random()<0.3){ S.followers=(S.followers||0)+1; return '📌 THE BOARD PAID OFF — lost cats, a yard sale, a band needing a drummer… and somebody pinned a flyer with YOUR name on it. Followers +1.' } }catch(e){} },log:'📌 READ THE BOARD — lost cats, piano lessons, a couch that is free if you can move it today. The corner store board is the town\'s oldest social network.'},
+  carry:{icon:'🛍️',label:'Carry a neighbour\'s bags',needs:{social:6,energy:-3},gain:'Social +6',fx:function(){ try{ if(Math.random()<0.45){ money(2,'🛍️ A neighbour\'s thank-you tip'); return '🛍️ BAGS CARRIED — two streets over, both arms loaded, and at the door a pressed-into-your-hand $2 "for your trouble". Kindness, occasionally, tips.' } }catch(e){} },log:'🛍️ BAGS CARRIED — a neighbour, a boot full of groceries, and you. No tip, no audience, just the walk and the thanks. That is the whole economy of it.'},
+  /* 🛒 FreshMart */
+  melon:{icon:'🍉',label:'Thump-test the melons',needs:{fun:5},gain:'Fun +5, Cooking XP +4',fx:function(){ try{ addXp(4,'cooking') }catch(e){} },log:'🍉 THUMP-TESTED — knuckle to rind, ear down like a safecracker. Gus nodded once, slowly: the nod of a man who respects the thump.'},
+  samples:{icon:'🧀',label:'Sample the samples',daily:true,needs:{hunger:6,fun:4},gain:'Hunger +6, Fun +4',log:'🧀 SAMPLED THE SAMPLES — a full lap of the tasting table: cheese, a sausage end, something on a toothpick nobody could identify. Lunch, technically.'},
+  /* 🛍️ The Mall */
+  wish:{icon:'⛲',label:'Make a fountain wish — $1',cost:1,needs:{fun:5},gain:'Fun +5',fx:function(V){ V.wishes++; return '⛲ WISH AWAY — coin over the shoulder, splash, secret kept. That is wish #'+V.wishes+' in this fountain. The fountain is not saying anything either way.' }},
+  balcony:{icon:'👀',label:'People-watch from the balcony',needs:{fun:5,social:5},gain:'Fun +5, Social +5',log:'👀 BALCONY PEOPLE-WATCH — the whole mall as an aquarium: first dates, mall-walkers at race pace, one kid living their best escalator life. Prime free entertainment.'},
+  /* 🎬 Cinema */
+  trailers:{icon:'🎟️',label:'Rate the trailers',needs:{fun:6},gain:'Fun +6',log:'🎟️ TRAILER CRITIC — every trailer rated out of five in a notebook only you will ever read. Two must-sees, one absolutely-not, one trailer better than its movie will be.'},
+  credits:{icon:'🎬',label:'Stay for the credits scene',needs:{fun:4},gain:'Fun +4',log:'🎬 STAYED TO THE END — lights half-up, cleaners waiting, and the credits scene rewarded the patient exactly as promised. You are the reason they hide things there.'},
+  /* 🎮 The Arcade */
+  spectate:{icon:'👀',label:'Watch a high-score run',needs:{fun:4},gain:'Fun +4, Tech XP +5',fx:function(){ try{ addXp(5,'tech') }catch(e){} },log:'👀 WATCHED A RUN — the cabinet wizard went twenty minutes without losing a life. You studied the inputs like scripture. Tech XP for the lesson.'},
+  teachtrick:{icon:'🎓',label:'Teach a kid your best trick',needs:{social:7,fun:4},gain:'Social +7, Fun +4',log:'🎓 TRICK PASSED DOWN — your best arcade secret, handed to a kid half your height. The look on their face when it worked: that is the whole arcade economy.'},
+  /* 🎤 Concert Hall */
+  wave:{icon:'🙌',label:'Start the wave',needs:{fun:7,social:6},gain:'Fun +7, Social +6',log:'🙌 YOU STARTED THE WAVE — arms up, section by section, all the way around the hall and back to you. For eleven seconds you conducted a building.'},
+  opener:{icon:'🌟',label:'Catch the opener early',needs:{fun:8},gain:'Fun +8',fx:function(){ try{ if(Math.random()<0.3){ S.followers=(S.followers||0)+3; return '🌟 THE OPENER WAS A FIND — an unknown act, twelve people watching, and you posted about them first. Followers +3 — remember this when they are famous.' } }catch(e){} },log:'🌟 CAUGHT THE OPENER — the act nobody came for, playing like it is their last night on earth. The openers are where the real shows hide.'},
+  /* 🎡 Amusement Park / theme park */
+  candy:{icon:'🍭',label:'Cotton-candy swirl contest',needs:{fun:8,hunger:2},gain:'Fun +8',log:'🍭 SWIRL CONTEST — you versus the machine versus physics: one enormous pink cloud, structural integrity questionable, flavour undeniable.'},
+  performers:{icon:'🎪',label:'Watch the street performers',needs:{fun:6,social:3},gain:'Fun +6, Social +3',log:'🎪 STREET PERFORMERS — a juggler, a living statue who blinked at exactly the right kid, and a crowd that became an audience without noticing.'},
+  /* 🧖 The Spa */
+  nails:{icon:'💅',label:'Paint-your-own nails',needs:{fun:6,hygiene:2},gain:'Fun +6, Hygiene +2',log:'💅 NAIL STATION — your own handiwork at the spa\'s paint bar: one hand flawless, one hand "artistic". Both hands, technically, done.'},
+  mags:{icon:'📰',label:'Read the glossy magazines',needs:{fun:5},gain:'Fun +5',log:'📰 GLOSSY PILE — spa magazines from three years ago: celebrity houses, miracle diets, a quiz that says you are a winter. Time well spent, information zero.'},
+  /* 💈 Barbershop / 💇 Salon */
+  towel:{icon:'🧖',label:'Hot-towel treatment',needs:{hygiene:6,fun:4},gain:'Hygiene +6, Fun +4',log:'🧖 HOT TOWEL — steam, eucalyptus, and thirty seconds of being a person with no responsibilities at all. The barbershop\'s best trick.'},
+  cond:{icon:'💆',label:'Deep-condition & scalp massage',needs:{fun:6,hygiene:3},gain:'Fun +6, Hygiene +3',log:'💆 DEEP-CONDITION — scalp massage, warm towels, the works. You left the salon floating approximately two inches above the pavement.'},
+  /* 🏥 The Vet */
+  walkdog:{icon:'🐕',label:'Walk a boarding dog',needs:{fun:7,social:4,energy:-3},gain:'Fun +7, Social +4',log:'🐕 BOARDED-DOG WALK — a vet guest named on the chart as "Sir Barks" got his evening lap of the block, and you got a new best friend with a checkout date.'},
+  cats:{icon:'🐈',label:'Sit with the rescue cats',needs:{fun:6},gain:'Fun +6',log:'🐈 CAT ROOM — twenty minutes sitting very still while the rescue cats conducted their inspections. Two approved of you. One sat on your foot, which is a contract.'},
+  /* 🏥 Regional Hospital */
+  flowers:{icon:'💐',label:'Bring flowers to a patient — $6',cost:6,needs:{social:7},gain:'Social +7',log:'💐 FLOWERS DELIVERED — the nurses pointed you to the ward\'s longest-stay patient. The flowers are on the sill now, and the room is measurably less hospital for them.'},
+  blood:{icon:'🩸',label:'Donate blood',daily:true,needs:{health:-4,hunger:4,social:5},gain:'Social +5, a cookie, juice',log:'🩸 BLOOD DONATED — one pint, one sticker, one juice box drunk like a sommelier. Somewhere across town, that pint is about to be the most important thing in somebody\'s day.'},
+  /* 🏦 First River Bank */
+  advisor:{icon:'🧑‍💼',label:'Ask the advisor one question',needs:{},gain:'Study XP +6',fx:function(){ try{ addXp(6,'study') }catch(e){} },log:'🧑‍💼 ONE QUESTION — the bank advisor got your best money question and answered it properly, with a diagram. You left measurably harder to fool.'},
+  lollipop:{icon:'🍭',label:'The teller\'s lollipop',needs:{fun:4,hunger:2},gain:'Fun +4',log:'🍭 TELLER\'S LOLLIPOP — the jar on the counter is not officially for grown-ups OR officially not. The teller slid one across with a wink. Bank business: concluded.'},
+  /* 🏛️ Town Hall */
+  notices:{icon:'📋',label:'Read the public notices',needs:{fun:3,social:3},gain:'Fun +3, Social +3',log:'📋 THE NOTICE BOARD — permits, hearings, one heated notice about a fence. Town hall\'s board is where the town argues with itself in print.'},
+  suggest:{icon:'🗳️',label:'Drop a suggestion in the town box',daily:true,needs:{social:4},gain:'Social +4',fx:function(){ try{ if(Math.random()<0.25){ S.followers=(S.followers||0)+2; return '🗳️ YOUR SUGGESTION GOT READ ALOUD — a clerk liked it enough to raise at the meeting, and the minutes have your name in them. Followers +2.' } }catch(e){} },log:'🗳️ SUGGESTION DROPPED — folded once, into the brass box by the clerk\'s desk. Democracy: administered in handwriting.'},
+  /* 🖋️ Tattoo Parlor */
+  flash:{icon:'🖋️',label:'Flip the flash book',needs:{fun:5},gain:'Fun +5',log:'🖋️ THE FLASH BOOK — page after page of other people\'s permanent decisions. You have a someday list now. It is long. It is specific.'},
+  /* 🍸 The Velvet Fox Bar (18+) */
+  pool:{icon:'🎱',label:'Challenge someone to pool — $10',cost:10,needs:{fun:8,social:6},gain:'Fun +8, Social +6',fx:function(){ try{ if(Math.random()<0.5){ money(20,'🎱 Pool — your rack, your table'); return '🎱 POOL: YOUR TABLE — you ran the last three balls like a training video. The regular\'s $10 became your $20 and the table is yours until somebody braver shows up.' } return '🎱 POOL: THEIR TABLE — the regular sank the 8-ball off two rails and your $10 stayed in their pocket. The rematch is already scheduled in both your heads.' }catch(e){} },log:'🎱 POOL.'},
+  flair:{icon:'🍸',label:'Learn a flair trick',needs:{fun:5},gain:'Fun +5, Social XP +5',fx:function(){ try{ addXp(5,'social') }catch(e){} },log:'🍸 FLAIR LESSON — the bartender taught you the bottle spin. Three attempts, one near-casualty, one clean catch. The regulars applauded the catch like a cup final.'},
+  /* 🍾 Bottle & Vine (21+) */
+  tnotes:{icon:'📜',label:'Read the tasting-notes wall',needs:{fun:4},gain:'Fun +4',log:'📜 TASTING NOTES — "hints of blackberry, leather, and decisions". You read the whole wall. Some of those bottles have better memoirs than people.'},
+  /* 🍽️ The Salty Cup */
+  song:{icon:'🎹',label:'Request a song from the pianist',needs:{fun:6,social:4},gain:'Fun +6, Social +4',log:'🎹 REQUEST HONOURED — your song, played properly, while the whole dining room pretended not to listen and absolutely listened. The pianist got a nod economy going.'},
+  compwall:{icon:'✍️',label:'Sign the compliment wall',needs:{fun:4,social:4},gain:'Fun +4, Social +4',fx:function(){ try{ if(Math.random()<0.25){ S.followers=(S.followers||0)+1; return '✍️ THE WALL NOTICED YOU BACK — your line on the compliment wall got photographed by three tables tonight. Followers +1.' } }catch(e){} },log:'✍️ COMPLIMENT WALL — your line is up there now between a marriage proposal and a five-star review of the bread. Immortality, restaurant-grade.'},
+  /* 🍽️ The Endless Table */
+  stack:{icon:'🏆',label:'Plate-stack challenge',needs:{fun:7,social:3,hygiene:-2},gain:'Fun +7, Social +3',log:'🏆 PLATE-STACK CHAMPION — eleven plates, one tower, a busser applauding against their will. The buffet has seen things. This ranked.'},
+  swirl:{icon:'🍦',label:'Tallest soft-serve swirl',needs:{fun:6,hunger:3},gain:'Fun +6',log:'🍦 THE SWIRL — you versus the soft-serve lever: a tower with its own weather system. It leaned. It held. It was eaten in victory.'},
+  /* 👵 Grandma & Grandpa's */
+  bake:{icon:'🍪',label:'Bake cookies with Grandma',needs:{fun:7,hunger:5},gain:'Fun +7, Cooking XP +5, Bond +2',fx:function(){ try{ addXp(5,'cooking'); S.bond=clamp((S.bond||0)+2) }catch(e){} },log:'🍪 BAKED WITH GRANDMA — her recipe, her rules, your flour-covered everything. The cookies came out like the ones from when you were small, because they are the ones from when you were small.'},
+  ggarden:{icon:'🌻',label:'Help Grandpa in the garden',needs:{fun:6,energy:-3},gain:'Fun +6, Bond +2',fx:function(){ try{ S.bond=clamp((S.bond||0)+2) }catch(e){} },log:'🌻 GRANDPA\'S GARDEN — an hour of weeding, watering and being told exactly how tomatoes were done in his day. The garden looks loved. So does he.'},
+  /* 🏠 home — any residence */
+  memorybox:{icon:'📦',label:'Dig through the memory box',needs:{fun:7},gain:'Fun +7',fx:function(V){ try{ if(V.days.memorypage!==S.day){ V.days.memorypage=S.day; page200('📦','The memory box','Day '+S.day+' — dug through the memory box at home: ticket stubs, a school drawing, one photograph nobody remembers taking. It goes in the storybook because it IS the storybook.') ; return '📦 THE MEMORY BOX — ticket stubs, a school drawing held together by glitter glue, one photograph nobody remembers taking. The good kind of archaeology. (A page went in the storybook.)' } }catch(e){} },log:'📦 THE MEMORY BOX — ticket stubs, a school drawing held together by glitter glue, one photograph nobody remembers taking. The good kind of archaeology.'},
+  bunk:{icon:'🛏️',label:'Bunk-story swap',needs:{social:7,fun:4},gain:'Social +7, Fun +4',log:'🛏️ BUNK-STORY SWAP — lights low, voices lower, the dorm trading its best stories bunk to bunk. Sleep is postponed. Morale is not.'},
+  tour:{icon:'🧸',label:'Show a new kid around',needs:{social:7},gain:'Social +7',log:'🧸 THE TOUR — you showed the newest kid everything: which tap runs fastest, where the good chairs are, who to sit with. A week ago somebody did this for you. That is how a house becomes a home.'},
+  /* 🏠 a friend's house — sleepover country */
+  fort:{icon:'🛋️',label:'Build a blanket fort',needs:{fun:9,social:5},gain:'Fun +9, Social +5',log:'🛋️ BLANKET FORT — every cushion in the house, engineering by vibes, one flashlight constitution. The fort has rooms. The fort has RULES. The fort is better than most architecture.'},
+  puppets:{icon:'🔦',label:'Flashlight shadow puppets',needs:{fun:7,social:4},gain:'Fun +7, Social +4',log:'🔦 SHADOW PUPPETS — one flashlight, one wall, and a rabbit that became a dragon that became, ambitiously, a horse. The audience demanded an encore.'},
+  /* 💼 work */
+  plant:{icon:'💧',label:'Water the office plant',needs:{fun:3,social:2},gain:'Fun +3, Social +2',log:'💧 THE OFFICE PLANT LIVES — somebody has to be its person, and today it was you. It is the only coworker who has never once complained in a meeting.'},
+  breakroom:{icon:'☕',label:'Break-room snack run — $3',cost:3,needs:{social:6},gain:'Social +6',fx:function(){ try{ var here=(typeof peopleHere200==='function')?peopleHere200():[]; if(here.length){ mem200(here[0],1); return '☕ BREAK-ROOM HERO — you restocked the snacks on your own $3 and '+here[0]+' noticed first. Small money, enormous office reputation.' } }catch(e){} },log:'☕ BREAK-ROOM HERO — you restocked the snacks on your own $3. Nobody saw who did it, which somehow makes it legend faster.'},
+  /* 🏋️ gym */
+  race:{icon:'🏃',label:'Challenge someone to a race',needs:{fun:8,energy:-5},gain:'Fun +8, Fitness XP +8',fx:function(){ try{ addXp(8,'fitness'); var lv=(typeof skillLv==='function')?skillLv('fitness'):1; if(Math.random()<0.35+lv*0.06)return '🏃 RACE: YOURS — all the way to the far wall and back, and it was not even close by the end. The gym has a new name to beat.'; return '🏃 RACE: THEIRS — beaten by half a stride and absolutely no excuses available. The rematch terms are already being negotiated.' }catch(e){} },log:'🏃 RACE.'},
+  spot:{icon:'🤝',label:'Spot a stranger on the bench',needs:{social:5},gain:'Social +5, Fitness XP +4',fx:function(){ try{ addXp(4,'fitness') }catch(e){} },log:'🤝 SPOTTED — a stranger, a heavy bar, and you standing over it being trustworthy. Gym trust is earned exactly one rep at a time.'},
+  /* ⛓️ jail */
+  paperbacks:{icon:'📖',label:'Trade paperbacks in the yard',needs:{fun:6,social:3},gain:'Fun +6, Social +3',log:'📖 YARD LIBRARY — two thrillers and a western changed hands for your paperback. Inside, a good book trades like currency because it is.'},
+  /* 🏖️ vacation places */
+  castle:{icon:'🏖️',label:'Build a sandcastle',needs:{fun:9},gain:'Fun +9',log:'🏖️ SANDCASTLE — moat, towers, a flag made of a leaf. The tide has been notified and does not care, which is exactly what makes it art.'},
+  shells:{icon:'🐚',label:'Hunt for shells',needs:{fun:6},gain:'Fun +6',fx:function(V){ var n=1+Math.floor(Math.random()*3); V.shells+=n; return '🐚 SHELL HUNT — '+n+' keeper'+(n===1?'':'s')+' found in the wet sand. Your collection stands at '+V.shells+' — the beach keeps the rest in trust.' }},
+  viewpoint:{icon:'🏔️',label:'Find the viewpoint',needs:{fun:7,health:2,energy:-3},gain:'Fun +7, Health +2',log:'🏔️ THE VIEWPOINT — the trail kept promising and then delivered all at once: the whole valley, laid out like it was waiting for an audience of one.'},
+  stationart:{icon:'🚇',label:'Station-art hop',needs:{fun:6},gain:'Fun +6',log:'🚇 STATION ART — rode one stop, got off, read the mosaics like a gallery that happens to have trains. The city hides its best art where everyone is in a hurry.'}
+ };
+ window.dynAct217=function(id){ try{ if(!S)return; var D=DYNACT217[id]; if(!D)return; var V=ensure217(); if(!V)return;
+  if(D.daily&&V.days[id]===S.day){ toast('✔ Done that today — it will be there tomorrow'); return }
+  if(id==='kite'&&/rain|storm/i.test(S.weather||'')){ toast('🪁 Not in this weather — kites and rain are enemies'); return }
+  if(D.cost){ if((S.money||0)<D.cost){ toast('💵 Need $'+D.cost); return } money(-D.cost,'📍 '+D.label.replace(/ — \$\d+$/,'')) }
+  if(D.daily)V.days[id]=S.day;
+  startActivity(D.icon,D.dur||2200,(typeof charX!=='undefined'?charX:450),(typeof charY!=='undefined'?charY:260),D.needs||{},function(){ var line=''; try{ if(D.fx)line=D.fx(V)||'' }catch(e){} if(!line)line=(typeof D.log==='function')?D.log():D.log; log(line); toast(D.icon+' '+D.label.replace(/ — \$\d+$/,'')+(D.gain?' — '+D.gain:'')); save(); render() });
+  save() }catch(e){} };
+ /* ---------- which dynamic verbs belong to this place, this age, this hour ---------- */
+ function dynSet217(){ if(!S)return null; var loc=S.location, age=S.age, hr=S.hour; var evening=(hr>=17&&hr<23), late=(hr>=18||hr<6);
+  switch(loc){
+   case 'school': { if(age>=3&&age<=4)return ['pz','tidy','bughunt']; if(age>=5&&age<=17)return ['tutor','helper','doodle']; return [] }
+   case 'college': return ['lecture','quad'];
+   case 'library': return ['stacks','librarian'];
+   case 'street': { var a=['ducks']; if(!/rain|storm/i.test(S.weather||''))a.push('kite'); return a }
+   case 'store': return ['board','carry'];
+   case 'grocery': return ['melon','samples'];
+   case 'mall': return ['wish','balcony'];
+   case 'cinema': return ['trailers','credits'];
+   case 'arcade': return ['spectate','teachtrick'];
+   case 'concert': return ['wave','opener'];
+   case 'fair': case 'park': return ['candy','performers'];
+   case 'spa': return ['nails','mags'];
+   case 'barber': return ['towel'];
+   case 'salon': return ['cond'];
+   case 'vet': return ['walkdog','cats'];
+   case 'hospital': { var h=['flowers']; if(age>=18)h.push('blood'); return h }
+   case 'bank': return age<13?['lollipop']:['advisor'];
+   case 'townhall': return ['notices','suggest'];
+   case 'tattoo': return ['flash'];
+   case 'bar': return age>=18?['pool','flair']:[];
+   case 'liquor': return age>=21?['tnotes']:[];
+   case 'restaurant': { var r=['compwall']; if(evening)r.unshift('song'); return r }
+   case 'buffet': return ['stack','swirl'];
+   case 'grandparents': return ['bake','ggarden'];
+   case 'house': case 'orphanage': case 'boarding': { var hm=['memorybox']; if(loc==='boarding'&&late)hm.push('bunk'); if(loc==='orphanage')hm.push('tour'); return hm }
+   case 'friendhouse': { var f=['fort']; if(late)f.push('puppets'); return f }
+   case 'work': return ['plant','breakroom'];
+   case 'gym': return ['race','spot'];
+   case 'jail': return ['paperbacks'];
+   case 'beach': return ['castle','shells'];
+   case 'mountains': return ['viewpoint'];
+   case 'city': return ['stationart'];
+  }
+  return null }
+ /* ---------- the school-day staples (existing actions, surfaced at school — gates ship with them) ---------- */
+ function schoolLead217(){ if(!S||S.location!=='school')return '';
+  if(S.age>=3&&S.age<=4){ var pre=[['attend','🎒 Attend Preschool'],['story','📖 Story Time'],['arts','🎨 Arts & Crafts'],['playground','🛝 Playground Time'],['snack','🍎 Snack Time'],['group','👫 Group Games']];
+   return '<p class="small" style="margin:2px 0 4px"><b>Preschool day:</b></p>'+pre.map(function(b){ return '<button class="btn" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="todPre72(\''+b[0]+'\')">'+b[1]+'</button>' }).join('') }
+  if(S.age>=5&&S.age<=17){ var acts=[['Attend Class',18,'study','🎒'],['Recess',10,'social','🛝'],['Eat Cafeteria Lunch',6,'social','🍽️'],['Library Study',14,'study','📚'],['Gym / Sports',12,'fitness','🏃']];
+   return '<p class="small" style="margin:2px 0 4px"><b>School day:</b></p>'+acts.map(function(a){ return '<button class="btn" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="doGeneric(\''+a[0]+'\','+a[1]+',\''+a[2]+'\')">'+a[3]+' '+a[0]+'</button>' }).join('') }
+  return '' }
+ function dynData217(){ if(!S)return null; var ids=dynSet217(); var lead=(S.location==='school')?schoolLead217():'';
+  if((!ids||!ids.length)&&!lead)return null;
+  var band=S.hour<6?'night':S.hour<12?'am':S.hour<18?'pm':S.hour<23?'eve':'night';
+  var sig=S.location+'|'+S.age+'|'+S.day+'|'+band+'|'+(S.weather||'');
+  var label=S.location; try{ var dl=(typeof locDisplay144==='function')?locDisplay144(S.location):''; if(dl)label=String(dl).split('—')[0].trim() }catch(e){}
+  if(S.location==='school'&&S.age>=3&&S.age<=4){ label='🧸 '+(function(){ try{ return schoolName('pre') }catch(e){ return 'Preschool' } })() }
+  var btns=(ids||[]).map(function(id){ var D=DYNACT217[id]; if(!D)return ''; return '<button class="btn gold" style="width:auto;margin:0 6px 8px 0;padding:8px 13px" onclick="dynAct217(\''+id+'\')">'+D.icon+' '+esc217(D.label)+'</button>' }).join('');
+  var counts=''; try{ var V=ensure217(); if(V&&(S.location==='beach'&&V.shells>0))counts='<p class="small" style="margin-top:2px">🐚 Shells collected: <b>'+V.shells+'</b></p>'; if(V&&(S.location==='mall'&&V.wishes>0))counts='<p class="small" style="margin-top:2px">⛲ Wishes made in this fountain: <b>'+V.wishes+'</b></p>' }catch(e){}
+  var html='<h3>📍 Only here — '+esc217(label)+'</h3><p class="small">These exist because of where you are standing. They are this place\'s own verbs — nothing here duplicates anything else you can do.</p>'
+   +lead
+   +(lead&&btns?'<p class="small" style="margin:4px 0"><b>Only at this school:</b></p>':'')
+   +btns+counts;
+  return {sig:sig,html:html} }
+ function positionDyn217(panel,card){ try{ var ctx=panel.querySelector('.ctxCard200'); var anchor=ctx?(ctx.closest('details.dd132')||ctx):null; var ref=anchor?anchor.nextSibling:panel.firstChild; if(ref!==card)panel.insertBefore(card,ref) }catch(e){} }
+ function dynPass217(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return; var data=dynData217(); var card=panel.querySelector('.dynCard217');
+  if(!data){ if(card)card.remove(); return }
+  if(!card){ card=document.createElement('div'); card.className='card dynCard217'; card.style.borderColor='var(--accent2)' }
+  if(card.getAttribute('data-sig')!==data.sig){ card.innerHTML=data.html; card.setAttribute('data-sig',data.sig) }
+  positionDyn217(panel,card) }catch(e){} }
+
+ /* ================= 3) 🧊 FIXTURES STAY IN THEIR PLACE ================= */
+ function stripCard217(el){ try{ var dd=el.closest?el.closest('details.dd132'):null; if(dd&&el.parentNode===dd)dd.remove(); else el.remove() }catch(e){} }
+ function fixtureFix217(){ try{ if(!S||typeof curTab==='undefined'||curTab!=='actions101')return; if(homeLike217())return; var panel=document.getElementById('panel'); if(!panel)return;
+  var cards=panel.querySelectorAll('.actCard101,.card');
+  for(var i=0;i<cards.length;i++){ var c=cards[i]; if(!c.isConnected)continue; var h=c.innerHTML||'';
+   if(h.indexOf('eatItem132(')>=0||h.indexOf('eatBag133(')>=0||h.indexOf('eatInv132(')>=0){
+    /* the Eat card: fridge rows + the Restock Fridge door go; Bag food (it travels) stays */
+    var btns=c.querySelectorAll('button'); for(var j=0;j<btns.length;j++){ var oc=btns[j].getAttribute('onclick')||''; if(oc.indexOf('eatItem132(')>=0||oc.indexOf('restockSheet173')>=0)btns[j].remove() }
+    var ps=c.querySelectorAll('p'); for(var k=0;k<ps.length;k++){ if(/fridge is empty/i.test(ps[k].textContent||''))ps[k].innerHTML='🎒 Nothing to eat in your Bag right now — the 🧊 fridge is at home, and fridge food stays home.' }
+    if(c.querySelector('button')&&!c.querySelector('.fixNote217')){ var n=document.createElement('p'); n.className='small fixNote217'; n.textContent='🧊 Fridge food stays at home — Bag food travels with you.'; c.appendChild(n) }
+   }
+   else if(h.indexOf('sleep132(')>=0||h.indexOf("act('sleep')")>=0){ if(['friendhouse','jail'].indexOf(S.location)<0)stripCard217(c) }
+   else if(h.indexOf('shower132(')>=0||h.indexOf("act('shower')")>=0){ stripCard217(c) }
+   else if(h.indexOf("act('tv')")>=0){ stripCard217(c) }
+  } }catch(e){} }
+ /* backstops: the fridge handlers themselves refuse away from home */
+ try{ var _ei217=eatItem132; eatItem132=function(kind){ if(!homeLike217()){ toast('🧊 The fridge is at home — fridge food doesn\'t travel'); return } return _ei217.apply(this,arguments) } }catch(e){}
+ try{ var _fs217=fridgeSnack; fridgeSnack=function(){ if(!homeLike217()){ toast('🧊 The fridge is at home — fridge snacks don\'t travel'); return } return _fs217.apply(this,arguments) } }catch(e){}
+
+ /* ================= shared passes ================= */
+ function passes217(){ try{ fixtureFix217() }catch(e){} try{ dynPass217() }catch(e){} }
+ ['renderTabs','paintActions101','paintQCards101','render'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__h217)return; var w=function(){ var r=fn.apply(this,arguments); try{ passes217(); setTimeout(passes217,90); setTimeout(passes217,320) }catch(e){} return r }; w.__h217=true; window[nm]=w }catch(e){} });
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; passes217() }catch(e){} },900);
+ window.__v217={ensure:ensure217,set:dynSet217,data:dynData217,acts:DYNACT217,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 17: 📸 Photo together REMOVED from Actions (event portraits + Scrapbook untouched) • 📍 dynamic per-place actions ("Only here" card under Right here, right now — audited zero-overlap verbs per place, age-gated, real effects, rebuilt on place/hour/age change) • 🧊 fixtures stay in their place: fridge rows + Restock door stripped from Actions away from home (Bag food travels), Sleep/Shower/TV cards only where those fixtures live, fridge handlers refuse away from home • 🎓 at school the Actions panel leads with the school day (preschool set for toddlers) + school-only verbs','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
