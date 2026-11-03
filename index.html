@@ -996,7 +996,7 @@ function setTheme(id){ if(!S)return; ensure39(); const t=THEMES39.find(function(
 function openThemeSheet(){ if(!S)return; ensure39(); const rows=THEMES39.map(function(t){ const un=(S.level||1)>=t.lv; const cur=S.theme===t.id; const sw=t.sw.map(function(c){ return '<i style="background:'+c+'"></i>' }).join(''); if(!un)return '<div class="themeRow locked"><span class="thSw">'+sw+'</span><span class="thTx"><b>'+t.icon+' '+t.name+'</b><small>🔒 Locked — this one is still up the ladder</small></span><span class="thState">Unlocks at Lv '+t.lv+'</span></div>'; return '<button type="button" class="themeRow'+(cur?' on':'')+'" onclick="setTheme(\''+t.id+'\')"><span class="thSw">'+sw+'</span><span class="thTx"><b>'+t.icon+' '+t.name+'</b><small>'+(cur?'✓ Wearing this one now':'Unlocked at Lv '+t.lv+' — tap to wear it')+'</small></span><span class="thState">'+(cur?'✓ ON':'Wear')+'</span></button>' }).join(''); openSheet('<h2>🎨 UI Themes</h2><p>Colour themes dress the <b>whole UI</b> — the top block, the headlines ticker, the chips, the cards, the pop-up sheets, the 📱 phone and its screens, the buttons, the animated gradient borders, the bottom menu dock and even the glow behind the room, all in the colours and gradients of the theme you wear. (The room artwork itself keeps its own look.) 🎁 New themes unlock as you level: <b>Lv 2, 3, 4, 5, 7, 10, 13, 15 &amp; 20</b>. You are <b>Lv '+(S.level||1)+'</b>, wearing <b>'+themeName39()+'</b>.</p>'+rows+'<button class="btn outline" style="margin-top:12px" onclick="closeModal()">Done</button>',{sfx:'pop'}) }
 // ---- v35: TAP EFFECTS — every tap on a button/control answers with a ripple ring + a sparkle burst at the exact tap point (the tap sound/vibration still fire from the controls themselves). Toggleable in Settings; off-switch + reduced-motion respected. ----
 function toggleTapFx(){ if(!S)return; ensure35(); S.tapFxOff=!S.tapFxOff; save(); toast(S.tapFxOff?'✨ Tap effects OFF — taps stay quiet':'✨ Tap effects ON — every tap sparkles'); render() }
-function spawnTapFx(x,y){ if(document.querySelector&&document.querySelector('.tapRing')&&document.querySelectorAll('.tapRing').length>14)return; const ring=document.createElement('span'); ring.className='tapRing'; ring.style.left=x+'px'; ring.style.top=y+'px'; document.body.appendChild(ring); setTimeout(function(){ ring.remove() },560); const glyphs=['✨','⭐','💫','✦']; for(let i=0;i<5;i++){ const sp=document.createElement('span'); sp.className='tapSpark'; const ang=(i/5)*Math.PI*2+Math.random()*0.7; const dist=26+Math.random()*26; sp.style.setProperty('--fx',Math.cos(ang)*dist+'px'); sp.style.setProperty('--fy',(Math.sin(ang)*dist-12)+'px'); sp.style.left=x+'px'; sp.style.top=y+'px'; sp.textContent=glyphs[i%glyphs.length]; document.body.appendChild(sp); setTimeout(function(){ sp.remove() },640) } }
+function spawnTapFx(x,y){ if(document.querySelector&&document.querySelector('.tapRing')&&document.querySelectorAll('.tapRing').length>14)return; const ring=document.createElement('span'); ring.className='tapRing'; ring.style.left=x+'px'; ring.style.top=y+'px'; document.body.appendChild(ring); setTimeout(function(){ ring.remove() },560); const glyphs=(window.__trailGlyphs193?window.__trailGlyphs193():null)||['✨','⭐','💫','✦']; for(let i=0;i<5;i++){ if(!glyphs.length)break; const sp=document.createElement('span'); sp.className='tapSpark'; const ang=(i/5)*Math.PI*2+Math.random()*0.7; const dist=26+Math.random()*26; sp.style.setProperty('--fx',Math.cos(ang)*dist+'px'); sp.style.setProperty('--fy',(Math.sin(ang)*dist-12)+'px'); sp.style.left=x+'px'; sp.style.top=y+'px'; sp.textContent=glyphs[i%glyphs.length]; document.body.appendChild(sp); setTimeout(function(){ sp.remove() },640) } }
 document.addEventListener('pointerdown',function(e){ try{ if(!window.S||S.tapFxOff)return; if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return; const t=e.target&&e.target.closest?e.target.closest('button,.appIcon,.tab,.dockTab,.furn,.opt,.appCell,.pfFolder,.pfBox,.chip,.clockChip'):null; if(!t)return; spawnTapFx(e.clientX||0,e.clientY||0) }catch(_){} },true);
 // ---- CAMERA FOCUS (v18): when an interaction happens, the game takes you TO it. The scene scrolls into frame (offset below the pinned top block) and the canvas zooms toward the actor / event anchor for the length of the moment, then eases back. If the camera cannot show it (sheet/phone open, no scene on screen), a spotlight pop-up stages the moment instead. One focus per action: rapid calls merge, nearby anchors ease, and nothing re-scrolls after the initial move, so player taps are never fought. ----
 let camState={active:false,x:450,y:260,scale:1.55,until:0,lastFocus:0,lastScroll:0,token:0};
@@ -2841,16 +2841,20 @@ function drawRoom(){
  drawCounterF(ctx,84,196); drawBedF(ctx,676,224,th,false); drawTableF(ctx,214,246,true); drawDeskF(ctx,556,224,false);
  } else if(loc==='restaurant'){
  drawTableF(ctx,214,246,true); drawTableF(ctx,470,252,false); drawCouchF(ctx,640,240,th.couch,150); drawCounterF(ctx,84,196);
+ } else if(loc==='library'){
+ /* v200 hotfix 3: THE LIBRARY — book stacks, a reading counter and study tables. No bed, no fridge, no couch: it is not a house. */
+ drawCounterF(ctx,84,196); shelfDraw(ctx,368,202,230); shelfDraw(ctx,560,202,180); drawTableF(ctx,214,246,false); drawTableF(ctx,600,252,false); drawDesksF(ctx,676,246);
+ } else if(loc==='buffet'){
+ /* v200 hotfix 3: THE ENDLESS TABLE — steam-tray serving counters and dining tables. No bed, no fridge. */
+ drawCounterF(ctx,84,196); drawCounterF(ctx,330,196); shelfDraw(ctx,560,202,200); drawTableF(ctx,214,246,true); drawTableF(ctx,470,252,false); drawTableF(ctx,640,252,false);
  } else {
  /* v144 (item 5): public places draw PUBLIC furniture — counter/desks/tables/lockers. No fridge, couch, bed or shower in a bank, bar or shop. */
- const pub144=['bank','bar','liquor','gym','spa','barber','salon','vet','work'].indexOf(loc)>=0;
- const inst144=pub144||loc==='school'||loc==='college';
- if(inst144)drawCounterF(ctx,84,196); else drawFridgeF(ctx,84,196,th.fridge);
- drawTableF(ctx,214,246,loc!=='house');
- if(inst144)drawDesksF(ctx,368,246); else drawCouchF(ctx,368,240,th.couch,168);
- drawDeskF(ctx,556,224,inst144);
- if(pub144)drawLockersF(ctx,676,224); else if(loc==='school'||loc==='college')drawNookF(ctx,676,224,th); else drawBedF(ctx,676,224,th,loc!=='house');
- if(inst144)drawLockersF(ctx,800,228); else drawShowerF(ctx,806,228,loc!=='house');
+ /* v200 hotfix 3: the home set (fridge/couch/bed/shower) is reserved for HOME-LIKE places only — every other location that fell through to it (tattoo, club, townhall, daycare, warehouse…) gets the public set; open-air places get tables only. */
+ const homeLike203=['house','friendhouse','grandparents','orphanage','boarding'].indexOf(loc)>=0;
+ const openAir203=['beach','park','mountains','city','fair'].indexOf(loc)>=0;
+ if(openAir203){ drawTableF(ctx,214,246,false); drawTableF(ctx,600,252,false) }
+ else if(homeLike203){ drawFridgeF(ctx,84,196,th.fridge); drawTableF(ctx,214,246,true); drawCouchF(ctx,368,240,th.couch,168); drawDeskF(ctx,556,224,false); drawBedF(ctx,676,224,th,loc==='orphanage'||loc==='boarding'); drawShowerF(ctx,806,228,loc==='orphanage'||loc==='boarding') }
+ else { drawCounterF(ctx,84,196); drawTableF(ctx,214,246,true); drawDesksF(ctx,368,246); drawDeskF(ctx,556,224,true); if(loc==='school'||loc==='college')drawNookF(ctx,676,224,th); else drawLockersF(ctx,676,224); drawLockersF(ctx,800,228) }
  }
  // extras: coffee table at home, globe at school, plant & lamp where they belong
  if(dloc==='house'){ ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(452,330,52,10,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#8a5a24'; ctx.fillRect(408,306,88,10); ctx.fillRect(414,316,8,14); ctx.fillRect(482,316,8,14); ctx.font='18px sans-serif'; ctx.fillText('🍎🍊',428,304) }
@@ -11540,7 +11544,7 @@ const QL136_QS=[
  {k:'kids',t:'👶 Do you want kids — be a parent?',opts:[['yes','👶 Yes — I want to be a parent'],['no','🚫 No kids this life'],['random','🎲 Random']]},
  {k:'rel',t:'💘 Single or taken?',opts:[['taken','💘 Taken — start with a partner'],['single','🧍 Single — start solo'],['random','🎲 Random']]},
  {k:'job',t:'💼 Job or no job?',opts:[['yes','💼 Yes — start employed'],['no','🌴 No job — figure it out live'],['random','🎲 Random']]},
- {k:'stage',t:'🎂 Start at what age? ⭐ (builder-added question)',opts:[['kid','🧒 Kid (5–12)'],['teen','🎒 Teen (13–17)'],['adult','🧑 Adult (21–35)'],['random','🎲 Random']]} ];
+ {k:'stage',t:'🎂 Start at what age? ⭐ (builder-added question)',opts:[['toddler','🧸 Toddler (3)'],['kid','🧒 Kid (5–12)'],['teen','🎒 Teen (13–17)'],['adult','🧑 Adult (21–35)'],['random','🎲 Random']]} ];
 let QL136={};
 function qlSet136(k,v){ QL136[k]=v; quickSheet136() }
 function quickSheet136(){ let h='<h2>⚡ Quick Life</h2><p>Answer what you care about; anything you skip rolls 🎲 random. Then the life is <b>built from your answers</b> — partner, kids and job set up to match, through the game\u2019s normal systems.</p>';
@@ -11551,16 +11555,16 @@ const _ql123=quickLife123;
 quickLife123=function(){ QL136={}; quickSheet136() };
 function quickRandom136(){ closeModal(); _ql123() }
 function quickStart136(){ const A={}; QL136_QS.forEach(function(q){ A[q.k]=QL136[q.k]||'random' });
- let agePool; if(A.stage==='kid')agePool=[5,7,9,11,12]; else if(A.stage==='teen')agePool=[13,14,15,16,17]; else if(A.stage==='adult')agePool=[21,24,26,29,32,35]; else agePool=[1,2,3,4,5,7,9,12,14,16,18,21,26,32];
+ let agePool; if(A.stage==='toddler')agePool=[3]; else if(A.stage==='kid')agePool=[5,7,9,11,12]; else if(A.stage==='teen')agePool=[13,14,15,16,17]; else if(A.stage==='adult')agePool=[21,24,26,29,32,35]; else agePool=[1,2,3,4,5,7,9,12,14,16,18,21,26,32];
  let age=pickArr(agePool);
  const kidsWanted=(A.kids==='yes')||(A.kids==='random'&&Math.random()<0.35);
  const jobWanted=(A.job==='yes')||(A.job==='random'&&Math.random()<0.5);
  const takenWanted=(A.rel==='taken')||(A.rel==='random'&&Math.random()<0.4);
- if(kidsWanted)age=Math.max(age,24+Math.floor(Math.random()*10));
- if(jobWanted&&age<18)age=21+Math.floor(Math.random()*8);
- if(takenWanted&&age<16)age=16+Math.floor(Math.random()*4);
+ if(kidsWanted&&A.stage!=='toddler')age=Math.max(age,24+Math.floor(Math.random()*10));
+ if(jobWanted&&age<18&&A.stage!=='toddler')age=21+Math.floor(Math.random()*8);
+ if(takenWanted&&age<16&&A.stage!=='toddler')age=16+Math.floor(Math.random()*4);
  const g=Math.random()<0.5?'girl':'boy'; selGender=g; selName=nameForGender(g==='girl'); selAge=age;
- selOrigin=pickArr(ORIGINS).id; /* v159: the family is DEALT, never picked — uniform across ORIGINS; the old money question steered the family start and is gone */
+ selOrigin=(A.stage==='toddler')?pickArr(ORIGINS.filter(function(o){ return ['two','mom','dad','step','rich','orphan','boarding'].indexOf(o.id)>=0 })).id:pickArr(ORIGINS).id; /* v159: the family is DEALT, never picked — uniform across ORIGINS; the old money question steered the family start and is gone • h3: a TODDLER start is always dealt a family home (parents / Hope House / dorm) — a 3-year-old starts IN a family, never self-raised */
  rollPlace44(); randomStyle123(true,g); tmpMom47=''; tmpDad47='';
  const el=document.getElementById('pname'); if(el)el.value=selName;
  closeModal(); startGame();
@@ -16154,7 +16158,7 @@ function frame180(t){
 }
 function run180(){ if(!rafId&&parts.length)rafId=requestAnimationFrame(frame180) }
 var down180={};
-window.addEventListener('pointerdown',function(e){ try{ down180[e.pointerId]={x:e.clientX,y:e.clientY}; burst180(e.clientX,e.clientY) }catch(err){} },{passive:true});
+window.addEventListener('pointerdown',function(e){ try{ down180[e.pointerId]={x:e.clientX,y:e.clientY}; if(!window.__trailCustom193)burst180(e.clientX,e.clientY) }catch(err){} },{passive:true}); /* trail-fix: the gold tap burst is the SPARKLE style's burst — when Settings has any other trail picked (or Off), __trailCustom193 is set and this burst stands down; the v193 layer draws the tap burst in the picked style instead, so changing the trail in Settings changes what a tap looks like */
 window.addEventListener('pointermove',function(e){ try{ var d=down180[e.pointerId]; if(!d)return; var dx=e.clientX-d.x, dy=e.clientY-d.y;
   if(dx*dx+dy*dy>=81){ d.x=e.clientX; d.y=e.clientY; if(!window.__trailCustom193)trail180(e.clientX,e.clientY) } }catch(err){} },{passive:true});
 function end180(e){ try{ delete down180[e.pointerId] }catch(err){} }
@@ -17670,8 +17674,9 @@ console.log('🌊 AquaLife v'+GAME_VERSION+' — v193: STAGE + CURB (all four ph
    Device-level store (localStorage 'aqualifeTrails.v1') — NOT the life save: SAVE_KEY untouched,
    and unlocks survive across lives because they belong to the PLAYER, not the character.
    ✨ Sparkle (Lv 1) IS the shipped v180 gold-star swipe trail; choosing any other trail (or Off)
-   sets window.__trailCustom193, which gates the v180 swipe-trail spawner (its tap bursts are a
-   separate feature with their own Settings switch). Other styles render on this block's own
+   sets window.__trailCustom193, which gates the v180 swipe-trail spawner. (Trail-fix: the gate now
+   also stands down the v180 gold TAP burst, and this layer bursts taps in the picked style — before
+   that fix the picker changed nothing a tap showed and every tap stayed sparkles.) Other styles render on this block's own
    pass-through canvas (pointer-events:none, passive listeners, capped particles, loop idles
    when empty). Level-ups are only READ — a 1s poll of S.level against the stored device max;
    XP and economy untouched. Unlock toasts ride the normal toast() queue. */
@@ -17718,6 +17723,37 @@ function spawn193(x,y){
   }
   run193();
 }
+/* ---------- trail-fix: the tap burst + button-tap glyphs follow the Settings pick ----------
+   Before this fix the picker only restyled the DRAG trail: every tap still burst the v180 layer's
+   hardwired gold stars (now gated off above whenever a custom trail or Off is picked) and the old
+   tap-FX glyph set was fixed sparkles. burst193 draws the tap burst in the picked style on this
+   layer's own canvas, and __trailGlyphs193 hands the button-tap effect the picked style's glyphs —
+   so the trail chosen in Settings is the effect the player actually sees, on taps and drags alike. */
+function burst193(x,y){
+  if(document.hidden)return;
+  if(document.getElementById('creator193'))return;
+  var st=TSTORE.sel; if(st==='off'||st==='sparkle')return;
+  if(parts.length>=MAXP)parts.splice(0,parts.length-MAXP+1);
+  var n=REDUCED?5:10;
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2, sp=26+Math.random()*64;
+    var life=(REDUCED?340:460)+Math.random()*180;
+    parts.push({x:x+(Math.random()-0.5)*4,y:y+(Math.random()-0.5)*4,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-10,life:life,max:life,r:2.4+Math.random()*2.8,hue:Math.random()*360,style:st,seed:Math.random()*10});
+  }
+  run193();
+}
+window.__trailGlyphs193=function(){
+  switch(TSTORE.sel){
+    case 'rainbow': return ['🌈','🔴','🟡','🟢','🔵','🟣'];
+    case 'bubble': return ['🫧','💧','🫧','💦'];
+    case 'star': return ['⭐','🌟','✨','⭐'];
+    case 'heart': return ['❤️','💖','💗','💕'];
+    case 'fire': return ['🔥','🟠','✨','🔥'];
+    case 'galaxy': return ['🌌','🪐','✨','💜'];
+    case 'off': return [];
+    default: return null; /* sparkle / unknown → the caller's classic sparkle glyphs */
+  }
+};
 function draw193(p,alpha,pr){
   var st=p.style;
   ctx.save(); ctx.globalAlpha=alpha;
@@ -17737,7 +17773,7 @@ function frame193(t){
 }
 function run193(){ if(!rafId&&parts.length)rafId=requestAnimationFrame(frame193) }
 var down193={};
-window.addEventListener('pointerdown',function(e){ try{ down193[e.pointerId]={x:e.clientX,y:e.clientY} }catch(err){} },{passive:true});
+window.addEventListener('pointerdown',function(e){ try{ down193[e.pointerId]={x:e.clientX,y:e.clientY}; burst193(e.clientX,e.clientY) }catch(err){} },{passive:true});
 window.addEventListener('pointermove',function(e){ try{ var d=down193[e.pointerId]; if(!d)return; var dx=e.clientX-d.x, dy=e.clientY-d.y; if(dx*dx+dy*dy>=100){ d.x=e.clientX; d.y=e.clientY; spawn193(e.clientX,e.clientY) } }catch(err){} },{passive:true});
 function end193(e){ try{ delete down193[e.pointerId] }catch(err){} }
 window.addEventListener('pointerup',end193,{passive:true});
@@ -17747,7 +17783,7 @@ document.addEventListener('visibilitychange',function(){ if(document.hidden){ pa
 /* v196: this watch used to grow TSTORE.max from the CHARACTER's level and toast each trail unlock. Both jobs moved to the PLAYER LEVEL layer (v196): trail gates read the permanent player level, and the single player level-up toast names any trail it unlocks — one voice. TSTORE.max is frozen here as the grandfather record: every trail unlocked under the v193 character-level rule stays unlocked forever (see tUnlocked193). Character level-ups no longer touch this store at all. */
 /* ---------- Settings picker (game ⚙️ Settings sheet only) ---------- */
 function pickerHtml193(){
-  var h='<div class="card" id="trailCard193"><h3>✨ Touch Trail</h3><p class="small">Drag a finger (or mouse) and your trail follows. Unlocks are yours forever — they live on this device, across every life. Trails unlock with your permanent 👤 Player Level (shown in the 👽 Me tab) — and anything you already unlocked stays yours.</p>';
+  var h='<div class="card" id="trailCard193"><h3>✨ Touch Trail</h3><p class="small">Tap or drag a finger (or mouse) and your trail follows — taps burst in the style you pick, too. Unlocks are yours forever — they live on this device, across every life. Trails unlock with your permanent 👤 Player Level (shown in the 👽 Me tab) — and anything you already unlocked stays yours.</p>';
   h+='<button class="btn '+(TSTORE.sel==='off'?'gold':'outline')+'" style="margin-top:8px" onclick="pickTrail193(\'off\')">🚫 Off'+(TSTORE.sel==='off'?' ✓':'')+'</button>';
   for(var i=0;i<TRAILS193.length;i++){ var d=TRAILS193[i], un=tUnlocked193(d), sel=TSTORE.sel===d.id;
     if(un)h+='<button class="btn '+(sel?'gold':'outline')+'" style="margin-top:8px" onclick="pickTrail193(\''+d.id+'\')">'+d.icon+' '+d.name+' trail'+(sel?' ✓':'')+'</button>';
@@ -20098,6 +20134,98 @@ try{ const _afx202=applyStatFx; applyStatFx=function(prev){ try{ if(S&&S.needs)O
 /* ---------- 6d) clamps + stale-escort clear on every render ---------- */
 try{ const _r202=render; render=function(){ try{ if(S){ ensureCarColor202(); if(S.needs)Object.keys(S.needs).forEach(function(k){ const v=S.needs[k]; if(typeof v==='number'&&isFinite(v))S.needs[k]=Math.max(0,Math.min(100,v)) }); if(typeof S.grades==='number'&&isFinite(S.grades))S.grades=Math.max(0,Math.min(100,S.grades)); if(S.age>=18&&S.escort)S.escort=null } }catch(e){} const r=_r202.apply(null,arguments); try{ setTimeout(drawCars202,60) }catch(e){} return r } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 1: unique backdrops completed (themes + scene layer + per-room signs) • cars in the world in their colours • creator letter button pinned • sleep tiers floor/bag/bed 20/32/45 • knock pre-filter • journal covers bank lines • clamps on render','color:#0ea5e9;font-weight:bold') }catch(e){}
+</script>
+<script>
+/* ================= v200 HOTFIX 3 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   From a DRIVEN playthrough of v200h1 (fresh adult "Finn" + toddler attempt):
+   P0-1 driving lessons never advanced · P0-2 toddler start produced an adult · P0-3 store-bought wallet
+   was a prop · P1-4 counter picker cash/bank only · P1-5 money journal empty + paper-check toast lied +
+   dock stale · P1-6 family listed Home but absent; no coworkers in shift scenes · P1-7 library/buffet
+   home-template reskins (fixed at the drawRoom source above, plus this layer's sweep note) ·
+   P2-8 ride Never mind · P2-9 license dialog ride alternative · P2-10 wanted/heat one story ·
+   P2-11 popups cover the dock · P2-12 stale Family Tree tooltip · P2-13 starting stash explained. */
+function ensure203(){ if(!S)return null; if(!S.v203||typeof S.v203!=='object')S.v203={}; return S.v203 }
+/* ---------- P0-1: DRIVING LESSONS — one clean counter, plain reasons, a real TEST button at 2/2 ----------
+   The shipped chain (base → v158 test wrapper → v176 scene wrapper, fired alongside openCarShop104)
+   could charge without the counter ever landing. This layer replaces drivingLesson outright: lessons
+   accumulate 0/2 → 1/2 → 2/2 and SAVE; at 2/2 the Cars buttons become the driving-test button. */
+function driveTestStart203(){ if(!S)return; try{ ensure16() }catch(e){} if(!S.car)return; if(S.car.license){ toast('🪪 You already have your license'); return } if((S.car.lessons||0)<2){ toast('🚗 Two lessons first — you are at '+(S.car.lessons||0)+'/2'); return } if((S.money||0)<30){ openSheet('<h2>🚗 The driving test costs $30 cash</h2><p>Your lessons are done (<b>2/2</b>) — but the test itself is <b>$30 cash</b>, and you have <b>$'+(S.money||0)+'</b> in hand. Nothing was charged. Earn the $30 and the test waits right here on the Cars screen.</p><button class="btn gold" onclick="closeModal()">Got it</button>'); toast('🚗 Test needs $30 cash — you have $'+(S.money||0)); return } money(-30,'🚗 Driving test'); log('🚗 THE DRIVING TEST — lessons 2/2 on the book, $30 paid. 🚧 Dodge the cones (2 hits max), then 📋 answer the road questions (2 of 3). Both parts, or no license.'); save(); try{ driveTestOpen158() }catch(e){} }
+function drivingLesson203(){ if(!S)return; try{ ensure16() }catch(e){} if(!S.car)return; if(S.age<16){ toast('🚗 Driving lessons start at 16'); return } if(S.car.license){ toast('🪪 You already have your license'); return } if((S.car.lessons||0)>=2){ driveTestStart203(); return } if((S.money||0)<30){ openSheet('<h2>🚗 A lesson costs $30 cash</h2><p>Each driving lesson is <b>$30 cash</b> — you have <b>$'+(S.money||0)+'</b> in hand, so this lesson cannot start yet. Nothing was charged.</p><p class="small">Lessons so far: <b>'+(S.car.lessons||0)+'/2</b>. Two lessons unlock the 🚗 driving test.</p><button class="btn gold" onclick="closeModal()">Got it</button>'); toast('🚗 Lesson needs $30 cash — you have $'+(S.money||0)); return } money(-30,'🚗 Driving lesson'); S.car.lessons=(S.car.lessons||0)+1; if(S.car.lessons>=2){ log('🚗 Driving lesson 2 of 2 done — lessons complete! The 🚗 DRIVING TEST is unlocked on the Cars screen.'); toast('🚗 Lesson 2/2 done — test unlocked!') } else { log('🚗 Driving lesson 1 of 2 done — one more and the test unlocks.'); toast('🚗 Lesson 1/2 done') } save(); render(); try{ renderTabs('travel') }catch(e){} }
+try{ drivingLesson=function(){ return drivingLesson203() } }catch(e){}
+function fixCarBtns203(h){ try{ if(!S||!S.car||S.car.license||(S.car.lessons||0)<2||typeof h!=='string')return h; return h.replace(/<button[^>]*onclick="drivingLesson\(\)[^"]*"[^>]*>🚗 Driving lesson[^<]*<\/button>/g,'<button class="btn gold" onclick="driveTestStart203()">🚗 Take the driving test — $30 (lessons 2/2 ✓)</button>') }catch(e){ return h } }
+try{ const _csh203=carShopHtml104; carShopHtml104=function(){ return fixCarBtns203(_csh203()) } }catch(e){}
+try{ const _cc203=carsCardHtml114; carsCardHtml114=function(){ return fixCarBtns203(_cc203()) } }catch(e){}
+/* ---------- P0-2: TODDLER START — the pick is enforced at startGame, and Quick Life has a real toddler stage (source edits above) ---------- */
+setInterval(function(){ try{ const b=document.getElementById('toddlerBtn200'); if(b&&!b.dataset.h3){ b.dataset.h3='1'; b.onclick=function(){ window.__toddler203=true; try{ if(typeof agePick==='function')agePick(3); else selAge=3 }catch(e){ try{ selAge=3 }catch(e2){} } b.style.outline='3px solid #ffb703'; toast('🧸 Toddler start — age 3, in your family. Hit Start and the life begins at 3.') } } }catch(e){} },900);
+try{ const _ap203=agePick; agePick=function(v){ if(parseInt(v,10)!==3)window.__toddler203=false; return _ap203(v) } }catch(e){}
+document.addEventListener('pointerdown',function(e){ try{ const b=e.target&&e.target.closest?e.target.closest('button'):null; if(!b||b.id==='toddlerBtn200')return; if(/selAge/.test(b.getAttribute('onclick')||''))window.__toddler203=false }catch(e){} },true);
+try{ const _sg203=startGame; startGame=function(){ try{ if(window.__toddler203)selAge=3 }catch(e){} const r=_sg203(); try{ if(window.__toddler203){ window.__toddler203=false; if(S&&S.age===3){ const V=ensure203(); if(V&&!V.todNote){ V.todNote=1; log('🧸 TODDLER START — this life begins at 3, at home with family around: daycare days, a babysitter when the grown-ups are out, and everybody taller than you. The toddler world is the real world, just lower down.') } save() } } }catch(e){} return r } }catch(e){}
+/* ---------- P0-3 + P1-4: THE STORE COUNTER — full payment picker (cash/debit/credit, PIN, tap-to-pay) and a wallet that is REAL wherever it is bought ---------- */
+function storePay203(how){ if(!S)return; const loc=window._storeLoc199; const total=basketTotal199(); if(!total){ toast('🧺 Basket is empty'); return } const label='🛒 '+locLabel199(loc)+' — checkout'; try{ ensure63() }catch(e){} const b=S.bank63||{bank:0,debit:false,credit:null};
+ const finish=function(){ try{ grantBasket199(total) }catch(e){} window._b199=[]; window._storeView199='done'; try{ sfx('chaching84') }catch(e){} save(); render(); paintStore199(loc); if(window._walletBought203){ window._walletBought203=false; setTimeout(function(){ try{ openWallet201() }catch(e){} },700) } };
+ if(how==='cash'){ if((S.money||0)<total){ toast('💵 Not enough cash — $'+total+' needed, you have $'+(S.money||0)); return } money(-total,label); finish(); return }
+ const method=(how==='bank'||how==='debit'||how==='tapdebit')?'debit':'credit'; const tap=(how==='tapdebit'||how==='tapcredit');
+ if(method==='debit'){ if(!b.debit||(b.bank||0)<total){ toast('💳 Debit can\'t cover $'+total+(b.debit?(' — bank balance is $'+(b.bank||0)):' — no debit card')); return } }
+ else { if(!b.credit||(b.credit.limit-b.credit.due)<total){ toast('💳 Credit can\'t cover $'+total+(b.credit?(' — $'+Math.max(0,b.credit.limit-b.credit.due)+' available'):' — no credit card')); return } }
+ const charge=function(){ if(method==='debit'){ b.bank-=total; try{ txn63('💳 Debit card — '+label,-total) }catch(e){} } else { b.credit.due+=total; try{ txn63('💳 Credit card — '+label,-total) }catch(e){} log('💳 On your CREDIT CARD: $'+total+' — owed is now $'+b.credit.due+' of $'+b.credit.limit+'. The statement lands weekly; pay it in the 🏦 Bank app.') } try{ receipt201(label,total,method==='debit'?'💳 Debit':'💳 Credit') }catch(e){} finish() };
+ if(tap){ toast('📶 Tap to pay — no PIN'); charge() } else { try{ pinSheet201(method,function(ok){ if(ok)charge(); else toast('💳 Payment cancelled — nothing was charged') }) }catch(e){ charge() } } }
+try{ storePay199=function(how){ return storePay203(how) } }catch(e){}
+try{ const _sh203=storeHtml199; storeHtml199=function(loc){ let h=_sh203(loc); try{ if((window._storeView199||'aisles')==='counter'){ const total=basketTotal199(); if(total>0){ try{ ensure63() }catch(e){} const b=S.bank63||{bank:0,debit:false,credit:null}; const canCash=(S.money||0)>=total, canDebit=!!(b.debit&&(b.bank||0)>=total), canCredit=!!(b.credit&&((b.credit.limit-b.credit.due)>=total));
+  const btn=function(how,t,ok,sub){ return ok?('<button class="btn gold" style="margin-top:8px" onclick="storePay199(\''+how+'\')">'+t+' — $'+total+'<br><span style="font-size:12px;font-weight:600;opacity:.85">'+sub+'</span></button>'):('<button class="btn" disabled style="margin-top:8px;opacity:.45;filter:grayscale(1)">'+t+' — $'+total+'<br><span style="font-size:12px;font-weight:600">'+sub+' — can\'t cover this</span></button>') };
+  let pk='<p style="font-size:12.5px;opacity:.85">💵 Cash: $'+(S.money||0)+' • 💳 Bank: $'+(b.bank||0)+(b.credit?(' • 💳 Credit available: $'+Math.max(0,b.credit.limit-b.credit.due)):'')+'</p>';
+  pk+=btn('cash','💵 Pay cash',canCash,'in hand: $'+(S.money||0));
+  pk+=btn('debit','💳 Pay debit',canDebit,b.debit?('bank balance: $'+(b.bank||0)+' · PIN asked'):'no debit card');
+  if(b.debit)pk+=btn('tapdebit','📶 Tap to pay — debit',canDebit,'no PIN — just tap');
+  pk+=btn('credit','💳 Pay credit',canCredit,b.credit?('$'+Math.max(0,b.credit.limit-b.credit.due)+' available · PIN asked'):'no credit card');
+  if(b.credit)pk+=btn('tapcredit','📶 Tap to pay — credit',canCredit,'no PIN — just tap');
+  h=h.replace(/<p style="font-size:12\.5px;opacity:\.85">💵 Cash:[\s\S]*?<\/p>/,'');
+  h=h.replace(/<button class="btn gold" style="margin-top:8px" onclick="storePay199\('cash'\)">[\s\S]*?<\/button><button class="btn" style="margin-top:8px" onclick="storePay199\('bank'\)">[\s\S]*?<\/button>/,pk);
+ } } }catch(e){} return h } }catch(e){}
+try{ const _gb203=grantBasket199; grantBasket199=function(total){ const items=(window._b199||[]).slice(); const r=_gb203(total); try{ if(items.some(function(it){ return it.n==='👛 Wallet' })){ const V=ensure128(); if(V)V.wallet=true; const ix=(S.inv||[]).findIndex(function(it){ return it.name==='👛 Wallet' }); if(ix>=0)S.inv.splice(ix,1); log('👛 WALLET — bought at the counter and IN USE from this second: not a shelf prop. Your cards, bills, 🧾 receipts and 💰 cash back live in it now — open it any time from your 🎒 Bag.'); window._walletBought203=true; save() } }catch(e){} return r } }catch(e){}
+try{ const _ui203=useItem; useItem=function(id){ try{ const it=S&&(S.inv||[]).find(function(x){ return x.id===id }); if(it&&/Wallet/.test(it.name||'')){ const V=ensure128(); if(V)V.wallet=true; save(); openWallet201(); return } }catch(e){} return _ui203(id) } }catch(e){}
+/* ---------- P1-5: MONEY JOURNAL records every balance change · paper checks announce as paper · dock refreshes at once ---------- */
+function j203(label,amt){ try{ if(!S||!amt||typeof ensure200!=='function')return; const V=ensure200(); if(!V||!Array.isArray(V.journal))return; const top=V.journal[0]; if(top&&top.day===S.day&&top.label===String(label||'')&&top.amt===amt&&Date.now()-(top._t||0)<1500)return; V.journal.unshift({day:S.day,label:String(label||'💵 Money moved'),amt:amt,_t:Date.now()}); if(V.journal.length>60)V.journal.pop() }catch(e){} }
+let _dockT203=0;
+function dockRefresh203(){ const now=Date.now(); if(now-_dockT203<150)return; _dockT203=now; setTimeout(function(){ try{ if(typeof S!=='undefined'&&S&&typeof inGame!=='undefined'&&inGame&&typeof render==='function')render() }catch(e){} },90) }
+try{ const _m203=money; money=function(n,label){ const r=_m203(n,label); try{ if(typeof n==='number'&&n!==0){ j203(label,n); dockRefresh203() } }catch(e){} return r } }catch(e){}
+try{ const _bm203=bankMoney63; bankMoney63=function(n,label){ const r=_bm203(n,label); try{ dockRefresh203() }catch(e){} return r } }catch(e){}
+try{ const _t203=toast; toast=function(msg){ try{ if(typeof msg==='string'&&msg.indexOf('🏦 Direct deposit landed')===0&&S&&S.bank63&&!(S.bank63.dd108&&S.bank63.debit)){ const m=/\$(\d+)/.exec(msg); msg='🧾 Paper check in your Bag — $'+(m?m[1]:'')+' (direct deposit is off — deposit it at the bank to spend it)' } }catch(e){} return _t203(msg) } }catch(e){}
+/* ---------- P1-6: PRESENCE TELLS THE TRUTH — family listed Home are IN the home, living; coworkers are people at work; Social ticks from real proximity ---------- */
+function famHomeSibs203(){ const out=[]; try{ if(!S||S.movedOut)return out; const f=S.fam78; if(f&&(f.siblings||[]))f.siblings.forEach(function(s){ if(s&&s.name)out.push({name:s.name,girl:!!s.girl,age:((typeof charAge79==='function')?charAge79(s.name):s.age)||10}) }) }catch(e){} return out }
+function coworkers203(){ try{ if(!S||!S.jobInfo)return; const V=(typeof ensure200==='function')?ensure200():null; if(V){ if(!V.work||typeof V.work!=='object')V.work={}; const t=S.jobInfo.title; if(!V.work[t]){ const pool=(typeof FIRSTN200!=='undefined')?FIRSTN200:['Sam','Jo','Alex','Riley']; V.work[t]={bossMood:40+Math.floor(Math.random()*50),mates:[pool[Math.floor(Math.random()*pool.length)],pool[Math.floor(Math.random()*pool.length)]]}; log('💼 THE WORKPLACE HAS PEOPLE — at '+t+', your coworkers are '+V.work[t].mates.join(' and ')+', and the boss has moods. They are real relationships now.') } const mates=V.work[t].mates||[]; if(!S.town)S.town={people:{}}; if(!S.town.people)S.town.people={}; mates.forEach(function(nm,i){ const rec=S.town.people[nm]; if(!rec){ S.town.people[nm]={name:nm,girl:i%2===1,trait:'kind',haunt:'work',skin:'#e8b98d',hair:'#1f2937',shirt:'#334155',hat:'none',glasses:'none',shoes:'sneakers',face:'classic',hairStyle:'classic',gloves:'none',watch:'none',jewelry:'none',icon:i%2===1?'👩':'👨',metDay:S.day,pet:null} } else if(rec.haunt!=='work')rec.haunt='work'; try{ if(window.__v196b)window.__v196b.register(nm) }catch(e){} }) } }catch(e){} }
+function presenceTick203(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||S.deadFlag||document.hidden)return; coworkers203(); const hl=(typeof homeLoc==='function')?homeLoc():null; let present=false;
+  if(hl&&S.location===hl){ const sibs=famHomeSibs203();
+   if(typeof npcs!=='undefined'&&npcs){ sibs.forEach(function(sb,i){ let n=npcs.find(function(x){ return x.name===sb.name }); if(!n){ const spots=[[150,300],[300,300],[470,310],[620,290],[740,320]]; const sp=spots[i%spots.length]; n={name:sb.name,icon:sb.age>=18?(sb.girl?'👩':'👨'):(sb.girl?'👧':'👦'),col:'#0d9488',hair:'#1f2937',x:sp[0],y:sp[1],tx:sp[0],ty:sp[1],state:'in',next:0,until:0,bubble:'',bonused:false,say:'',sayUntil:0,room86:['living','kitchen','living','bedroom'][(i+(S.hour>=17?1:0))%4],sib203:true}; npcs.push(n) } if(n.sib203)n.state='in' });
+    if(Math.random()<0.3){ const acts=['📺 watching TV','🍳 cooking something','💃 dancing to the radio','🎵 humming along','📖 reading on the couch','🧹 tidying up']; npcs.forEach(function(n){ if(n.sib203&&n.state==='in'&&Math.random()<0.45){ n.say=acts[Math.floor(Math.random()*acts.length)]; n.sayUntil=performance.now()+6000 } }) } }
+   let folks=sibs.length; if(!folks&&(S.kids&&S.kids.length))folks=S.kids.length; if(!folks&&(S.housemates&&S.housemates.length))folks=S.housemates.length; if(!folks){ try{ if(typeof npcs!=='undefined'&&npcs&&npcs.some(function(n){ return n.state==='in' }))folks=1 }catch(e){} }
+   if(folks>0)present=true }
+  else if(typeof npcs!=='undefined'&&npcs){ npcs.forEach(function(n){ if(n.sib203)n.state='out' }) }
+  if(!present&&S.location==='work'&&S.jobInfo)present=true;
+  if(!present&&S.location==='grandparents')present=true;
+  if(present){ window._socAcc203=(window._socAcc203||0)+0.5; if(window._socAcc203>=1){ window._socAcc203=0; try{ adj('social',1) }catch(e){} } }
+ }catch(e){} }
+setInterval(presenceTick203,5000);
+/* ---------- P2-8: the ride sheet gets its actual Never mind button ---------- */
+function rideNeverMind203(){ try{ const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.neverMind203'))return; if((sh.textContent||'').indexOf('Call for a ride')<0)return; const b=document.createElement('button'); b.className='btn outline neverMind203'; b.style.marginTop='8px'; b.textContent='Never mind'; b.setAttribute('onclick','closeModal()'); sh.appendChild(b) }catch(e){} }
+try{ const _rs203=rideSheet137; rideSheet137=function(dest){ const r=_rs203(dest); try{ rideNeverMind203(); setTimeout(rideNeverMind203,140) }catch(e){} return r } }catch(e){}
+/* ---------- P2-9: the no-license dialog offers a RIDE, not just crime or staying put ---------- */
+try{ const _dl203=driverLaw98; driverLaw98=function(id){ const r=_dl203(id); try{ if(r===false&&S&&S.car&&S.car.owned&&!S.car.license){ const add=function(){ const sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.rideAlt203'))return; if((sh.textContent||'').indexOf('Drive without a license')<0)return; const b=document.createElement('button'); b.className='btn rideAlt203'; b.style.marginTop='8px'; b.textContent='📞 Call a ride there instead'; b.setAttribute('onclick',"closeModal();rideSheet137('"+id+"')"); sh.appendChild(b) }; add(); setTimeout(add,140) } }catch(e){} return r } }catch(e){}
+/* ---------- P2-10: WANTED ★ AND STOLEN-CAR HEAT TELL ONE STORY ---------- */
+try{ const _hc203=heatCoolTick; heatCoolTick=function(){ const r=_hc203(); try{ const V=(typeof ensure201c==='function')?ensure201c():null; if(S&&V&&V.stolen&&!V.stolen.resolved&&!V.stolen.sold&&S.car&&S.car.stolen201&&S.wanted<1){ S.wanted=1; if(V.stolen.floorDay!==S.day){ V.stolen.floorDay=S.day; log('🚔 WANTED HOLDS AT 1★ — the stolen car is still reported, so the stars cannot fully cool while its heat climbs ('+(V.stolen.heat||10)+'%). One story: a reported car, a wanted driver. Change the plates or sell it to start cooling off. ↳ Why: stolen-car heat') } save() } }catch(e){} return r } }catch(e){}
+window._heldCrime203=[];
+setInterval(function(){ try{ if(typeof CRIMES78==='undefined'||!S)return; const V=(typeof ensure201c==='function')?ensure201c():null; const active=!!(V&&V.stolen&&!V.stolen.resolved&&S.car&&S.car.stolen201); if(active){ for(let i=CRIMES78.length-1;i>=0;i--){ if(/chase ends in a crash/i.test(CRIMES78[i][0]||'')){ window._heldCrime203.push(CRIMES78[i]); CRIMES78.splice(i,1) } } } else if(window._heldCrime203.length){ window._heldCrime203.forEach(function(c){ CRIMES78.push(c) }); window._heldCrime203=[] } }catch(e){} },3000);
+try{ const _rt203=renderTabs; renderTabs=function(a){ const r=_rt203(a); try{ const card=document.querySelector('.hotCar201'); if(card&&!card.querySelector('.wantLine203')){ const V=(typeof ensure201c==='function')?ensure201c():null; const heat=V&&V.stolen?(V.stolen.heat||10):10; const p=document.createElement('p'); p.className='small wantLine203'; p.innerHTML='🚔 <b>Wanted: '+(S.wanted||0)+'★</b> — held at 1★ or more while this car is reported stolen; the ★ and the <b>'+heat+'% heat</b> are the same story, told two ways.'; card.appendChild(p) } }catch(e){} return r } }catch(e){}
+/* ---------- P2-11: POPUPS NEVER BURY THE DOCK — core navigation stays on top, sheets sit above it ---------- */
+(function(){ try{ const st=document.createElement('style'); st.id='style203'; st.textContent='.menuDock{z-index:60!important}.modal{padding-bottom:calc(var(--dockH,92px) + 14px)!important}'; document.head.appendChild(st) }catch(e){} })();
+/* ---------- P2-12: the Family Tree lives in ❤️ Social — stale pointers corrected wherever they surface ---------- */
+try{ if(typeof TIPS!=='undefined')Object.keys(TIPS).forEach(function(k){ const e=TIPS[k]; if(e&&e.b){ if(/Me → Social/.test(e.b))e.b=e.b.replace(/Me → Social/g,'❤️ Social'); if(/family tree are in Me\b/i.test(e.b))e.b=e.b.replace(/family tree are in Me\b/gi,'family tree are in ❤️ Social') } }) }catch(e){}
+function fixTreeTip203(){ try{ const sh=document.getElementById('sheet'); if(!sh)return; const els=sh.querySelectorAll('p,div,span,li'); for(let i=0;i<els.length;i++){ const el=els[i]; if(el.children.length)continue; const t=el.textContent||''; if(/family tree are in (the )?👽?\s*Me/i.test(t)||/full relationships & family tree are in Me/i.test(t))el.textContent='🌳 Family Tree — full relationships & the family tree live in ❤️ Social (the Social folder).' } }catch(e){} }
+setInterval(function(){ try{ const m=document.getElementById('modal'); if(m&&m.classList.contains('open'))fixTreeTip203() }catch(e){} },1500);
+/* ---------- P2-13: THE STASH IS NEVER SILENT — a starting stash is acknowledged, overnight changes get a journal cause ---------- */
+function stashNote203(){ try{ if(!S||!S.stash)return; const V=ensure203(); if(!V||V.stashNote)return; const parts=[]; if(S.stash.thc)parts.push('🌿 THC ×'+S.stash.thc); if(S.stash.lsd)parts.push('🌀 LSD ×'+S.stash.lsd); if(S.stash.shrooms)parts.push('🍄 Shrooms ×'+S.stash.shrooms); if(!parts.length)return; V.stashNote=1; log('🎒 STARTING STASH — this life begins with product already in the bag: '+parts.join(' · ')+'. That is the street-life start this life rolled — a family in the game, a plug, or product held from day one. It is yours to move, use or sit on, and every change from here lands in the journal with its reason. ↳ Why: the stash is never silent'); save() }catch(e){} }
+setInterval(stashNote203,2500);
+try{ const _nd203=nextDay; nextDay=function(skip){ let before=null; try{ if(S&&S.stash)before={thc:S.stash.thc||0,lsd:S.stash.lsd||0,shrooms:S.stash.shrooms||0} }catch(e){} const r=_nd203(skip); try{ if(before&&S&&S.stash){ const names={thc:'🌿 THC',lsd:'🌀 LSD',shrooms:'🍄 Shrooms'}; const diffs=[]; Object.keys(names).forEach(function(k){ const d=(S.stash[k]||0)-before[k]; if(d>0)diffs.push('+'+d+' '+names[k]) }); if(diffs.length){ const j=(S.journal||[]).slice(0,6).join(' '); if(!/RESTOCK|stash|supply|delivery|harvest/i.test(j)){ log('🎒 STASH RECOUNT — overnight the bag changed and no line above says why, so here is the record: '+diffs.join(' · ')+' appeared (a restock, a gift, or product moved while you slept — in this house, product moves). Nothing in this game changes silently any more. ↳ Why: overnight stash change'); save() } } } }catch(e){} return r } }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 3: driving lessons accumulate (test button at 2/2, $30 reason shown) • toddler starts at 3 (creation + Quick Life) • counter picker = cash/debit/credit + PIN + tap, wallet real at any counter • money journal records every change, paper checks say so, dock refreshes live • family present & living at home, coworkers at work, Social ticks from proximity • library & buffet (and every fall-through location) lost the home furniture • ride Never mind + license-dialog ride option • wanted/heat one story • dock above popups • stash never silent','color:#0ea5e9;font-weight:bold') }catch(e){}
 </script>
 </body>
 </html>
