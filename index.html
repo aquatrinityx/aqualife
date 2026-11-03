@@ -2384,7 +2384,7 @@ function drawNPCSprite(ctx,n,now,stepping){
   ctx.fillStyle=n.hair; ctx.beginPath(); ctx.arc(nx-40,ny+22,12,Math.PI,Math.PI*2); ctx.fill();
   ctx.strokeStyle='#1f2937'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(nx-46,ny+26); ctx.lineTo(nx-41,ny+26); ctx.moveTo(nx-38,ny+26); ctx.lineTo(nx-33,ny+26); ctx.stroke(); ctx.lineWidth=1;
   ctx.font='15px sans-serif'; ctx.fillText('💤',nx-36+Math.sin(now/600+nx)*2,ny-4);
-  ctx.font='bold 14px sans-serif'; const nw2=ctx.measureText(n.name).width; ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(nx-nw2/2-6,ny-47,nw2+16,21,10); ctx.fill(); ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(nx-nw2/2-8,ny-49,nw2+16,21,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#fff'; ctx.fillText(n.name,nx-nw2/2,ny-34);
+  ctx.font='bold 15px sans-serif'; const nw2=ctx.measureText(n.name).width; const tl2=Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw2+18),nx-nw2/2-9)); ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl2+2,ny-47,nw2+18,22,10); ctx.fill(); ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl2,ny-49,nw2+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#fff'; ctx.fillText(n.name,tl2+9,ny-33);
   ctx.restore(); return }
  const nx=n.x, ny=n.y; ctx.save(); ctx.translate(nx,ny); ctx.scale(1.43,1.43); ctx.translate(-nx,-ny); const bob=stepping?Math.abs(Math.sin(now/130+nx))*3:0; const yy=ny-bob;
  ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(nx,ny+44,20,7,0,0,Math.PI*2); ctx.fill();
@@ -2395,12 +2395,12 @@ function drawNPCSprite(ctx,n,now,stepping){
  drawFace(ctx,nx,yy-9,npcExpr(n,now),0.66,4.5);
  ctx.font='15px sans-serif'; ctx.fillText(n.icon,nx+13,yy-6);
  if(n.hatEmoji){ ctx.font='14px sans-serif'; ctx.fillText(n.hatEmoji,nx-27,yy-6) }
- ctx.font='bold 14px sans-serif'; const nw=ctx.measureText(n.name).width;
- ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(nx-nw/2-6,yy-49,nw+16,21,10); ctx.fill();
- ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(nx-nw/2-8,yy-51,nw+16,21,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1;
- ctx.fillStyle='#fff'; ctx.fillText(n.name,nx-nw/2,yy-36);
- if(n.say&&now<n.sayUntil){ drawSpeechBubble(ctx,nx,yy-58,n.say); drawHeadPop(ctx,nx+Math.max(30,nw/2+26),yy-62,headEmojiFor(n.say,n.bubble),now,1-(n.sayUntil-now)/3100) }
- else if(n.bubble&&n.state==='in'){ drawHeadPop(ctx,nx,yy-76,n.bubble,now,0.9+0.1*Math.sin(now/300+nx)) }
+ ctx.font='bold 15px sans-serif'; const nw=ctx.measureText(n.name).width; const tl216=Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw+18),nx-nw/2-9));
+ ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl216+2,yy-49,nw+18,22,10); ctx.fill();
+ ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl216,yy-51,nw+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1;
+ ctx.fillStyle='#fff'; ctx.fillText(n.name,tl216+9,yy-35);
+ if(n.say&&now<n.sayUntil){ drawSpeechBubble(ctx,nx,yy-58,n.say) }
+ else if(n.state==='in'){ const ee216=(typeof window.exprNpc216==='function')?window.exprNpc216(n):null; if(ee216){ ctx.font='21px sans-serif'; ctx.fillText(ee216,nx-10,yy-64+Math.sin(now/340+nx)*2) } }
  ctx.restore();
 }
 // ---- WALL DECOR HELPERS ----
@@ -2916,8 +2916,8 @@ function drawRoom(){
   ctx.font='30px sans-serif'; ctx.fillText('🎂',268,262); ctx.font='20px sans-serif'; ctx.fillText('🎁',330,266); ctx.fillText('🎁',212,268) }
  // ---- PETS & HOUSEMATES, with little name tags ----
  S.pets.forEach((p,i)=>{ const roam=p.mode==='roam'&&!tankPet95(p); const spotX=314+i*54,spotY=344; const tx=tankPet95(p)?spotX:(roam?spotX:charX+(charX>450?-48-i*10:48+i*10)), ty=tankPet95(p)?spotY:(roam?spotY:charY+44); const pp=petDrawPos('own:'+i+':'+p.name,tx,ty,roam,nowMs); drawPetSprite(ctx,p,pp.x,pp.y,nowMs,false) });
- S.housemates.forEach((h,i)=>{ if(typeof mateHere86==='function'&&!mateHere86(h))return; if(typeof atWork120==='function'&&atWork120(h))return; /* v120: at work = at work — not drawn at home mid-shift */ const hx=556+i*68,hy=326; ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(hx,hy+10,26,8,0,0,Math.PI*2); ctx.fill(); const lk=personLook(h)||{girl:false,skin:'#f7cf9f',hair:'#4a2c14',shirt:'#64748b',hat:'none',glasses:'none',shoes:'sneakers'}; if(typeof asleep128==='function'&&asleep128(h)){ ctx.save(); ctx.translate(hx+16,hy+6); ctx.rotate(-Math.PI/2); drawFigure(ctx,0,0,lk,0,'💤',nowMs,'sleep'); ctx.restore(); ctx.font='13px sans-serif'; ctx.fillText('💤',hx+22,hy-24+Math.sin(nowMs/600+hx)*2) } else { ctx.save(); ctx.translate(hx,hy-16); ctx.scale(1,1); drawFigure(ctx,0,0,lk,0,null,nowMs,personExpr(h)); ctx.restore() } ctx.font='bold 10px sans-serif'; const hw=ctx.measureText(h).width; ctx.fillStyle='#111111c9'; ctx.beginPath(); ctx.roundRect(hx-hw/2-4,hy-70,hw+8,14,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(h,hx-hw/2,hy-59) });
- (S.kids||[]).forEach((k,i)=>{ if(typeof kidHere86==='function'&&!kidHere86(k))return; const preWalkK=k.age<2&&!k.canWalk; const outK=preWalkK&&k.cribOutUntil&&nowMs<k.cribOutUntil; const inCribK=preWalkK&&!outK; const kcrawl=preWalkK&&!!outK; const kx=inCribK?(688+(i%2)*52):180+i*52+(kcrawl?Math.round(Math.sin(nowMs/280+i*1.7)*4):0), ky=inCribK?302:368+(kcrawl?3:0); /* v120: a toddler who cannot walk yet is IN THE CRIB (inCribK) — drawn resting at the crib spot; a caregiver takes them OUT for care (cribOutUntil), and only then do they crawl */ const klabel=k.name+' ('+k.age+')'; const kh=[...String(k.name)].reduce((a,c)=>a+c.charCodeAt(0),0); const klk={girl:k.gender==='girl',skin:k.skin||SKINS[Math.max(0,Math.min(SKINS.length-1,((typeof famToneIdx83==='function')?famToneIdx83():2)+(kh%3)-1))],hair:HAIRS[kh%HAIRS.length],shirt:SHIRTS[(kh>>2)%SHIRTS.length],hat:'none',glasses:'none',shoes:'sneakers'}; const kexpr=(k.happy!==undefined&&k.happy<35)?'sad':'happy'; const kAsleep136v=(typeof kidAsleep136==='function')?kidAsleep136(k):false; if(kAsleep136v){ /* v136: ASLEEP means asleep — in the crib/bed, lying down under the covers pose, still: no crawling, no jitter, no standing in the crib */ const ax=688+(i%2)*52, ay=302; ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(ax,ay+10,20,7,0,0,Math.PI*2); ctx.fill(); ctx.save(); ctx.translate(ax,ay-16); const ksA=k.age<5?0.52:0.64; ctx.scale(ksA,ksA); ctx.save(); ctx.translate(16,6); ctx.rotate(-Math.PI/2); drawFigure(ctx,0,0,klk,0,'💤',nowMs,'sleep'); ctx.restore(); ctx.restore(); if(typeof drawCrib120==='function')drawCrib120(ctx,ax,ay); ctx.font='15px sans-serif'; ctx.fillText('💤',ax+16,ay-44+Math.sin(nowMs/700+i)*1.5); ctx.font='bold 10px sans-serif'; const kwA=ctx.measureText(klabel+' 💤 asleep').width; ctx.fillStyle='#111111c9'; ctx.beginPath(); ctx.roundRect(ax-kwA/2-4,ay-64,kwA+8,14,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(klabel+' 💤 asleep',ax-kwA/2,ay-53); return } ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(kx,ky+10,20,7,0,0,Math.PI*2); ctx.fill(); ctx.save(); if(kcrawl){ ctx.translate(kx,ky-10); ctx.scale(0.55,0.55); drawCrawlFigure(ctx,0,0,klk,nowMs/120,null,nowMs,kexpr) } else { ctx.translate(kx,ky-16); const ks45=k.age<5?0.52:(k.age<10?0.64:(k.age<14?0.8:0.94)); ctx.scale(ks45,ks45); drawFigure(ctx,0,0,klk,0,null,nowMs,kexpr) } ctx.restore(); if(inCribK&&typeof drawCrib120==='function')drawCrib120(ctx,kx,ky); ctx.font='bold 10px sans-serif'; const kw=ctx.measureText(klabel).width; ctx.fillStyle='#111111c9'; ctx.beginPath(); ctx.roundRect(kx-kw/2-4,ky-64,kw+8,14,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(klabel,kx-kw/2,ky-53) });
+ S.housemates.forEach((h,i)=>{ if(typeof mateHere86==='function'&&!mateHere86(h))return; if(typeof atWork120==='function'&&atWork120(h))return; /* v120: at work = at work — not drawn at home mid-shift */ const hx=556+i*68,hy=326; ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(hx,hy+10,26,8,0,0,Math.PI*2); ctx.fill(); const lk=personLook(h)||{girl:false,skin:'#f7cf9f',hair:'#4a2c14',shirt:'#64748b',hat:'none',glasses:'none',shoes:'sneakers'}; if(typeof asleep128==='function'&&asleep128(h)){ ctx.save(); ctx.translate(hx+16,hy+6); ctx.rotate(-Math.PI/2); drawFigure(ctx,0,0,lk,0,'💤',nowMs,'sleep'); ctx.restore(); ctx.font='13px sans-serif'; ctx.fillText('💤',hx+22,hy-24+Math.sin(nowMs/600+hx)*2) } else { ctx.save(); ctx.translate(hx,hy-16); ctx.scale(1,1); drawFigure(ctx,0,0,lk,0,null,nowMs,personExpr(h)); ctx.restore() } ctx.font='bold 11px sans-serif'; const hw=ctx.measureText(h).width; ctx.fillStyle='#111111c9'; ctx.beginPath(); ctx.roundRect(hx-hw/2-4,hy-70,hw+8,14,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(h,hx-hw/2,hy-59) });
+ (S.kids||[]).forEach((k,i)=>{ if(typeof kidHere86==='function'&&!kidHere86(k))return; const preWalkK=k.age<2&&!k.canWalk; const outK=preWalkK&&k.cribOutUntil&&nowMs<k.cribOutUntil; const inCribK=preWalkK&&!outK; const kcrawl=preWalkK&&!!outK; const kx=inCribK?(688+(i%2)*52):180+i*52+(kcrawl?Math.round(Math.sin(nowMs/280+i*1.7)*4):0), ky=inCribK?302:368+(kcrawl?3:0); /* v120: a toddler who cannot walk yet is IN THE CRIB (inCribK) — drawn resting at the crib spot; a caregiver takes them OUT for care (cribOutUntil), and only then do they crawl */ const klabel=k.name+' ('+k.age+')'; const kh=[...String(k.name)].reduce((a,c)=>a+c.charCodeAt(0),0); const klk={girl:k.gender==='girl',skin:k.skin||SKINS[Math.max(0,Math.min(SKINS.length-1,((typeof famToneIdx83==='function')?famToneIdx83():2)+(kh%3)-1))],hair:HAIRS[kh%HAIRS.length],shirt:SHIRTS[(kh>>2)%SHIRTS.length],hat:'none',glasses:'none',shoes:'sneakers'}; const kexpr=(k.happy!==undefined&&k.happy<35)?'sad':'happy'; const kAsleep136v=(typeof kidAsleep136==='function')?kidAsleep136(k):false; if(kAsleep136v){ /* v136: ASLEEP means asleep — in the crib/bed, lying down under the covers pose, still: no crawling, no jitter, no standing in the crib */ const ax=688+(i%2)*52, ay=302; ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(ax,ay+10,20,7,0,0,Math.PI*2); ctx.fill(); ctx.save(); ctx.translate(ax,ay-16); const ksA=k.age<5?0.52:0.64; ctx.scale(ksA,ksA); ctx.save(); ctx.translate(16,6); ctx.rotate(-Math.PI/2); drawFigure(ctx,0,0,klk,0,'💤',nowMs,'sleep'); ctx.restore(); ctx.restore(); if(typeof drawCrib120==='function')drawCrib120(ctx,ax,ay); ctx.font='15px sans-serif'; ctx.fillText('💤',ax+16,ay-44+Math.sin(nowMs/700+i)*1.5); ctx.font='bold 11px sans-serif'; const kwA=ctx.measureText(klabel+' 💤 asleep').width; ctx.fillStyle='#111111c9'; ctx.beginPath(); ctx.roundRect(ax-kwA/2-4,ay-64,kwA+8,14,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(klabel+' 💤 asleep',ax-kwA/2,ay-53); return } ctx.fillStyle='#00000028'; ctx.beginPath(); ctx.ellipse(kx,ky+10,20,7,0,0,Math.PI*2); ctx.fill(); ctx.save(); if(kcrawl){ ctx.translate(kx,ky-10); ctx.scale(0.55,0.55); drawCrawlFigure(ctx,0,0,klk,nowMs/120,null,nowMs,kexpr) } else { ctx.translate(kx,ky-16); const ks45=k.age<5?0.52:(k.age<10?0.64:(k.age<14?0.8:0.94)); ctx.scale(ks45,ks45); drawFigure(ctx,0,0,klk,0,null,nowMs,kexpr) } ctx.restore(); if(inCribK&&typeof drawCrib120==='function')drawCrib120(ctx,kx,ky); ctx.font='bold 11px sans-serif'; const kw=ctx.measureText(klabel).width; ctx.fillStyle='#111111c9'; ctx.beginPath(); ctx.roundRect(kx-kw/2-4,ky-64,kw+8,14,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(klabel,kx-kw/2,ky-53) });
  // ---- ESCORT: when a minor travelled with a parent/caregiver, they stay right beside the player in this scene ----
  if(S.escort&&S.location!=='school'&&personDefFor82(S.escort)){ const ed=personDefFor82(S.escort); const etx=charX+(charX>470?-74:74), ety=charY+12; escortX+=(etx-escortX)*.06; escortY+=(ety-escortY)*.06; drawNPCSprite(ctx,{name:ed.name,icon:ed.icon,col:ed.col,hair:ed.hair,x:escortX,y:escortY,state:'in',bubble:'',say:'',sayUntil:0},nowMs,Math.abs(etx-escortX)>6||Math.abs(ety-escortY)>6) }
  // ---- DATE PARTNER: on a date they stand right beside you in the scene, with their own chat bubble ----
@@ -2979,10 +2979,10 @@ function drawRoom(){
  ctx.font='bold 15px sans-serif'; const pnm=S.name; const pw2=ctx.measureText(pnm).width; const lyingTag=(actIcon==='💤'||(typeof playerAsleep128==='function'&&playerAsleep128()))&&!crawling; const ppx=x+(lyingTag?38:0)-pw2/2-9, ppy=lyingTag?y+66:y-(crawling?54:70);
  ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.roundRect(ppx+2,ppy+2,pw2+18,21,10); ctx.fill();
  ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(ppx,ppy,pw2+18,21,10); ctx.fill(); ctx.strokeStyle='#ffb703'; ctx.lineWidth=1.5; ctx.stroke(); ctx.lineWidth=1;
- ctx.fillStyle='#fff'; ctx.fillText(pnm,ppx+9,ppy+15); /* v126: the text starts INSIDE the pill (pill x + its 9px padding) — it used to be drawn at the standing x even when the pill had shifted right for the lying/sleeping pose, so the name slid out of its box while sleeping */
+ ctx.fillStyle='#fff'; ctx.fillText(pnm,ppx+9,ppy+15); try{ const eeP216=(typeof window.exprPlayer216==='function')?window.exprPlayer216():null; if(eeP216&&!actIcon&&!lyingTag){ ctx.font='22px sans-serif'; ctx.fillText(eeP216,ppx+(pw2+18)/2-11,ppy-12+Math.sin(nowMs/340)*2) } }catch(e){} /* v126: the text starts INSIDE the pill (pill x + its 9px padding) — it used to be drawn at the standing x even when the pill had shifted right for the lying/sleeping pose, so the name slid out of its box while sleeping */
  if(nowMs<partyUntilPerf){ const pcx126=ppx+(pw2+18)/2; ctx.fillStyle='#ec4899'; ctx.beginPath(); ctx.moveTo(pcx126-9,ppy-1); ctx.lineTo(pcx126+9,ppy-1); ctx.lineTo(pcx126,ppy-21); ctx.closePath(); ctx.fill(); ctx.fillStyle='#ffb703'; ctx.beginPath(); ctx.arc(pcx126,ppy-22,4.2,0,7); ctx.fill() }
  // the player's half of a conversation — a reply bubble when someone talks to them
- if(playerSay&&nowMs<playerSay.until){ drawSpeechBubble(ctx,x,actIcon?y-(crawling?104:134):y-(crawling?58:80),playerSay.text); drawHeadPop(ctx,x+34,y-(crawling?96:118),headEmojiFor(playerSay.text,'💬'),nowMs,1-(playerSay.until-nowMs)/2500) }
+ if(playerSay&&nowMs<playerSay.until){ drawSpeechBubble(ctx,x,actIcon?y-(crawling?104:134):y-(crawling?58:80),playerSay.text) }
  // ---- LIVE ACTIVITY: bubble + progress shimmer + effects, so you SEE the action happening ----
  if(actIcon){
   const lyingNow=actIcon==='💤'&&!crawling; const bx=lyingNow?x-2:x-30, by=lyingNow?y-70:y-(crawling?98:124);
@@ -4722,7 +4722,7 @@ function openFamTree78(){ if(!S)return; ensure78(); showTip('family-tree'); cons
  if(S.familyHistory&&S.familyHistory.length)h+='<h4 style="margin:12px 0 4px">📜 Generations before</h4>'+S.familyHistory.map(function(x){ return '<p class="small" style="margin-top:3px">• '+x+'</p>' }).join('');
  h+='<button class="btn outline" style="margin-top:12px" onclick="closeModal()">Close</button>'; openSheet(h) }
 /* ---- 💀 THE DEATH SYSTEM: old age already takes its turn (maybeDeath) — now the life can take you too ---- */
-function die78(cause){ if(!S||S.deadFlag)return; ensure16(); S.deadFlag=true; const T={gangwar:{icon:'🔫',title:'Killed in a gang war',line:'The war over a corner that was never really anyone\'s took '+S.name+' at '+S.age+'. The street held a silence for about a day. Then it went back to work — that is the whole eulogy the life gives, and it is why the smart ones get out.'},shootout:{icon:'🚔',title:'Killed in a police shootout',line:S.name+' died at '+S.age+' in a shootout with the law — the last frame of a chase that had been building for a long time. The news ran the wanted stars like a score. The family got a knock on the door instead.'}}; const t=T[cause]||T.gangwar; log(t.icon+' '+t.title.toUpperCase()+' — '+S.name+', age '+S.age+'. The journal holds the whole story, right up to the last page.'); newsStory(S.name+' dead at '+S.age,t.title+' in '+placeOf().city+'. A life that ran hot, ended hot — and a city that will argue about it for a week.',true);
+function die78(cause){ if(!S||S.deadFlag)return; ensure16(); S.deadFlag=true; const T={gangwar:{icon:'🔫',title:'Killed in a gang war',line:'The war over a corner that was never really anyone\'s took '+S.name+' at '+S.age+'. The street held a silence for about a day. Then it went back to work — that is the whole eulogy the life gives, and it is why the smart ones get out.'},shootout:{icon:'🚔',title:'Killed in a police shootout',line:S.name+' died at '+S.age+' in a shootout with the law — the last frame of a chase that had been building for a long time. The news ran the wanted stars like a score. The family got a knock on the door instead.'}}; T.fight={icon:'🥊',title:'Killed in a fight',line:S.name+' died at '+S.age+' of injuries from a fight. The hospital did everything it could — it was not enough. Some fights you do not walk away from; this was one of them.'}; T.gunned={icon:'🔫',title:'Shot in a fight',line:S.name+' was shot in a fight and died at '+S.age+'. The ER team worked on them and could not pull it back — a gun turns a fistfight into a funeral.'}; const t=T[cause]||T.gangwar; log(t.icon+' '+t.title.toUpperCase()+' — '+S.name+', age '+S.age+'. The journal holds the whole story, right up to the last page.'); newsStory(S.name+' dead at '+S.age,t.title+' in '+placeOf().city+'. A life that ran hot, ended hot — and a city that will argue about it for a week.',true);
  if(S.kids&&S.kids.length){ const k=S.kids[0]; openSheet('<h2>'+t.icon+' '+S.name+' is gone</h2><p>'+t.line+'</p><p>But the family lives on: <b>'+k.name+'</b>, age '+k.age+', is ready to take the story forward — keeping the house, the money (inheritance), and the family history in the journal.</p><button class="btn gold" onclick="continueAsChild(0)">▶ Continue as '+k.name+' — Generation '+(S.generation+1)+'</button><button class="btn outline" onclick="localStorage.removeItem(SAVE_KEY);S=null;closeModal();render()">↺ Start a brand-new life instead</button>') } else openSheet('<h2>'+t.icon+' '+S.name+' is gone</h2><p>'+t.line+'</p><p>A full life, kept forever in the journal. No children to carry it on — this line ends here.</p><button class="btn gold" onclick="localStorage.removeItem(SAVE_KEY);S=null;closeModal();render()">↺ Start a New Life</button>'); save() }
 /* ---- 🚔 THE RAID: at 4★+, the shootout can come to YOU, in real time ---- */
 function raidSheet78(){ if(!S)return; ensure78(); showTip('shootout'); openSheet('<h2>🚔 THE RAID — boots on the stairs</h2><p>'+S.wanted+'★ was always going to end like this: the block lit red-and-blue, a loudspeaker with YOUR name in it, glass about to break. This becomes a shootout or it does not — your call, right now:</p><button class="btn gold" onclick="raidGo78(\'surrender\')">🙌 Surrender — hands up, and live</button><button class="btn orange" style="margin-top:8px" onclick="raidGo78(\'run\')">🏃 Run — rooftops, fences, adrenaline</button>'+(hasGun()?'<button class="btn" data-bad="1" style="margin-top:8px;background:#7f1d1d;color:#fff" onclick="raidGo78(\'shoot\')">🔫 Shoot your way out</button>':'<p class="small" style="margin-top:8px">No gun in your Bag — shooting your way out is not an option.</p>'),{sfx:'siren',buzz:[160,60,160,60,220]}) }
@@ -10275,7 +10275,7 @@ render=function(){ const r=_rn132(); try{ if(!S||!inGame)return r; const V=ensur
  try{ const w=(typeof wornWatch110==='function')?wornWatch110():null; if(w&&(typeof watchWorks110!=='function'||watchWorks110(w))){ watchEl='w110'; const def=(w.w110&&w.w110.def)||''; if(/meridian|diamond/i.test(def))rainbow=true; else if(/solara|solar/i.test(def)||(w.w110&&w.w110.type==='solar'))watchCol='#fbbf24'; else if(/aurelion|gold/i.test(def))watchCol='#f59e0b'; else if(w.w110&&w.w110.type==='luxury'){ rainbow=true } } }catch(e){}
  if(!watchEl){ try{ const lk=lookOf(S); if(lk&&lk.watch&&lk.watch!=='none'){ watchEl='style'; const wd=(typeof WATCHES!=='undefined')?WATCHES.find(function(x){ return x.id===lk.watch }):null; watchCol=(wd&&wd.color)||'#e0f2fe'; if(lk.watch==='diamond')rainbow=true } }catch(e){} }
  const pill=document.querySelector('.clockPill125'); const loc=document.querySelector('.locClock110'); const chip=document.querySelector('.watchChip110');
- if(watchEl){ if(pill)pill.style.display='none'; if(loc)loc.style.display='none'; if(chip){ chip.classList.add('watchRgb132'); chip.style.color=watchCol; if(rainbow)chip.classList.add('watchRainbow132'); else chip.classList.remove('watchRainbow132') } }
+ if(watchEl){ if(loc)loc.style.display='none'; if(chip){ chip.classList.add('watchRgb132'); chip.style.color=watchCol; if(rainbow)chip.classList.add('watchRainbow132'); else chip.classList.remove('watchRainbow132') } }
  else { if(pill)pill.style.display=''; if(loc)loc.style.display='' }
  /* item 23: charging readout, top right */
  let cc=document.getElementById('chargeChip132'); const charging=!!(S.phone40&&S.phone40.charging&&S.hasPhone);
@@ -20160,30 +20160,73 @@ function carGlyph202(model){ try{ const m=String(model||'').match(/[\u{1F300}-\u
    so neighbouring tags can never overlap. Cars with no known owner never reach carList202, so no
    tag is ever invented. The home curb car (#parked193 — already the animation glyph) gains the
    same owner tag for the moments it is the visible one. */
-function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; const wrap=document.querySelector('.roomWrap'); if(!wrap)return; const cars=carList202(); let strip=document.getElementById('cars202');
-  if(!cars.length){ if(strip)strip.remove(); const pk0=document.getElementById('parked193'); if(pk0)pk0.style.removeProperty('display'); return }
-  if(!strip){ strip=document.createElement('div'); strip.id='cars202'; strip.setAttribute('aria-hidden','true'); strip.style.cssText='position:absolute;left:0;right:0;bottom:0;height:64px;z-index:5;pointer-events:none;overflow:hidden'; strip.innerHTML='<canvas width="900" height="64" style="width:100%;height:100%;display:block"></canvas>'; wrap.appendChild(strip) }
-  else { const oc=strip.querySelector('canvas'); if(oc&&oc.height!==64){ strip.style.height='64px'; oc.height=64 } }
-  const hl=(typeof homeLoc==='function')?homeLoc():null; const atHome=S.location===hl||S.location==='grandparents';
-  const pk=document.getElementById('parked193'); if(pk&&atHome&&cars.some(function(c){ return c.mine }))pk.style.setProperty('display','none','important'); else if(pk)pk.style.removeProperty('display');
+function drawCars202(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; const wrap=document.querySelector('.roomWrap'); if(!wrap)return; const cvEl=document.getElementById('cv'); const cars=carList202(); const deps=window._dep216||{}; const depKeys=Object.keys(deps); let strip=document.getElementById('cars202');
+  const pk=document.getElementById('parked193'); const hl=(typeof homeLoc==='function')?homeLoc():null; const atHome=S.location===hl||S.location==='grandparents';
+  if(!cars.length&&!depKeys.length){ if(strip)strip.style.display='none'; if(pk)pk.style.removeProperty('display'); window._carSig216=''; return }
+  if(!strip){ strip=document.createElement('div'); strip.id='cars202'; strip.setAttribute('aria-hidden','true'); strip.style.cssText='position:absolute;z-index:6;pointer-events:none;overflow:hidden'; strip.innerHTML='<canvas width="900" height="92" style="width:100%;height:100%;display:block"></canvas>'; wrap.appendChild(strip) }
+  strip.style.display='block';
+  /* h16 ROAD FIX: the strip is pinned to the CANVAS box (never the wrap's bottom edge, which drifts
+     whenever the wrap is taller than the canvas) and wears the SAME camera transform as the scene
+     canvas, so the road rides the cinematic lens with the scene — no detach, no jump, no shimmer. */
+  if(cvEl){ const ch=cvEl.offsetHeight||460, cw=cvEl.offsetWidth||900; const sh=ch*(92/460); strip.style.left=cvEl.offsetLeft+'px'; strip.style.width=cw+'px'; strip.style.top=(cvEl.offsetTop+ch-sh)+'px'; strip.style.height=sh+'px'; strip.style.right='auto'; strip.style.bottom='auto';
+    const tr=cvEl.style.transform||''; if(strip.style.transform!==tr)strip.style.transform=tr;
+    const og=cvEl.style.transformOrigin||''; if(og){ const mm=/([\d.]+)%\s+([\d.]+)%/.exec(og); if(mm){ const oy=((parseFloat(mm[2])/100*460)-368)/92*100; const no=mm[1]+'% '+oy+'%'; if(strip.style.transformOrigin!==no)strip.style.transformOrigin=no } else if(strip.style.transformOrigin!==og)strip.style.transformOrigin=og }
+    const ts=cvEl.style.transition||''; if(strip.style.transition!==ts)strip.style.transition=ts }
+  /* redraw ONLY when something actually changed — the old 900ms blind repaint was the visible flicker */
+  const night=S.hour>=18||S.hour<6; const now=performance.now();
+  const sig=S.location+'|'+(night?'n':'d')+'|'+cars.map(function(c){ return c.owner+c.model }).join(',')+'|'+(depKeys.length?Math.floor(now/55):'');
+  if(sig===window._carSig216&&strip.dataset.ok==='1')return; window._carSig216=sig; strip.dataset.ok='1';
+  if(pk&&atHome&&cars.some(function(c){ return c.mine }))pk.style.setProperty('display','none','important'); else if(pk)pk.style.removeProperty('display');
   if(pk&&S.car&&S.car.owned){ try{ let po=pk.querySelector('.pOwner'); if(!po){ po=document.createElement('span'); po.className='pOwner'; po.style.cssText='position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);background:#111111e8;color:#fff;font-size:11px;font-weight:900;line-height:1;padding:3px 8px;border-radius:999px;border:1.5px solid #ffb703;white-space:nowrap;pointer-events:none'; pk.appendChild(po) } if(po.textContent!==S.name)po.textContent=S.name }catch(e){} }
-  const cv=strip.querySelector('canvas'); const ctx=cv.getContext('2d'); ctx.clearRect(0,0,900,64);
-  if(!atHome){ const g=ctx.createLinearGradient(0,0,0,64); g.addColorStop(0,'#cfc8ba'); g.addColorStop(0.14,'#a89f8f'); g.addColorStop(0.2,'#3c3a38'); g.addColorStop(1,'#2e2c2a'); ctx.fillStyle=g; ctx.fillRect(0,0,900,64); ctx.fillStyle='#f5d90a77'; for(let dx=6;dx<900;dx+=64)ctx.fillRect(dx,50,30,3) }
-  const night=S.hour>=18||S.hour<6; const n=cars.length; const slot=Math.min(168,840/Math.max(1,n));
-  cars.forEach(function(c,i){ const cx=26+i*slot+slot/2, gy=60;
-   if(night){ const lg=ctx.createLinearGradient(cx+24,0,cx+122,0); lg.addColorStop(0,'rgba(255,240,170,.5)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(cx+24,gy-14); ctx.lineTo(cx+122,gy-26); ctx.lineTo(cx+122,gy-2); ctx.lineTo(cx+24,gy-6); ctx.closePath(); ctx.fill() }
-   ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.ellipse(cx,gy+1,36,4.5,0,0,7); ctx.fill();
-   ctx.save(); ctx.globalAlpha=.5; ctx.fillStyle=c.col.body; ctx.beginPath(); ctx.ellipse(cx,gy+2,27,3.2,0,0,7); ctx.fill(); ctx.restore();
-   ctx.font='40px sans-serif'; ctx.textAlign='center'; ctx.fillText(carGlyph202(c.model),cx,gy); ctx.textAlign='left';
-   if(night){ ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(cx+27,gy-13,3.2,0,7); ctx.fill() }
-   let nm=String(c.owner||''); if(nm){ const maxW=slot-8; let fs=13, tw=0; const fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit(); while(fs>9.5&&tw+24>maxW){ fs-=0.5; fit() } if(tw+24>maxW){ while(nm.length>1&&tw+24>maxW){ nm=nm.slice(0,-2)+'…'; fit() } }
-    const pw=tw+24, px=cx-pw/2, py=2, ph=fs+7;
-    ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(px+2,py+2,pw,ph,9); ctx.fill();
-    ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(px,py,pw,ph,9); ctx.fill();
-    ctx.strokeStyle=c.mine?'#ffb703':'#ffffffa0'; ctx.lineWidth=c.mine?2:1.2; ctx.stroke(); ctx.lineWidth=1;
-    ctx.fillStyle=c.col.body; ctx.beginPath(); ctx.arc(px+10,py+ph/2,3.6,0,7); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+17,py+ph/2+fs*0.36); ctx.font='12px sans-serif' }
-  });
+  const cv=strip.querySelector('canvas'); const ctx=cv.getContext('2d'); ctx.clearRect(0,0,900,92);
+  if(atHome){ ctx.fillStyle='#c9b691'; ctx.fillRect(0,46,900,46); ctx.fillStyle='#b3a07c'; ctx.fillRect(0,46,900,3); ctx.fillStyle='#00000014'; for(let dx=40;dx<900;dx+=150)ctx.fillRect(dx,50,2,38) }
+  else { const g=ctx.createLinearGradient(0,30,0,92); g.addColorStop(0,'#a2987f'); g.addColorStop(0.18,'#8f8570'); g.addColorStop(0.2,'#3b3936'); g.addColorStop(1,'#282724'); ctx.fillStyle=g; ctx.fillRect(0,30,900,62); ctx.fillStyle='#6e675a'; ctx.fillRect(0,30,900,3); ctx.fillStyle='#f7d54d99'; for(let dx=8;dx<900;dx+=78)ctx.fillRect(dx,72,36,4) }
+  const gy=88;
+  /* SOLID CARS (h16): filled bodies in the car's own colour, dark-trimmed cabin with real windows,
+     a shaded lower band, a highlight stripe, door line and proper wheels with hubcaps — same models
+     as the road animation (🚙 boxy SUV, 🏎️ low sports, 🚗/🚘 sedan), just drawn solid, never hollow. */
+  const solid=function(cx,model,col,alpha){ const gl=carGlyph202(model); const suv=gl==='🚙', sport=gl==='🏎️'; const w=sport?110:(suv?98:102); ctx.save(); if(alpha!=null)ctx.globalAlpha=alpha;
+    ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.ellipse(cx,gy+2,w/2+6,5,0,0,7); ctx.fill();
+    ctx.save(); ctx.globalAlpha=(alpha==null?0.5:alpha*0.5); ctx.fillStyle=col.body; ctx.beginPath(); ctx.ellipse(cx,gy+3,w/2-8,3.4,0,0,7); ctx.fill(); ctx.restore();
+    const cabW=w*(suv?0.60:(sport?0.46:0.52)), cabH=suv?21:(sport?13:17), cabX=cx-cabW/2-2, cabY=gy-30-cabH+8;
+    ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cabX-2,cabY-2,cabW+4,cabH+4,7); ctx.fill();
+    ctx.fillStyle='#d8eef8'; ctx.beginPath(); ctx.roundRect(cabX+2,cabY+2,cabW-4,cabH-3,5); ctx.fill();
+    ctx.fillStyle=col.dark; ctx.fillRect(cx-3,cabY+1,5,cabH);
+    ctx.fillStyle=col.body; ctx.beginPath(); ctx.roundRect(cx-w/2,gy-30,w,23,7); ctx.fill();
+    ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cx-w/2+2,gy-15,w-4,8,4); ctx.fill();
+    ctx.fillStyle='#ffffff59'; ctx.fillRect(cx-w/2+7,gy-28,w-14,3);
+    ctx.strokeStyle='#00000030'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(cx+4,gy-28); ctx.lineTo(cx+4,gy-10); ctx.stroke(); ctx.lineWidth=1;
+    ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.arc(cx+11,gy-19,1.8,0,7); ctx.fill();
+    [cx-w/2+21,cx+w/2-21].forEach(function(wx){ ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-8,8.5,0,7); ctx.fill(); ctx.fillStyle='#cfd6de'; ctx.beginPath(); ctx.arc(wx,gy-8,3.6,0,7); ctx.fill(); ctx.fillStyle='#141519'; ctx.beginPath(); ctx.arc(wx,gy-8,1.4,0,7); ctx.fill() });
+    if(night){ const lg=ctx.createLinearGradient(cx+w/2,0,cx+w/2+96,0); lg.addColorStop(0,'rgba(255,240,170,.45)'); lg.addColorStop(1,'rgba(255,240,170,0)'); ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(cx+w/2-2,gy-22); ctx.lineTo(cx+w/2+96,gy-30); ctx.lineTo(cx+w/2+96,gy-8); ctx.lineTo(cx+w/2-2,gy-13); ctx.closePath(); ctx.fill() }
+    ctx.fillStyle='#ffeeb0'; ctx.beginPath(); ctx.arc(cx+w/2-3,gy-20,3.2,0,7); ctx.fill();
+    ctx.restore(); return w };
+  const n=cars.length; const slot=Math.min(190,860/Math.max(1,n)); window._carPos216={};
+  let prevRight=2;
+  cars.forEach(function(c,i){ const cx=30+i*slot+slot/2; window._carPos216[c.owner]=cx; solid(cx,c.model,c.col);
+    /* CLEARER NAMES (h16): big 900-weight type on a near-black pill, colour dot, gold rim for yours —
+       measured and marched left-to-right so tags can never overlap, and clamped inside the canvas so
+       a tag is never clipped by the edge again. */
+    let nm=String(c.owner||''); if(nm){ let fs=19, tw=0; const fit=function(){ ctx.font='900 '+fs+'px sans-serif'; tw=ctx.measureText(nm).width }; fit(); while(fs>14&&tw+26>slot+34){ fs-=0.5; fit() } if(tw+26>slot+34){ while(nm.length>1&&tw+26>slot+34){ nm=nm.slice(0,-2)+'…'; fit() } }
+     const pw=tw+26; let px=cx-pw/2; px=Math.max(prevRight,Math.min(898-pw,px)); prevRight=px+pw+4; const py=2, ph=fs+8;
+     ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(px+2,py+2,pw,ph,10); ctx.fill();
+     ctx.fillStyle='#0d0d10f2'; ctx.beginPath(); ctx.roundRect(px,py,pw,ph,10); ctx.fill();
+     ctx.strokeStyle=c.mine?'#ffb703':'#ffffffd0'; ctx.lineWidth=c.mine?2.2:1.6; ctx.stroke(); ctx.lineWidth=1;
+     ctx.fillStyle=c.col.body; ctx.beginPath(); ctx.arc(px+12,py+ph/2,4.2,0,7); ctx.fill();
+     ctx.fillStyle='#fff'; ctx.font='900 '+fs+'px sans-serif'; ctx.fillText(nm,px+20,py+ph/2+fs*0.36); ctx.font='12px sans-serif' } });
+  /* WALK TO THE CAR AND LEAVE (h16): a departing owner appears at the door side of the street, walks
+     the sidewalk to their own car wearing their name, gets in, and the car drives off the edge. */
+  let depActive=false;
+  depKeys.forEach(function(owner){ const d=deps[owner]; if(!d)return; const el=now-d.t0; const carX=d.x;
+    if(el<1500){ depActive=true; const p=el/1500, e2=1-Math.pow(1-p,2); const fx=884+(carX-884)*e2; const bob=Math.abs(Math.sin(now/90))*2;
+      ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(fx,47,10,3,0,0,7); ctx.fill();
+      ctx.fillStyle=d.fig||'#3b82f6'; ctx.fillRect(fx-4.5,30-bob,9,13); ctx.fillStyle='#20242c'; ctx.fillRect(fx-4.5,43-bob,4,6); ctx.fillRect(fx+0.5,43-bob,4,6); ctx.fillStyle='#f2c89b'; ctx.beginPath(); ctx.arc(fx,25-bob,5.5,0,7); ctx.fill();
+      ctx.font='900 13px sans-serif'; const tw2=ctx.measureText(owner).width; const px2=Math.max(3,Math.min(897-(tw2+16),fx-(tw2+16)/2)); ctx.fillStyle='#0d0d10e8'; ctx.beginPath(); ctx.roundRect(px2,2,tw2+16,19,9); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillText(owner,px2+8,16); ctx.font='12px sans-serif';
+      solid(carX,d.model,d.col) }
+    else if(el<1950){ depActive=true; solid(carX,d.model,d.col) }
+    else if(el<3400){ depActive=true; const p=(el-1950)/1450; solid(carX+p*p*820,d.model,d.col) }
+    else { delete deps[owner]; window._carSig216='' } });
+  if(depActive&&!window._depTick216){ window._depTick216=true; setTimeout(function(){ window._depTick216=false; try{ drawCars202() }catch(e){} },55) }
  }catch(e){} }
 setInterval(drawCars202,900);
 /* ---------- 4) sleep tiers — a real tier table inside the sleep system ---------- */
@@ -21639,5 +21682,260 @@ setInterval(function(){ try{ if(document.hidden)return; if(typeof S==='undefined
 window.__cine215={shot:function(){ return cineShot215 }};
 try{ console.log('🎬 AquaLife cinematic camera — closer idle framing (1.24×), conversation push-ins (1.52×), framing holds behind menus') }catch(e){}
 </script>
+<script>
+/* ================= v200 HOTFIX 16 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's live-play batch (Nov 3, 2026):
+   1) TODDLER TUSSLE — fires "out of nowhere" no more, and can never stick: every ambient/playdate start
+      now plays the CAUSE first in the world (the toy grab, the face-off, the opponent's 😤 bubble +
+      spotlight) and the player CHOOSES — Tussle / Share / Walk away. The day burns at the escalation,
+      so nothing can re-fire or strand anyone. A general battle watchdog joins v194's: any live battle
+      always has its sheet, a battle sheet with no battle behind it is closed, queued battle sheets are
+      purged at every battle end (all kinds, not just toddler), and a toddler tussle past turn 16 is
+      broken up by a grown-up.
+   2) CARS ARE SOLID — drawCars202 rebuilt at the source: filled bodies, windowed cabins, shaded bands,
+      hubcapped wheels, per-model silhouettes (source edit above).
+   3) NAMES CLEARER — car tags are 19px 900-weight on near-black pills, marched so they never overlap
+      and clamped so they never clip; scene name tags bumped to 15px and clamped inside the canvas.
+   4) ROAD GLITCH — the strip now pins to the CANVAS box and copies the scene's camera transform (it
+      used to pin to the wrap's bottom edge, which drifts below the scene), and it repaints only when
+      its signature changes instead of blindly every 900ms.
+   5) WALK TO THE CAR — when a car owner's car vanishes from the street (they left), the strip plays it:
+      the owner walks the sidewalk to their car, gets in, and the car drives off. No more vanish-departures.
+   6) FIGHT → HOSPITAL — Howard's rule, on the one battle engine: shot, knocked out, or ending at ≤25 HP
+      means a REQUIRED hospital run (sheet → ambulance scene → ER verdict): recovery, a broken body part
+      (a real lasting injury: days of reduced fight power, no gym/team, daily health/energy cost, shown in
+      the Doctor card), or — worst case, shot-and-downed mostly — death through the shipped die78 system
+      (new 'fight'/'gunned' causes added at the source). A mid-tier beating is the shipped injured state.
+      Toddler tussles stay toddler-scale: the shipped booboo, plus a caregiver doctor trip on a rough loss.
+   7) RECAP DAY STAMPS — the "While You Were Out" rows put the day ON TOP of each moment now (the side
+      column squeezed "Day 4" letter-by-letter); a sweep gives every other .kv day stamp the same move.
+   8) CLOCK UNDER THE CALENDAR — root cause: the v132 watch rule hid .clockPill125 whenever ANY watch
+      was worn, including the cosmetic style watch from character creation, and its replacement chip does
+      not live in the top bar — so the top clock vanished for good. The pill-hide is removed at the source
+      and a guardian now guarantees the pill exists, is visible, and ticks under the Calendar, watch or not.
+   9) EXPRESSIONS — the hollow white head-pop badges are GONE (source edits: drawHeadPop has no callers
+      left). One clean emoji floats over the head, and it means something: the player's comes from their
+      real state (sick 🤒, hurt 🤕, starving 😫, wiped 😴, bored 🥱, lonely 😔, hunted 😰, thriving 😊,
+      low 😢), an NPC's from who they are (a kid's real happiness, a townsfolk trait) — no box, no random
+      cycling. The player customises their feeling emojis and conversation bubble texts in 👽 Me, and more
+      emojis + bubbles UNLOCK at Lv 3 / 5 / 8 / 12 (EXPR_UNLOCK216).
+  10) LEVEL-UP SPOTLIGHT DISCIPLINE — a "Level Up — Level N" spotlight bypasses the banner queue, takes
+      the screen alone, and STAYS until tapped (no timer, immune to hideSpotlight, self-healing if anything
+      repaints it). While it (or its pending turn) is live, openSheet / showSpotlight / text & DM notifs /
+      call cards all HOLD in one FIFO queue; acknowledging releases exactly one, and each later release
+      follows the same one-at-a-time rule. If a modal is open when the level lands, the spotlight waits
+      for the first free moment — still ahead of everything else.
+  11) FEEDBACK — a 💬 Send feedback button joins the Welcome-back screen (same h14 sheet; with no save the
+      progress line honestly reads "Not started yet"), and a play clock (its own localStorage key, never
+      the save) asks every FEEDBACK_ASK_MINUTES of real play — only at a free moment, never mid-anything:
+      one ask per interval, "Not now" restarts the clock. ================= */
+(function(){ 'use strict';
+try{
+function modalOpen216(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+function stamp216(){ try{ lastTap132=Date.now() }catch(e){} try{ modalNav115=Date.now() }catch(e){} }
+function ensure216(){ if(typeof S==='undefined'||!S)return null; if(!S.v216||typeof S.v216!=='object')S.v216={}; var V=S.v216; if(V.broken===undefined)V.broken=null; if(V.pendingHosp===undefined)V.pendingHosp=null; if(!V.expr||typeof V.expr!=='object')V.expr={feel:{},bubbles:[]}; if(!V.expr.feel||typeof V.expr.feel!=='object')V.expr.feel={}; if(!Array.isArray(V.expr.bubbles))V.expr.bubbles=[]; return V }
+window.ensure216=ensure216;
+
+/* ================= 🕐 8) THE CLOCK GUARDIAN — time under the Calendar, always ================= */
+function clockFix216(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var stack=document.querySelector('.dayStack125'); if(!stack)return; var pill=stack.querySelector('.clockPill125');
+  if(!pill){ pill=document.createElement('span'); pill.className='clockChip123 clockPill125'; pill.setAttribute('role','status'); pill.setAttribute('aria-label','Current time'); pill.innerHTML='🕐 <span class="jsClock"></span>'; stack.appendChild(pill) }
+  if(pill.style.display==='none')pill.style.display='';
+  var t=(typeof clockStr==='function')?clockStr():''; var jc=pill.querySelector('.jsClock'); if(jc&&t&&jc.textContent!==t)jc.textContent=t;
+ }catch(e){} }
+setInterval(clockFix216,600);
+
+/* ================= 🧸 1) TODDLER TUSSLE — cause first, never stuck ================= */
+var _startTod216=(typeof startTodFight149==='function')?startTodFight149:null;
+var _endTod216=(typeof todFightEnd149==='function')?todFightEnd149:null;
+if(_startTod216){ startTodFight149=function(opp,where){
+  if(window._todGo216){ window._todGo216=false; return _startTod216.apply(this,arguments) }
+  try{
+    if(!S||S.age<1||S.age>4||window._b128)return _startTod216.apply(this,arguments);
+    var V=(typeof ensure149==='function')?ensure149():null; if(V&&V.todFightDay===S.day)return;
+    if(modalOpen216())return _startTod216.apply(this,arguments);
+    if(typeof activity!=='undefined'&&activity)return _startTod216.apply(this,arguments);
+    if(V)V.todFightDay=S.day;
+    window._todEsc216={opp:opp,where:where};
+    try{ var all=[].concat((typeof npcs!=='undefined'&&npcs)?npcs:[],(typeof townsfolk!=='undefined'&&townsfolk)?townsfolk:[]); var mm=null; for(var ai=0;ai<all.length;ai++){ var p=all[ai]; if(p&&p.state==='in'&&p.name&&(p.name===opp||p.name.split(' ')[0]===String(opp).split(' ')[0])){ mm=p; break } } if(mm){ mm.say='😤 That toy is MINE!'; mm.sayUntil=performance.now()+3400; mm.bubble='😤' } }catch(e){}
+    try{ showSpotlight('🧸','THE GOOD TOY',opp+' grabbed the good toy at '+where+' — and '+S.name+' is NOT having it.') }catch(e){}
+    try{ log('🧸⚡ THE GOOD TOY — at '+where+', '+opp+' grabbed the good toy right out of the pile and is holding it like a trophy. Faces are being made. This ends one of two ways, and you pick which.') }catch(e){}
+    stamp216();
+    openSheet('<h2>🧸⚡ The good toy — '+where+'</h2><p><b>'+opp+'</b> grabbed the good toy — THE good toy — right in front of '+S.name+', and is holding it like a trophy. '+S.name+' is squaring up, toddler-style: tiny fists, enormous feelings. A grown-up has already clocked it and is on the way over.</p><p class="small">Toddler rules: tiny hits, big feelings — the worst ending is a booboo and a lot of tears.</p><button class="btn" style="background:#7f1d1d;color:#fff;margin-top:8px" onclick="todTussleGo216()">🥊 Tussle! — it is the principle of the thing</button><button class="btn gold" style="margin-top:8px" onclick="todShare216()">🧸 Share it instead — crisis averted</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Walk away</button>');
+    return;
+  }catch(e){ return _startTod216.apply(this,arguments) }
+ } }
+window.todTussleGo216=function(){ try{ var esc=window._todEsc216||{}; var opp=esc.opp||'Milo', where=esc.where||'the park'; window._todEsc216=null; try{ var V=ensure149(); if(V)V.todFightDay=0 }catch(e){} closeModal(); window._todGo216=true; setTimeout(function(){ try{ startTodFight149(opp,where) }catch(e){} },90) }catch(e){} };
+window.todShare216=function(){ try{ var esc=window._todEsc216||{}; var opp=esc.opp||'Milo'; window._todEsc216=null; closeModal(); try{ adj('social',3); adj('fun',2); var V=ensure149(); if(V){ if(!V.todPals[opp])V.todPals[opp]={pts:50}; V.todPals[opp].pts=Math.min(100,(V.todPals[opp].pts||50)+4) } log('🧸 THE TREATY — '+S.name+' shared the good toy with '+opp+'. A long stare, then trading, then both of them playing with the WRONG toys, happily. Crisis averted — friendship +4, Social +3.'); save(); render() }catch(e){} }catch(e){} };
+if(_endTod216){ todFightEnd149=function(res,opp){ var r=_endTod216.apply(this,arguments);
+  try{ if(typeof S!=='undefined'&&S&&res==='lose'&&Math.random()<0.18){ var tries=0; var iv=setInterval(function(){ tries++; if(tries>6){ clearInterval(iv); return } if(modalOpen216()||window._b128)return; clearInterval(iv);
+    try{ var V=ensure149(); if(V)V.booboo=null; adj('health',6); log('🏥👶 THE DOCTOR, CARE-EDITION — that tussle ended rough, so a grown-up took '+S.name+' straight to the doctor: checked over, cleaned up, pronounced FINE, sticker earned. The booboo is handled — today, not eventually.'); stamp216(); openSheet('<h2>🏥👶 Doctor visit</h2><p>That tussle ended rough, so a grown-up took '+S.name+' straight to the doctor. Verdict: checked over, cleaned up, <b>fine</b> — a sticker for bravery, and the booboo is handled today.</p><button class="btn gold" onclick="closeModal()">🧸 Back to playing</button>'); save() }catch(e){}
+   },700) } }catch(e){}
+  return r } }
+
+/* ================= 🚑 6) FIGHT → HOSPITAL ================= */
+function purgeBattleQueue216(){ try{ if(typeof modalQueue115!=='undefined'&&Array.isArray(modalQueue115)){ for(var i=modalQueue115.length-1;i>=0;i--){ var q=modalQueue115[i]; var h=(q&&typeof q.html==='string')?q.html:''; if(h.indexOf('Battle — turn')>=0||h.indexOf('TODDLER TUSSLE')>=0)modalQueue115.splice(i,1) } } }catch(e){} try{ if(typeof sheetQ84!=='undefined'&&Array.isArray(sheetQ84)){ for(var j=sheetQ84.length-1;j>=0;j--){ var q2=sheetQ84[j]; var h2=(q2&&typeof q2.html==='string')?q2.html:''; if(h2.indexOf('Battle — turn')>=0)sheetQ84.splice(j,1) } } }catch(e){} }
+function assessHurt216(res,hurt){ if(typeof S==='undefined'||!S)return; var php=Math.max(0,Math.ceil(hurt.php)); var serious=hurt.shot||res==='lose'||php<=25; var moderate=!serious&&php<=55;
+  if(moderate){ try{ ensure16(); if(S.healthSys){ S.healthSys.injured=true; S.healthSys.injuredDays=Math.max(S.healthSys.injuredDays||0,2) } log('🩹 BANGED UP — you got the better of '+hurt.name+', but your body kept the receipts: bruised and limping for a couple of days (the injury state, in 👽 Me). Walked off — no hospital needed.'); save() }catch(e){} return }
+  if(!serious)return;
+  if(S.jail&&S.jail.in){ try{ ensure16(); if(S.healthSys){ S.healthSys.injured=true; S.healthSys.injuredDays=Math.max(S.healthSys.injuredDays||0,3) } log('🚑 THE INFIRMARY — you were hurt badly enough that even the jail sends you to the infirmary: patched up under guard, and the injury rides for days.'); save() }catch(e){} return }
+  var V=ensure216(); if(!V||V.pendingHosp)return; V.pendingHosp={shot:!!hurt.shot,opp:hurt.name||'them',res:res,php:php,day:S.day}; try{ save() }catch(e){} }
+function hospSheet216(){ var V=ensure216(); var c=V&&V.pendingHosp; if(!c)return; stamp216();
+  openSheet('<h2>🚑 You need a hospital</h2><p>The fight with <b>'+c.opp+'</b> is over — and you are '+(c.shot?'<b>shot</b>. There is blood, and it is yours':'<b>really hurt</b>: down to '+c.php+' HP, seeing stars, something moving that should not move')+'. This is not a walk-it-off injury. You are going to 🏥 Regional Hospital — that part is not a choice.</p><button class="btn gold" style="margin-top:10px" onclick="hospGo216()">🚑 Get to the hospital</button>',{sfx:'siren'}) }
+window.hospGo216=function(){ try{ var V=ensure216(); var c=V?V.pendingHosp:null; closeModal();
+  var go=function(){ try{ S.location='hospital' }catch(e){} try{ render() }catch(e){} setTimeout(function(){ erSheet216(c) },350) };
+  if(typeof startActivity==='function'&&typeof charX!=='undefined'&&typeof charY!=='undefined'){ try{ startActivity('🚑',2400,charX,charY,{energy:-5},go); return }catch(e){} }
+  go() }catch(e){} };
+function erSheet216(c){ var V=ensure216(); if(typeof S==='undefined'||!S)return; if(V)V.pendingHosp=null; try{ ensure16() }catch(e){}
+  var shot=!!(c&&c.shot), lost=!!(c&&c.res==='lose'); var deathP=(shot&&lost)?0.12:(lost?0.03:0);
+  if(Math.random()<deathP){ try{ log('🚑 THE ER — they worked on '+S.name+' in the trauma bay, fast and quiet and then slower. It was not enough.') }catch(e){}
+    stamp216(); openSheet('<h2>🚑 The ER</h2><p>The ambulance got '+S.name+' to Regional Hospital fast. The trauma team is working — it looks bad. It looks like the kind of bad that makes a whole room go quiet.</p>',{sfx:'siren'});
+    setTimeout(function(){ try{ die78(shot?'gunned':'fight') }catch(e){} },1400); return }
+  var bill=0, outcome='';
+  if(Math.random()<0.45){ var parts=['left arm','right arm','left leg','right leg','two ribs','left wrist','right ankle','collarbone']; var part=parts[Math.floor(Math.random()*parts.length)]; var days=4+Math.floor(Math.random()*4); if(V)V.broken={part:part,untilDay:S.day+days}; if(S.healthSys){ S.healthSys.injured=true; S.healthSys.injuredDays=Math.max(S.healthSys.injuredDays||0,days) } bill=140;
+    outcome='<b>🦴 Broken '+part+'.</b> Set, cast, and yours to carry for about <b>'+days+' days</b> — until Day '+(S.day+days)+'. Until it heals: your fighting power is down, the gym and the team are off-limits, and every day costs a little health and energy. It heals on its own from here.' }
+  else { if(S.healthSys){ S.healthSys.injured=false; S.healthSys.injuredDays=0 } try{ adj('health',22) }catch(e){} bill=90;
+    outcome='<b>🌤️ Recovery.</b> Patched, stitched, scanned — nothing broken, nothing left inside that should not be there. You are cleared to go home and rest it out. Health +22 — the hospital did its job.' }
+  if(S.age<18){ try{ log('🏥 ER — '+(V&&V.broken?('a broken '+V.broken.part+' set and cast'):'treated and cleared')+'. Family covered the $'+bill+' bill — that is what family is for.') }catch(e){} }
+  else { var pay=Math.min(S.money||0,bill); if(pay>0){ try{ money(-pay,'🏥 Hospital — ER treatment') }catch(e){} } try{ log('🏥 ER BILL — $'+bill+(pay<bill?(' — you had $'+pay+' on you; the rest goes on a plan, and it is handled.'):'. Paid.')) }catch(e){} }
+  try{ save() }catch(e){}
+  stamp216(); openSheet('<h2>🏥 Regional Hospital — the verdict</h2><p>'+outcome+'</p><p class="small">The fight put you here; the hospital is the price of really getting hurt. '+(S.age<18?'Family covered the bill.':'Bill: $'+bill+'.')+'</p><button class="btn gold" style="margin-top:10px" onclick="closeModal()">🏥 Rest up</button>',{sfx:'pop'}) }
+var _be216=(typeof battleEnd128==='function')?battleEnd128:null;
+if(_be216){ battleEnd128=function(res){ var b=window._b128||null; var hurt=null;
+  try{ if(b){ var shot=false; (b.lines||[]).forEach(function(l){ if(String(l).indexOf('BANG')>=0||String(l).indexOf('shoots you')>=0)shot=true }); hurt={shot:shot,php:(typeof b.php==='number')?b.php:100,kind:b.kind,name:b.name,power:b.power||0} } }catch(e){}
+  purgeBattleQueue216(); var r=_be216.apply(this,arguments);
+  try{ purgeBattleQueue216(); if(hurt&&typeof S!=='undefined'&&S&&!S.deadFlag&&hurt.kind!=='todfight149')assessHurt216(res,hurt) }catch(e){}
+  return r } }
+if(typeof fightPowerBase==='function'){ var _fpb216=fightPowerBase; fightPowerBase=function(){ var r=_fpb216.apply(this,arguments); try{ var V=ensure216(); if(V&&V.broken)r=Math.max(6,Math.round(r*0.65)) }catch(e){} return r } }
+if(typeof gymWorkout==='function'){ var _gw216=gymWorkout; gymWorkout=function(){ try{ var V=ensure216(); if(V&&V.broken){ toast('🦴 Not with a broken '+V.broken.part+' — it heals by Day '+V.broken.untilDay); return } }catch(e){} return _gw216.apply(this,arguments) } }
+if(typeof joinTeam==='function'){ var _jt216=joinTeam; joinTeam=function(){ try{ var V=ensure216(); if(V&&V.broken){ toast('🦴 Not with a broken '+V.broken.part+' — it heals by Day '+V.broken.untilDay); return } }catch(e){} return _jt216.apply(this,arguments) } }
+if(typeof doctorCard123==='function'){ var _dc216=doctorCard123; doctorCard123=function(){ var h=_dc216.apply(this,arguments); try{ var V=ensure216(); if(V&&V.broken&&typeof h==='string')h=h.replace(/<\/div>$/,'<div class="kv"><span>🦴 Broken right now</span><b>'+V.broken.part+' — heals by Day '+V.broken.untilDay+'</b></div></div>') }catch(e){} return h } }
+var _nd216=(typeof nextDay==='function')?nextDay:null;
+if(_nd216){ nextDay=function(){ var r=_nd216.apply(this,arguments);
+  try{ if(typeof S!=='undefined'&&S&&!S.deadFlag){ var V=ensure216(); if(V&&V.broken){ if(S.day>=V.broken.untilDay){ var part=V.broken.part; V.broken=null; if(S.healthSys){ S.healthSys.injured=false; S.healthSys.injuredDays=0 } log('🩹 THE CAST IS OFF — your '+part+' is healed and cleared. Full strength restored.'); toast('🩹 Healed — your '+part+' is back!') } else { adj('health',-2); adj('energy',-5); if(S.healthSys)S.healthSys.injuredDays=Math.max(S.healthSys.injuredDays||0,V.broken.untilDay-S.day) } save() } } }catch(e){}
+  return r } }
+
+/* ================= 🚗 5) DEPARTURE WATCHER — feeds the strip's walk-to-car ================= */
+window._dep216=window._dep216||{};
+var prevCars216=null;
+setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||typeof carList202!=='function'){ prevCars216=null; return }
+  var cur={}; carList202().forEach(function(c){ if(!c.mine&&String(c.owner).indexOf('(garage)')<0)cur[c.owner]=c });
+  if(prevCars216&&prevCars216.loc===S.location){ Object.keys(prevCars216.map).forEach(function(owner){ if(!cur[owner]&&!window._dep216[owner]){ var pc=prevCars216.map[owner]; var figCols=['#3b82f6','#e2543e','#14b8a6','#a855f7','#f59e0b','#ec4899','#22c55e']; var h=0; for(var i=0;i<owner.length;i++)h=(h*31+owner.charCodeAt(i))>>>0; window._dep216[owner]={model:pc.model,col:pc.col,t0:performance.now(),x:(window._carPos216&&window._carPos216[owner])||450,fig:figCols[h%figCols.length]}; try{ drawCars202() }catch(e){} } }) }
+  prevCars216={loc:S.location,map:cur};
+ }catch(e){} },800);
+
+/* ================= 🏠 7) RECAP — the day goes ON TOP of the moment ================= */
+if(typeof recapShow84==='function'){ recapShow84=function(){ if(!S||!S.away84||!S.away84.length)return; var items=S.away84.slice(); S.away84=[]; var bondUp=Math.min(3,items.length); S.bond=clamp((S.bond||50)+bondUp); adj('fun',2); log('🏠 WHILE YOU WERE OUT — '+items.length+' household moment(s) happened at home and landed as one tidy recap. Bond +'+bondUp+'.'); var ttl='While You Were Out'; for(var qi=items.length-1;qi>=0;qi--){ if(items[qi].ctx){ ttl='While You Were '+items[qi].ctx; break } }
+  openSheet('<h2>🏠 '+ttl+'</h2>'+items.map(function(it){ return '<div style="padding:7px 0;border-bottom:1px dashed var(--line)"><div style="font-size:11px;font-weight:900;letter-spacing:.05em;opacity:.7">Day '+it.day+'</div><div style="font-size:13.5px;line-height:1.5;margin-top:1px">'+it.t+(it.why?'<br><span style="font-size:12px;opacity:.8">↳ Why: '+it.why+'</span>':'')+'</div></div>' }).join('')+'<p class="small" style="margin-top:8px">❤️ '+items.length+' household moment'+(items.length>1?'s':'')+' happened while you were out — the house felt lived-in when you got back — Bond +'+bondUp+'.</p><button class="btn gold" style="margin-top:10px" onclick="closeModal()">🏠 Good to be home</button>',{sfx:'pop'}) } }
+setInterval(function(){ try{ var rows=document.querySelectorAll('#sheet .kv:not([data-daytop216]), #panel .kv:not([data-daytop216])'); rows.forEach(function(kv){ var b=kv.querySelector(':scope > b'); if(!b)return; var tx=(b.textContent||'').trim(); if(!/^Day \d+( fostered)?$/.test(tx))return; kv.setAttribute('data-daytop216','1'); kv.style.display='block'; var lab=document.createElement('div'); lab.textContent=tx; lab.style.cssText='font-size:11px;font-weight:900;letter-spacing:.05em;opacity:.7;margin-bottom:1px'; kv.insertBefore(lab,kv.firstChild); b.remove() }) }catch(e){} },700);
+
+/* ================= 😊 9) EXPRESSIONS — one clean meaning-full emoji over the head ================= */
+var EXPR_BASE216={happy:'😊',sad:'😢',sick:'🤒',hurt:'🤕',tired:'😴',hungry:'😫',bored:'🥱',lonely:'😔',scared:'😰',love:'😍',angry:'😠'};
+var EXPR_UNLOCK216=[
+ {lv:1,feel:{happy:'😊',sad:'😢',sick:'🤒',tired:'😴'},bubbles:['that was fun!','wait — really?','okay okay okay','best day ever']},
+ {lv:3,feel:{hungry:'😫',hurt:'🤕',bored:'🥱'},bubbles:['I am SO hungry','nap time soon…','did you see that??']},
+ {lv:5,feel:{lonely:'😔',scared:'😰',angry:'😠'},bubbles:['this place is my favorite','I have a plan 😏','tell everyone I said hi']},
+ {lv:8,feel:{love:'😍',cool:'😎',proud:'😤'},bubbles:['main character energy today','watch and learn','I was born for this']},
+ {lv:12,feel:{rich:'🤑',zen:'😌',star:'🤩'},bubbles:['another day, another era','the grind never lies','legacy loading…']}];
+window.EXPR_UNLOCK216=EXPR_UNLOCK216;
+function exprUnlocked216(){ var lv=(typeof S!=='undefined'&&S&&S.level)||1; var feel={},bub=[]; EXPR_UNLOCK216.forEach(function(t){ if(lv>=t.lv){ Object.keys(t.feel).forEach(function(k){ feel[k]=t.feel[k] }); bub=bub.concat(t.bubbles) } }); return {feel:feel,bubbles:bub} }
+window.exprPlayer216=function(){ try{ if(typeof S==='undefined'||!S||S.deadFlag)return null; var V=ensure216(); if(!V)return null; var un=exprUnlocked216(); var pick=function(k){ return (V.expr.feel&&V.expr.feel[k])||un.feel[k]||null };
+  if(S.healthSys&&S.healthSys.sick)return pick('sick'); if(S.healthSys&&S.healthSys.injured)return pick('hurt');
+  var n=S.needs||{}; if((n.hunger==null?50:n.hunger)<=15)return pick('hungry'); if((n.energy==null?50:n.energy)<=12)return pick('tired'); if((n.fun==null?50:n.fun)<=12)return pick('bored'); if((n.social==null?50:n.social)<=12)return pick('lonely'); if((S.wanted||0)>=3)return pick('scared');
+  if((S.partner||S.spouse)&&(n.social||0)>=70)return pick('love');
+  var avg=((n.hunger||50)+(n.energy||50)+(n.fun||50)+(n.social||50)+(n.health||50))/5; if(avg>70)return pick('happy'); if(avg<38)return pick('sad'); return null }catch(e){ return null } };
+window.exprNpc216=function(n){ try{ if(typeof S==='undefined'||!S||!n)return null; var kid=(S.kids||[]).find(function(k){ return k.name===n.name }); if(kid){ if((kid.happy==null?75:kid.happy)<35)return '😢'; if((kid.happy||75)>82)return '😊'; return null }
+  var rec=(S.town&&S.town.people)?S.town.people[n.name]:null; if(rec&&rec.trait&&typeof TOWN_TRAITS!=='undefined'&&TOWN_TRAITS[rec.trait])return TOWN_TRAITS[rec.trait].e;
+  if(typeof isParentNpc==='function'&&isParentNpc(n.name)){ if((S.bond||50)<28)return '😟'; return null }
+  return null }catch(e){ return null } };
+function exprCard216(){ if(typeof S==='undefined'||!S)return ''; var V=ensure216(); if(!V)return ''; var un=exprUnlocked216(); var locked=EXPR_UNLOCK216.filter(function(t){ return (S.level||1)<t.lv });
+  return '<div class="card exprCard216"><h3>😊 Expressions — your face, your rules</h3><p>The emoji over your head is your real state talking — sick, starving, wiped out, thriving. No box, no random faces: it means what you are feeling. Customise which emoji each feeling wears, and which custom text bubbles you blurt out mid-conversation.</p><div class="kv"><span>🎭 Emojis unlocked</span><b>'+Object.keys(un.feel).length+'</b></div><div class="kv"><span>💬 Custom bubbles chosen</span><b>'+V.expr.bubbles.length+'</b></div>'+(locked.length?'<p class="small">🔒 More emojis and bubbles unlock as you level — next drop at <b>Lv '+locked[0].lv+'</b>.</p>':'<p class="small">Every emoji and bubble is unlocked. Icon behaviour.</p>')+'<button class="btn gold" onclick="exprSheet216()">😊 Customise expressions</button></div>' }
+window.exprSheet216=function(){ try{ if(typeof S==='undefined'||!S)return; var V=ensure216(); var un=exprUnlocked216(); var slots=[['happy','Happy / thriving'],['sad','Feeling low'],['sick','Sick'],['hurt','Hurt / injured'],['tired','Wiped out'],['hungry','Starving'],['bored','Bored'],['lonely','Lonely'],['scared','Hunted / wanted'],['love','Loved up'],['angry','Angry']];
+  var rows=slots.map(function(sl){ var k=sl[0]; var tierLv=0; EXPR_UNLOCK216.forEach(function(t){ if(t.feel[k])tierLv=t.lv }); var has=(k in un.feel)||!!(V.expr.feel&&V.expr.feel[k]); var cur=(V.expr.feel&&V.expr.feel[k])||un.feel[k]||EXPR_BASE216[k];
+   if(!has)return '<div class="kv"><span>'+sl[1]+'</span><b>🔒 Lv '+tierLv+'</b></div>';
+   return '<div class="kv"><span>'+sl[1]+'</span><span style="font-size:20px">'+cur+'</span><button class="btn" style="width:auto;margin:0;padding:6px 12px;flex:none" onclick="exprCycle216(\''+k+'\')">Change</button></div>' }).join('');
+  var bub=''; EXPR_UNLOCK216.forEach(function(t){ var open=(S.level||1)>=t.lv; t.bubbles.forEach(function(b){ if(!open){ bub+='<div class="kv"><span>💬 '+b+'</span><b>🔒 Lv '+t.lv+'</b></div>' } else { var on=V.expr.bubbles.indexOf(b)>=0; bub+='<div class="kv"><span>💬 '+b+'</span><button class="btn '+(on?'gold':'')+'" style="width:auto;margin:0;padding:6px 12px;flex:none" onclick="exprBubble216(this)" data-b="'+b.replace(/"/g,'&quot;')+'">'+(on?'✓ On':'＋ Use')+'</button></div>' } }) });
+  stamp216(); openSheet('<h2>😊 Expressions</h2><p>One clean emoji over your head, straight from your real state. Change what each feeling wears — the choices grow as you level (now Lv '+(S.level||1)+').</p><h4 style="margin:12px 0 2px">🎭 Feeling emojis</h4>'+rows+'<h4 style="margin:14px 0 2px">💬 Custom text bubbles</h4><p class="small">Switched-on bubbles join your side of in-world conversations — your words, popping over your head like anyone\'s.</p>'+bub+'<button class="btn gold" style="margin-top:12px" onclick="closeModal()">Done</button>') }catch(e){} };
+window.exprCycle216=function(k){ try{ var V=ensure216(); if(!V)return; var un=exprUnlocked216(); var opts=[]; Object.keys(un.feel).forEach(function(key){ if(opts.indexOf(un.feel[key])<0)opts.push(un.feel[key]) }); if(!opts.length)return; var cur=(V.expr.feel&&V.expr.feel[k])||un.feel[k]||EXPR_BASE216[k]; var i=opts.indexOf(cur); V.expr.feel[k]=opts[((i<0?0:i)+1)%opts.length]; save(); exprSheet216() }catch(e){} };
+window.exprBubble216=function(btn){ try{ var V=ensure216(); if(!V||!btn)return; var b=btn.getAttribute('data-b'); if(!b)return; var ix=V.expr.bubbles.indexOf(b); if(ix>=0)V.expr.bubbles.splice(ix,1); else V.expr.bubbles.push(b); save(); exprSheet216() }catch(e){} };
+if(typeof renderTabs==='function'){ var _rt216=renderTabs; renderTabs=function(active){ var r=_rt216.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&active==='home'){ var p=document.getElementById('panel'); var grid=p?p.querySelector('.grid'):null; if(grid&&!grid.querySelector('.exprCard216')){ var d=document.createElement('div'); d.innerHTML=exprCard216(); while(d.firstChild)grid.appendChild(d.firstChild) } } }catch(e){} return r } }
+var lastSay216=null;
+setInterval(function(){ try{ if(typeof playerSay==='undefined'||!playerSay){ lastSay216=null; return } if(playerSay!==lastSay216){ lastSay216=playerSay; var V=(typeof S!=='undefined'&&S)?ensure216():null; if(V&&V.expr.bubbles.length&&Math.random()<0.55)playerSay.text=V.expr.bubbles[Math.floor(Math.random()*V.expr.bubbles.length)] } }catch(e){} },700);
+
+/* ================= ⭐ 10) LEVEL-UP SPOTLIGHT — exclusive, persistent, acknowledged ================= */
+window._lvSpot216=null; var lvSpotPend216=null; var holdQ216=[];
+var _os216=(typeof openSheet==='function')?openSheet:null;
+var _ss216=(typeof showSpotlight==='function')?showSpotlight:null;
+var _hs216=(typeof hideSpotlight==='function')?hideSpotlight:null;
+var _stn216=(typeof showTextNotif==='function')?showTextNotif:null;
+var _sdm216=(typeof showDmNotif==='function')?showDmNotif:null;
+var _scc216=(typeof showCallCard==='function')?showCallCard:null;
+var _cm216=(typeof closeModal==='function')?closeModal:null;
+function lvSpotShow216(icon,title,body){ var el=document.getElementById('spotCard'); if(!el)return; window._lvSpot216={icon:icon,title:title,body:body};
+  el.innerHTML='<div class="spotIcon">'+icon+'</div><div style="flex:1;min-width:0"><b style="color:#ffb703;font-size:11px;letter-spacing:.07em">🎥 SPOTLIGHT</b><div style="font-weight:900;font-size:15px;margin:2px 0 3px">'+title+'</div><div style="font-size:13px;line-height:1.5;opacity:.93">'+body+'</div><div style="margin-top:7px;font-size:11.5px;font-weight:900;color:#ffb703">👆 Tap to continue</div></div>';
+  el.classList.add('show'); el.onclick=function(){ lvSpotAck216() } }
+function lvSpotAck216(){ if(!window._lvSpot216)return; window._lvAck216=true; window._lvSpot216=null; var el=document.getElementById('spotCard'); if(el)el.classList.remove('show'); setTimeout(function(){ window._lvAck216=false },60); releaseHold216() }
+function releaseHold216(){ try{ if(window._lvSpot216||lvSpotPend216)return; if(modalOpen216())return; var it=holdQ216.shift(); if(!it)return;
+  if(it.type==='sheet'&&_os216)_os216(it.html,it.opts);
+  else if(it.type==='spot'&&_ss216)_ss216(it.icon,it.title,it.body);
+  else if(it.type==='notif'&&_stn216)_stn216(it.m);
+  else if(it.type==='dm'&&_sdm216)_sdm216(it.th);
+  else if(it.type==='call'&&_scc216)_scc216(it.from);
+ }catch(e){} }
+if(_ss216){ showSpotlight=function(icon,title,body){ try{
+   if(typeof title==='string'&&/^Level Up — Level \d+/.test(title)){ if(window._lvSpot216){ lvSpotShow216(icon,title,body); return } if(modalOpen216()){ lvSpotPend216={icon:icon,title:title,body:body}; return } lvSpotShow216(icon,title,body); return }
+   if(window._lvSpot216||lvSpotPend216){ holdQ216.push({type:'spot',icon:icon,title:title,body:body}); return }
+  }catch(e){} return _ss216.apply(this,arguments) } }
+if(_hs216){ hideSpotlight=function(){ if(window._lvSpot216&&!window._lvAck216)return; return _hs216.apply(this,arguments) } }
+if(_os216){ openSheet=function(html,opts){ try{ if(window._lvSpot216||lvSpotPend216){ holdQ216.push({type:'sheet',html:html,opts:opts}); return } }catch(e){} return _os216.apply(this,arguments) } }
+if(_stn216){ showTextNotif=function(m){ if(window._lvSpot216||lvSpotPend216){ holdQ216.push({type:'notif',m:m}); return } return _stn216.apply(this,arguments) } }
+if(_sdm216){ showDmNotif=function(th){ if(window._lvSpot216||lvSpotPend216){ holdQ216.push({type:'dm',th:th}); return } return _sdm216.apply(this,arguments) } }
+if(_scc216){ showCallCard=function(from){ if(window._lvSpot216||lvSpotPend216){ holdQ216.push({type:'call',from:from}); return } return _scc216.apply(this,arguments) } }
+if(_cm216){ closeModal=function(){ var r=_cm216.apply(this,arguments); try{ setTimeout(function(){ try{
+   if(lvSpotPend216&&!modalOpen216()&&!window._lvSpot216){ var p=lvSpotPend216; lvSpotPend216=null; lvSpotShow216(p.icon,p.title,p.body); return }
+   releaseHold216() }catch(e){} },140) }catch(e){} return r } }
+
+/* ================= 🛡️ THE WATCHDOG — fights can't stick, the spotlight can't fall, the hospital can't be dodged ================= */
+var staleTicks216=0;
+setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+  if(window._lvSpot216){ var el=document.getElementById('spotCard'); if(el&&(!el.classList.contains('show')||el.innerHTML.indexOf('Tap to continue')<0)){ var c=window._lvSpot216; lvSpotShow216(c.icon,c.title,c.body) } }
+  else if(lvSpotPend216&&!modalOpen216()){ var p=lvSpotPend216; lvSpotPend216=null; lvSpotShow216(p.icon,p.title,p.body) }
+  if(!window._lvSpot216&&!lvSpotPend216&&!modalOpen216())releaseHold216();
+  var b=window._b128;
+  if(b&&b.kind==='todfight149'&&(b.turn||0)>16){ try{ todFightEnd149('fled',b.name); log('🥊 A grown-up waded in and ended it — some tussles just will not resolve, so the adults resolved it. Snack treaty for everyone.') }catch(e){} return }
+  var open=modalOpen216(); var sh=document.getElementById('sheet'); var sheetHtml=(open&&sh)?(sh.innerHTML||''):''; var battleShown=sheetHtml.indexOf('Battle — turn')>=0;
+  if(b&&!open){ stamp216(); if(typeof battleSheet128==='function')battleSheet128() }
+  else if(b&&open&&battleShown&&sheetHtml.indexOf('battleMove128')<0){ stamp216(); if(typeof battleSheet128==='function')battleSheet128() }
+  else if(!b&&open&&battleShown){ staleTicks216++; if(staleTicks216>=2){ staleTicks216=0; try{ closeModal() }catch(e){} } }
+  else staleTicks216=0;
+  if(!b&&!open&&!window._lvSpot216&&!lvSpotPend216){ var V=ensure216(); if(V&&V.pendingHosp&&!S.deadFlag&&!(typeof activity!=='undefined'&&activity))hospSheet216() }
+ }catch(e){} },1300);
+
+/* ================= 💬 11) FEEDBACK — Welcome screen button + the hourly ask ================= */
+var FEEDBACK_ASK_MINUTES=60; window.FEEDBACK_ASK_MINUTES=FEEDBACK_ASK_MINUTES;
+function fbClock216(){ try{ return JSON.parse(localStorage.getItem('aqualifePlayClock_v1')||'{}') }catch(e){ return {} } }
+function fbClockSave216(o){ try{ localStorage.setItem('aqualifePlayClock_v1',JSON.stringify(o)) }catch(e){} }
+var fbLast216=Date.now(), fbPend216=false;
+setInterval(function(){ try{ var now=Date.now(); var el2=now-fbLast216; fbLast216=now; if(document.hidden)return; if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return;
+  var c=fbClock216(); c.acc=(c.acc||0)+Math.min(el2,30000)/1000; if(c.acc>=FEEDBACK_ASK_MINUTES*60)fbPend216=true; fbClockSave216(c);
+  if(fbPend216&&!modalOpen216()&&!window._b128&&!(typeof activity!=='undefined'&&activity)&&!window._lvSpot216&&!lvSpotPend216){ fbPend216=false; c.acc=0; fbClockSave216(c); stamp216();
+   openSheet('<h2>💬 Been playing a while?</h2><p>You have been living this life for about '+(FEEDBACK_ASK_MINUTES>=60?'an hour':FEEDBACK_ASK_MINUTES+' minutes')+' now. Got a bug, an idea, or a feeling about how it plays? The maker actually reads these.</p><button class="btn gold" style="margin-top:10px" onclick="fbAskGo216()">💬 Send feedback</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">Not now</button>',{quiet:true}) }
+ }catch(e){} },15000);
+window.fbAskGo216=function(){ try{ closeModal(); setTimeout(function(){ try{ if(typeof window.openFeedback214==='function')window.openFeedback214() }catch(e){} },150) }catch(e){} };
+if(typeof renderWelcome==='function'){ var _rw216=renderWelcome; renderWelcome=function(){ var r=_rw216.apply(this,arguments); try{ var card=document.querySelector('.setup .card'); if(card&&!card.querySelector('.fbBtn216')){ var nl=card.querySelector('button[onclick="confirmNewLife()"]'); var btn=document.createElement('button'); btn.type='button'; btn.className='btn gold fbBtn216'; btn.style.cssText='width:100%;padding:14px;margin-top:10px'; btn.textContent='💬 Send feedback'; btn.onclick=function(){ try{ window.openFeedback214() }catch(e){} }; if(nl)card.insertBefore(btn,nl); else card.appendChild(btn) } }catch(e){} return r } }
+if(typeof window.openFeedback214==='function'){ var _of216=window.openFeedback214; window.openFeedback214=function(){ var r=_of216.apply(this,arguments); try{ var hasSave=false; try{ hasSave=!!localStorage.getItem(SAVE_KEY) }catch(e){} window._fbNoSave216=!hasSave;
+   if(!hasSave){ var sh=document.getElementById('sheet'); var p=sh?sh.querySelector('p'):null; if(p&&p.innerHTML.indexOf('Not started yet')<0)p.innerHTML+=' Your progress (<b>Not started yet</b>) rides along so it makes sense.' } }catch(e){} return r } }
+if(typeof window.sendFeedback214==='function'){ var _sf216=window.sendFeedback214; window.sendFeedback214=function(){ if(!window._fbNoSave216)return _sf216.apply(this,arguments);
+  try{ var t=document.getElementById('fbType214'); var m=document.getElementById('fbMsg214'); var st=document.getElementById('fbStatus214'); var msg=(m&&m.value)?m.value.trim():'';
+   if(!msg){ if(st)st.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">Write a little something first — even one line helps.</p>'; return }
+   var fail=function(){ try{ var s2=document.getElementById('fbStatus214'); if(s2)s2.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">📡 Couldn\'t send — looks like you\'re offline. Your words are still in the box above; try again when you\'re back online.</p>' }catch(e){} };
+   if(typeof fetch!=='function'||(typeof navigator!=='undefined'&&navigator.onLine===false)){ fail(); return }
+   var body=new URLSearchParams(); body.append('entry.2083096370',t?t.value:'Other'); body.append('entry.1048300260',msg); body.append('entry.2144211601','Not started yet');
+   fetch('https://docs.google.com/forms/d/e/1FAIpQLSerzlldqjpGD9zX0P6X80U7ujMLMJSJFrksiVV9Ui4isbC8eA/formResponse',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}).then(function(){ try{ openSheet('<h2>💬 Thank you!</h2><p>Your feedback is in — it goes straight to the AquaLife feedback sheet. Happy living! 🌊</p><button class="btn gold" onclick="closeModal()">Back to life</button>',{quiet:true}) }catch(e){} }).catch(fail);
+  }catch(e){ return _sf216.apply(this,arguments) } } }
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 16: 🧸 tussle cause-first + battle anti-deadlock • 🚗 solid cars, clearer clamped name tags, lens-locked road, walk-to-car departures • 🚑 fight→hospital (recovery / broken parts / die78 death) • 🏠 recap day-on-top • 🕐 clock guardian under the Calendar • 😊 expressions (head-pops gone, customise + level unlocks) • ⭐ level-up spotlight exclusivity • 💬 feedback on Welcome + hourly ask','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
 </body>
 </html>
