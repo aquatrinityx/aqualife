@@ -22497,10 +22497,10 @@ try{
     lead in its direction of travel. gy is the ground line the wheels rest on. */
  function paintCar221(ctx,cx,gy,model,col,dir,night){ try{ var gl='🚗'; try{ gl=carGlyph202(model) }catch(e){}
   var suv=gl==='🚙', sport=gl==='🏎️';
-  var L=sport?268:(suv?252:(gl==='🚓'?262:256));
+  var L=sport?232:(suv?222:(gl==='🚓'?230:224)); /* hf27: lengths tuned so the whole car (body + shadow) reads ~2.5× a standing figure's height, per the driven re-test target */
   var cabH=suv?33:(sport?24:29), cabW=L*(suv?0.56:(sport?0.42:0.48));
   ctx.save(); ctx.translate(cx,gy); if(dir<0)ctx.scale(-1,1);
-  ctx.fillStyle='#00000042'; ctx.beginPath(); ctx.ellipse(0,3,L/2+8,6,0,0,7); ctx.fill();
+  ctx.fillStyle='#00000042'; ctx.beginPath(); ctx.ellipse(0,3,L/2+3,6,0,0,7); ctx.fill();
   ctx.save(); ctx.globalAlpha=0.5; ctx.fillStyle=col.body; ctx.beginPath(); ctx.ellipse(0,4,L/2-12,3.6,0,0,7); ctx.fill(); ctx.restore();
   var cabX=-cabW/2-4, cabTop=-56-cabH+6;
   ctx.fillStyle=col.dark; ctx.beginPath(); ctx.roundRect(cabX-2,cabTop-2,cabW+4,cabH+5,8); ctx.fill();
@@ -22994,9 +22994,9 @@ try{
 <script>
 /* ================= v200 HOTFIX 26 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
    Howard asked (Nov 3, 2026): "Can you show me the Google sheet so far."
-   THE READ (from the form's Responses tab, Nov 3, 2026): there is no spreadsheet linked to the
-   "AquaLife — Stats & Feedback" form yet — answers live in the form's Responses tab until the maker
-   taps "Link to Sheets" there. 34 responses so far. Only 6 hold anything, and they are really TWO
+   THE READ (from the form's Responses tab, Nov 3, 2026): at read time no spreadsheet was linked
+   yet — linked later the same day (hf27 note): the form now feeds the spreadsheet
+   "AquaLife — Stats & Feedback (Responses)" and every new response lands there. 34 responses so far. Only 6 hold anything, and they are really TWO
    feedback messages wearing three copies each (the repeat-send bug hotfix 25 now guards):
    • 2:14 PM ×3 — Bug report: "Game doesn't work" — Day 5, Level 4
    • 3:57 PM ×3 — Bug report: "Try again" — Day 1, Level 1
@@ -23058,7 +23058,7 @@ try{
  }
  window.showSheet226=function(){ try{
   openSheet('<h2>📊 The sheet so far</h2>'
-  +'<p class="small">Snapshot read from the form\'s <b>Responses</b> tab on <b>Nov 3, 2026</b>. There is no spreadsheet linked to the form yet — responses live in that tab until the maker taps <b>Link to Sheets</b> there. The live count keeps growing after this snapshot.</p>'
+  +'<p class="small">Snapshot read from the form\'s <b>Responses</b> tab on <b>Nov 3, 2026</b>. Responses now flow into the linked spreadsheet — <b>AquaLife — Stats &amp; Feedback (Responses)</b> — and every new one lands there automatically. The live count keeps growing after this snapshot.</p>'
   +'<div class="kv" style="margin-top:8px"><span>Responses so far</span><b>34</b></div>'
   +'<div class="kv"><span>With anything in them</span><b>6</b></div>'
   +'<div class="kv"><span>Completely blank</span><b>28</b></div>'
@@ -23068,7 +23068,7 @@ try{
   +fbRow226('2:14 PM','Bug report','Game doesn\'t work','Day 5, Level 4 — a player, five days into a life')
   +fbRow226('3:57 PM','Bug report','Try again','Day 1, Level 1')
   +'<a class="btn gold" style="display:block;text-align:center;text-decoration:none;margin-top:14px" href="'+FORM_EDIT226+'" target="_blank" rel="noopener">📊 Open the form — Responses tab</a>'
-  +'<p class="small" style="margin-top:6px">Maker sign-in needed — that tab is also where <b>Link to Sheets</b> turns it into a real spreadsheet.</p>'
+  +'<p class="small" style="margin-top:6px">Maker sign-in needed — and every new response also lands in the linked spreadsheet, <b>AquaLife — Stats &amp; Feedback (Responses)</b>.</p>'
   +(V226.mirrored?'<p class="small">📡 This session, '+V226.mirrored+' stats ping'+(V226.mirrored>1?'s have':' has')+' gone out with the readable copy riding along.</p>':'')
   +'<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Back to life</button>',{quiet:true});
  }catch(e){} };
@@ -23080,6 +23080,205 @@ try{
  setInterval(injectSheetBtn226,900);
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 26: 📊 "Show the sheet so far" (Settings → Data & Save) renders the Nov 3, 2026 Responses snapshot — 34 responses: 2 feedback messages ×3 copies each ("Game doesn\'t work" Day 5 Lv 4 · "Try again" Day 1 Lv 1) and 28 BLANK stats pings — plus the blank-ping repair: every stats ping now also writes a readable copy of itself into the proven feedback fields on the same single send, so its event/day/level can never land blank again','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 27 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Driven re-test repairs (live h22 build, Nov 3, 2026) + Howard's babysitter-knock repeat:
+   1) SCENE GEOMETRY — the stage canvas is now sized by script to the largest true 900:460 box that
+      fits its column (sky band 52px + curb band 46px reserved when present), so the bitmap is never
+      stretched non-uniformly again: cars render at the painter's real proportions (~2.5x a standing
+      figure long, ~0.85x tall — painter lengths also tuned in place) at EVERY zoom, and the in-scene
+      road scales with the camera like everything else. The sky + curb bands mirror the canvas's
+      ACTUAL computed transform (idle, conversation and event zooms alike), so the road band grows
+      and shrinks with the lens instead of sitting as a fixed strip.
+   2) A KNOCK RESOLVES EXACTLY ONCE — babysitter arrivals and general visitor knocks alike: letting
+      someone in or sending them away records the arrival on the save (S.knockRes227, keyed by
+      person + day + sitting #), purges every queued copy of that knock sheet, and any re-served
+      copy is swallowed at the openSheet door — a displayed sitting # that is already in the books,
+      or a knock shown while coverage reads "in"/"declined", can never appear again. Holds across
+      save/reload; a genuinely new sitting on a later day knocks normally. The teacher conference
+      gets the same state-driven treatment (a completed conference can never be re-served).
+   3) LIBRARY SERVICES LIVE IN ACTIONS — the v138 library card is removed from Travel on every
+      render and homed into ⚡ Actions under "📍 Next steps — 📚 The Library", like every other
+      location's services (h22's extraction never saw it: v138 injects it after the capture).
+   4) SALON IS A MAP DESTINATION FOR EVERYONE — travelOpts45 no longer filters it out by gender;
+      its map spot moves off the barbershop's tile.
+   5) A MAP CLICK ALWAYS ANSWERS — goLoc taps stamp the game's own navigation clock (so travel
+      sheets serve live instead of queueing behind stale gates), and if a tap produces no travel,
+      no sheet, no day card and no toast, the game itself explains the gate (car/license law, walk
+      or ride options) instead of staying silent.
+   6) A TAP ON A SHEET BUTTON ALWAYS LANDS — if a fullscreen transition, a resize, or a covering
+      overlay eats the click between finger-down and finger-up, the tap is delivered to the button
+      it was aimed at; and the fullscreen grab steps aside while a sheet is open.
+   The clock's dialog behaviour is deliberately NOT touched (Howard's pending design call). */
+(function(){ 'use strict';
+try{
+
+ /* ---------- 1) stage geometry: uniform canvas fit + bands that ride the real camera ---------- */
+ function fitStage227(){ try{ var cv=document.getElementById('cv'); if(!cv)return; var wrap=cv.parentElement; if(!wrap)return;
+  var W=wrap.clientWidth; if(!W||W<60)return;
+  var sky=document.getElementById('sky193'), curb=document.getElementById('curb193');
+  var hasSky=!!(sky&&wrap.contains(sky)), hasCurb=!!(curb&&wrap.contains(curb));
+  var res=(hasSky?52:0)+(hasCurb?46:0);
+  var H=wrap.clientHeight; var availH=(H&&H>res+80)?(H-res):Math.floor(window.innerHeight*0.6);
+  var capH=Math.floor(window.innerHeight*0.7); if(availH>capH)availH=capH; if(availH<100)availH=100;
+  var sc=Math.min(W/900,availH/460); if(!(sc>0))return;
+  var w=Math.max(60,Math.floor(900*sc)), h=Math.max(40,Math.floor(460*sc));
+  if(Math.abs((cv._w227||0)-w)>2||Math.abs((cv._h227||0)-h)>2){ cv._w227=w; cv._h227=h;
+   cv.style.setProperty('width',w+'px','important'); cv.style.setProperty('height',h+'px','important');
+   cv.style.setProperty('flex','0 0 auto','important'); cv.style.setProperty('max-width','none','important');
+   cv.style.setProperty('max-height','none','important'); cv.style.setProperty('aspect-ratio','auto','important');
+   cv.style.setProperty('margin-left','auto','important'); cv.style.setProperty('margin-right','auto','important') }
+  if(hasSky){ sky.style.setProperty('height','52px','important'); sky.style.setProperty('flex','0 0 auto','important') }
+  if(hasCurb){ curb.style.setProperty('height','46px','important'); curb.style.setProperty('flex','0 0 auto','important') }
+ }catch(e){} }
+ function bandSync227(){ try{ var cv=document.getElementById('cv'); if(!cv)return;
+  var sky=document.getElementById('sky193'), curb=document.getElementById('curb193');
+  var bands=[]; if(sky)bands.push(sky); if(curb)bands.push(curb); if(!bands.length)return;
+  var cs=getComputedStyle(cv); var tr=cs.transform;
+  if(!tr||tr==='none'){ bands.forEach(function(el){ el.style.setProperty('transform','none','important') }); return }
+  var m=/matrix\(([^)]+)\)/.exec(tr); if(!m)return; var a=parseFloat(m[1].split(',')[0]); if(!(a>0))return;
+  var org=(cs.transformOrigin||'').split(/\s+/); var ox=parseFloat(org[0])||0, oy=parseFloat(org[1])||0;
+  var fx=cv.offsetWidth?ox/cv.offsetWidth:0.5, fy=cv.offsetHeight?oy/cv.offsetHeight:0.5;
+  bands.forEach(function(el){ var px=cv.offsetLeft+fx*cv.offsetWidth-el.offsetLeft; var py=cv.offsetTop+fy*cv.offsetHeight-el.offsetTop;
+   el.style.setProperty('transform-origin',px.toFixed(1)+'px '+py.toFixed(1)+'px','important');
+   el.style.setProperty('transform','scale('+a+')','important') });
+ }catch(e){} }
+ setInterval(function(){ fitStage227(); bandSync227() },300);
+ window.addEventListener('resize',function(){ try{ var cv=document.getElementById('cv'); if(cv)cv._w227=0; fitStage227(); bandSync227() }catch(e){} });
+
+ /* ---------- 2) resolved sheets stay resolved: conference + every knock ---------- */
+ function sitterNow227(){ try{ return (typeof ensureSitter120==='function')?ensureSitter120():null }catch(e){ return null } }
+ function knockState227(html){ try{ if(typeof S==='undefined'||!S)return 'live';
+  if(html.indexOf('sitterLetIn120')>=0){ var V=null; try{ V=(typeof ensure120==='function')?ensure120():null }catch(e){}
+   if(V&&(V.covState==='in'||V.covState==='declined'))return 'zombie';
+   var st=sitterNow227(); var m=/sitting #(\d+)/.exec(html); var n=m?parseInt(m[1],10):null;
+   if(st&&n!==null&&n<=(st.sittings||0))return 'zombie';
+   if(st&&n!==null&&S.knockRes227&&S.knockRes227['sit|'+st.name+'|d'+S.day+'|#'+n])return 'zombie';
+   return 'live' }
+  var wm=/id="knockWho91"[^>]*>([^<]+)</.exec(html); var nm=wm?wm[1].replace(/^\s+|\s+$/g,''):'';
+  if(nm&&S.knockRes227&&S.knockRes227['vis|'+nm+'|d'+S.day])return 'zombie';
+  return 'live' }catch(e){ return 'live' } }
+ function confGone227(html){ try{ return html.indexOf('confDone102')>=0&&typeof S!=='undefined'&&S&&S.v102&&S.v102.confDoneAge===S.age }catch(e){ return false } }
+ function queuePurge227(){ try{ var zap=function(arr){ if(!arr||!arr.length)return; for(var i=arr.length-1;i>=0;i--){ var it=arr[i]; var hs=(typeof it==='string')?it:((it&&(it.h||it.html))||''); if(!hs)continue; if(confGone227(hs)||(hs.indexOf('knockCard91')>=0&&knockState227(hs)==='zombie'))arr.splice(i,1) } };
+  try{ if(typeof sheetQ84!=='undefined')zap(sheetQ84) }catch(e){}
+  try{ if(typeof modalQueue115!=='undefined')zap(modalQueue115) }catch(e){}
+ }catch(e){} }
+ function zombieClose227(){ try{ var m=document.getElementById('modal'); if(!m||!m.classList.contains('open'))return; var sh=document.getElementById('sheet'); if(!sh)return; var hs=sh.innerHTML||'';
+  if(confGone227(hs)||(hs.indexOf('knockCard91')>=0&&knockState227(hs)==='zombie')){ try{ closeModal() }catch(e){} }
+ }catch(e){} }
+ function repairCov227(){ try{ if(typeof S==='undefined'||!S||!S.knockRes227)return; var V=(typeof ensure120==='function')?ensure120():null; if(!V||V.covState!=='knocking')return; var st=sitterNow227(); if(!st)return;
+  var res=S.knockRes227['sit|'+st.name+'|d'+S.day+'|#'+((st.sittings||0)+1)]; if(res){ V.covState=(res==='in')?'in':'declined'; V.knockPending=false; try{ doorVisitor91=null }catch(e){} }
+ }catch(e){} }
+ setInterval(function(){ queuePurge227(); zombieClose227(); repairCov227() },500);
+ try{ var _os227=openSheet; openSheet=function(html,opts){ try{ if(typeof html==='string'){ if(confGone227(html))return; if(html.indexOf('knockCard91')>=0&&knockState227(html)==='zombie')return } }catch(e){} return _os227.apply(this,arguments) } }catch(e){}
+ try{ var _ocf227=openConf102; openConf102=function(){ try{ if(typeof S!=='undefined'&&S&&S.v102&&S.v102.confDoneAge===S.age)return }catch(e){} return _ocf227.apply(this,arguments) } }catch(e){}
+ try{ var _cfd227=confDone102; confDone102=function(){ var r; try{ r=_cfd227.apply(this,arguments) }catch(e){} try{ queuePurge227(); setTimeout(queuePurge227,200); setTimeout(zombieClose227,400) }catch(e){} return r } }catch(e){}
+ function recordKnock227(id,mode){ try{ if(!id||typeof S==='undefined'||!S)return; S.knockRes227=S.knockRes227||{}; S.knockRes227[id]=mode }catch(e){} }
+ function settleKnock227(){ try{ queuePurge227(); zombieClose227() }catch(e){} try{ if(typeof save==='function')save() }catch(e){}
+  setTimeout(function(){ try{ queuePurge227(); zombieClose227() }catch(e){} },220);
+  setTimeout(function(){ try{ queuePurge227(); zombieClose227() }catch(e){} },800) }
+ try{ var _sli227=sitterLetIn120; sitterLetIn120=function(){ try{ var st=sitterNow227(); if(st&&typeof S!=='undefined'&&S)recordKnock227('sit|'+st.name+'|d'+S.day+'|#'+((st.sittings||0)+1),'in') }catch(e){}
+  var r; try{ r=_sli227.apply(this,arguments) }catch(e){}
+  try{ var V=(typeof ensure120==='function')?ensure120():null; if(V&&V.covState==='knocking')V.covState='in'; try{ doorVisitor91=null }catch(e){} }catch(e){}
+  settleKnock227(); return r } }catch(e){}
+ try{ var _ssa227=sitterSendAway120; sitterSendAway120=function(){ try{ var st=sitterNow227(); if(st&&typeof S!=='undefined'&&S)recordKnock227('sit|'+st.name+'|d'+S.day+'|#'+((st.sittings||0)+1),'away') }catch(e){}
+  var r; try{ r=_ssa227.apply(this,arguments) }catch(e){}
+  try{ var V=(typeof ensure120==='function')?ensure120():null; if(V&&V.covState==='knocking')V.covState='declined'; try{ doorVisitor91=null }catch(e){} }catch(e){}
+  settleKnock227(); return r } }catch(e){}
+ try{ var _kli227=knockLetIn91; knockLetIn91=function(){ try{ var dv=null; try{ dv=doorVisitor91 }catch(e){} if(dv&&dv.name&&typeof S!=='undefined'&&S)recordKnock227('vis|'+dv.name+'|d'+S.day,'in') }catch(e){}
+  var r; try{ r=_kli227.apply(this,arguments) }catch(e){} settleKnock227(); return r } }catch(e){}
+ try{ var _ksa227=knockSendAway91; knockSendAway91=function(){ try{ var dv=null; try{ dv=doorVisitor91 }catch(e){} if(dv&&dv.name&&typeof S!=='undefined'&&S)recordKnock227('vis|'+dv.name+'|d'+S.day,'away') }catch(e){}
+  var r; try{ r=_ksa227.apply(this,arguments) }catch(e){} settleKnock227(); return r } }catch(e){}
+
+ /* ---------- 3) the Library's services live in Actions, not Travel ---------- */
+ function libraryMove227(){ try{ if(typeof S==='undefined'||!S)return; var panel=document.getElementById('panel'); if(!panel)return;
+  var cur=(typeof curTab!=='undefined'&&curTab)?curTab:null;
+  if(cur==='travel'){ panel.querySelectorAll('.libraryCard138').forEach(function(el){ el.remove() }) }
+  if(cur==='actions101'&&S.location==='library'&&!panel.querySelector('.libraryCard138')){
+   var html=''; try{ html=libraryCard138() }catch(e){} if(!html)return;
+   html=html.replace(/<p>[^<]*<\/p>/,'<p>Quiet stacks, long tables — every study session, right here where you are standing.</p>');
+   var d=document.createElement('div'); d.innerHTML=html; var card=d.firstChild; if(!card)return;
+   var sec=document.getElementById('svcSec222');
+   if(sec){ sec.appendChild(card) }
+   else{ var grid=panel.querySelector('.grid'); if(!grid)return; var wrap=document.createElement('div'); wrap.id='svcSec222';
+    wrap.style.cssText='grid-column:1/-1;display:flex;flex-direction:column;gap:10px';
+    wrap.innerHTML='<div class="catHead58" style="margin:2px 2px 0">📍 Next steps — 📚 The Library</div>'; wrap.appendChild(card); grid.appendChild(wrap) }
+  }
+ }catch(e){} }
+ try{ var _rt227=renderTabs; renderTabs=function(a){ var r=_rt227.apply(this,arguments); try{ libraryMove227() }catch(e){} return r } }catch(e){}
+ ['paintActions101','paintQCards101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__lib227)return; var w=function(){ var r=fn.apply(this,arguments); try{ libraryMove227() }catch(e){} return r }; w.__lib227=true; window[nm]=w }catch(e){} });
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||S.location!=='library')return; var panel=document.getElementById('panel'); if(!panel)return;
+  var cur=(typeof curTab!=='undefined'&&curTab)?curTab:null;
+  if(cur==='travel'&&panel.querySelector('.libraryCard138'))libraryMove227();
+  if(cur==='actions101'&&!panel.querySelector('.libraryCard138'))libraryMove227();
+ }catch(e){} },1200);
+
+ /* ---------- 4) Salon: a proper map destination for everyone ---------- */
+ try{ var _to227=travelOpts45; travelOpts45=function(){ var r=_to227.apply(this,arguments);
+  try{ if(typeof S!=='undefined'&&S&&!r.some(function(o){ return o[0]==='salon' })){ var full=null;
+   for(var i=0;i<TRAVEL_OPTS.length;i++){ if(TRAVEL_OPTS[i][0]==='salon'){ full=TRAVEL_OPTS[i]; break } }
+   if(full){ var entry=(S.gender==='girl')?full:['salon','💇 Salon — cuts & styles'];
+    var bi=-1; for(var j=0;j<r.length;j++){ if(r[j][0]==='barber'){ bi=j; break } }
+    if(bi>=0)r.splice(bi+1,0,entry); else r.push(entry) } }
+  }catch(e){} return r } }catch(e){}
+ try{ if(typeof MAP_SPOTS209!=='undefined'&&MAP_SPOTS209)MAP_SPOTS209.salon=[26,17.5] }catch(e){}
+ /* the spot table itself lives inside the map layer's closure, so for boys the shipped salon tile
+    lands exactly on the barbershop's square — move the RENDERED salon tile to its own square
+    whenever another tile already holds its spot */
+ setInterval(function(){ try{ var map=document.getElementById('townMapCard209'); if(!map)return; var tiles=map.querySelectorAll('.mapSpot209'); var salon=null; var taken={};
+  tiles.forEach(function(b){ var oc=b.getAttribute('onclick')||''; if(oc.indexOf("'salon'")>=0)salon=b; else taken[b.style.left+'|'+b.style.top]=1 });
+  if(salon&&taken[salon.style.left+'|'+salon.style.top])salon.style.left='26%';
+ }catch(e){} },800);
+
+ /* ---------- 5) a map click always answers ---------- */
+ function gateAnswer227(id){ try{ if(typeof S==='undefined'||!S)return;
+  var name=id; try{ for(var i=0;i<TRAVEL_OPTS.length;i++){ if(TRAVEL_OPTS[i][0]===id){ name=TRAVEL_OPTS[i][1]; break } } }catch(e){}
+  try{ if(typeof jailed98==='function'&&jailed98()){ toast('⛓️ No travel from a cell'); return } }catch(e){}
+  var car=S.car||{};
+  if(S.age>=18&&!car.owned&&id!==homeLoc()){ try{ noCarSheet98(id); return }catch(e){} }
+  if(S.age>=18&&car.owned&&!car.license){ try{ if(driverLaw98(id)===false)return }catch(e){} }
+  var walkable=false; try{ walkable=canWalkTo137(id) }catch(e){}
+  openSheet('<h2>📍 '+name+'</h2><p>That trip did not start — no travel, no word why. Here is the way there:</p>'
+   +(walkable?'<button class="btn gold" onclick="closeModal();walkTo137(\''+id+'\')">🚶 Walk there — about 20 min</button>':'')
+   +'<button class="btn outline" style="margin-top:8px" onclick="closeModal();rideSheet137(\''+id+'\')">📞 Call someone for a ride</button>'
+   +'<button class="btn outline" onclick="closeModal()">Never mind</button>');
+ }catch(e){} }
+ function watchAnswer227(id,beforeLoc,toast0){ var tries=0; var maxT=6;
+  try{ if(typeof S!=='undefined'&&S&&S.car&&S.car.owned&&S.car.license)maxT=13 }catch(e){}
+  var iv=setInterval(function(){ try{ if(document.hidden)return; tries++;
+   if(typeof S==='undefined'||!S){ clearInterval(iv); return }
+   if(S.location!==beforeLoc){ clearInterval(iv); return }
+   var m=document.getElementById('modal'); if(m&&m.classList.contains('open')){ clearInterval(iv); return }
+   var dc=document.getElementById('dayCard'); if(dc&&dc.classList.contains('show')){ clearInterval(iv); return }
+   var tEl=document.getElementById('toast'); if(tEl&&tEl.style.display==='block'&&tEl.textContent&&tEl.textContent!==toast0){ clearInterval(iv); return }
+   if(tries>=maxT){ var q=0; try{ if(typeof sheetQ84!=='undefined'&&sheetQ84)q+=sheetQ84.length }catch(e){} try{ if(typeof modalQueue115!=='undefined'&&modalQueue115)q+=modalQueue115.length }catch(e){}
+    if(q>0&&tries<maxT+5)return; clearInterval(iv); gateAnswer227(id) }
+  }catch(e){} },300) }
+ try{ var _gl227=goLoc; goLoc=function(id){ try{ modalNav115=Date.now() }catch(e){} try{ lastTap132=Date.now() }catch(e){}
+  var S0=null; try{ S0=(typeof S!=='undefined')?S:null }catch(e){}
+  var beforeLoc=S0?S0.location:null;
+  var tEl=document.getElementById('toast'); var toast0=tEl?tEl.textContent:null;
+  var r; try{ r=_gl227.apply(this,arguments) }catch(e){ r=undefined }
+  try{ if(S0&&id&&id!==beforeLoc)watchAnswer227(id,beforeLoc,toast0) }catch(e){}
+  return r } }catch(e){}
+
+ /* ---------- 6) a tap on a sheet button always lands ---------- */
+ try{ if(typeof fsGo218==='function'){ var _fs227=fsGo218; fsGo218=function(){ try{ var m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return }catch(e){} return _fs227.apply(this,arguments) } } }catch(e){}
+ var tapRec227=null;
+ document.addEventListener('pointerdown',function(e){ try{ var t=e.target; if(!t||!t.closest)return; if(!t.closest('#modal,#dayCard'))return; var btn=t.closest('button'); if(!btn)return;
+  tapRec227={el:btn,t:Date.now(),w:window.innerWidth,h:window.innerHeight,fs:!!document.fullscreenElement,clicked:false} }catch(err){} },true);
+ document.addEventListener('click',function(e){ try{ if(tapRec227&&e.target&&(e.target===tapRec227.el||tapRec227.el.contains(e.target)))tapRec227.clicked=true }catch(err){} },true);
+ document.addEventListener('pointerup',function(){ try{ var rec=tapRec227; if(!rec)return;
+  setTimeout(function(){ try{ if(rec.clicked)return; if(Date.now()-rec.t>2500)return; if(!document.contains(rec.el))return;
+   var eaten=(!!document.fullscreenElement!==rec.fs)||Math.abs(window.innerWidth-rec.w)>30||Math.abs(window.innerHeight-rec.h)>30;
+   if(!eaten){ var r=rec.el.getBoundingClientRect(); if(r.width>2){ var top=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2); if(top&&top!==rec.el&&!rec.el.contains(top))eaten=true } }
+   if(eaten){ rec.clicked=true; rec.el.click() } }catch(err){} },450);
+ }catch(err){} },true);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 27: 🚗 the stage canvas is fitted to its true 900:460 shape (cars at real proportions at every zoom) and the sky + road bands ride the camera\'s actual transform • 🚪 a knock resolves exactly once — babysitter and visitor arrivals are recorded on the save, queue-purged and swallow-proof, across reloads • 🎓 a completed teacher conference can never be re-served • 📚 library services moved from Travel into Actions\' Next steps • 💇 Salon is on the travel map for everyone • 📍 a map click always answers • 👆 a tap on a sheet button always lands','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
