@@ -22849,6 +22849,148 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 24 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's order (Nov 3, 2026): "Once you do a contextual action it will go away or lock and if you
+   do it again it will say you can't do it again."
+   RULE: the 🌤️ "Right here, right now" CONTEXTUAL actions (the ctxActs200 / ctxAct200 set) now carry
+   the same memory discipline as hotfix 20's 📍 "Only here" verbs — with one refinement the contextual
+   system itself demands: a memory is keyed by ACTION + TARGET + SITUATION, not by the bare verb.
+   Hugging the same person in the same situation is one memory; hugging somebody else, or the same
+   person in a genuinely different situation (another place, another company, another time-of-day
+   situation the action itself is built on), is a different action and stays available. Consumption
+   persists per character in S.v224.done (inside the save, like S.v217.done): a done action is
+   filtered out of the card on every paint — no return on revisit, on a new day, or after reload —
+   and a stale button or a direct re-attempt is refused by ctxAct200 itself with the Only-here words:
+   "Already done — that one is a memory now, not a repeat", and NOTHING happens (no activity, no
+   effects, no second toast from the action). The mark lands BEFORE the action runs (the dynAct217
+   discipline), so a double-tap can never fire it twice; a synchronous failure rolls the mark back.
+   SCOPE: ctxAct200 actions only. The relocated location SERVICES in "Next steps" (svcInject222)
+   stay repeatable — checkups are not memories — core Actions, Social, Trouble, Travel and the phone
+   apps keep their repeatability, the 📍 Only here set keeps its own untouched rule, and the card's
+   two non-contextual riders (Cook a real meal / Set up laptop, which are not ctxAct200 actions)
+   are not consumed. 📸 Photo together stays removed (it is filtered out of the set upstream). */
+(function(){ 'use strict';
+try{
+ var CTXKEYS224={meditate:1,nap:1,hug:1,catch:1,sing:1,walk:1,porch:1,letter:1,vent:1,book:1,computer:1};
+ function ensure224(){ if(typeof S==='undefined'||!S)return null; if(!S.v224||typeof S.v224!=='object')S.v224={}; var V=S.v224; if(!V.done||typeof V.done!=='object')V.done={}; return V }
+ function here224(){ try{ return (typeof peopleHere200==='function')?peopleHere200():[] }catch(e){ return [] } }
+ function sorted224(a){ return (a||[]).slice().sort() }
+ /* the person (or people) the action will actually act on — mirroring ctxAct200's own choices:
+    Hug prefers spouse/partner when they are the ones here, else the first person here; a letter
+    goes to the first family name; Vent speaks to whoever is here (else the close contact who
+    unlocked it); Play catch is with the kid(s) in range; Sing together is with everyone here. */
+ function target224(k){ try{ var here=here224();
+  if(k==='hug'){ var pref=[S.spouse,S.partner].filter(Boolean); for(var i=0;i<pref.length;i++){ if(here.indexOf(pref[i])>=0)return pref[i] } return here[0]||'' }
+  if(k==='letter'){ var fam=(typeof famNames201==='function')?famNames201():[]; return fam[0]||'Mom' }
+  if(k==='vent'){ if(here.length)return here[0]; var close=Object.keys(S.contacts||{}).filter(function(nm){ try{ return relScore137(nm)>=60 }catch(e){ return false } }); return sorted224(close)[0]||'someone close' }
+  if(k==='catch'){ var kids=here.filter(function(nm){ try{ return (typeof charAge79==='function'?(charAge79(nm)||99):99)<13 }catch(e){ return false } }); if(!kids.length){ try{ var home=S.location===(typeof homeLoc==='function'?homeLoc():''); if(home&&S.kids&&S.kids.length)kids=S.kids.map(function(kd){ return kd.name }) }catch(e){} } return sorted224(kids).join(' + ') }
+  if(k==='sing'){ return sorted224(here).join(' + ') }
+  if(k==='computer'){ try{ if(typeof hasLaptop200==='function'&&hasLaptop200())return 'laptop'; var hl=(typeof homeLoc==='function')?homeLoc():null; if(hl&&S.location===hl)return 'home computer'; return S.location+' computer' }catch(e){ return '' } }
+  return '' }catch(e){ return '' } }
+ /* the situation the action exists in: the place, plus the situation ingredient the action itself
+    is built on (the evening for porch/singing, the daytime for catch/walking, low energy for a nap,
+    a close contact for venting). No day and no clock hour — a memory does not reset overnight. */
+ function situation224(k){ try{ var parts=[String(S.location||'')];
+  if(k==='sing'||k==='porch')parts.push('evening');
+  else if(k==='catch'||k==='walk')parts.push('daytime');
+  else if(k==='nap')parts.push('low-energy');
+  else if(k==='vent')parts.push('close-contact');
+  else if(k==='book'||k==='computer')parts.push('computer-here');
+  return parts.join('|') }catch(e){ return String((typeof S!=='undefined'&&S&&S.location)||'') } }
+ function key224(k){ return JSON.stringify([String(k||''),target224(k),situation224(k)]) }
+ function isDone224(k){ var V=ensure224(); if(!V)return false; return !!V.done[key224(k)] }
+ function mark224(k){ var V=ensure224(); if(!V)return null; var key=key224(k); V.done[key]={day:S.day,action:String(k),target:target224(k),situation:situation224(k)}; try{ save() }catch(e){} return key }
+
+ /* a done action leaves the card at once, and a stale copy never survives a paint */
+ function prune224(){ try{ if(typeof S==='undefined'||!S)return; var panel=document.getElementById('panel'); if(!panel)return; var card=panel.querySelector('.ctxCard200'); if(!card)return;
+   var note=card.querySelector('p.small'); if(note&&!note.getAttribute('data-mem224')){ note.setAttribute('data-mem224','1'); note.innerHTML+=' Each one is a <b>one-time thing for this life</b> — once you do it, it\'s done, and it becomes a memory.' }
+   var btns=card.querySelectorAll('button'); var removed=false;
+   for(var i=0;i<btns.length;i++){ var oc=btns[i].getAttribute('onclick')||''; var m=oc.match(/ctxAct200\('([^']+)'\)/); if(m&&CTXKEYS224[m[1]]&&isDone224(m[1])){ btns[i].remove(); removed=true } }
+   if(removed&&!card.querySelector('button'))card.remove();
+  }catch(e){} }
+
+ /* the offer list itself forgets what this character has already lived */
+ try{ var _acts224=ctxActs200; ctxActs200=function(){ var out=_acts224.apply(this,arguments); try{ out=out.filter(function(a){ return !a||!CTXKEYS224[a[0]]||!isDone224(a[0]) }) }catch(e){} return out } }catch(e){}
+
+ /* and the handler itself refuses a repeat — same words as Only here, and nothing happens.
+    The refuse-check reads the done-set BEFORE any mark is written. */
+ try{ var _act224=ctxAct200; ctxAct200=function(k){ if(!k||!CTXKEYS224[k]||typeof S==='undefined'||!S)return _act224.apply(this,arguments);
+   if(isDone224(k)){ try{ toast('✔ Already done — that one is a memory now, not a repeat') }catch(e){} return }
+   var key=mark224(k);
+   try{ var r=_act224.apply(this,arguments) }catch(err){ try{ var V=ensure224(); if(V&&key)delete V.done[key]; save() }catch(e){} return }
+   try{ prune224(); setTimeout(prune224,120) }catch(e){}
+   return r } }catch(e){}
+
+ setInterval(prune224,900);
+ window.__v224={ensure:ensure224,key:key224,target:target224,situation:situation224,done:isDone224,prune:prune224,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 24: 🌤️ "Right here, right now" contextual actions are now ONE-TIME memories per character — keyed by action + target + situation and persisted in S.v224.done: do one and it leaves the card for that life (no return on revisit, new day or reload), try it again and the game answers "Already done — that one is a memory now, not a repeat" with nothing happening; Next steps services, core Actions and the Only here set keep their own rules','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 25 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's bug (Nov 3, 2026): "It keeps popping up thank you for the submitted feedback form. It was
+   delayed and I think it did multiple tries. Only should take one, dont allow multiple send forms
+   by accident."
+   ROOT CAUSE: window.sendFeedback214 (h214, plus the h216 no-save variant) had NO in-flight guard —
+   every tap on 📨 Send fired its own POST to the feedback form, and every POST's completion opened
+   its own "💬 Thank you!" sheet; with a slow network the taps stacked up, several sends landed, and
+   the queued thank-you sheets kept re-appearing one after another.
+   THE LAW: ONE send, ever, per submission. All of the state lives in ONE place —
+   window._fbState225 = { session, phase } — where phase walks 'idle' → 'sending' → 'done' for the
+   sheet session that openFeedback214 started:
+   • sendFeedback214 is wrapped: a tap while phase is 'sending' or 'done' is swallowed whole — no
+     POST, no sheet, nothing. The first real tap locks the Send control in the DOM (disabled, label
+     "📨 Sending…") AND flips phase to 'sending' before delegating to the shipped sender exactly
+     once, so double-taps, impatient taps and re-renders cannot fire a second POST. (An empty
+     message and the offline / no-fetch case are NOT sends — the shipped sender only shows its hint
+     or its offline note and fires nothing — so those delegate unguarded and never consume the one
+     send; the form's own words invite another try when you're back online, and reopening the sheet
+     starts a fresh session anyway.)
+   • NO RETRY: nothing in this layer re-POSTs, ever. If the one POST rejects, the shipped sender's
+     offline note appears in the status line; a watcher notices it and returns the session to 'idle'
+     with the Send control restored — that is the player choosing to try again, not a retry loop.
+     The anonymous-stats pings (ping214) are a separate path and are untouched.
+   • THE THANK-YOU RENDERS EXACTLY ONCE: openSheet is wrapped for the feedback thank-you sheet only
+     (recognised by its "Your feedback is in" line). It may open only while phase is 'sending' — the
+     moment it does, phase becomes 'done'. A queue re-serve, a re-render or a stale copy arriving in
+     any other phase is swallowed before it can paint, so dismissing it ends the flow for good. A
+     NEW submission (sheet reopened → new session → its own single send) earns its own one
+     thank-you, and a completed send can never replay. */
+(function(){ 'use strict';
+try{
+ var FB225={session:0,phase:'idle'};
+ window._fbState225=FB225;
+ function fbSendBtns225(){ try{ return Array.prototype.slice.call(document.querySelectorAll('#sheet button')).filter(function(b){ return (b.getAttribute('onclick')||'').indexOf('sendFeedback214')>=0 }) }catch(e){ return [] } }
+ function fbLock225(){ fbSendBtns225().forEach(function(b){ try{ b.disabled=true; b.style.opacity='.55'; b.textContent='📨 Sending…' }catch(e){} }) }
+ function fbUnlock225(){ fbSendBtns225().forEach(function(b){ try{ b.disabled=false; b.style.opacity=''; b.textContent='📨 Send feedback' }catch(e){} }) }
+ function fbMsg225(){ try{ var m=document.getElementById('fbMsg214'); return (m&&m.value)?m.value.trim():'' }catch(e){ return '' } }
+ function fbCanPost225(){ try{ return typeof fetch==='function'&&!(typeof navigator!=='undefined'&&navigator.onLine===false) }catch(e){ return false } }
+
+ /* a fresh feedback sheet = a fresh session with its own single send */
+ if(typeof window.openFeedback214==='function'){ var _of225=window.openFeedback214; window.openFeedback214=function(){ var r=_of225.apply(this,arguments); FB225.session++; FB225.phase='idle'; return r } }
+
+ /* the one send: guarded, locked, delegated exactly once */
+ if(typeof window.sendFeedback214==='function'){ var _sf225=window.sendFeedback214; window.sendFeedback214=function(){
+   if(FB225.phase==='sending'||FB225.phase==='done')return; /* swallowed: this submission already has its send */
+   if(!fbMsg225()||!fbCanPost225())return _sf225.apply(this,arguments); /* not a send: the shipped hint / offline note only, nothing fires */
+   FB225.phase='sending'; fbLock225();
+   try{ return _sf225.apply(this,arguments) }catch(e){ FB225.phase='idle'; fbUnlock225() }
+ } }
+
+ /* the thank-you sheet: exactly once per send, and never resurrected */
+ if(typeof openSheet==='function'){ var _os225=openSheet; openSheet=function(html){ try{ if(typeof html==='string'&&html.indexOf('Your feedback is in')>=0){ if(FB225.phase!=='sending')return; FB225.phase='done' } }catch(e){} return _os225.apply(this,arguments) } }
+
+ /* a rejected POST shows the shipped offline note in the status line — hand the session back so
+    the PLAYER can choose to try again (this layer never retries on its own) */
+ setInterval(function(){ try{ if(FB225.phase!=='sending')return; var st=document.getElementById('fbStatus214'); if(st&&(st.textContent||'').indexOf('Couldn')>=0){ FB225.phase='idle'; fbUnlock225() } }catch(e){} },700);
+
+ window.__v225={state:FB225,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 25: 💬 feedback is SINGLE-FIRE — one POST per submission, ever: Send locks the moment it is tapped (state guarded in one place, window._fbState225), extra taps are swallowed, nothing retries, and the "💬 Thank you!" sheet renders exactly once per send — queue re-serves and re-renders can never resurrect it; reopening the sheet is a new submission with its own one send','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
