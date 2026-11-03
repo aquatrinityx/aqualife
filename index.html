@@ -20511,5 +20511,203 @@ try{
 })();
 </script>
 
+<script>
+/* ================= v200 HOTFIX 7 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's picks from mockup round 2 — all B's, applied exactly as mocked:
+   1) BANK = 1B DASHBOARD TILES: the Bank app's stacked banking pile and the First River Bank branch
+      counter both become ONE dashboard — balances at a glance on top (bank + cash back boxes, cash /
+      score / RiverCard underneath), then big tappable tiles: Deposit (cash & paychecks), Withdraw,
+      My Cards (debit & PIN + counter services), RiverCard, Wallet, Cash Back & Rewards, Cars & Driving.
+      Every tile opens the SAME shipped flows (deposit63/dep133, withdraw63/wd133, getDebit63/debit133,
+      applyCredit63/credit133, payCredit63/paycr133, pinSheet201, ddSet108, depositCheck108,
+      openWallet201, redeemCb201, openReceipts201, bankVisit108, openCarShop104) — presentation only,
+      every price, rule and lock unchanged.
+   2) PHONE = 2B FOLDERS: apps file into Games (the 15: PocketPal, Rip It, Casino, Creator Sim,
+      Miami Nights, Land, Pocket League, Flip It, Food Truck, Cast & Collect, Gossip Page, Underground,
+      Midnight Circuit, Rescue Shelter, Windowsill) / Life / Money. One-time migration for existing
+      saves (player-made custom folders are kept); new saves seed the same filing, and installs now
+      file Casino & Rip It into Games, Spark & Birdy into Life. Folder tiles and app cells carry REAL
+      attention badges — unread texts, unread DMs, job offers waiting, paychecks waiting to deposit,
+      a hungry PocketPal, an adoption-ready foster, a ripe Windowsill pot: the folder badge is the sum
+      of its apps, and each app's own badge shows inside its folder too. Browser, PocketPal and
+      Miami Nights also sit out on the home screen, as mocked (Messages/Bank already live in the
+      phone's dock bar).
+   3) BAG = 3B SMART BUTTONS: bagRows rebuilt — ONE list, every item carrying its one right button:
+      food -> Eat / Drink (the shipped food paths, eatBag133 for the rest), paycheck -> Deposit,
+      wallet -> Open, kid phone -> Give (or Open on the kid's own phone), laptop -> Open (AquaOS),
+      hospital bill -> Pay, parcel -> Open, book -> Read, watch -> Wear, phone -> Open, and sellable
+      junk -> Pawn at the shown pawn value. The generic Use + Sell pair is gone for those items;
+      anything unhandled keeps a plain Use fallback and unsellable items keep their not-for-sale note.
+   4) HUD = 4B TWO TIDY ROWS: a status block sits directly above the needs row in the top pin —
+      ROW 1: cash (data-roll span, so it rolls and refreshes live exactly as before) / bank /
+      Day + time (tap opens the Calendar; the clock rides the shipped .jsClock span) / wanted stars
+      (only while wanted). ROW 2: the five needs — the shipped needsRow100 itself. Same information,
+      same live updates (the h3 rule stands), just sorted into the two mocked rows. */
+(function(){
+'use strict';
+try{
+ var st=document.createElement('style'); st.id='style207';
+ st.textContent=
+  '.tileGrid207{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}'
+ +'.tile207{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 13px;cursor:pointer;color:var(--ink);font:inherit;width:100%;margin:0}'
+ +'.tile207:active{transform:scale(.98)}'
+ +'.tile207.wide207{grid-column:1/-1}'
+ +'.tIc207{font-size:24px;line-height:1.1}'
+ +'.tNm207{font-weight:900;font-size:15.5px}'
+ +'.tSb207{font-size:11.5px;opacity:.75;font-weight:600;line-height:1.3}'
+ +'.bankHead207{display:flex;gap:10px;margin:2px 0 8px}'
+ +'.balBox207{flex:1;background:#00000010;border:1px solid var(--line);border-radius:14px;padding:9px 12px}'
+ +'.phoneScreen .balBox207{background:#ffffff12}'
+ +'.balLab207{display:block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.7}'
+ +'.balAmt207{display:block;font-size:19px;font-weight:900}'
+ +'.kv207{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px}'
+ +'.pfFolder{position:relative}'
+ +'.appCell{position:relative}'
+ +'.bdg207{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:900;line-height:19px;text-align:center;box-shadow:0 1px 4px #00000055;z-index:3;pointer-events:none}'
+ +'.phoneDock127 .bdg207{top:-7px;right:2px}'
+ +'.hudRow207{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 2px 0}'
+ +'.hudPill207{display:inline-flex;align-items:center;gap:5px;background:#00000010;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:800;color:var(--ink)}'
+ +'button.hudPill207{cursor:pointer;font:inherit}'
+ +'.hudPill207 .hStars207{color:var(--accent2,#ffb703);letter-spacing:1px}'
+ +'.hudPill207 .hStarsOff207{color:#9ca3af;letter-spacing:1px}';
+ document.head.appendChild(st);
+
+ /* ================= 1) BANK = 1B DASHBOARD TILES ================= */
+ function bal207(){ try{ ensure63() }catch(e){} const b=(S&&S.bank63)||{bank:0,debit:false,credit:null,score:0}; let cb=0; try{ const V=ensure201b(); if(V)cb=V.cb||0 }catch(e){} return {b:b,cb:cb} }
+ function pinSet207(kind){ try{ const V=ensure201b(); return !!(V&&(kind==='credit'?V.pinC:V.pinD)) }catch(e){ return false } }
+ function bankDash207(branch){ if(!S)return ''; const o=bal207(), b=o.b, cr=b.credit; const checks=(b.checks108||[]).length;
+  const T=function(ic,nm,sb,kind,wide){ return '<button type="button" class="tile207'+(wide?' wide207':'')+'" onclick="bankTile207(\''+kind+'\','+(branch?1:0)+')"><span class="tIc207">'+ic+'</span><span class="tNm207">'+nm+'</span><span class="tSb207">'+sb+'</span></button>' };
+  return '<div class="bankHead207"><div class="balBox207"><span class="balLab207">🏦 '+(branch?'In the bank':'Checking')+'</span><span class="balAmt207">$'+(b.bank||0)+'</span></div><div class="balBox207"><span class="balLab207">💰 Cash back</span><span class="balAmt207" style="color:#4ade80">$'+o.cb.toFixed(2)+'</span></div></div>'
+  +'<p style="font-size:12.5px;opacity:.9;margin:0 0 10px">💵 Cash on hand <b>$'+(S.money||0)+'</b> · 📊 Credit score <b>'+(b.score||0)+'</b>'+(checks?' · 🧾 <b>'+checks+' paycheck'+(checks===1?'':'s')+'</b> waiting to deposit':'')+'</p>'
+  +'<div class="tileGrid207">'
+  +T('💵','Deposit','Cash &amp; paychecks'+(checks?' · '+checks+' in your Bag':''),'deposit')
+  +T('🏧','Withdraw',b.debit?'To your wallet':'Needs your debit card','withdraw')
+  +T('💳','My Cards',b.debit?('Debit active'+(b.cardKind108==='kid'?' · linked kid card':'')):'No debit card yet','cards')
+  +T('🟥','RiverCard',cr?('$'+cr.due+' owed · $'+Math.max(0,cr.limit-cr.due)+' left'):('Credit card · '+(S.age>=18?'apply here':'18+, debit first')),'river')
+  +T('👛','Wallet',((typeof walletOwned201==='function')&&walletOwned201())?'Owned ✓ · cards &amp; cash inside':'$25 · one and done','wallet')
+  +T('💰','Cash Back',o.cb>=1?('$'+o.cb.toFixed(2)+' waiting · redeem it'):'2% back on every purchase','cashback')
+  +T('🚗','Cars &amp; Driving',(S.car&&S.car.license)?('Licensed ✓'+(S.car.owned?' · '+S.car.name:'')):('Lessons '+((S.car&&S.car.lessons)||0)+'/2 · the license test'),'cars',true)
+  +'</div>' }
+ function bankTile207(kind,branch){ if(!S)return; branch=!!branch;
+  if(kind==='wallet'){ openWallet201(); return }
+  if(kind==='cars'){ openCarShop104(); return }
+  const o=bal207(), b=o.b, cr=b.credit;
+  const ob=branch?'class="btn outline"':'class="btn outline" style="color:#fff;border-color:#ffffff88"';
+  const back=branch?'<button class="btn outline" style="margin-top:12px" onclick="closeModal()">‹ Back to the counter</button>':'<button class="btn outline" style="margin-top:12px;color:#fff;border-color:#ffffff88" onclick="phoneBank()">‹ Back to 🏦 Bank</button>';
+  let title='', inner='';
+  if(kind==='deposit'){ title='💵 Deposit';
+   inner='<p style="font-size:12.5px;opacity:.9;margin-top:0">💵 Cash on hand <b>$'+(S.money||0)+'</b> · 🏦 In the bank <b>$'+(b.bank||0)+'</b></p>'
+   +'<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'dep133(50)':'deposit63(50)')+'">⬇️ Deposit $50</button><button class="btn" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'dep133(200)':'deposit63(200)')+'">⬇️ Deposit $200</button><button class="btn gold" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'dep133(-1)':'deposit63(-1)')+'">⬇️ Deposit all cash</button></div>';
+   const held=b.checks108||[];
+   if(held.length){ inner+='<h4 style="margin:14px 0 4px">🧾 Paychecks in your Bag — not spendable yet</h4>'+held.map(function(c){ return '<div class="kv207"><span>🧾 <b>$'+c.amt+'</b> — '+(c.label||'pay')+'<br><span style="font-size:11px;opacity:.75">Day '+c.day+'</span></span><span style="flex:none">'+(branch?'<button class="btn gold" style="width:auto;margin:0;padding:8px 12px" onclick="depositCheck108('+c.id+',\'branch\')">Deposit — clears now</button>':'<button class="btn gold" style="width:auto;margin:0;padding:8px 12px" onclick="depositCheck108('+c.id+',\'mobile\')">📸 Photo deposit</button> <button class="btn" style="width:auto;margin:0;padding:8px 12px" onclick="depositCheck108('+c.id+',\'branch\')">🏦 At the bank</button>')+'</span></div>' }).join('')+'<p style="font-size:11.5px;opacity:.8;margin-top:6px">📸 Photo deposits clear the <b>next morning</b>; branch deposits clear <b>on the spot</b>.</p>' }
+   if(b.pending108&&b.pending108.length)inner+='<p style="font-size:12px;opacity:.85;margin-top:8px">📸 Clearing: '+b.pending108.map(function(p){ return '$'+p.amt+' on Day '+p.clearDay }).join(' · ')+'</p>' }
+  else if(kind==='withdraw'){ title='🏧 Withdraw';
+   if(!b.debit){ inner='<p>💳 <b>Withdrawals need your debit card</b> — the card is what lets bank money move. '+(S.age>=14?'Yours is free, right here.':'Debit cards open at 14 — and from 5, a parent or guardian can set up a linked kid card at the counter.')+'</p>'+(S.age>=14?'<button class="btn gold" onclick="'+(branch?'debit133()':'getDebit63()')+'">💳 Get my debit card — free</button>':'') }
+   else { inner='<p style="font-size:12.5px;opacity:.9;margin-top:0">🏦 In the bank <b>$'+(b.bank||0)+'</b> · 💵 Cash on hand <b>$'+(S.money||0)+'</b></p><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'wd133(50)':'withdraw63(50)')+'">⬆️ Withdraw $50</button><button class="btn" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'wd133(200)':'withdraw63(200)')+'">⬆️ Withdraw $200</button><button class="btn gold" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'wd133(-1)':'withdraw63(-1)')+'">⬆️ Withdraw all</button></div><p style="font-size:12px;opacity:.85;margin-top:8px">💳 Debit card: ACTIVE — withdrawals land as cash, in hand.</p>' } }
+  else if(kind==='cards'){ title='💳 My Cards';
+   if(b.debit){ inner='<div class="kv207"><span>💳 <b>Debit card: ACTIVE</b><br><span style="font-size:11.5px;opacity:.8">'+(b.cardKind108==='kid'?('Linked kid card — on '+(typeof giverName==='function'?giverName():'a parent')+'\'s account. Purchases cap at $25 each under 13, $75 at 13–17; the account becomes fully yours at 18.'):'Your own account, your name on the card. Bank money spends by card (or ATM); wages direct-deposit here.')+'</span></span><b style="flex:none">$'+(b.bank||0)+'</b></div>'
+    +'<button class="btn" style="margin-top:8px" onclick="pinCard207(\'debit\','+(branch?1:0)+')">🔢 '+(pinSet207('debit')?'Change':'Set')+' debit PIN</button>'
+    +'<button '+ob+' style="margin-top:8px" onclick="bankTile207(\'river\','+(branch?1:0)+')">🟥 RiverCard — '+(cr?('$'+cr.due+' owed of $'+cr.limit):'no card yet')+'</button>'
+    +'<div class="kv207" style="margin-top:10px"><span>💼 <b>Direct deposit</b><br><span style="font-size:11.5px;opacity:.8">Pay lands '+(b.dd108?'straight in your bank':'as 🧾 paper checks')+'.</span></span><button class="btn '+(b.dd108?'outline':'gold')+'" style="width:auto;margin:0;padding:8px 12px;flex:none" onclick="ddSet108('+(!b.dd108)+');bankTile207(\'cards\','+(branch?1:0)+')">'+(b.dd108?'ON ✓ — switch off':'Turn ON')+'</button></div>' }
+   else { inner='<p>💳 <b>No debit card yet.</b> Until the bank issues one, bank money cannot be spent or withdrawn, and pay cannot direct-deposit — it arrives as 🧾 paper checks.</p>'
+    +(S.age>=14?'<button class="btn gold" onclick="'+(branch?'debit133()':'getDebit63()')+'">💳 Get my debit card — free</button>':'<p style="font-size:12.5px;opacity:.85">Cards start at 5 (a linked kid card, with a parent or guardian signing) — Counter services below sets that up. Your own card opens at 14.</p>') }
+   inner+='<button '+ob+' style="margin-top:10px" onclick="bankVisit108()">🧾 Counter services — card issuance, checks &amp; more</button>' }
+  else if(kind==='river'){ title='🟥 RiverCard';
+   if(!cr){ inner='<p>💳 <b>RiverCard credit</b> — borrowed money with a memory. The ladder: debit card FIRST, then credit. Approval needs <b>18+</b>, the debit card, and a score of <b>580+</b> — yours is <b>'+(b.score||0)+'</b>. Your limit is set by your score: $300 at the floor, up to $5,000 at the top.</p>'+((S.age>=18&&b.debit)?'<button class="btn gold" onclick="'+(branch?'credit133()':'applyCredit63()')+'">💳 Apply for a RiverCard</button>':'<p style="font-size:12.5px;opacity:.85">'+(S.age<18?'🔒 Opens at 18.':'🔒 Debit card first — see 💳 My Cards.')+'</p>') }
+   else { const avail=Math.max(0,cr.limit-cr.due); inner='<div class="kv207"><span>💸 Owed</span><b>$'+cr.due+'</b></div><div class="kv207"><span>🎚️ Limit</span><b>$'+cr.limit+'</b></div><div class="kv207"><span>✅ Available</span><b>$'+avail+'</b></div><div class="kv207"><span>📊 Credit score</span><b>'+(b.score||0)+'</b></div><p style="font-size:12px;opacity:.85;margin-top:6px">The statement lands weekly: 2% interest on what you owe, minimum auto-collected. Pay on time and your score climbs.</p>'+(cr.due>0?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="btn" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'paycr133(25)':'payCredit63(25)')+'">💳 Pay $25</button><button class="btn gold" style="width:auto;margin:0;padding:9px 13px" onclick="'+(branch?'paycr133(-1)':'payCredit63(-1)')+'">💳 Pay in full — $'+cr.due+'</button></div>':'<p style="margin-top:6px">✅ Nothing owed — the card is clean.</p>')+'<button class="btn" style="margin-top:8px" onclick="pinCard207(\'credit\','+(branch?1:0)+')">🔢 '+(pinSet207('credit')?'Change':'Set')+' RiverCard PIN</button>' } }
+  else if(kind==='cashback'){ title='💰 Cash Back &amp; Rewards';
+   inner='<div style="text-align:center"><div style="font-size:12px;opacity:.85">💰 Cash back balance</div><div style="font-size:38px;font-weight:900;color:#4ade80;line-height:1.1">$'+o.cb.toFixed(2)+'</div><p style="font-size:12.5px;opacity:.9">Earned at <b>2% of every purchase</b>, everywhere — it accrues on its own and lives in your 👛 Wallet.</p></div>'
+   +(o.cb>=1?'<button class="btn gold" style="margin-top:6px" onclick="redeemCb201(false)">💵 Redeem $'+Math.floor(o.cb)+' to cash</button><button '+ob+' style="margin-top:8px" onclick="redeemCb201(true)">🏦 Redeem to bank</button>':'<p style="font-size:12px;opacity:.8">Cash back redeems from $1 — keep living and it piles up by itself.</p>')
+   +'<button '+ob+' style="margin-top:8px" onclick="openReceipts201()">🧾 Receipts — where it all came from</button>' }
+  else return;
+  if(branch)openSheet('<h2>🏦 '+title+'</h2>'+inner+back);
+  else openSheet(phoneShell('🏦 '+title,inner+back)) }
+ function pinCard207(kind,branch){ try{ pinSheet201(kind,function(){ bankTile207(kind==='credit'?'river':'cards',branch) },true) }catch(e){} }
+ window.bankTile207=bankTile207; window.pinCard207=pinCard207;
+ /* the branch counter card becomes the dashboard */
+ try{ bankFullCard133=function(){ if(!S||S.location!=='bank')return ''; return '<div class="card" style="border:2px solid #b45309"><h3>🏦 First River Bank — the counter</h3><p style="margin-top:0">Everything the bank does, on one screen — tap a tile. The app and this counter are the same bank.</p>'+bankDash207(true)+'<button class="btn outline" style="margin-top:10px" onclick="bankVisit108()">🧾 Counter services — card issuance, checks &amp; direct deposit</button></div>' } }catch(e){}
+ /* the Bank app: swap the stacked bankCard63 pile for the dashboard, in place */
+ function bankDashSwap207(){ try{ const sh=document.getElementById('sheet'); if(!sh||!S)return; const scr=sh.querySelector('.phoneScreen'); if(!scr||scr.querySelector('.tileGrid207'))return; const kids=Array.prototype.slice.call(scr.children); let si=-1,ei=-1; for(let i=0;i<kids.length;i++){ if(si<0&&kids[i].tagName==='H4'&&kids[i].textContent.indexOf('Real Banking')>=0)si=i } if(si<0)return; for(let i=si+1;i<kids.length;i++){ if(kids[i].tagName==='H4'&&kids[i].textContent.indexOf('Investing')>=0){ ei=i; break } } if(ei<0)ei=kids.length; const wrap=document.createElement('div'); wrap.className='bankDashWrap207'; wrap.innerHTML=bankDash207(false); const ref=kids[ei]||null; for(let i=ei-1;i>=si;i--){ if(kids[i]&&kids[i].parentNode===scr)scr.removeChild(kids[i]) } scr.insertBefore(wrap,ref) }catch(e){} }
+ try{ const _pb207=phoneBank; phoneBank=function(){ const r=_pb207.apply(this,arguments); try{ bankDashSwap207(); setTimeout(bankDashSwap207,90) }catch(e){} return r } }catch(e){}
+
+ /* ================= 2) PHONE = 2B FOLDERS ================= */
+ const GAME15_207=['tama','ripit','casino','creatorsim','miami','land','league','flip','truck','cast','gossip','underground','circuit','shelter','windowsill'];
+ const LIFE207=['msg','calls','services','browser','social','spark','birdy','album','calendar','phonebook','scrap149','schoolapp','calc','bag'];
+ const MONEY207=['bank','jobs','invest','empire','property','caraholic','aquabay','aquamarket','enterprise'];
+ function folders207(){ const known={}; try{ PHONE_APPS.forEach(function(a){ known[a.id]=1 }) }catch(e){} const pick=function(list){ return list.filter(function(id){ return known[id] }) }; return [{name:'🎮 Games',apps:pick(GAME15_207)},{name:'🌤️ Life',apps:pick(LIFE207)},{name:'💰 Money',apps:pick(MONEY207)}] }
+ try{ phoneFoldersDefault=function(){ const f=folders207(); try{ f.forEach(function(fd){ fd.apps=fd.apps.filter(function(id){ return STORE7_158.indexOf(id)<0||(typeof appInstalled110==='function'&&appInstalled110(id)) }) }) }catch(e){} return f } }catch(e){}
+ try{ if(typeof FOLDER_HOME158!=='undefined'){ FOLDER_HOME158.casino='Games'; FOLDER_HOME158.ripit='Games'; FOLDER_HOME158.spark='Life'; FOLDER_HOME158.birdy='Life' } }catch(e){}
+ function migrateFolders207(){ try{ if(!S||!Array.isArray(S.phoneFolders))return; if(!S.v207||typeof S.v207!=='object')S.v207={}; if(S.v207.folders)return; const olds=['⭐ Essentials','🎮 Games','📱 Social & Web','🛠️ Money & More','🌤️ Life','💰 Money']; const custom=S.phoneFolders.filter(function(f){ return f&&olds.indexOf(f.name)<0 }); S.phoneFolders=folders207().concat(custom); S.v207.folders=true; try{ folderPrune158() }catch(e){} try{ save() }catch(e){} }catch(e){} }
+ function attn207(id){ if(!S)return 0; try{
+  if(id==='msg')return (S.phoneMsgs||[]).filter(function(m){ return !m.read&&m.from!=='You' }).length;
+  if(id==='social')return (typeof dmUnread==='function')?dmUnread():0;
+  if(id==='jobs')return (S.jobApps||[]).filter(function(a){ return a&&a.status==='offer' }).length;
+  if(id==='bank'){ try{ ensure108() }catch(e){} return ((S.bank63&&S.bank63.checks108)||[]).length }
+  if(id==='tama'){ const G=(typeof g200==='function')?g200():null; const P=G&&G.pal; if(P&&P.pals)return P.pals.filter(function(p){ return (p.hun||0)<25 }).length; return 0 }
+  if(id==='shelter'){ const G=(typeof g200==='function')?g200():null; return (G&&G.shelter&&G.shelter.foster&&(G.shelter.days||0)>=5)?1:0 }
+  if(id==='windowsill'){ const G=(typeof g200==='function')?g200():null; const W=G&&G.garden; return (W&&W.pots&&W.pots.some(function(p){ return p&&p.grow>=100 }))?1:0 }
+ }catch(e){} return 0 }
+ function badgeOn207(el,n){ if(!el||!(n>0)||el.querySelector('.bdg207'))return; const s=document.createElement('span'); s.className='bdg207'; s.textContent=n>99?'99+':String(n); el.appendChild(s) }
+ function phoneBadgePass207(){ try{ const sh=document.getElementById('sheet'); if(!sh||!S)return; const scr=sh.querySelector('.phoneScreen'); if(!scr)return;
+  const tiles=scr.querySelectorAll('.pfFolder'); if(tiles.length&&Array.isArray(S.phoneFolders))tiles.forEach(function(t,fi){ const f=S.phoneFolders[fi]; if(!f)return; let n=0; (f.apps||[]).forEach(function(id){ n+=attn207(id) }); badgeOn207(t,n) });
+  scr.querySelectorAll('.appCell').forEach(function(c){ const m=(c.getAttribute('onclick')||'').match(/phoneTapApp\('([^']+)'\)/); if(m)badgeOn207(c,attn207(m[1])) });
+ }catch(e){} }
+ function phoneHomePass207(){ try{ const sh=document.getElementById('sheet'); if(!sh||!S)return; const scr=sh.querySelector('.phoneScreen'); if(!scr)return; const grid=scr.querySelector('.appGrid'); if(!grid||!scr.querySelector('.pfFolder'))return;
+  const have={}; grid.querySelectorAll('.appCell').forEach(function(c){ const m=(c.getAttribute('onclick')||'').match(/phoneTapApp\('([^']+)'\)/); if(m)have[m[1]]=1 });
+  ['browser','tama','miami'].forEach(function(id){ if(have[id])return; const a=(typeof phoneAppById==='function')?phoneAppById(id):null; if(!a)return; let html=''; try{ html=appCellHtml(a) }catch(e){} if(html)grid.insertAdjacentHTML('beforeend',html) });
+ }catch(e){} try{ phoneBadgePass207() }catch(e){} }
+ try{ const _rph207=renderPhoneHome; renderPhoneHome=function(){ migrateFolders207(); const r=_rph207.apply(this,arguments); try{ phoneHomePass207(); setTimeout(phoneHomePass207,80); setTimeout(phoneHomePass207,240) }catch(e){} return r } }catch(e){}
+ try{ const _rpf207=renderPhoneFolder; renderPhoneFolder=function(){ migrateFolders207(); const r=_rpf207.apply(this,arguments); try{ phoneBadgePass207(); setTimeout(phoneBadgePass207,80) }catch(e){} return r } }catch(e){}
+
+ /* ================= 3) BAG = 3B SMART BUTTONS ================= */
+ function bagEat207(id){ const prev=(typeof curTab!=='undefined')?curTab:null; try{ eatBag133(id) }catch(e){} try{ if(prev&&prev!=='actions101')renderTabs(prev) }catch(e){} try{ const md=document.getElementById('modal'); if(md&&md.classList.contains('open')){ if(window._bagPhone)phoneBag(); else openBag() } }catch(e){} }
+ window.bagEat207=bagEat207;
+ function bagBtn207(it){ if(!it)return null; const id=it.id, use=it.use||'', kind=it.kind||'';
+  if(use==='booze')return {label:'Drink',fn:'useItem('+id+')'};
+  if(use==='edrink122')return {label:'Drink',fn:'useItem('+id+')'};
+  if(kind==='kidphone199'||use==='kidphone199')return {label:'Give',fn:'useItem('+id+')'};
+  if(kind==='kidphone162'||use==='kidphone162')return {label:'Open',fn:'useItem('+id+')'};
+  if(use==='check108')return {label:'Deposit',fn:'useItem('+id+')',gold:1};
+  if(use==='bill141')return {label:'💳 Pay $'+(it.amt141||0),fn:'useItem('+id+')',gold:1};
+  if(/Wallet/.test(it.name||''))return {label:'Open',fn:'useItem('+id+')'};
+  if(/Laptop/i.test(it.name||''))return {label:'Open',fn:'useItem('+id+')'};
+  if(kind==='phone')return {label:'Open',fn:'openPhone()'};
+  if(kind==='watch'&&it.w110)return {label:it.w110.worn?'Take off':'Wear',fn:'useItem('+id+')'};
+  if(kind==='food'&&!use)return {label:'Eat',fn:'useItem('+id+')'};
+  if(use==='snack')return {label:'Eat',fn:'useItem('+id+')'};
+  if(use==='drink')return {label:'Drink',fn:'useItem('+id+')'};
+  if(typeof bagFood133==='function'&&bagFood133(it))return {label:'Eat',fn:'bagEat207('+id+')'};
+  if(use==='parcel')return {label:'Open',fn:'useItem('+id+')'};
+  if(use==='read')return {label:'Read',fn:'useItem('+id+')'};
+  if(use==='ripit144')return {label:'Open',fn:'useItem('+id+')'};
+  if(use)return {label:'Use',fn:'useItem('+id+')'};
+  if(typeof sellable91==='function'&&sellable91(it))return {label:'Pawn',fn:'sellFromBag91('+id+')',gold:1};
+  return null }
+ function bagRows207(dark){ if(!S)return ''; try{ ensure27() }catch(e){}
+  if(!S.inv||!S.inv.length)return '<p style="font-size:12.5px;opacity:.85">Your bag is empty. Loot (pick locks, break-ins), dumpster finds, vacation souvenirs, your author\'s copy — everything you pick up in this life lands here.</p>';
+  return S.inv.map(function(it){ const btn=bagBtn207(it); const pawn=(typeof pawnPrice==='function')?pawnPrice(it):(it.value||0); const sellable=(typeof sellable91==='function')?sellable91(it):true;
+   const gun=(/gun|pistol|revolver|rifle|shotgun/i.test(it.name||''))?((typeof gunLicensed38==='function'&&gunLicensed38())?' <b style="color:#22c55e">🪪 LICENSED CARRY</b>':' <b style="color:#f59e0b">⚠️ NO LICENSE</b>'):'';
+   const right=btn?'<button class="btn '+(btn.gold?'gold':'')+'" style="width:auto;margin:0;padding:7px 13px;flex:none" onclick="'+btn.fn+'">'+btn.label+'</button>':'<span style="font-size:11px;opacity:.7;flex:none">🔒 not for sale</span>';
+   return '<div class="kv" '+(dark?'style="color:#fff;border-color:#ffffff2a"':'')+'><span>'+it.name+(it.new91?' <b style="background:#ef4444;color:#fff;border-radius:6px;padding:1px 6px;font-size:10px;vertical-align:2px">NEW</b>':'')+(it.hot?' <b style="color:#f87171">HOT</b>':'')+gun+'<br><span style="font-size:11px;opacity:.75">'+(it.desc||'')+(sellable?'<br><span style="color:#ffb703;font-weight:700">pawn ~$'+pawn+'</span>':'')+'</span></span>'+right+'</div>' }).join('') }
+ try{ bagRows=function(dark){ return bagRows207(dark) } }catch(e){}
+
+ /* ================= 4) HUD = 4B TWO TIDY ROWS ================= */
+ function hudPass207(){ try{ if(!S||!(typeof inGame!=='undefined'&&inGame))return; const tp=document.getElementById('topPin'); if(!tp||tp.querySelector('.hudRow207'))return; const needs=tp.querySelector('.needsRow100'); if(!needs)return;
+  const bank=(S.bank63&&S.bank63.bank)||0; const w=S.wanted||0;
+  const stars=w>0?'<span class="hudPill207">🚔 <span><span class="hStars207">'+'★'.repeat(Math.min(5,w))+'</span><span class="hStarsOff207">'+'★'.repeat(Math.max(0,5-w))+'</span></span></span>':'';
+  const d=document.createElement('div'); d.className='hudRow207'; d.setAttribute('aria-label','Money, day and time');
+  d.innerHTML='<span class="hudPill207">💵 $<span data-roll="money">'+(S.money||0)+'</span></span>'
+  +'<span class="hudPill207">🏦 $'+bank+'</span>'
+  +'<button type="button" class="hudPill207" onclick="phoneCalendar89()" aria-label="Day and time — open your calendar">📅 Day '+(S.day||1)+' · 🕐 <span class="jsClock">'+((typeof clockStr==='function')?clockStr():'')+'</span></button>'
+  +stars;
+  tp.insertBefore(d,needs) }catch(e){} }
+ try{ const _r207=render; render=function(){ const r=_r207.apply(this,arguments); try{ hudPass207(); setTimeout(hudPass207,90) }catch(e){} return r } }catch(e){}
+
+ window.__v207={folders207:folders207,attn207:attn207,bagBtn207:bagBtn207,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 7: 🏦 Bank = 1B dashboard tiles (app + branch counter: balances on top, Deposit / Withdraw / My Cards / RiverCard / Wallet / Cash Back / Cars & Driving tiles over the shipped flows) • 📱 Phone = 2B folders (Games 15 · Life · Money; real attention badges on folders and apps; PocketPal & Miami Nights stay out as favorites) • 🎒 Bag = 3B smart buttons (Eat / Deposit / Open / Give / Pay / Pawn — one right button per item) • 📊 HUD = 4B two tidy rows (money + day/time + wanted stars over the five needs)','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
 </body>
 </html>
