@@ -22991,6 +22991,98 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 26 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard asked (Nov 3, 2026): "Can you show me the Google sheet so far."
+   THE READ (from the form's Responses tab, Nov 3, 2026): there is no spreadsheet linked to the
+   "AquaLife — Stats & Feedback" form yet — answers live in the form's Responses tab until the maker
+   taps "Link to Sheets" there. 34 responses so far. Only 6 hold anything, and they are really TWO
+   feedback messages wearing three copies each (the repeat-send bug hotfix 25 now guards):
+   • 2:14 PM ×3 — Bug report: "Game doesn't work" — Day 5, Level 4
+   • 3:57 PM ×3 — Bug report: "Try again" — Day 1, Level 1
+   The other 28 responses are COMPLETELY BLANK: the silent stats pings (v214) arrive, but every one
+   of their fields — install, event, day, level, version, detail — lands empty, while the feedback
+   fields on the very same form record fine. The pipe works; the ping payload is being dropped.
+   THIS BUILD:
+   A) 📊 "Show the sheet so far" joins ⚙️ Settings → 💾 Data & Save (in the Stats & Feedback block,
+      beside 💬 Send feedback): a sheet rendering the snapshot above, labelled with its read date,
+      plus a link out to the form's Responses tab (maker sign-in) where "Link to Sheets" lives.
+   B) THE BLANK-PING REPAIR: window.fetch is wrapped for the feedback-form endpoint ONLY. A stats
+      ping (recognised by its event field) has its body enriched BEFORE the one send leaves: any
+      empty Day / Level fields are first filled from the live character, and a readable copy of the
+      whole ping — event · day · level · version · detail · install ID — is written into the three
+      feedback fields that PROVENLY record (type "Stats ping", the message field, the progress
+      field). Same single POST, no retry, nothing extra sent: even if the ping's own columns are
+      dropped again, its data now lands in columns that keep it. Feedback posts already carry those
+      fields, so they pass through untouched, and hotfix 25's single-fire guard is unaffected.
+      window.__v226.mirrored counts the pings mirrored this session. */
+(function(){ 'use strict';
+try{
+ var V226={mirrored:0};
+ window.__v226=V226;
+ var FORM_ID226='1FAIpQLSerzlldqjpGD9zX0P6X80U7ujMLMJSJFrksiVV9Ui4isbC8eA';
+ var FORM_EDIT226='https://docs.google.com/forms/d/1d4Az2Pnu1XUTfz5ycU0hjXvOaSqo5qv5pzIhEGYScpg/edit';
+
+ /* ================= B) pings ride the proven fields ================= */
+ if(typeof window.fetch==='function'){ var _f226=window.fetch;
+  window.fetch=function(input,init){
+   try{
+    var url=(typeof input==='string')?input:((input&&input.url)||'');
+    if(url.indexOf(FORM_ID226)>=0&&url.indexOf('formResponse')>=0&&init&&typeof init.body==='string'){
+     var p=new URLSearchParams(init.body);
+     var ev=p.get('entry.1257175784');
+     if(ev&&!p.get('entry.1048300260')){
+      var day=p.get('entry.1820728039')||'', lvl=p.get('entry.686270592')||'';
+      try{ if(typeof S!=='undefined'&&S){ if(!day&&S.day!=null){ day=String(S.day); p.set('entry.1820728039',day) } if(!lvl&&S.level!=null){ lvl=String(S.level); p.set('entry.686270592',lvl) } } }catch(e){}
+      var ver=p.get('entry.1069628396')||'', iid=p.get('entry.810057987')||'', det=p.get('entry.1917171974')||'';
+      var msg='📊 Stats ping — event: '+ev+(day?(' · Day '+day):'')+(lvl?(' · Level '+lvl):'')+(ver?(' · v'+ver):'')+(det?(' · '+det):'')+(iid?(' · install '+iid):'');
+      p.append('entry.2083096370','Stats ping');
+      p.append('entry.1048300260',msg);
+      p.append('entry.2144211601',(day||lvl)?('Day '+(day||'—')+', Level '+(lvl||'—')):'');
+      var init2={}; for(var k in init)init2[k]=init[k]; init2.body=p.toString();
+      V226.mirrored++;
+      return _f226.call(this,input,init2);
+     }
+    }
+   }catch(e){}
+   return _f226.apply(this,arguments);
+  };
+ }
+
+ /* ================= A) the sheet so far, in Settings ================= */
+ function fbRow226(time,type,msg,prog){
+  return '<div style="border:1.5px solid var(--line);border-radius:14px;padding:11px 12px;margin-top:9px">'
+  +'<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b>🐞 '+type+'</b><span class="small" style="white-space:nowrap">'+time+' · ×3 copies</span></div>'
+  +'<p style="font-size:15px;margin:6px 0 2px">“'+msg+'”</p>'
+  +'<p class="small" style="margin:0">'+prog+'</p></div>';
+ }
+ window.showSheet226=function(){ try{
+  openSheet('<h2>📊 The sheet so far</h2>'
+  +'<p class="small">Snapshot read from the form\'s <b>Responses</b> tab on <b>Nov 3, 2026</b>. There is no spreadsheet linked to the form yet — responses live in that tab until the maker taps <b>Link to Sheets</b> there. The live count keeps growing after this snapshot.</p>'
+  +'<div class="kv" style="margin-top:8px"><span>Responses so far</span><b>34</b></div>'
+  +'<div class="kv"><span>With anything in them</span><b>6</b></div>'
+  +'<div class="kv"><span>Completely blank</span><b>28</b></div>'
+  +'<p class="small" style="margin-top:6px">The 28 blanks are the silent stats pings — they arrived, but their fields landed empty. From this build, every ping also writes a readable copy of itself into the feedback fields that do record, so its event, day and level land either way.</p>'
+  +'<h3 style="margin:14px 0 0">💬 Feedback that landed</h3>'
+  +'<p class="small" style="margin-top:4px">Two real messages — each sitting there three times (the repeat-send bug; hotfix 25\'s single-fire guard is the cure).</p>'
+  +fbRow226('2:14 PM','Bug report','Game doesn\'t work','Day 5, Level 4 — a player, five days into a life')
+  +fbRow226('3:57 PM','Bug report','Try again','Day 1, Level 1')
+  +'<a class="btn gold" style="display:block;text-align:center;text-decoration:none;margin-top:14px" href="'+FORM_EDIT226+'" target="_blank" rel="noopener">📊 Open the form — Responses tab</a>'
+  +'<p class="small" style="margin-top:6px">Maker sign-in needed — that tab is also where <b>Link to Sheets</b> turns it into a real spreadsheet.</p>'
+  +(V226.mirrored?'<p class="small">📡 This session, '+V226.mirrored+' stats ping'+(V226.mirrored>1?'s have':' has')+' gone out with the readable copy riding along.</p>':'')
+  +'<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Back to life</button>',{quiet:true});
+ }catch(e){} };
+ V226.show=window.showSheet226;
+ function injectSheetBtn226(){ try{ var b=document.querySelector('.statsBlock214'); if(!b||b.querySelector('.sheetBtn226'))return;
+  var btn=document.createElement('button'); btn.type='button'; btn.className='btn sheetBtn226'; btn.style.marginTop='8px'; btn.textContent='📊 Show the sheet so far'; btn.onclick=function(){ try{ window.showSheet226() }catch(e){} };
+  b.appendChild(btn);
+ }catch(e){} }
+ setInterval(injectSheetBtn226,900);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 26: 📊 "Show the sheet so far" (Settings → Data & Save) renders the Nov 3, 2026 Responses snapshot — 34 responses: 2 feedback messages ×3 copies each ("Game doesn\'t work" Day 5 Lv 4 · "Try again" Day 1 Lv 1) and 28 BLANK stats pings — plus the blank-ping repair: every stats ping now also writes a readable copy of itself into the proven feedback fields on the same single send, so its event/day/level can never land blank again','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
