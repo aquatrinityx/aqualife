@@ -24353,6 +24353,70 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 38 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   🌤️🛣️ SKY & STREET STOP MOVING — the glitch Howard kept filming ("the street and sky moving
+   all round and isn't stopping") survived h33 and h36, so this layer was diagnosed against the
+   SHIPPED source, not the earlier build reports. h36's header named its bandFrame236 "ONE owner"
+   of the home sky (#sky193) and street/curb (#curb193) bands — but it never actually removed the
+   other three writers, and all four are still live in this file:
+     • bandCam221 — a 500 ms interval PLUS a call inside every applyCameraTransform (i.e. every
+       render, ~1/s): writes via the plain style setter, which REPLACES even !important inline
+       declarations, stamping its own pivot/scale over the guard's.
+     • bandSync227 — a 300 ms interval: writes !important but SCALE-ONLY (it drops the rest of the
+       canvas's computed matrix), with a pivot derived from offset fractions.
+     • bandFrame233 — per frame, !important, but its pivot is derived from the bands' OWN
+       post-transform getBoundingClientRect — a self-referential feedback loop whose pivot is
+       wrong by ox·(scale−1) whenever the camera is zoomed, so the bands slide against the scene.
+     • bandFrame236 — per frame, correct layout-geometry math, but only "the frame's last word"
+       under Chrome's rAF-before-paint ordering. On the player's Firefox webview, the timer and
+       render tasks above DO reach paint between rAF passes — so several times a second the sky
+       and street jump to a competing transform and snap back: they move all round, forever, and
+       never settle, exactly as filmed. During the game's constant ambient zooms (conversations,
+       free will, events) the disagreement is larger and the smear is worse.
+   THE FIX — one owner whose word cannot be painted over: this layer computes the bands' correct
+   transform exactly once per frame (the canvas's full computed transform, pivot from LAYOUT
+   geometry only — offsetLeft/offsetTop, which transforms cannot contaminate; 'none' at rest) and
+   additionally re-asserts that same value from a MutationObserver callback whenever ANY writer
+   touches a band's style. Mutation callbacks run as microtasks — before the browser's next
+   rendering update — so a foreign write is corrected before it can ever be painted, in any
+   browser, on any cadence. The legacy writers keep running (they are closures from shipped
+   layers and stay untouched); their output simply never reaches the screen. The bands' CSS
+   transition stays off (frame mirroring must be frame-exact). Canvas sizing, the sky painter,
+   traffic, the camera and all gameplay are untouched — presentation only. */
+(function(){ 'use strict';
+try{
+ var st238=document.createElement('style'); st238.id='style238';
+ st238.textContent='#sky193,#curb193{transition:none!important}';
+ document.head.appendChild(st238);
+
+ var watched238=new WeakSet();
+ function watch238(b){ if(!b||watched238.has(b))return; watched238.add(b); try{ mo238.observe(b,{attributes:true,attributeFilter:['style']}) }catch(e){} }
+ var mo238=new MutationObserver(function(){ reassert238() });
+ function curOf238(b){ return {t:b.style.getPropertyValue('transform'),o:b.style.getPropertyValue('transform-origin'),p:b.style.getPropertyPriority('transform')} }
+ function isMine238(b){ var d=b.__d238; if(!d)return false; var c=curOf238(b); return c.t===d.t&&c.p==='important'&&(!d.o||c.o===d.o) }
+ function assert238(b,t,o){ if(!b)return; b.__d238={t:t,o:o||null}; var c=curOf238(b);
+  if(c.t!==t||c.p!=='important')b.style.setProperty('transform',t,'important');
+  if(o&&c.o!==o)b.style.setProperty('transform-origin',o,'important') }
+ function reassert238(){ try{ ['sky193','curb193'].forEach(function(id){ var b=document.getElementById(id); if(!b||!b.__d238||isMine238(b))return;
+   b.style.setProperty('transform',b.__d238.t,'important'); if(b.__d238.o)b.style.setProperty('transform-origin',b.__d238.o,'important') }) }catch(e){} }
+ function compute238(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+   var cv=document.getElementById('cv'); if(!cv)return;
+   var sky=document.getElementById('sky193'), curb=document.getElementById('curb193');
+   if(!sky&&!curb)return; watch238(sky); watch238(curb);
+   var cs=getComputedStyle(cv); var tr=cs.transform||'none';
+   if(tr==='none'){ assert238(sky,'none',null); assert238(curb,'none',null); return }
+   var org=(cs.transformOrigin||'').split(/\s+/); var ox=parseFloat(org[0])||0, oy=parseFloat(org[1])||0;
+   var px0=cv.offsetLeft+ox, py0=cv.offsetTop+oy;
+   [sky,curb].forEach(function(b){ if(!b)return; assert238(b,tr,(px0-b.offsetLeft).toFixed(1)+'px '+(py0-b.offsetTop).toFixed(1)+'px') });
+  }catch(e){} }
+ (function frame238(){ requestAnimationFrame(frame238); compute238() })();
+
+ window.__v238={version:function(){ return GAME_VERSION },reassert:reassert238};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 38: 🌤️ sky & street bands get ONE true owner — the correct camera mirror (full computed transform, layout-geometry pivot, none at rest) is re-asserted from a MutationObserver microtask whenever any legacy writer (bandCam221 / bandSync227 / bandFrame233 / bandFrame236) touches a band, so a competing transform can never reach paint in any browser: the sky and street ride the scene rigidly during zooms and sit perfectly still at rest','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
