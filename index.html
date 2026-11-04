@@ -24210,6 +24210,149 @@ try{
 }catch(e){}
 })();
 </script>
+<style id="style237">
+/* ===== v200 hotfix 37: ACTIONS WORDS STOP GLITCHING — the folder's name is printed ONCE (the sheet bar already titles it; the in-panel folderHead repeated it verbatim — "Social / Social", "Travel / Travel", doubled headers stacked in the panel), the folder sheet no longer re-runs its slide transition on every rebuild, the infinite border-spin + choice-pulse animations stop behind the panel's and the sheets' words (the conic borders stay — still — so text sits on a calm surface instead of a perpetually repainting one), and tap rings/sparkles no longer burst over the words while a folder is open ===== */
+#panel .folderHead{display:none!important}
+.dockSheet{transition:none!important}
+#panel .card,#panel .btn,#panel .furn,#panel details,#sheet .btn{animation:none!important}
+body.dockOpen47 .tapRing,body.dockOpen47 .tapSpark{display:none!important}
+</style>
+<script>
+/* ================= v200 HOTFIX 37 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Two repairs, both reproduced from Howard's own recordings (Nov 3, late):
+
+   A) ⚡ ACTIONS GLITCHING WITH WORDS — in his video the Actions panel (and every folder) prints
+      its title TWICE (the sheet bar's title + an identical in-panel folderHead), its sections
+      arrive sprawled, and its words shimmer/flicker while he reads: every card and button in the
+      panel wears TWO infinite animations (the @property conic-border spin + the choice pulse),
+      the folder sheet re-runs its .36s slide transition on every rebuild, tap rings/sparkles
+      burst over the text on every scroll-touch, and the queue painter's repaint signature
+      (qSigOf101) embeds the LIVE cooldown clock — a continuously-changing float — so while a
+      cooldown runs the 1.5s queue tick keeps deciding the panel is "dirty" and rebuilding it
+      under his thumb, scroll position and all. And h36's arrival-collapse law never applied to
+      Actions at all (its realTab map returns null for actions101), so Actions sections were the
+      one menu exempt from start-collapsed. FIXES (style237 + below): folderHead hidden (the
+      sheet bar keeps the one title), dockSheet transition off, panel/sheet animations off
+      (borders stay, motion stops), tap FX hidden while a folder is open, qSigOf101 bucketed to
+      whole game-hours (queue changes still repaint instantly — the queue list itself is in the
+      signature), paintQCards101 defers while the player is touching/scrolling the panel and
+      every Actions repaint preserves the panel's scroll position, and entering Actions now
+      closes its sections like every other folder (in-visit opens are never touched).
+
+   B) 🔢 THE PIN SHEET — THREE DEFECTS, ONE FAMILY:
+      (1) IT FIRES UNINVITED: pinSetupPrompt201 is wired into getDebit63 / issueCard108 /
+          applyCredit63 / cardOfferGo151, so merely receiving a card (or a bank visit ending)
+          schedules a "Set up your PIN" sheet 800ms later — and if another sheet is up it is
+          QUEUED (v84/v115) and served at the next close, e.g. right after a family celebration
+          sheet, looking completely random. Howard never started a PIN setup; Levi (age 6, kid
+          card) never wanted one.
+      (2) THE KEYPAD IS DEAD + (3) SKIP DOESN'T DISMISS: every PIN render calls openSheet while
+          the PIN modal is already open. The v115 popup queue files any sheet opened >350ms
+          after the last modal click — and the global choice-pulse interceptor delays every
+          sheet button's real click by exactly 360ms. So each digit tap: click stamps
+          modalNav115, the interceptor re-fires at +360ms, pinKey updates its hidden state,
+          pinRender calls openSheet at +360ms — 10ms past the deadline — and the repaint is
+          QUEUED instead of painted. The dots never fill (his video: 8 seconds, four empty
+          dots). Skip is worse: pinCancel closes the modal, the closeModal wrapper drains the
+          queue at +90ms and RE-OPENS the queued PIN renders — the sheet resurrects forever.
+          Escape has no handler at all.
+      FIXES: pinSheet201 is gated at the single chokepoint every caller flows through —
+          a SETUP sheet (no PIN set yet) opens ONLY on a deliberate PIN tap (a button whose
+          own onclick is pinSheet201/pinCard207, or the card-inspect Set/Change PIN button);
+          auto-prompts are swallowed and remembered (S.v201.pinSkip237) so they never
+          re-serve; a card payment attempted with no PIN set simply proceeds (no forced
+          setup — the PIN can be set deliberately from the card screen any time); entering
+          an EXISTING PIN at checkout is untouched. pinSetupPrompt201 itself is gated the
+          same way. pinRender201 stamps modalNav115 and purges queued PIN copies before
+          painting, so every digit paints immediately. PIN pad / Skip / tap-to-pay buttons
+          are exempted from the 360ms choice-pulse delay (dataset.fx='go' on pointerdown),
+          so taps land when touched. pinCancel201 records the dismissal, purges both sheet
+          queues of PIN copies, and sweeps at +150/+450/+900ms so a drained queue can never
+          resurrect the sheet; the sheet's ✕ on a PIN setup counts as the same dismissal,
+          and Escape now cancels the PIN sheet too. A 700ms guard also purges queued PIN
+          setup copies and closes a setup sheet that appeared with no deliberate session
+          behind it (legacy queues on aged saves heal themselves). */
+(function(){ 'use strict';
+try{
+
+ /* ================= B) THE PIN SHEET ================= */
+ function pinV237(){ try{ return (typeof ensure201b==='function')?ensure201b():null }catch(e){ return null } }
+ function isPinHtml237(h){ return typeof h==='string'&&(h.indexOf('pinKey201')>=0||h.indexOf('Set up your PIN')>=0||h.indexOf('Enter your PIN')>=0) }
+ function isPinSetupHtml237(h){ return typeof h==='string'&&h.indexOf('Set up your PIN')>=0 }
+ function purgePinQueues237(setupsOnly){ try{
+   var zap=function(arr){ if(!arr||!arr.length)return; for(var i=arr.length-1;i>=0;i--){ var it=arr[i]; var hs=(typeof it==='string')?it:((it&&(it.html||it.h))||''); if(!hs)continue; if(setupsOnly?isPinSetupHtml237(hs):isPinHtml237(hs))arr.splice(i,1) } };
+   try{ if(typeof sheetQ84!=='undefined')zap(sheetQ84) }catch(e){}
+   try{ if(typeof modalQueue115!=='undefined')zap(modalQueue115) }catch(e){}
+  }catch(e){} }
+ var pinExplicitUntil237=0, pinSession237=false;
+ function pinExplicit237(){ try{ if(Date.now()<pinExplicitUntil237)return true;
+   if(typeof lastTapOc146==='string'&&lastTapOc146&&(lastTapOc146.indexOf('pinSheet201')>=0||lastTapOc146.indexOf('pinCard207')>=0)&&Date.now()-(typeof lastTapOcAt146==='number'?lastTapOcAt146:0)<2500)return true;
+  }catch(e){} return false }
+ function pinDismissed237(){ try{ var V=pinV237(); if(V&&V.pinSkip237)return true }catch(e){} return false }
+ function markPinDismissed237(){ try{ var V=pinV237(); if(V&&!V.pinSkip237){ V.pinSkip237=true; try{ save() }catch(e){} } }catch(e){} }
+
+ /* deliberate-tap tracking + the keypad exemption from the 360ms choice-pulse delay */
+ document.addEventListener('pointerdown',function(e){ try{ var b=e.target&&e.target.closest?e.target.closest('button'):null; if(!b)return; var oc=b.getAttribute('onclick')||'';
+   if(oc.indexOf('pinKey201')>=0||oc.indexOf('pinCancel201')>=0||oc.indexOf('pinTap201')>=0){ b.dataset.fx='go'; pinExplicitUntil237=Date.now()+5000; pinSession237=true; try{ modalNav115=Date.now() }catch(err){} }
+   else if(oc.indexOf('pinSheet201')>=0||oc.indexOf('pinCard207')>=0){ pinExplicitUntil237=Date.now()+5000 }
+   else if(b.classList.contains('sheetX')){ var sh=document.getElementById('sheet'); if(sh&&isPinSetupHtml237(sh.innerHTML)){ markPinDismissed237(); pinSession237=false; purgePinQueues237(false);
+     [150,450,900].forEach(function(ms){ setTimeout(function(){ try{ purgePinQueues237(false); var m=document.getElementById('modal'); var s2=document.getElementById('sheet'); if(m&&m.classList.contains('open')&&s2&&isPinHtml237(s2.innerHTML)&&!window._pin201)closeModal() }catch(err){} },ms) }) } }
+  }catch(err){} },true);
+
+ /* the gate: pinSheet201 only ever shows a SETUP sheet on a deliberate PIN tap */
+ try{ var _ps237=pinSheet201; pinSheet201=function(method,resume,setupOnly){ try{
+   var V=pinV237(); var isSet=method==='credit'?!!(V&&V.pinC):!!(V&&V.pinD);
+   if(!isSet){
+     if(setupOnly){ if(pinExplicit237()){ pinSession237=true; pinExplicitUntil237=Date.now()+5000; return _ps237.apply(this,arguments) }
+       markPinDismissed237(); return }
+     if(typeof resume==='function'){ resume(true) } return;
+   }
+   return _ps237.apply(this,arguments);
+  }catch(e){ return _ps237.apply(this,arguments) } } }catch(e){}
+ /* the auto-prompt itself stands down unless the player just tapped a PIN control */
+ try{ var _pp237=pinSetupPrompt201; pinSetupPrompt201=function(){ try{ if(pinExplicit237()&&!pinDismissed237())return _pp237.apply(this,arguments) }catch(e){} return } }catch(e){}
+ /* every PIN repaint paints NOW — never into the popup queue — and queued copies are purged */
+ try{ var _pr237=pinRender201; pinRender201=function(){ try{ modalNav115=Date.now() }catch(e){} purgePinQueues237(true); var r=_pr237.apply(this,arguments); try{ modalNav115=Date.now() }catch(e){} return r } }catch(e){}
+ /* Skip / Cancel: record it, purge, and sweep so the queue can never resurrect the sheet */
+ try{ var _pc237=pinCancel201; pinCancel201=function(){ try{ var P=window._pin201; if(P&&P.setupOnly)markPinDismissed237() }catch(e){}
+   var r=_pc237.apply(this,arguments); pinSession237=false; purgePinQueues237(false);
+   [150,450,900].forEach(function(ms){ setTimeout(function(){ try{ purgePinQueues237(false); var m=document.getElementById('modal'); var sh=document.getElementById('sheet'); if(m&&m.classList.contains('open')&&sh&&isPinHtml237(sh.innerHTML)&&!window._pin201)closeModal() }catch(e){} },ms) });
+   return r } }catch(e){}
+ /* Escape dismisses the PIN sheet */
+ document.addEventListener('keydown',function(e){ try{ if(e.key!=='Escape')return; var m=document.getElementById('modal'); var sh=document.getElementById('sheet'); if(!m||!m.classList.contains('open')||!sh||!isPinHtml237(sh.innerHTML))return;
+   if(window._pin201&&typeof pinCancel201==='function')pinCancel201(); else closeModal();
+  }catch(err){} },true);
+ /* aged-save hygiene: queued PIN setup copies are purged, and a setup sheet with no
+    deliberate session behind it closes itself instead of sitting there uninvited */
+ var pinSheetSeen237=0;
+ setInterval(function(){ try{ purgePinQueues237(true);
+   var m=document.getElementById('modal'); var sh=document.getElementById('sheet');
+   if(m&&m.classList.contains('open')&&sh&&isPinSetupHtml237(sh.innerHTML)&&(!window._pin201||(window._pin201.setupOnly&&!pinSession237&&!pinExplicit237()))){
+     if(!pinSheetSeen237)pinSheetSeen237=Date.now();
+     else if(Date.now()-pinSheetSeen237>1200){ pinSheetSeen237=0; markPinDismissed237(); window._pin201=null; try{ closeModal() }catch(e){} }
+   } else pinSheetSeen237=0;
+  }catch(e){} },700);
+
+ /* ================= A) ACTIONS: stable signature, reading-safe repaints, arrival collapse ================= */
+ try{ var _qSig237=qSigOf101; qSigOf101=function(){ try{ return (S&&S.queue84?S.queue84.join(','):'')+'|'+Math.floor(typeof qLeft99==='function'?qLeft99():0) }catch(e){ return _qSig237() } } }catch(e){}
+ var panelTouchAt237=0;
+ document.addEventListener('pointerdown',function(e){ try{ if(e.target&&e.target.closest&&e.target.closest('#panel'))panelTouchAt237=Date.now() }catch(e){} },true);
+ document.addEventListener('scroll',function(e){ try{ if(e.target&&e.target.id==='panel')panelTouchAt237=Date.now() }catch(e){} },true);
+ try{ var _pa237=paintActions101; paintActions101=function(){ var p=document.getElementById('panel'); var st=p?p.scrollTop:0; var r=_pa237.apply(this,arguments); try{ var p2=document.getElementById('panel'); if(p2&&st)p2.scrollTop=st }catch(e){} return r } }catch(e){}
+ try{ var _pq237=paintQCards101; var pqRetry237=null; paintQCards101=function(){ try{
+   if(typeof curTab!=='undefined'&&curTab==='actions101'&&Date.now()-panelTouchAt237<1000){ if(!pqRetry237)pqRetry237=setTimeout(function(){ pqRetry237=null; try{ paintQCards101() }catch(e){} },1100); return }
+  }catch(e){} return _pq237.apply(this,arguments) } }catch(e){}
+ function closeActionsSections237(){ try{ if(typeof curTab==='undefined'||curTab!=='actions101')return; var p=document.getElementById('panel'); if(!p)return;
+   Array.prototype.slice.call(p.querySelectorAll('details')).forEach(function(d){ try{ var sm=d.querySelector(':scope > summary'); var t=sm?sm.textContent:''; if(/you are here/i.test(t))return; if(d.open)d.removeAttribute('open') }catch(e){} });
+  }catch(e){} }
+ var lastTab237=null;
+ try{ var _rt237=renderTabs; renderTabs=function(a){ var r=_rt237.apply(this,arguments); try{ var nowT=(typeof curTab!=='undefined')?curTab:null; var entering=!!(nowT==='actions101'&&lastTab237!=='actions101'); if(nowT)lastTab237=nowT; if(entering)[60,250,600].forEach(function(ms){ setTimeout(closeActionsSections237,ms) }) }catch(e){} return r } }catch(e){}
+
+ window.__v237={version:function(){ return GAME_VERSION },pinExplicit:pinExplicit237,purgePinQueues:purgePinQueues237};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 37: ⚡ Actions words stop glitching (folder title printed once, sheet slide-transition off, infinite border/pulse animations off behind panel & sheet text, tap FX hidden while a folder is open, queue repaint signature bucketed to whole game-hours, Actions repaints preserve scroll and defer while reading, Actions sections start collapsed on entry like every folder) • 🔢 the PIN sheet is gated to deliberate PIN taps only (card-issue/bank-visit auto-prompts swallowed + remembered, never queue-served again), its keypad paints every digit immediately (modalNav stamped, queued copies purged, pad exempt from the 360ms choice-pulse delay), and Skip/✕/Escape always dismiss it for good (dismissal recorded, both sheet queues purged, resurrection sweeps)','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
