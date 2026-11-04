@@ -8884,7 +8884,7 @@ function ensure123(){ if(!S)return null; if(!S.v123||typeof S.v123!=='object')S.
 function careName123(){ try{ const c=(typeof todCare82==='function')?todCare82():null; if(c)return c }catch(e){} try{ return careHelper() }catch(e){ return 'Mom' } }
 /* ---------- ⚡ QUICK LIFE + 🎲 RANDOM STYLE (the start-screen choice) ---------- */
 function randomStyle123(quiet,keepGender){ if(!keepGender)selGender=Math.random()<0.5?'girl':'boy'; selSkin=pickArr(SKINS); selHair=pickArr(HAIRS); selShirt=pickArr(SHIRTS); selHat='none'; selGlasses='none'; selShoes='sneakers'; try{ selFace=pickArr(FACE_STYLES).id }catch(e){} try{ const pool=(selGender==='girl'&&typeof HAIR_GIRL113!=='undefined')?HAIR_GIRL113:((typeof HAIR_BOY113!=='undefined')?HAIR_BOY113:HAIRSTYLES.map(function(h){ return h.id })); selHairStyle=pickArr(pool) }catch(e){} selGloves='none'; selWatch='none'; selJewelry='none'; if(!quiet)render() }
-function quickLife123(){ const g=Math.random()<0.5?'girl':'boy'; selGender=g; selName=nameForGender(g==='girl'); selAge=pickArr([1,2,3,4,5,7,9,12,14,16,18,21,26,32]); selOrigin=pickArr(ORIGINS).id; rollPlace44(); randomStyle123(true,g); tmpMom47=''; tmpDad47=''; const el=document.getElementById('pname'); if(el)el.value=selName; startGame(); if(S){ const V=ensure123(); V.quick=true; log('⚡ QUICK LIFE — no forms, no fuss: the dice rolled '+S.name+', a '+(g==='girl'?'girl':'boy')+' of '+S.age+', placed in '+placeLine()+' — and the life is already running. Everything from here is earned the usual way.'); save() } }
+function quickLife123(){ const g=Math.random()<0.5?'girl':'boy'; selGender=g; selName=nameForGender(g==='girl'); selAge=pickArr([1,2,3,4,5,7,9,12,14,16,18,21,26,32]); selOrigin=(typeof window!=='undefined'&&window._dealt159)?window._dealt159:pickArr(ORIGINS).id; rollPlace44(); /* h56: dealt family wins here too */ randomStyle123(true,g); tmpMom47=''; tmpDad47=''; const el=document.getElementById('pname'); if(el)el.value=selName; startGame(); if(S){ const V=ensure123(); V.quick=true; log('⚡ QUICK LIFE — no forms, no fuss: the dice rolled '+S.name+', a '+(g==='girl'?'girl':'boy')+' of '+S.age+', placed in '+placeLine()+' — and the life is already running. Everything from here is earned the usual way.'); save() } }
 const _rset123=renderSetup; renderSetup=function(app){ _rset123(app); try{ const st=app.querySelector('.setup'); if(st&&!st.querySelector('.quick123')){ const d=document.createElement('div'); d.className='quick123'; d.innerHTML='<div class="qCard123"><h3 style="margin:0 0 4px">⚡ Quick Life</h3><p>Starts a random life instantly — random gender, name, style, family and town.</p><button class="btn gold" style="margin-top:8px" onclick="quickLife123()">⚡ Start a Quick Life</button></div><div class="qCard123"><h3 style="margin:0 0 4px">🎨 Normal Life</h3><p>Pick name, look, place and age below. Your family is 🎲 dealt. <b>🎲 Random style</b> rolls just the look.</p><button class="btn" style="margin-top:8px" onclick="randomStyle123()">🎲 Random style</button></div>'; const h3=st.querySelector('h3'); if(h3)st.insertBefore(d,h3); else st.appendChild(d) } }catch(e){} };
 /* ---------- 🎓 TUTORIAL — step 3 points at the clock now, and there are more steps ---------- */
 try{ TUT102[2]=['🕐 Time — right up top','Time runs itself: <b>1 day ≈ 24 real minutes</b> (10 game-min per 10 real sec). <b>No pause.</b> Clock: top bar — 📅 Day &amp; Calendar pill, 🕐 beside it; also 📱 phone + clocks in town. Only <b>sleep</b> speeds time.'];
@@ -11594,12 +11594,13 @@ function quickStart136(){ const A={}; QL136_QS.forEach(function(q){ A[q.k]=QL136
  const kidsWanted=(A.kids==='yes')||(A.kids==='random'&&Math.random()<0.35);
  const jobWanted=(A.job==='yes')||(A.job==='random'&&Math.random()<0.5);
  const takenWanted=(A.rel==='taken')||(A.rel==='random'&&Math.random()<0.4);
- if(kidsWanted&&A.stage!=='toddler')age=Math.max(age,24+Math.floor(Math.random()*10));
- if(jobWanted&&age<18&&A.stage!=='toddler')age=21+Math.floor(Math.random()*8);
- if(takenWanted&&age<16&&A.stage!=='toddler')age=16+Math.floor(Math.random()*4);
+ var bandPicked136=(A.stage==='toddler'||A.stage==='kid'||A.stage==='teen'||A.stage==='adult'); /* h56: a PICKED age band is law — the kids/job/taken bumps fire only when no band was picked (stage random/unset); with a band picked, the other answers degrade through the honest notes below instead of dragging the age out of band */
+ if(kidsWanted&&!bandPicked136)age=Math.max(age,24+Math.floor(Math.random()*10));
+ if(jobWanted&&age<18&&!bandPicked136)age=21+Math.floor(Math.random()*8);
+ if(takenWanted&&age<16&&!bandPicked136)age=16+Math.floor(Math.random()*4);
  const g=Math.random()<0.5?'girl':'boy'; selGender=g; selName=nameForGender(g==='girl'); selAge=age;
  try{ if(typeof agePick==='function')agePick(age) }catch(e){} /* h5: the builder behind the modal (age readout, stage line, preview caption) must agree with the age this life actually starts at — never a stale "Age 1" */
- selOrigin=(A.stage==='toddler')?pickArr(ORIGINS.filter(function(o){ return ['two','mom','dad','step','rich','orphan','boarding'].indexOf(o.id)>=0 })).id:pickArr(ORIGINS).id; /* v159: the family is DEALT, never picked — uniform across ORIGINS; the old money question steered the family start and is gone • h3: a TODDLER start is always dealt a family home (parents / Hope House / dorm) — a 3-year-old starts IN a family, never self-raised */
+ selOrigin=(function(){ var d=(typeof window!=='undefined'&&window._dealt159)?window._dealt159:null; if(d&&!(A.stage==='toddler'&&['alley','crackden'].indexOf(d)>=0))return d; return (A.stage==='toddler')?pickArr(ORIGINS.filter(function(o){ return ['two','mom','dad','step','rich','orphan','boarding'].indexOf(o.id)>=0 })).id:pickArr(ORIGINS).id })(); /* h56: the family DEALT on the setup card is the family this life starts in — no silent re-roll behind the player's back (toddler safety filter still applies) */ /* v159: the family is DEALT, never picked — uniform across ORIGINS; the old money question steered the family start and is gone • h3: a TODDLER start is always dealt a family home (parents / Hope House / dorm) — a 3-year-old starts IN a family, never self-raised */
  rollPlace44(); randomStyle123(true,g); tmpMom47=''; tmpDad47='';
  const el=document.getElementById('pname'); if(el)el.value=selName;
  closeModal(); startGame();
@@ -25178,7 +25179,7 @@ function letterGen241(){ try{ var V=V241(); if(V.letterDay===S.day)return; V.let
  brain241(sys,ctx241('The letter is FROM: '+who+'. The recipient is '+S.name+'. Write the letter body only.'),9000,function(rep){ var body=rep?rep.replace(/\s+\n/g,'\n').trim().slice(0,700):''; var V2=V241();
   if(!body)body=kind==='summons'?('Dear '+S.name+',\nThis letter concerns matters on your record that require your appearance. Do not ignore it — paper like this does not go away on its own.\n— The Court'):('Dear '+S.name+',\nThinking of you and everything lately. Write back when you can — actually write.\n— '+who);
   V2.mail.unshift({from:who,kind:kind,body:body,day:S.day,read:false}); if(V2.mail.length>20)V2.mail.length=20; try{ save() }catch(e){}
-  try{ toast('✉️ New letter — from '+who) }catch(e){} try{ log('✉️ A letter arrived from '+who+' — it\u2019s in 🧠 Living World → Your mail.') }catch(e){} }) }catch(e){} }
+  try{ toast('✉️ New letter — from '+who) }catch(e){} try{ log('✉️ A letter arrived from '+who+'.') }catch(e){} }) }catch(e){} }
 window.aiMail241=function(){ var V=V241(); V.mail.forEach(function(m){ m.read=true }); try{ save() }catch(e){}
  openSheet('<h2>✉️ Your mail</h2>'+(V.mail.length?V.mail.map(function(m){ return '<div class="card" style="margin-top:8px"><b>'+(m.kind==='summons'?'⚖️ ':m.kind==='fan'?'💌 ':'')+esc241(m.from)+'</b> <span class="small">• Day '+m.day+'</span><p style="font-size:14px;line-height:1.6;margin-top:4px;white-space:pre-wrap">'+esc241(m.body)+'</p></div>' }).join(''):'<p>No letters yet. Paper takes a day to arrive — family, fans and (if it comes to it) courts all still write.</p>')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
 function storyGen241(dayDone,entries){ try{ if(!entries||!entries.length)return; var key='story|'+dayDone; var V=V241(); if(V.stories[key])return; V.stories[key]='…';
@@ -25675,7 +25676,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h54', CLASS246='hotfix';
+ var BUILD246='v200-h55', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26637,7 +26638,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h52'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h55'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -27005,10 +27006,10 @@ try{
 
   /* ================= 1) Quick Life honors its answers ================= */
   if(typeof qlSet136==='function'){ var _qls54=qlSet136; qlSet136=function(k,v){ var r=_qls54.apply(null,arguments); try{ window.__qlAns54={}; if(typeof QL136!=='undefined')for(var kk in QL136)window.__qlAns54[kk]=QL136[kk] }catch(e){} return r } }
-  function enforceQL54(snap,typed){ try{ if(typeof S==='undefined'||!S||!snap)return; var fixed=[];
-   if(snap.kids==='yes'&&S.age<24){ S.age=24; fixed.push('age set to 24 — parenthood was the answer') }
-   if(snap.job==='yes'&&S.age<21){ S.age=21; fixed.push('age set to 21 — employed was the answer') }
-   if(snap.rel==='taken'&&S.age<16){ S.age=16; fixed.push('age set to 16 — taken was the answer') }
+  function enforceQL54(snap,typed){ try{ if(typeof S==='undefined'||!S||!snap)return; var fixed=[]; var band54=(snap.stage==='toddler'||snap.stage==='kid'||snap.stage==='teen'||snap.stage==='adult'); /* h56: a picked age BAND outranks the kids/job/taken age raises below — the band is the answer that must land */
+   if(snap.kids==='yes'&&S.age<24&&!band54){ S.age=24; fixed.push('age set to 24 — parenthood was the answer') }
+   if(snap.job==='yes'&&S.age<21&&!band54){ S.age=21; fixed.push('age set to 21 — employed was the answer') }
+   if(snap.rel==='taken'&&S.age<16&&!band54){ S.age=16; fixed.push('age set to 16 — taken was the answer') }
    if(typed){ var wantFirst=typed.split(' ')[0]; if(S.name.split(' ')[0]!==wantFirst){ var parts=S.name.split(' '); S.name=(typed.indexOf(' ')>=0)?typed:(typed+(parts.length>1?(' '+parts.slice(1).join(' ')):(' '+pickArr(TOWN_LAST)))); fixed.push('name is '+S.name) } }
    if(snap.rel==='taken'&&!S.partner&&S.age>=13&&typeof nameForGender==='function'&&typeof romOf==='function'){ var pg=(S.gender==='girl')?false:true; var pn=nameForGender(pg)+' '+pickArr(TOWN_LAST); var gd=0; while((pn===S.name||(S.town&&S.town.people&&S.town.people[pn]))&&gd++<40)pn=nameForGender(pg)+' '+pickArr(TOWN_LAST); if(!S.town)S.town={people:{}}; if(!S.town.people)S.town.people={}; S.town.people[pn]={name:pn,girl:pg,trait:pickArr(Object.keys(TOWN_TRAITS)),haunt:'street',skin:pickArr(SKINS),hair:pickArr(HAIRS),shirt:pickArr(SHIRTS),hat:'none',glasses:'none',shoes:'sneakers',face:'classic',hairStyle:pickArr(pg?HAIR_GIRL113:HAIR_BOY113),gloves:'none',watch:'none',jewelry:'none',icon:pg?'👩':'👨',metDay:S.day,pet:null}; if(!S.met)S.met={}; S.met['town:'+pn]=1; addContact(pn); var rr=romOf(pn); rr.stage=3; rr.meter=72; rr.dates=2; rr.lastTouch=S.day; S.partner=pn; fixed.push('partner: '+pn) }
    if(snap.kids==='yes'&&!(S.kids&&S.kids.length)&&S.age>=18&&typeof nameForGender==='function'){ var kg=Math.random()<0.5?'girl':'boy'; var kn=nameForGender(kg==='girl'); var gd2=0; while((kn===S.name||(S.kids||[]).some(function(x){ return x.name===kn }))&&gd2++<40)kn=nameForGender(kg==='girl'); var ka=Math.floor(Math.random()*Math.min(7,S.age-18)); if(!S.kids)S.kids=[]; S.kids.push({name:kn,age:ka,born:S.day-ka*8,happy:75,gender:kg,canWalk:ka>=2,coParent:S.partner||''}); fixed.push('child: '+kn+' ('+ka+')') }
@@ -27066,6 +27067,334 @@ try{
  }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 55 — THE STABILITY PASS 2 (owner's third phone video, live h46 + PRIORITY ZERO: the in-out-in-out pulse)
+   P0) THE CAMERA LAW — root cause, proven in shipped source: the v215 cinematic director ticks every 350 ms and
+       treats ANY live speech bubble from speakers191() as a conversation — and the v191 conversation engine fires
+       ambient NPC-to-NPC pair exchanges constantly in busy scenes. Every ambient bubble pushed the lens to 1.52x,
+       the 1.1 s grace expired, the lens eased back to the 1.24x idle shot, the next bubble pushed it in again:
+       in, out, in, out, forever — worst exactly where the owner filmed it (a crowded classroom). gentleFocus()
+       added a second ambient re-aim (focusCamera 1.3x on NPC interactions). THE LAW, enforced by the outermost
+       applyCameraTransform wrap below (the ONE writer of the scene transform from this build on):
+         • ambient NPC chatter NEVER moves the camera (gentleFocus stands down; the cine convo shot is unreachable
+           unless the PLAYER is in the conversation — a conversation sheet/thread is open, a date is live, or a
+           player-started talk is inside its window);
+         • in free play the lens is PINNED to one snapshot framing (1.24x on the player's snapshot aim): the pin
+           writes NOTHING while the framing already matches, re-snapshots only on a room/location change, after an
+           event zoom ends, or when the player has walked 150px+ from the snapshot aim;
+         • shipped event/action zooms (camState) keep sole ownership while live, exactly as before;
+         • after a player conversation ends, a 3 s cooldown must pass before any new push-in.
+   1) UPDATE NOTICE, ONCE MEANS ONCE — the offer is gated: it may only appear at the main menu / life hub with NO
+      sheet or overlay open; a boot-time showing that lands anywhere else is removed before paint and the device
+      stamp is restored so the notice can still offer once, at the menu, next launch. Showing it marks the stamp
+      seen immediately (shipped behaviour kept); the SW/watchdog paths route through the same gate.
+   2) TAP FX CONSOLIDATED — the three historical layers (v180 sparkle canvas z-100001, v193 trail canvas z-100000,
+      v35 DOM rings/sparks) are capped under the sheet layer (z-40), hidden and swept while any sheet/overlay is
+      open, cleared on every panel/screen switch, capped at 8 live DOM marks, and the picker's Off now also gates
+      the v35 spawner (before, Off only stopped the trail layers and taps kept bursting).
+   3) SPRITE ASPECT + CANVAS STABILITY — the scene bitmap is pinned to its authored 900x460 and the element box is
+      an aspect-true fit of the wrap, recomputed ONLY on a real viewport (window) size change — never mid-play.
+   4) CROWD DISCIPLINE — figures keep a minimum separation (targets are nudged apart on a half-second pass, so two
+      figures stop merging into one spot wearing two pills), and speech bubbles are clamped inside the scene.
+   5) START-OF-LIFE QUEUE — welcome waits for any open sheet; enrollment/trait/tutorial sheets defer while the
+      welcome overlay or creator letter is up; the welcome overlay and creator letter are fully OPAQUE (their
+      translucent backdrops were the ghost-through), and the creator letter never opens over a sheet.
+   6) ONE PANEL IN THE TRAY — a purity pass removes foreign cards from the open panel (store cards outside Travel,
+      the Living World card outside Home) on a cadence and after every tab paint.
+   7) QUICK LIFE NAME — the typed name is captured at input time and enforced after start (immediately and on
+      settle timers) for EVERY band, and the welcome card is handed the typed name: kid and teen starts carry it
+      on the HUD, the welcome card and the born-into log like the adult start does.
+   8) PLAY FOLDER — an Actions Play section that renders with no action rows gets its real Play action restored.
+   9) REPAINT DUPLICATIONS — the tray pass dedupes panel cards by heading+action signature and duplicate
+      non-card section header rows, so a list renders each entry exactly once at any scroll offset.
+   10) TOAST LANE — while a sheet is open, toasts ride the top lane (overSheet55) instead of across the sheet's
+      header. GAME_VERSION stays 200; SAVE_KEY untouched; tracker + feedback paths untouched. */
+(function(){ 'use strict';
+try{
+ function $55(id){ return document.getElementById(id) }
+ function S55(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+ function modalOpen55(){ var m=$55('modal'); return !!(m&&m.classList.contains('open')) }
+ function overlayUp55(){ return !!document.querySelector('.welcomeOv')||!!$55('creator200')||!!$55('creator193') }
 
+ /* ================= P0 + 3) THE CAMERA LAW & CANVAS LOCK ================= */
+ var camSnap55=null, camWasEvent55=false, camLastConvoEnd55=0, camWasConvo55=false, camPinWrites55=0;
+ function clampCam55(cv){ try{ var m=/scale\(([\d.]+)\)/.exec(cv&&cv.style?cv.style.transform||'':''); if(m&&parseFloat(m[1])>1.3){ cv.style.transform='scale(1.3)'; camPinWrites55++ } }catch(e){} } /* event/conversation push-ins stay MODEST: noticeably closer than the wide rest, never face-filling */
+ function playerConvo55(now){
+  try{ if(typeof openThread42!=='undefined'&&openThread42)return true }catch(e){}
+  try{ if(window._dateWith&&(window._dateSay&&window._dateSay.until>now))return true }catch(e){}
+  try{ if(window.__playerConvo55Until&&window.__playerConvo55Until>now)return true }catch(e){}
+  return false }
+ try{ if(typeof openConvo==='function'){ var _oc55=openConvo; openConvo=function(){ try{ window.__playerConvo55Until=performance.now()+12000 }catch(e){} return _oc55.apply(this,arguments) } } }catch(e){}
+ try{ gentleFocus=function(){} }catch(e){} /* ambient re-aim: retired — NPC moments never move the lens */
+ try{ if(typeof applyCameraTransform==='function'){ var _act55=applyCameraTransform;
+  applyCameraTransform=function(){
+   var cv=$55('cv'); var s=S55();
+   if(!cv||!s||typeof inGame==='undefined'||!inGame)return _act55.apply(this,arguments);
+   var now=performance.now();
+   var eventLive=false; try{ eventLive=!!(typeof camState!=='undefined'&&camState.active&&now<Math.max(camState.until,(typeof camHoldUntil!=='undefined'?camHoldUntil:0))) }catch(e){}
+   if(eventLive){ camWasEvent55=true; var rE=_act55.apply(this,arguments); clampCam55(cv); return rE }
+   var convo=playerConvo55(now);
+   if(convo){ camWasConvo55=true; var rC=_act55.apply(this,arguments); clampCam55(cv); return rC }
+   if(camWasConvo55){ camWasConvo55=false; camLastConvoEnd55=now }
+   /* free play: ONE pinned framing — the WIDE resting shot (owner's latest word supersedes the
+      Nov 3 closer framing: rest wide and calm, no idle zoom, no drift, no re-aiming). The pin
+      writes NOTHING while the canvas already sits unzoomed. */
+   camWasEvent55=false; camSnap55=null;
+   if(cv.style.transform){ cv.style.transform=''; camPinWrites55++ }
+  } } }catch(e){}
+ window.__still55={writes:function(){ return camPinWrites55 },snap:function(){ return camSnap55 }};
+ var lock55={w:0,h:0,vw:0,vh:0};
+ (function lockTick55(){ try{ var cv=$55('cv'); if(cv){ if(cv.width!==900)cv.width=900; if(cv.height!==460)cv.height=460;
+   var vw=window.innerWidth, vh=window.innerHeight;
+   if(lock55.vw!==vw||lock55.vh!==vh||!lock55.w){ var wrap=cv.closest?cv.closest('.roomWrap'):cv.parentElement; if(wrap){ var W=wrap.clientWidth,H=wrap.clientHeight; if(W>40&&H>40){ var sc=Math.min(W/900,H/460); lock55={w:Math.round(900*sc),h:Math.round(460*sc),vw:vw,vh:vh} } } }
+   if(lock55.w){ var ws=lock55.w+'px', hs=lock55.h+'px'; if(cv.style.width!==ws)cv.style.setProperty('width',ws,'important'); if(cv.style.height!==hs)cv.style.setProperty('height',hs,'important') } }
+  }catch(e){} requestAnimationFrame(lockTick55) })();
+
+ /* ================= 4) CROWD DISCIPLINE ================= */
+ function figures55(){ var out=[]; try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n&&n.state==='in')out.push(n) }) }catch(e){}
+  try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p&&p.state==='in')out.push(p) }) }catch(e){} return out }
+ setInterval(function(){ try{ if(!S55()||typeof inGame==='undefined'||!inGame)return; var f=figures55(); if(f.length<2)return;
+   for(var i=0;i<f.length;i++)for(var j=i+1;j<f.length;j++){ var a=f[i],b=f[j]; if(typeof a.x!=='number'||typeof b.x!=='number')continue;
+    var dx=b.x-a.x, dy=b.y-a.y;
+    if(Math.abs(dx)<52&&Math.abs(dy)<34){ var push=(52-Math.abs(dx))/2+4; var sgn=dx<0?-1:1;
+     if(typeof a.tx==='number')a.tx=Math.max(56,Math.min(844,a.tx-push*sgn)); if(typeof b.tx==='number')b.tx=Math.max(56,Math.min(844,b.tx+push*sgn));
+     if(Math.abs(dx)<20){ a.x=Math.max(40,a.x-6); b.x=Math.min(860,b.x+6) } } }
+  }catch(e){} },500);
+ try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
+
+ /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h55';
+ var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
+ function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
+  var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
+  if(!document.body.classList.contains('inGame51'))return true; /* main menu / setup */
+  try{ if(typeof dockOpen!=='undefined'&&dockOpen)return false }catch(e){} return true }
+ var origOffer55=(typeof window.__upd246Offer==='function')?window.__upd246Offer:null;
+ window.__upd246Offer=function(){ try{ if(!updStage55())return; if(origOffer55)origOffer55() }catch(e){} };
+ setInterval(function(){ try{ var st=null; try{ st=localStorage.getItem(STAMP55) }catch(e){}
+   if(st&&st!==BUILD55&&updStage55()&&origOffer55)origOffer55() }catch(e){} },2500);
+ new MutationObserver(function(muts){ try{ for(var i=0;i<muts.length;i++)for(var k=0;k<muts[i].addedNodes.length;k++){ var n=muts[i].addedNodes[k];
+   if(n&&n.id==='updNotice246'&&!updStage55()){ n.remove(); try{ if(prevStamp55&&prevStamp55!==BUILD55)localStorage.setItem(STAMP55,prevStamp55); else if(!prevStamp55)localStorage.removeItem(STAMP55) }catch(e){} } } }catch(e){} }).observe(document.body,{childList:true});
+
+ /* ================= 2) TAP FX: ONE LAYER, OWNED BY THE PICKER ================= */
+ var st55=document.createElement('style'); st55.id='style55';
+ st55.textContent='#sparkLayer180,#trailLayer193{z-index:40!important}.tapRing,.tapSpark{z-index:40!important}#toast.overSheet55{top:10px!important;bottom:auto!important;z-index:1300!important}.welcomeOv{background:#14100c!important}#creator200{background:#080614!important}.modal .sheet{background-color:var(--card)!important}.roomWrap{overflow:hidden}';
+ document.head.appendChild(st55);
+ function trailOff55(){ try{ return !!(window.__trails193&&window.__trails193.store&&window.__trails193.store().sel==='off') }catch(e){ return false } }
+ function fxClear55(){ try{ document.querySelectorAll('.tapRing,.tapSpark').forEach(function(el){ el.remove() }) }catch(e){} }
+ try{ if(typeof spawnTapFx==='function'){ var _stf55=spawnTapFx; spawnTapFx=function(x,y){ try{ if(modalOpen55()||overlayUp55())return; if(trailOff55())return; var s=S55(); if(s&&s.tapFxOff)return; if(document.querySelectorAll('.tapRing,.tapSpark').length>=8)return }catch(e){} return _stf55.apply(this,arguments) } } }catch(e){}
+ var fxDisp55=null;
+ setInterval(function(){ try{ var blocked=modalOpen55()||overlayUp55()||trailOff55(); var want=blocked?'none':'';
+   if(fxDisp55!==want){ fxDisp55=want; ['sparkLayer180','trailLayer193'].forEach(function(id){ var c=$55(id); if(c)c.style.display=want }) }
+   if(blocked)fxClear55() }catch(e){} },300);
+ ['renderTabs','render'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__fx55){ var w=function(){ var r=fn.apply(this,arguments); fxClear55(); return r }; w.__fx55=true; window[nm]=w } }catch(e){} });
+
+ /* ================= 5) START-OF-LIFE QUEUE + OPAQUE SHEETS ================= */
+ try{ if(typeof welcomeMoment==='function'){ var _wm55=welcomeMoment; var wmBusy55=false;
+  welcomeMoment=function(name){ if(wmBusy55)return _wm55.apply(this,arguments);
+   if(modalOpen55()){ wmBusy55=true; var tries=0; var iv=setInterval(function(){ tries++; if(!modalOpen55()||tries>40){ clearInterval(iv); wmBusy55=false; try{ _wm55(name) }catch(e){} } },700); return }
+   return _wm55.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof showCreator200==='function'){ var _sc55=showCreator200; showCreator200=function(){ if(modalOpen55()||document.querySelector('.welcomeOv'))return; return _sc55.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof openSheet==='function'){ var _os55=openSheet;
+  openSheet=function(html,opts){ try{ if(typeof html==='string'&&(overlayUp55())&&/enroll|school time|trait|new here/i.test(html)){ var self=this,args=arguments,tries=0;
+    var iv=setInterval(function(){ tries++; if(!overlayUp55()||tries>30){ clearInterval(iv); try{ _os55.apply(self,args) }catch(e){} } },800); return } }catch(e){} return _os55.apply(this,arguments) } } }catch(e){}
+
+ /* ================= 6+9+8) TRAY PURITY, DEDUPE, PLAY FOLDER ================= */
+ function topCards55(panel){ var out=[]; Array.prototype.slice.call(panel.querySelectorAll('.card, details.dd132')).forEach(function(el){ var anc=el.parentElement,nested=false;
+   while(anc&&anc!==panel){ if(anc.classList&&(anc.classList.contains('card')||anc.classList.contains('dd132'))){ nested=true; break } anc=anc.parentElement } if(!nested)out.push(el) }); return out }
+ function cardKey55(el){ try{ var h=el.querySelector('h3,summary'); var t=h?(h.textContent||'').replace(/\s+/g,' ').trim():''; var b=el.querySelector('button'); var oc=b?(b.getAttribute('onclick')||''):''; if(!t&&!oc)return null; return t+'||'+oc }catch(e){ return null } }
+ function trayPass55(){ try{ var s=S55(); if(!s)return; var panel=$55('panel'); if(!panel)return; var tab=(typeof curTab!=='undefined')?curTab:'';
+   var cards=topCards55(panel);
+   cards.forEach(function(el){ try{ var h=el.querySelector('h3'); var ht=h?(h.textContent||''):'';
+     if(tab!=='travel'&&(el.classList.contains('storeCard233')||el.id==='svcSec222'||el.querySelector('button[onclick*="openStore199("]'))){ (el.closest?el.closest('details.dd132'):null)||el.remove(); if(el.parentNode)el.remove(); return }
+     if(tab!=='home'&&/Living World/.test(ht)){ el.remove(); return } }catch(e){} });
+   var seen={}, heads={};
+   topCards55(panel).forEach(function(el){ var k=cardKey55(el); if(!k)return; if(seen[k]){ el.remove() } else seen[k]=1 });
+   Array.prototype.slice.call(panel.querySelectorAll('h2,h3,.folderHead')).forEach(function(hd){ try{ if(hd.closest('.card'))return; var t=(hd.textContent||'').replace(/\s+/g,' ').trim(); if(!t)return; if(heads[t]){ var row=hd.closest('div')||hd; if(row&&row!==panel)row.remove(); else hd.remove() } else heads[t]=1 }catch(e){} });
+   if(tab==='actions101'){ Array.prototype.slice.call(panel.querySelectorAll('details.dd132')).forEach(function(d){ try{ var sm=d.querySelector('summary'); if(!sm||!/play/i.test(sm.textContent||''))return;
+     if(d.querySelector('button[onclick*="act(\'play\')"]'))return;
+     var host=d.querySelector('.card')||d; var b=document.createElement('button'); b.type='button'; b.className='furn'; b.setAttribute('onclick',"act('play')"); b.textContent='🎮 Play'; host.appendChild(b) }catch(e){} }) }
+  }catch(e){} }
+ setInterval(trayPass55,500);
+ try{ if(typeof renderTabs==='function'){ var _rt55=renderTabs; renderTabs=function(){ var r=_rt55.apply(this,arguments); setTimeout(trayPass55,80); setTimeout(trayPass55,450); return r } } }catch(e){}
+
+ /* ================= 7) QUICK LIFE NAME — EVERY BAND ================= */
+ try{ document.addEventListener('input',function(e){ try{ if(e.target&&e.target.id==='qlName199')window.__qlTyped55=e.target.value }catch(err){} },true) }catch(e){}
+ function enforceName55(){ try{ var st=window.__qlName55; if(!st||!st.name)return; var s=S55(); if(!s)return; var typed=st.name;
+   if(s.name!==typed){ var parts=String(s.name||'').split(' '); s.name=(typed.indexOf(' ')>=0)?typed:(typed+(parts.length>1?(' '+parts.slice(1).join(' ')):'')); try{ var pn=$55('pname'); if(pn)pn.value=s.name }catch(e){} try{ save() }catch(e){} try{ render() }catch(e){} } }catch(e){} }
+ try{ if(typeof quickStart136==='function'){ var _qs55=quickStart136; quickStart136=function(){ var typed=''; try{ var el=$55('qlName199'); if(el)typed=String(el.value||'').trim(); if(!typed)typed=String(window.__qlTyped55||window.__qlName199||'').trim() }catch(e){}
+   if(typed)window.__qlName55={name:typed,at:Date.now()}; var r=_qs55.apply(this,arguments); enforceName55(); [400,1500,3500,7000].forEach(function(ms){ setTimeout(enforceName55,ms) }); return r } } }catch(e){}
+ try{ if(typeof welcomeMoment==='function'){ var _wm55b=welcomeMoment; welcomeMoment=function(name){ try{ var st=window.__qlName55; if(st&&st.name&&Date.now()-st.at<20000){ var want=st.name; if(String(name||'').split(' ')[0]!==want.split(' ')[0]){ var parts=String(name||'').split(' '); name=(want.indexOf(' ')>=0)?want:(want+(parts.length>1?(' '+parts.slice(1).join(' ')):'')) } } }catch(e){} return _wm55b.apply(this,arguments) } } }catch(e){}
+
+ /* ================= 10) TOAST LANE ================= */
+ function lane55(){ try{ var el=$55('toast'); if(!el)return; if(modalOpen55())el.classList.add('overSheet55'); else el.classList.remove('overSheet55') }catch(e){} }
+ try{ if(typeof toast==='function'){ var _tt55=toast; toast=function(){ var r=_tt55.apply(this,arguments); lane55(); return r } } }catch(e){}
+ try{ if(typeof topToast98==='function'){ var _tt9855=topToast98; topToast98=function(){ var r=_tt9855.apply(this,arguments); lane55(); return r } } }catch(e){}
+ setInterval(lane55,600);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 55: 📷 THE CAMERA LAW — ambient chatter never moves the lens, free play rests at the WIDE shot pinned write-free (owner: pull the framing back), push-ins only for events and the player\u2019s own conversations, clamped modest at 1.3×, one move in and one out with a 3 s cooldown, gentleFocus retired • 🔔 update notice gated to the menu/hub, once per stamp • ✨ tap FX consolidated under the sheets, capped, swept on switch, Off means off • 🖼️ canvas bitmap + aspect locked to 900×460, resizes only on a real viewport change • 👥 crowd separation + bubble clamp • 🚦 start-of-life sheets queue invisibly, cards opaque • 🧺 one pure panel per tray + dedupe • ✏️ Quick Life typed name enforced at kid/teen/adult • 🎮 Play folder renders its action • 🍞 toasts ride the top lane over sheets','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 47 FOLLOW-UP — 🌍 THE LIVING WORLD WITHOUT BUTTONS + 📷 THE CAMERA LAW, COMPLETED
+   (owner's confirmed ruling, Nov 4, 2026: "I want the living world to be the living world without the
+   physical buttons there" • camera, his words: "I liked it when it just zoomed in and then zoomed out
+   when things were happening, but now it's way too close").
+   JOB 1 — THE 🧠 LIVING WORLD BUTTON CARD IS DORMANT. The card the v241/v243 injectors plant on the
+   👽 Me tab (curTab 'home') and the button-menu sheet it opens (aiHub241 / hubHtml241) are stood down
+   the app-purge way: every visible copy is removed on a cadence and after every panel paint, one
+   INVISIBLE marker keeps the injectors believing the card is already placed (the shipped K-layer
+   trick, extended to every tab including Me), and window.aiHub241 is a dormant stub that only closes
+   a sheet — so every stale "‹ Living World" back-button in the hub-only sub-sheets lands nowhere.
+   NOTHING is deleted: hubHtml241, the hub sub-sheets, S.v241 (listings, mail, stories, birdy, biz,
+   legacies) and the whole ambient engine — NPC movement, pair chatter, world bubbles, place flavour,
+   letters and stories still generating into their stores — all stay in the code and keep running
+   exactly as shipped. Doors whose ONLY entry was a hub button (dates-by-hub, conferences, interviews,
+   doctor/vet-by-hub, court, estate, customers, hub mail/storybook/birdy sheets) are simply
+   unreachable now; face-to-face talk (the v191 scene engine + talk sheets), phone calls from the
+   phone's own call sheet, and text messaging are untouched and fully working, and no new AI surface
+   is wired — the brain's only jobs remain conversations and text replies. Tips that pointed at the
+   removed card are reworded to point at what actually exists; the letter-arrival journal line no
+   longer directs the player to the dormant mail sheet (edited at its source, above).
+   JOB 2 — CAMERA: h55's law was verified in source and PRESERVED (free play pinned to the wide shot,
+   write-free; gentleFocus retired; event zooms clamped to 1.3×; canvas bitmap/box locked). Three
+   gaps against the owner's final spec are repaired here, in this outermost applyCameraTransform
+   wrap (still exactly ONE writer of the scene transform per frame):
+     • h55 recorded the conversation-end stamp but never gated on it — here a settled wide framing
+       HOLDS through a full 3 s cooldown after the player's conversation ends before any new
+       push-in may start;
+     • h55's 12 s openConvo window let the ambient-driven cine shot own the lens after the player's
+       conversation had actually ended — here the ONLY push-in trigger is the player's own live
+       in-scene speech (playerSay) or a live date line (_dateSay): ambient NPC↔NPC chatter can
+       never aim the lens, in any window;
+     • the push-in itself is the modest, player-centred 1.3× (never the old 1.52× face-filling
+       shot), it HOLDS through the talk and its 3 s tail (bubble gaps never bounce it), re-aims
+       only when the player has moved 30 px+, and eases back to the wide rest exactly once when
+       the conversation is truly over. While a sheet is open the lens writes nothing at all.
+   Standing guards untouched: GAME_VERSION 200, SAVE_KEY byte-identical, BUILD246 kept at the
+   h55 build's fresh stamp 'v200-h55', the anonymous stats tracker and the player-typed Send
+   feedback path are not referenced by this layer at all. */
+(function(){ 'use strict';
+try{
+ function $56(id){ return document.getElementById(id) }
+ function S56(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+ function modalOpen56(){ var m=$56('modal'); return !!(m&&m.classList.contains('open')) }
+
+ /* ---------- JOB 1: the Living World button card + menu are dormant ---------- */
+ window.aiHub241=function(){ try{ closeModal() }catch(e){} };
+ function lwGone56(){ try{
+   if(!S56())return;
+   var panel=$56('panel'); if(!panel)return;
+   var marker=null;
+   Array.prototype.slice.call(panel.querySelectorAll('.aiHubCard241')).forEach(function(c){
+     if(c.getAttribute('data-lw56mark')==='1'&&c.style.display==='none'){ if(marker)c.remove(); else marker=c } else c.remove() });
+   Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(el){ try{
+     var h=el.querySelector('h3'); if(h&&/Living World/.test(h.textContent||''))el.remove() }catch(e){} });
+   if(!marker){ marker=document.createElement('div'); marker.className='aiHubCard241';
+     marker.setAttribute('data-lw56mark','1'); marker.setAttribute('aria-hidden','true'); marker.style.display='none';
+     var grid=panel.querySelector('.grid'); if(grid&&grid.firstChild)grid.insertBefore(marker,grid.firstChild); else panel.appendChild(marker) }
+ }catch(e){} }
+ setInterval(lwGone56,300);
+ ['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm];
+   if(typeof fn==='function'&&!fn.__lw56){ var w=function(){ var r=fn.apply(this,arguments);
+     try{ setTimeout(lwGone56,60); setTimeout(lwGone56,420) }catch(e){} return r }; w.__lw56=true; window[nm]=w } }catch(e){} });
+ /* tips stop pointing at the removed card */
+ try{ if(typeof TIPS!=='undefined'&&TIPS){
+   if(TIPS['control84'])TIPS['control84']={t:'🧭 Your people, living',b:'The people around you live their own days — school, work, errands, moods — whether you tap or not. There is nothing to switch on: the world just lives, and you live in it.'};
+   if(TIPS['scrapbook84'])TIPS['scrapbook84'].b='The game now frames your biggest moments itself — first steps, first words, birthdays, first days, first jobs, weddings, babies, promotions — into a 📸 Scrapbook (open it from the 📸 Scrapbook button above the scene, or the phone\u2019s album app). You live; it remembers.';
+   if(TIPS['dopamine84'])TIPS['dopamine84'].b='Money moments SOUND like winning now — coin showers, cha-ching, fanfares — scratch-offs tick upward as you reveal them, emojis ride every result, and the RGB borders cycle on cards, dialogs and buttons.';
+ } }catch(e){}
+
+ /* ---------- JOB 2: the camera law, completed (outermost single writer) ---------- */
+ var camMode56='wide', camLastTalk56=0, camLastEnd56=0, camAim56=null, camWrites56=0;
+ function playerTalking56(now){
+   try{ if(typeof playerSay!=='undefined'&&playerSay&&now<playerSay.until)return true }catch(e){}
+   try{ if(window._dateWith&&window._dateSay&&now<window._dateSay.until)return true }catch(e){}
+   return false }
+ try{ if(typeof applyCameraTransform==='function'){ var _act56=applyCameraTransform;
+  applyCameraTransform=function(){
+   var cv=$56('cv'); var s=S56();
+   if(!cv||!s||typeof inGame==='undefined'||!inGame)return _act56.apply(this,arguments);
+   var now=performance.now();
+   var eventLive=false;
+   try{ eventLive=!!(typeof camState!=='undefined'&&camState.active&&now<Math.max(camState.until,(typeof camHoldUntil!=='undefined'?camHoldUntil:0))) }catch(e){}
+   if(eventLive)return _act56.apply(this,arguments); /* shipped event/action zooms own the lens, clamped by h55 */
+   if(modalOpen56())return; /* a sheet owns the screen — the lens holds, writes nothing */
+   var talking=playerTalking56(now);
+   if(talking)camLastTalk56=now;
+   if(camMode56==='wide'&&talking&&!(camLastEnd56&&now-camLastEnd56<3000)){ camMode56='push'; camAim56=null }
+   if(camMode56==='push'){
+     var inHold=talking||(camLastTalk56&&now-camLastTalk56<3000);
+     if(!inHold){ camMode56='wide'; camLastEnd56=now; camAim56=null;
+       if(cv.style.transform){ cv.style.transform=''; camWrites56++ } return }
+     var px=(typeof charX==='number')?charX:450, py=(typeof charY==='number')?charY:260;
+     var ax=Math.max(150,Math.min(750,px)), ay=Math.max(130,Math.min(360,py-10));
+     if(!camAim56||Math.hypot(ax-camAim56.x,ay-camAim56.y)>30||cv.style.transform!=='scale(1.3)'){
+       cv.style.transformOrigin=(ax/900*100).toFixed(2)+'% '+(ay/460*100).toFixed(2)+'%';
+       if(cv.style.transform!=='scale(1.3)')cv.style.transform='scale(1.3)';
+       camAim56={x:ax,y:ay}; camWrites56++ }
+     return }
+   /* wide rest: pinned at the wide shot — write-free while settled */
+   if(cv.style.transform){ cv.style.transform=''; camWrites56++ }
+  } } }catch(e){}
+ window.__cam56={writes:function(){ return camWrites56 },mode:function(){ return camMode56 },
+   transform:function(){ var cv=$56('cv'); return cv?{t:cv.style.transform||'',o:cv.style.transformOrigin||''}:null },
+   version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 47 follow-up: 🌍 the Living World is just the world now — the 🧠 button card & its menu are dormant (code & data intact, ambient life untouched, face-to-face talk & texts untouched) • 📷 camera law completed — rest WIDE and write-free, push-in only for YOUR in-scene talk at a modest 1.3×, held through a 3 s cooldown, one slow move each way','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+
+<script>
+/* ================================================================
+   🌊 AquaLife — HOTFIX 47 FOLLOW-UP, part 2 (teen-tester additions):
+   A2) THE AGE BAND IS A SAFETY NET, NOT A SUGGESTION — after every
+       questionnaire Quick Life start, if a band (Toddler/Kid/Teen/
+       Adult) was picked and the life somehow landed outside it, the
+       age is set inside the band before anything reads it, so the
+       HUD, the welcome card and the born-into card all agree.
+   B)  THE MARKET SPEAKS TO MINORS ON THE OPEN PATH — opening the
+       Market (the Trouble panel's dealMenu or the Market line,
+       phoneBurner63) under 18 now refuses OUT LOUD: a toast AND a
+       journal line, the established pattern. Buy-side refusals
+       already spoke; the door itself speaks now. Adults untouched.
+   ================================================================ */
+(function(){
+ 'use strict';
+ function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+ function minorMarketRefusal(){
+  try{ toast('🚫 The Market is 18+ — not until your 18th birthday') }catch(e){}
+  try{ log('🚫 TURNED AWAY AT THE MARKET DOOR — one look was enough: “Not a chance, kid.” The 🛒 Market — buying in, selling, orders, regulars — is adults-only (18+), and the door says so out loud now. It will still be there when you are grown.') }catch(e){}
+  try{ save() }catch(e){}
+ }
+ try{ if(typeof dealMenu==='function'){ var _dm57=dealMenu; dealMenu=function(){ var s=S_(); if(s&&s.age<18){ minorMarketRefusal(); return } return _dm57.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof phoneBurner63==='function'){ var _pb57=phoneBurner63; phoneBurner63=function(){ var s=S_(); if(s&&s.age<18){ minorMarketRefusal(); return } return _pb57.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof dealerGateSheet117==='function'){ var _dg57=dealerGateSheet117; dealerGateSheet117=function(){ var s=S_(); if(s&&s.age<18){ minorMarketRefusal(); return } return _dg57.apply(this,arguments) } } }catch(e){} /* h56b+: the Bad Actions section's own door — "🛒 Open the Market to start" — calls this sheet; a minor must meet the same toast + journal refusal here, not a silent explainer */
+
+ /* ---- A2) band safety net on the questionnaire Quick Life ---- */
+ var BANDS57={ toddler:{lo:1,hi:4,rep:3}, kid:{lo:5,hi:12,rep:8}, teen:{lo:13,hi:17,rep:15}, adult:{lo:21,hi:35,rep:26} };
+ function snapStage57(){
+  var st=null;
+  try{ if(window.__qlAns54&&window.__qlAns54.stage)st=window.__qlAns54.stage }catch(e){}
+  try{ if(typeof QL136!=='undefined'&&QL136&&QL136.stage)st=QL136.stage }catch(e){}
+  return st;
+ }
+ function enforceBand57(){
+  try{
+   var s=S_(); if(!s)return;
+   var st=snapStage57(); var b=st&&BANDS57[st]; if(!b)return;
+   if(s.age<b.lo||s.age>b.hi){
+    var was=s.age; s.age=b.rep; s.startAge=b.rep;
+    try{ log('⚡ QUICK LIFE — your age band wins: '+st+' means '+b.lo+'–'+b.hi+', so this life starts at '+b.rep+' (not '+was+'). The band you pick is the age you get.') }catch(e){}
+    try{ save(); render() }catch(e){}
+   }
+  }catch(e){}
+ }
+ try{ if(typeof quickStart136==='function'){ var _qs57=quickStart136; quickStart136=function(){ var r=_qs57.apply(this,arguments); enforceBand57(); setTimeout(enforceBand57,1600); return r } } }catch(e){}
+ try{ console.log('🌊 AquaLife h56b — Quick Life age band safety net live; the Market refuses minors out loud (toast + journal) on the open path') }catch(e){}
+})();
+</script>
 </body>
 </html>
