@@ -1300,7 +1300,7 @@ function doTrouble(t){
 }
 function maybeBust(sev,force){ ensure27(); const gun=hasGun(); const chance=(force?1:(.18*sev + S.wanted*.06))*catchMult()*(gun?1.3:1); if(Math.random()<chance){ const esc=Math.min(.55,.18+.06*(streetLv()-1)); if(Math.random()<esc){ S.streetClean=(S.streetClean||0)+1; streetXp(10); log('🏃 GOT AWAY CLEAN — the moment was THERE, cuffs out, and you were simply… gone. Heart pounding, record untouched. That is '+S.streetClean+' clean escapes now — the street is teaching you.'); toast('🏃 You got away CLEAN!'); sfx('win'); save(); render(); return false } window._bustCtx={sev:sev,gun:!!gun}; log('🚔 CAUGHT — cuffs out, badge up. The officer facing you is Lv '+copLevel()+': the department sends stronger officers the hotter you are. Last seconds to choose how this goes.'); focusCamera(charX,charY,{dur:5200,scale:1.6}); showTip('cop-fight'); openSheet('<h2>🚔 Caught!</h2><p>Cuffs out. The officer facing you is <b>Lv '+copLevel()+'</b> — stronger officers answer hotter names (Wanted <b>'+S.wanted+'★</b> • Record '+S.record+'). Cooperate, run, pay, or swing — your call, and it lands for real:</p>'+confrontButtonsHtml('bust')+'<button class="btn orange" style="margin-top:8px" onclick="bustCooperate()">🤝 Cooperate &amp; take it</button><button class="btn outline" style="margin-top:8px" onclick="bustRun()">🏃 Run for it</button>',{person:'Officer',sfx:'siren',buzz:[160,60,160,60,220]}); return true } return false }
 // ================= v73: BABIES & TODDLERS CAN'T DO CHORES — the paid 🧹 Chores job stays locked until age 5: the Work tab shows the lock, and doWork itself refuses under-5s, so no path pays a baby or toddler for housework (or marks them as having "helped out" for the money ask) =================
-function doWork(label,pay){ const chores=label.includes('Chores'); if(chores&&S.age<5){ toast('🔒 Too young for chores — babies and toddlers can\'t do chores. They unlock at age 5'); return } showTip('first-job'); if(chores)S.helpedDay=S.day; const prevLoc=S.location; if(!chores)S.location='work'; startActivity(chores?'🧹':'💻',2600,chores?300:610,chores?300:255,{energy:-14},()=>{if(!chores)S.location=(S.jail&&S.jail.in)?'jail':prevLoc; const _p59=chores?(money(pay,'💼 '+label),pay):payTaxed59(pay,'💼 '+label); if(label==='Career Shift'){ ensure16(); S.careerShifts=(S.careerShifts||0) } addXp(16,'tech'); log(label+' shift — '+(chores?('earned $'+pay+'.'):('net $'+_p59+' landed (gross $'+pay+', tax withheld).'))); save(); render(); toast('💼 '+label+' +$'+_p59)})}
+function doWork(label,pay){ const chores=label.includes('Chores'); if(chores&&S.age<5){ toast('🔒 Too young for chores — babies and toddlers can\'t do chores. They unlock at age 5'); return } showTip('first-job'); if(chores)S.helpedDay=S.day; const prevLoc=S.location; if(!chores)S.location='work'; startActivity(chores?'🧹':'💻',2600,chores?300:610,chores?300:255,{energy:-14},()=>{if(!chores)S.location=(S.jail&&S.jail.in)?'jail':prevLoc; const _p59=chores?((typeof bankMoney63==='function'?bankMoney63(pay,'💼 '+label):money(pay,'💼 '+label)),pay):payTaxed59(pay,'💼 '+label); if(label==='Career Shift'){ ensure16(); S.careerShifts=(S.careerShifts||0) } addXp(16,'tech'); log(label+' shift — '+(chores?('earned $'+pay+'.'):('net $'+_p59+' landed (gross $'+pay+', tax withheld).'))); save(); render(); toast('💼 '+label+' +$'+_p59)})}
 function applyLaw(){ if(S.record) toast('❌ Record blocks police/FBI careers'); else {toast('✅ Application sent — clean record!'); log('Applied to Police / FBI academy — eligible!')} }
 const PET_DEFAULT_NAMES={Dog:'Biscuit',Cat:'Miso',Hamster:'Peanut',Bird:'Sky',Fish:'Bubbles'};
 function adopt(name,cost,icon){ if(S.money<cost){toast('Need $'+cost);return} window._adopt={type:name,cost:cost,icon:icon,coat:Math.floor(Math.random()*((PET_COATS[name]||PET_COATS.Dog).length)),pattern:'solid',size:0.9+Math.random()*0.3,ear:Math.random()<0.5?'floppy':'pointy'}; adoptSheet() }
@@ -1322,7 +1322,7 @@ function giverName(){ if(!S)return 'Mom'; if(S.origin==='orphan')return 'Ms. Alv
 // ---- BABIES CRAWL UNTIL THEY LEARN TO WALK: the grown-up who is physically in the room with a baby (feeds them, bathes them, tucks them in) ----
 function careHelper(){ if(!S)return 'Mom'; if(S.origin==='orphan')return 'Ms. Rivera'; return caregiverName()||'Mom' }
 function isCrawling(){ return !!S&&S.canWalk===false&&S.age<3 }
-function doKidJob(label,pay){ if(S.age<5){ toast('🔒 Too young — toddlers (1–4) don\'t do jobs. A grown-up does everything for them'); return } const icon=label.split(' ')[0]; startActivity(icon,2400,450,320,{energy:-8,fun:4},()=>{ money(pay,'🧒 Kid job: '+label.replace(/^\S+\s/,'')); addXp(10,'fitness'); log(label+' — earned $'+pay+'. Kid money, earned honest.'); save(); render(); toast('🧒 '+label+' +$'+pay) }) }
+function doKidJob(label,pay){ if(S.age<5){ toast('🔒 Too young — toddlers (1–4) don\'t do jobs. A grown-up does everything for them'); return } const icon=label.split(' ')[0]; startActivity(icon,2400,450,320,{energy:-8,fun:4},()=>{ if(typeof bankMoney63==='function')bankMoney63(pay,'🧒 Kid job: '+label.replace(/^\S+\s/,'')); else money(pay,'🧒 Kid job: '+label.replace(/^\S+\s/,'')); addXp(10,'fitness'); log(label+' — earned $'+pay+'. Kid money, earned honest.'); save(); render(); toast('🧒 '+label+' +$'+pay) }) }
 function askMoney(){ const g=giverName(); const al=ALLOWANCE[S.origin]||8; if(S.age<5){ openSheet('<h2>💵 Too young to ask for money</h2><p>You are only '+S.age+' — asking '+g+' for money starts at <b>age 5</b>. Until then, your money arrives the little-kid way: the weekly '+(S.origin==='orphan'?'Hope House stipend':'allowance')+' of <b>$'+al+'</b> lands on its own, no asking needed.</p><button class="btn" onclick="closeModal()">Okay</button>'); return } openSheet(`<h2>💵 Ask ${g} for money</h2><p>Everyone starts at $0 — around here, kid money comes from family or kid jobs. Your weekly ${S.origin==='orphan'?'Hope House stipend':'allowance'} is <b>$${al}</b>. Asking works better when you have been helping out (🧹 chores), your grades are decent, and you have not already asked a bunch this week.</p><p class="small">This week: asked ${S.askCount||0}× • ❤️ Bond ${S.bond}% • 📚 Grades ${S.grades}%${S.helpedDay===S.day?' • You helped out today ✅':''}</p>${S.bond<goodBondLine57()?`<div style="background:#00000010;border:1.5px dashed var(--line);border-radius:12px;padding:11px 12px;margin-top:10px"><b>🔒 The ask is closed right now — it needs a good bond.</b><br><span class="small">Your bond with ${g} is ❤️ <b>${S.bond}%</b>; a good bond is <b>${goodBondLine57()}%+</b>. Build it back the way bonds actually grow: 🧹 help out at home (chores), warm household moments, gifts, and time together. When the bond is good, the ask opens again — full or partial, decided by bond, grades, helping out and how often you have asked lately.</span></div>`:[5,10,20].map(a=>`<button class="btn ${a===10?'orange':''}" style="margin-top:8px" onclick="askMoneyGo(${a})">🙏 Ask ${g} for $${a}</button>`).join('')}<button class="btn outline" style="margin-top:8px" onclick="closeModal()">Never mind</button>`) }
 function askMoneyGo(amt){ const g=giverName(); if(S.age<5){ toast('🔒 Too young to ask for money — asking starts at age 5'); return } if(S.bond<goodBondLine57()){ toast('🔒 Asking '+g+' for money needs a good bond — yours is ❤️ '+S.bond+'% (good is '+goodBondLine57()+'%+)'); askMoney(); return } const wk=Math.floor((S.day-1)/7); if(S.askWeekIdx!==wk){S.askWeekIdx=wk;S.askCount=0} S.askCount=(S.askCount||0)+1; S.askDay=S.day;
  const score=S.bond+(S.grades>=80?12:S.grades>=60?4:-6)+(S.helpedDay===S.day?16:S.helpedDay===S.day-1?8:0)-(S.askCount-1)*14-(amt>=20?12:amt>=10?4:0)+Math.random()*30;
@@ -25675,7 +25675,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h48', CLASS246='hotfix';
+ var BUILD246='v200-h52', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -25912,7 +25912,7 @@ try{
  setInterval(function(){ try{ var s=S246(); if(!s||typeof inGame==='undefined'||!inGame)return;
   /* tray pressed state = the folder truly showing */
   var dockOpenNow=false; try{ dockOpenNow=!!dockOpen }catch(e){}
-  if(dockOpenNow){ var want=realTab246(); var btns=document.querySelectorAll('#menuDock .dockTab,.dockBtns56 .dockTab'); btns.forEach(function(b){ var oc=b.getAttribute('onclick')||''; var m=oc.match(/dockGo\('([^']+)'\)/)||oc.match(/renderTabs\('([^']+)'\)/); var tab=m?m[1]:''; if(tab)b.classList.toggle('on',tab===want) }) }
+  if(dockOpenNow){ var want=(typeof curTab!=='undefined'&&curTab==='actions101')?'actions101':realTab246(); var btns=document.querySelectorAll('#menuDock .dockTab,.dockBtns56 .dockTab'); btns.forEach(function(b){ var oc=b.getAttribute('onclick')||''; var m=oc.match(/dockGo\('([^']+)'\)/)||oc.match(/renderTabs\('([^']+)'\)/); var tab=m?m[1]:(b.classList.contains('actBtn101')?'actions101':''); if(tab)b.classList.toggle('on',tab===want) }) }
   /* one heading: a panel heading that repeats the sheet-bar title is hidden */
   var ds=document.getElementById('dsTitle'); var panel=document.getElementById('panel');
   if(ds&&panel&&dockOpenNow){ var title=(ds.textContent||'').replace(/[^\p{L}\p{N} ]/gu,'').replace(/\s+/g,' ').trim().toLowerCase(); if(title){ var heads=panel.querySelectorAll('h2,h3,.acT'); for(var i=0;i<heads.length&&i<4;i++){ var ht=(heads[i].textContent||'').replace(/[^\p{L}\p{N} ]/gu,'').replace(/\s+/g,' ').trim().toLowerCase(); if(ht&&ht===title){ heads[i].style.display='none'; break } } } }
@@ -26481,6 +26481,412 @@ try{
  setInterval(function(){ try{ if(!chooserOpen248()||modalOpen248())return; if(typeof curTab!=='undefined'&&curTab==='rooms106'&&typeof curRoom86==='function'&&typeof paintRoomPick106==='function'){ var rm=curRoom86(); if(!rm)return; var on=document.querySelector('#panel .roomRow106.on'); var oc=on?(on.getAttribute('onclick')||''):''; if(!on||oc.indexOf("'"+rm.id+"'")<0)paintRoomPick106() } }catch(e){} },2000);
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 48 (K): 🚪 Change Rooms STAYS OPEN — picks walk and the chooser restores with the chip on the new room; game-driven closes/tab-switches are swallowed, only the player closes it • 🍞 toasts ride their own lane (above the open sheet / top lane under a modal) — never over menu rows or the ticker • 💡 exactly ONE tray tab lit, matching the open panel • 🧠 the Living World card lives on 🏠 Home only','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 49 — ⚡ ACTIONS STAYS THE PLAYER'S (his report, Nov 4, 1:45 PM:
+   "Action keeps switching back to me quickly without pressing anything", plus his 1:50 PM
+   direction to investigate the zoom / cinematic camera as a suspect).
+   ROOT CAUSE — ⚡ Actions is a pseudo-tab ('actions101') that only ONE mid-chain wrapper
+   (v101) knows how to paint; the base renderTabs maps any tab it does not know to 'home'
+   (👽 Me). The h48 (K) stay-open law protected only the 🚪 room / area choosers, so Actions
+   had NO protection at all: any game-driven repaint that reached the chain carrying 'home'
+   — an action's own completion handlers (many end in renderTabs('home')), a free-will /
+   queued action resolving, an event or text landing — repainted the panel as Me while the
+   player sat in Actions, and the tray light followed curTab to Me. The camera is the
+   accelerant, not an exception: the zoom machines themselves (base, v119, v128, v146, the
+   v215 cinematic layer) never touch the panel, but every camera moment is wrapped in the
+   game's heaviest repaint bursts — startActivity re-renders at three step points and again
+   on completion, conversation beats repaint as bubbles land, and render() reborns the canvas
+   (and re-runs renderTabs) constantly while the cinematic lens glides — so the flip visibly
+   lands "when the camera moves", within seconds, with no tap from the player.
+   PROVEN IN THE RIG (this build, portrait): with ⚡ Actions open and untouched, the tray
+   showed ⚡ Actions AND 👽 Me BOTH lit, seconds apart, over and over. The mechanism: the
+   h45 (v246) "tray truth" interval (700 ms) computed the tab under Actions as
+   lastRealTab101 ('home') and re-lit Me every pass — its matcher also skipped the ⚡
+   button entirely (that button's handler is a JS property, not an onclick attribute, so
+   it never matched) — while the h48 tray-truth pass (900 ms) un-lit Me again. Two
+   "truths" fighting on different cadences IS the quick, press-free switch back to Me the
+   player filmed. That pass is corrected AT THE SOURCE in this hotfix (in place, in the
+   v246 interval): under Actions its want is now 'actions101' and the ⚡ button is matched
+   by its class, so both passes agree — exactly one tab lit, and it is ⚡ Actions.
+   THE FIX — the same owner law as h48 (K), extended to Actions at the OUTERMOST layer, so
+   no present or future repaint path can break it:
+   L1) While the player has ⚡ Actions open, a game-driven renderTabs to any other tab is
+       undone on the spot (Actions repainted, curTab restored); only a player-driven call
+       (a real pointer tap in the last ~900 ms, or the navIntent91 flag the shipped openers
+       set) may move the panel — the player's own tab taps, chooser trips and folder picks
+       all still land instantly.
+   L2) A game-driven setDock(false) while Actions is open is swallowed, exactly as for the
+       choosers; the player's own closes (the ⚡ toggle, ▾ Hide, picking an action card —
+       all real taps inside the window) close it as before.
+   L3) CAMERA IMMUNITY — focusCamera and applyCameraTransform (the function the cinematic
+       layer's 350 ms tick drives) are wrapped: if a zoom-in, a zoom-out, an action
+       cinematic or an idle/conversation glide leaves curTab anywhere but Actions while
+       Actions was open, Actions is restored before the call returns. Camera movement can
+       therefore NEVER change the active panel — the active panel is the player's choice
+       alone and survives zoom in, zoom out, action cinematics and idle drift.
+   L4) A 900 ms leash re-checks the same law (no modal open, no recent player tap), so a
+       flip that slips in by direct curTab assignment self-heals within a second; the h48
+       tray-truth pass then lights exactly one tab — ⚡ Actions.
+   Player-driven behaviour is untouched everywhere: tapping 👽 Me still goes to Me, picking
+   an action still tucks the folder while it plays (and the shipped spot-return brings
+   Actions back), and the room/area choosers keep their h48 guarantees. GAME_VERSION and
+   SAVE_KEY untouched; nothing is stored. ================= */
+(function(){
+'use strict';
+try{
+ var lastPtr249=0;
+ document.addEventListener('pointerdown',function(){ lastPtr249=Date.now() },true);
+ function playerDrove249(){ try{ if(typeof navIntent91!=='undefined'&&navIntent91)return true }catch(e){} if(Date.now()-lastPtr249<900)return true; try{ var M=window._menu162; if(M&&Date.now()-(M.playerDockAt||0)<900)return true }catch(e){} return false }
+ function modalOpen249(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+ function actionsOpen249(){ try{ return typeof curTab!=='undefined'&&curTab==='actions101'&&typeof dockOpen!=='undefined'&&dockOpen }catch(e){ return false } }
+ var armActions249=false;
+ var _rt249=(typeof renderTabs==='function')?renderTabs:null;
+ function restoreActions249(){ try{ if(_rt249)_rt249('actions101') }catch(e){} }
+ if(_rt249){
+  renderTabs=function(active){
+   var drove=playerDrove249();
+   var wasArmed=armActions249;
+   var r=_rt249.apply(this,arguments);
+   try{
+    if(!drove&&wasArmed&&typeof dockOpen!=='undefined'&&dockOpen&&typeof curTab!=='undefined'&&curTab!=='actions101')restoreActions249();
+    armActions249=actionsOpen249();
+   }catch(e){}
+   return r;
+  };
+ }
+ try{ if(typeof setDock==='function'){ var _sd249=setDock; setDock=function(open){ try{ if(open===false&&actionsOpen249()&&!playerDrove249())return }catch(e){} return _sd249.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof focusCamera==='function'){ var _fc249=focusCamera; focusCamera=function(){ var r=_fc249.apply(this,arguments); try{ if(armActions249&&typeof dockOpen!=='undefined'&&dockOpen&&typeof curTab!=='undefined'&&curTab!=='actions101'&&!playerDrove249())restoreActions249() }catch(e){} return r } } }catch(e){}
+ try{ if(typeof applyCameraTransform==='function'){ var _act249=applyCameraTransform; applyCameraTransform=function(){ var r=_act249.apply(this,arguments); try{ if(armActions249&&typeof dockOpen!=='undefined'&&dockOpen&&typeof curTab!=='undefined'&&curTab!=='actions101'&&!playerDrove249())restoreActions249() }catch(e){} return r } } }catch(e){}
+ function tray249(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var db=document.querySelector('#dockCore100 .dockBtns56')||document.querySelector('#menuDock .dockBtns56'); if(!db)return; var tabs=Array.prototype.slice.call(db.querySelectorAll('.dockTab')); if(!tabs.length)return;
+  /* h50 (T5/U5a): the lit tab must equal panel reality at ALL times — dock closed means NO tab is
+     lit (a resumed life sat with Me lit and nothing open; a hidden Work panel left Work outlined).
+     This pass only ever touches classes, so it is safe under an open modal too: a dialog over an
+     open panel keeps that panel's tab lit; a dialog over a closed dock keeps none lit. */
+  var dockIsOpen=true; try{ dockIsOpen=(typeof dockOpen==='undefined')?true:!!dockOpen }catch(e){}
+  var want=null;
+  if(dockIsOpen){ var ct=(typeof curTab!=='undefined')?curTab:'';
+   if(ct==='actions101')want=db.querySelector('.actBtn101');
+   if(!want&&(ct==='rooms106'||ct==='areas123'))ct=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='rooms106'&&lastRealTab101!=='areas123')?lastRealTab101:'home';
+   if(!want){ for(var i=0;i<tabs.length;i++){ var oc=tabs[i].getAttribute('onclick')||''; if(oc.indexOf("dockGo('"+ct+"')")>=0){ want=tabs[i]; break } } } }
+  tabs.forEach(function(x){ var on=(want!==null&&x===want); if(x.classList.contains('on')!==on)x.classList.toggle('on',on); x.setAttribute('aria-pressed',on?'true':'false') }) }catch(e){} }
+ setInterval(function(){ try{ tray249(); if(!armActions249||modalOpen249()||playerDrove249())return; if(typeof dockOpen!=='undefined'&&dockOpen&&typeof curTab!=='undefined'&&curTab!=='actions101')restoreActions249() }catch(e){} },900);
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 49: ⚡ ACTIONS STAYS THE PLAYER\u2019S — game-driven repaints can no longer switch the open ⚡ Actions panel back to 👽 Me, game-driven dock closes are swallowed while it is open, and the camera (action zooms, conversation push-ins, cinematic idle drift) can never change the active panel — only your own tap moves it','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 50 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   The Nov 4 LIVE tester sweep on h43 (toddler / kid / teen / adult driven runs) + workstreams
+   L–U. Every fix sits at the OUTERMOST layer or at the exact choke point, so no shipped system
+   is rewritten — these passes correct what the earlier layers got wrong in lived play:
+   S/U4) RETURNING PLAYERS CAN NEVER BE STRANDED — QA profiles with real saves were offered no
+       Resume and no update notice, while new lives in the same profiles saved/resumed fine.
+       Root: the welcome path trusts the in-memory S from the parse-time load() exactly once;
+       any route that reaches the creation choice with S null (gate route, SW-update route, a
+       boot that raced the age gate) strands the stored life behind Quick Life / Make Your Own
+       with no way back. Fix: every entry choke point (enterGame71, renderSetup, a boot
+       watchdog) re-reads storage and ADOPTS the stored life before painting creation, and the
+       update notice gains a watchdog that fires the shipped vague notice when the device stamp
+       says the build changed but the sheet never appeared.
+   L) COVERAGE NEVER INVENTS A SITTER — h48's card pass returned null when its truth builder had
+       no line, leaving the ORIGINAL card text (which asserts a booked sitter) standing; and its
+       !nm branch asserted "the sitter is here in the house" for a nameless booking record. The
+       card is now rewritten from presence + real bookings on every paint: present caregiver,
+       present NAMED sitter (let in), booked-not-arrived sitter, daycare — or the plain truth
+       that nobody is covering, naming the visitors who are actually there.
+   M) CHANGE ROOMS READS THE SAME PRESENCE AS THE SCENE — roomFolks106 trusted stored room
+       fields that lag the figures the scene actually draws, and never listed pets at all. The
+       wrapper reconciles: anyone the scene draws in the current room is listed there (and in
+       no other room), and the household pet is listed in the room it is drawn in.
+   N) TODDLER GATING IS ROOM-PROOF — the h48 pass keyed on curTab and only relabelled the Cook
+       button (its handler still cooked). This pass keys on panel CONTENT in every room:
+       Cook-from-groceries becomes a caregiver-fed meal (handler rewired to the toddler eat
+       path), Restock/Order-Out doors leave, solo shower options leave, and an emptied Shower
+       section gains the caregiver-led bath (caregiver home) or an honest unavailable line.
+   O) ROOM ROWS ARE THE TARGET — taps are delegated at capture phase to pickRoom106/pickArea123
+       exactly once (native double-fire suppressed), so the first tap of any kind walks and
+       triggers the carry flow; the Change Rooms ▾ Hide button force-wins over any restore.
+   P) OLD LIVES STAY QUIET DURING CREATION — while a creation surface (.setup) is up, event
+       sheets from the previous life (teach offers, drawings, knocks, household events) are
+       swallowed at the openSheet door; creation's own sheets pass by their markers.
+   (Part 2 below: R1 Spark lock, R2 Market refusal, R3/T4 one send contract, R5/T7 XP truth,
+   T1 fishing home + counter + tank, T2 family framing, T3 closable sheets, T5 chip in flow,
+   T6 no silent actions, U1 bank counter repaint + honest quick amounts, U2 one pill for every
+   role, U3 portrait fill at every interior, U5b one card per place, U5c start-of-life queue.) */
+(function(){ 'use strict';
+try{
+ function S250(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+ function esc250(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+ function modalOpen250(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+ function panel250(){ return document.getElementById('panel') }
+
+ /* ================= S/U4) a stored life is adopted at every entry door ================= */
+ function adoptSave250(){ try{ if(S250())return true; if(typeof load!=='function')return false; var o=null; try{ o=load() }catch(e){} if(!o||typeof o!=='object')return false;
+   try{ S=o }catch(e){ return false }
+   var s=S250(); if(!s)return false;
+   if(!s.phoneMsgs)s.phoneMsgs=[]; if(!s.journal)s.journal=[]; if(!s.inv)s.inv=[]; if(!s.skills)s.skills={}; if(s.money===undefined)s.money=0; if(s.day===undefined)s.day=1;
+   if(!s.needs)s.needs={hunger:78,energy:82,fun:70,hygiene:80,social:65,health:88}; if(!s.fridge)s.fridge={groceries:5,leftovers:1,snacks:3,drinks:3};
+   return true }catch(e){ return false } }
+ function storedSave250(){ try{ return !!localStorage.getItem(SAVE_KEY) }catch(e){ return false } }
+ try{ if(typeof enterGame71==='function'){ var _eg250=enterGame71; enterGame71=function(){ try{ adoptSave250() }catch(e){} return _eg250.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof renderSetup==='function'){ var _rs250=renderSetup; renderSetup=function(app){ try{ if(adoptSave250()&&typeof renderWelcome==='function'){ renderWelcome(); return } }catch(e){} return _rs250.apply(this,arguments) } } }catch(e){}
+ [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
+ /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
+ setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
+   if(st&&st!=='v200-h52'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+
+ /* ================= L) coverage: presence + real bookings only ================= */
+ function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
+   var hl=null; try{ hl=(typeof homeLoc==='function')?homeLoc():null }catch(e){}
+   if(hl&&s.location===hl&&typeof roomHas141==='function')return !!roomHas141(nm); return false }catch(e){ return false } }
+ function covTruth250(){ try{ var s=S250(); if(!s||s.age<1||s.age>4)return null;
+   var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
+   for(var i=0;i<cgs.length;i++){ if(cgPresent250(cgs[i]))return '<b>'+esc250(cgs[i])+'</b> is with <b>'+esc250(s.name)+'</b> right now — right here, in person. No babysitter is watching: family is.' }
+   var V120=null; try{ V120=(typeof ensure120==='function')?ensure120():null }catch(e){}
+   if(V120&&V120.sitter&&V120.sitter.name&&V120.covState==='in')return '<b>'+esc250(V120.sitter.name)+'</b> — the household\u2019s babysitter — is watching <b>'+esc250(s.name)+'</b> right now, here in the room.';
+   if(s.location==='daycare')return '<b>'+esc250(s.name)+'</b> is at <b>🏫 Daycare</b> right now — the daycare staff are the coverage, in person.';
+   var V119=null; try{ V119=(typeof ensure119==='function')?ensure119():null }catch(e){}
+   var cov=V119?V119.coverage:null;
+   if(cov&&cov.day===s.day&&cov.who==='sitter'){ var nm2=(V120&&V120.sitter&&V120.sitter.name)||cov.sitName120||null;
+     if(nm2)return '<b>'+esc250(nm2)+'</b> — the household\u2019s babysitter — is booked to watch <b>'+esc250(s.name)+'</b>. Sitters knock at the front door first: the sitting starts when they are let in.';
+     return 'A sitter was booked for <b>'+esc250(s.name)+'</b> today, but no sitter is here in the house yet — the sitting starts when they are let in at the front door.' }
+   var visitors=[]; try{ if(typeof peopleHere200==='function')visitors=peopleHere200().filter(function(n){ return cgs.indexOf(n)<0&&n!==s.name }) }catch(e){}
+   if(visitors.length)return '<b>'+esc250(s.name)+'</b> is with <b>'+esc250(visitors.join(', '))+'</b> right now — they are who is actually here. No caregiver is home, and no babysitter is booked.';
+   return '<b>'+esc250(s.name)+'</b> is on their own right now — no caregiver is here, and no babysitter is booked or has arrived.' }catch(e){ return null } }
+ function covPass250(){ try{ var s=S250(); if(!s||s.age<1||s.age>4)return; var card=document.querySelector('.covCard119'); if(!card)return; var html=covTruth250(); if(!html)return; var p=card.querySelector('p'); if(p&&p.innerHTML!==html)p.innerHTML=html; var h3=card.querySelector('h3'); if(h3&&h3.textContent.indexOf("Who's with the toddler")!==0)h3.textContent="👶 Who's with the toddler" }catch(e){} }
+
+ /* ================= M) Change Rooms occupancy = scene presence, pets included ================= */
+ try{ if(typeof roomFolks106==='function'){ var _rf250=roomFolks106; roomFolks106=function(rid){ var out=_rf250.apply(this,arguments); try{ var s=S250(); if(!s||!Array.isArray(out))return out;
+   var rm=(typeof curRoom86==='function')?curRoom86():null; var curId=rm?rm.id:null; if(!curId)return out;
+   var present=[];
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in'){ var here=false; try{ here=(typeof npcHere86==='function')?!!npcHere86(n):false }catch(e){} if(here)present.push(n.name) } });
+   if(s.escort&&present.indexOf(s.escort)<0)present.push(s.escort);
+   if(rid===curId){ present.forEach(function(n){ if(out.indexOf(n)<0)out.push(n) });
+     (s.pets||[]).forEach(function(p){ if(p&&p.name){ var lbl='🐾 '+p.name; if(out.indexOf(p.name)<0&&out.indexOf(lbl)<0)out.push(lbl) } }) }
+   else { out=out.filter(function(n){ return present.indexOf(n)<0 }) }
+  }catch(e){} return out } } }catch(e){}
+
+ /* ================= N) toddler gating in EVERY room (content-keyed, handler rewired) ================= */
+ function toddlerPanel250(){ try{ var s=S250(); if(!s||s.age>=5)return; var panel=panel250(); if(!panel)return;
+   if(!panel.querySelector('.actCard101')&&panel.textContent.indexOf('🍽️ Eat')<0)return;
+   panel.querySelectorAll('button').forEach(function(b){ var oc=b.getAttribute('onclick')||''; var tx=b.textContent||'';
+     if(oc.indexOf("eatItem132('groceries')")>=0||tx.indexOf('Cook from groceries')>=0){ b.innerHTML='🍽️ A grown-up cooks a meal for you ×'+((s.fridge&&s.fridge.groceries)||0)+' (+28 hunger, +health)'; b.setAttribute('onclick',"act('eat')") }
+     else if(oc.indexOf('restockSheet173')>=0||tx.indexOf('Restock Fridge')>=0||tx.indexOf('Order Out')>=0){ b.remove() }
+     else if(oc.indexOf('shower132(')>=0){ b.remove() } });
+   panel.querySelectorAll('.actCard101,.card').forEach(function(c){ var hd=c.querySelector('.acT,h3'); var htx=hd?(hd.textContent||''):''; if(!/Shower|Bath/.test(htx))return; if(c.querySelector('[data-bath250]'))return;
+     if(c.querySelectorAll('button').length)return;
+     var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
+     var cgHome=cgs.some(function(n){ return cgPresent250(n) });
+     var d=document.createElement('div'); d.setAttribute('data-bath250','1');
+     if(cgHome)d.innerHTML='<button class="btn" onclick="act(\'shower\')">🛁 A grown-up runs your bath</button>';
+     else d.innerHTML='<p class="small">🚿 No grown-up is home to run a bath right now — at this age, baths are a grown-up\u2019s job.</p>';
+     c.appendChild(d) });
+  }catch(e){} }
+
+ /* ================= O) room rows: first tap walks; Hide always closes ================= */
+ document.addEventListener('click',function(ev){ try{ var t=ev.target; if(!t||!t.closest)return;
+   var row=t.closest('.roomRow106');
+   if(row){ var oc=row.getAttribute('onclick')||''; var m=oc.match(/pickRoom106\('([^']+)'\)/)||oc.match(/pickArea123\('([^']+)'\)/);
+     if(m){ ev.stopPropagation(); ev.preventDefault(); try{ navIntent91=true }catch(e){}
+       if(oc.indexOf('pickArea123')>=0){ if(typeof pickArea123==='function')pickArea123(m[1]) } else if(typeof pickRoom106==='function')pickRoom106(m[1]);
+       setTimeout(function(){ try{ navIntent91=false }catch(e){} },100); return } }
+   var hide=t.closest('.dsHide');
+   if(hide){ try{ navIntent91=true; setTimeout(function(){ try{ if(typeof dockOpen!=='undefined'&&dockOpen&&typeof setDock==='function')setDock(false) }catch(e){} setTimeout(function(){ try{ navIntent91=false }catch(e){} },180) },60) }catch(e){} }
+  }catch(e){} },true);
+
+ /* ================= P) the old life stays quiet while a new one is being made ================= */
+ try{ if(typeof openSheet==='function'){ var _os250=openSheet; openSheet=function(html,opts){ try{ var s=S250();
+     if(s&&typeof html==='string'&&document.querySelector('.setup')){
+       if(!/born into|Pick your first babysitter|Welcome|creator|Creator|Start living/.test(html)&&/offers to teach|FIRST DRAWING|knock|Knock|visitor|💊|at the door|wants to teach|has something for you/.test(html))return;
+     } }catch(e){} return _os250.apply(this,arguments) } } }catch(e){}
+
+ /* shared render post-passes + leash for part 1 */
+ ['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__p250a){ var w=function(){ var r=fn.apply(this,arguments); try{ covPass250(); toddlerPanel250() }catch(e){} return r }; w.__p250a=true; window[nm]=w } }catch(e){} });
+ window.__h50a={covPass250:covPass250,toddlerPanel250:toddlerPanel250,adoptSave250:adoptSave250,S250:S250,esc250:esc250,modalOpen250:modalOpen250,cgPresent250:cgPresent250};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50a: 🚪 a stored life is adopted at every entry door (Resume can never be stranded) • 👶 coverage states only what exists • 🚪 Change Rooms reads scene presence, pets included • 🧒 toddler gating holds in every room • 👆 room rows walk on the first tap, Hide always closes • 🤫 the old life stays quiet during creation','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 50 (part 2) — GAME_VERSION stays 200; SAVE_KEY untouched =================
+   R1) SPARK IS 18+ AT INSTALL — the Casino install gate (v151) named only 'casino'; Spark's GET
+       installed for a 15-year-old. appInstall110 now refuses 'spark' under 18 the same way, and
+       the store row shows the lock instead of a working GET.
+   R2) THE MARKET REFUSES MINORS OUT LOUD — phoneBurner63 early-returned in silence for minors;
+       it now routes to the shipped 18+ refusal sheet, every time.
+   R3/T4) ONE SEND CONTRACT — sendTyped146: an in-flight lock per thread (a second tap inside
+       1.5 s, or an identical text inside 4 s, is swallowed), the box clears and the Send button
+       disables the moment a send starts and re-enables when it settles, and if the send path
+       closed the phone sheet the thread is re-opened — Send never closes the thread. Thread
+       birth is sanitised in startGame: no thread starts holding two unanswered messages. A
+       pending reply older than 25 real seconds is force-delivered — a typing indicator can
+       never evaporate without its reply.
+   R5/T7) XP ALWAYS NAMES ITS CAUSE + ONE NUMBER — addXp is wrapped at the outermost layer: if
+       the source added no journal line naming the gain, a cause line is journalled from the
+       skill it fed; and every XP change schedules one debounced repaint so all headers read
+       the same total at the same moment.
+   T1) FISHING'S HOME IS THE PARK'S ACTIONS — at the pond, the Actions panel's Next steps gains
+       the cast (the Me card stays as a shortcut); the cast counter is guarded at the choke
+       point (a cast that starts always counts); pond-card counters repaint live; and a caught
+       fish in the Bag offers 🐠 tank placement whenever a Catch Tank is owned.
+   T2) FAMILY EVENTS KEY OFF THE REAL FAMILY — the phone-gift event cannot fire from a mother
+       who does not exist in this life (staff-run lives keep their staff giver); sleepover
+       sheets for staff-run lives drop the "Parent to parent" framing, and no child NPC is
+       labelled anybody's parent.
+   T3) EVERY SHEET CLOSES — if a sheet's ✕ (or Escape) was honoured by nothing within 90 ms,
+       the modal is force-closed. The stuck sleepover sheet state cannot trap a player again.
+   T5) THE CHANGE-ROOMS CHIP LIVES IN FLOW — #roomBar86 is forced in-flow so it can never lie
+       over a person's row or their Chat button. (Tray truth: see the h49 tray249 upgrade —
+       dock closed now means NO tab lit, at all times, modal or not.)
+   T6) NO SILENT ACTIONS — a startActivity completion that produced no journal line, no toast
+       and no sheet gains an honest completion line + toast. Silence is not an outcome.
+   U1) THE BANK COUNTER REPAINTS ON EVERY ROUTE — deposit63 / withdraw63 / depositCheck108 and
+       any dialog closing at the bank schedule a repaint from live state; quick-amount deposit
+       buttons are capped at the cash actually held (a $200 button on $19 cash disables).
+   U2) ONE PILL FOR EVERY ROLE — rainTag193's family-role gate is extended to ALL role words
+       (Coworker, Classmate, Friend, Boss, Teacher…): a role never renders as a second pill.
+   U3) PORTRAIT FILL AT EVERY INTERIOR — the h48 fill CSS named only the home stage classes;
+       it is generalised to every .roomWrap canvas, with a backup bitmap sizer, so workplaces,
+       the mall, the bank and school fill a tall portrait frame with no band and no void.
+   U5b) ONE CARD PER PLACE — duplicate place cards (same heading) are deduped in Travel.
+   U5c) START-OF-LIFE DIALOGS QUEUE — in a new life's first minutes, event sheets arriving
+       while a start-flow sheet is up wait their turn and are served one at a time, in order. */
+(function(){ 'use strict';
+try{
+ var H=(typeof window!=='undefined'&&window.__h50a)||{};
+ function S250(){ try{ return H.S250?H.S250():(typeof S!=='undefined'?S:null) }catch(e){ return null } }
+ function esc250(s){ return H.esc250?H.esc250(s):String(s==null?'':s) }
+ function modalOpen250(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+
+ /* ================= R1) Spark: 18+ at install, exactly like Casino ================= */
+ try{ if(typeof appInstall110==='function'){ var _ai250=appInstall110; appInstall110=function(id){ try{ var s=S250(); if(id==='spark'&&s&&s.age<18){ toast('💘 Spark is 18+ — it cannot be installed until your 18th birthday'); return } }catch(e){} return _ai250.apply(this,arguments) } } }catch(e){}
+ function storeSparkPass250(){ try{ var s=S250(); if(!s||s.age>=18||!modalOpen250())return; var sh=document.getElementById('sheet'); if(!sh||sh.textContent.indexOf('App Store')<0)return;
+   sh.querySelectorAll('button').forEach(function(b){ var oc=b.getAttribute('onclick')||''; if(oc.indexOf("appInstall110('spark')")>=0||oc.indexOf('appInstall110("spark")')>=0){ b.disabled=true; b.textContent='🔒 18+'; b.removeAttribute('onclick') } }) }catch(e){} }
+
+ /* ================= R2) the Market refuses minors out loud ================= */
+ try{ if(typeof phoneBurner63==='function'){ var _pb250=phoneBurner63; phoneBurner63=function(){ try{ var s=S250(); if(s&&s.age<18){ if(typeof dealerGateSheet117==='function'){ dealerGateSheet117(); return } openSheet('<h2>🛒 The Market</h2><p>🔞 <b>18+ only</b> — your ID says no. This side of the street does not open for minors.</p><button class="btn" onclick="closeModal()">Fair enough</button>'); return } }catch(e){} return _pb250.apply(this,arguments) } } }catch(e){}
+
+ /* ================= R3/T4) one send contract ================= */
+ var sendLock250={};
+ try{ if(typeof sendTyped146==='function'){ var _st250=sendTyped146; sendTyped146=function(from){ try{ var now=Date.now(); if(sendLock250[from]&&now-sendLock250[from]<1500)return; sendLock250[from]=now }catch(e){}
+   var r; try{ r=_st250.apply(this,arguments) }catch(e){}
+   try{ var inp=document.getElementById('txtIn146'); if(inp){ inp.value=''; inp.disabled=true }
+     document.querySelectorAll('#sheet button').forEach(function(b){ if((b.getAttribute('onclick')||'').indexOf('sendTyped146')>=0){ b.disabled=true; b.setAttribute('data-send250','1') } });
+     [450,1200].forEach(function(ms){ setTimeout(function(){ try{ if(!modalOpen250()&&typeof openConvo==='function')openConvo(from); var i2=document.getElementById('txtIn146'); if(i2)i2.disabled=false; document.querySelectorAll('[data-send250]').forEach(function(b){ b.disabled=false; b.removeAttribute('data-send250') }) }catch(e){} },ms) });
+   }catch(e){} return r } } }catch(e){}
+ /* thread birth: never two unanswered from the same sender */
+ var lifeStart250=0;
+ try{ if(typeof startGame==='function'){ var _sg250=startGame; startGame=function(){ var r=_sg250.apply(this,arguments); try{ lifeStart250=Date.now(); var s=S250();
+   if(s&&Array.isArray(s.phoneMsgs)){ var seen={}, out=[]; var hasYou={}; s.phoneMsgs.forEach(function(m){ if(m&&m.from==='You')hasYou[m.to]=true });
+     s.phoneMsgs.forEach(function(m){ if(!m||m.from==='You'||m.from==='School'){ out.push(m); return } if(hasYou[m.from]){ out.push(m); return } if(seen[m.from])return; seen[m.from]=true; out.push(m) });
+     s.phoneMsgs=out; if(typeof save==='function')save() } }catch(e){} return r } } }catch(e){}
+ /* a typing indicator never evaporates: stale pending replies are force-delivered */
+ function replySweep250(){ try{ var s=S250(); if(!s||typeof ensure146!=='function'||typeof replyFor146!=='function'||typeof pushMsg!=='function')return; var V=ensure146(); if(!V||!Array.isArray(V.pendingReplies))return; var now=Date.now(), changed=false;
+   for(var i=V.pendingReplies.length-1;i>=0;i--){ var q=V.pendingReplies[i]; if(!q._seen250)q._seen250=now; if(now-q._seen250>25000){ V.pendingReplies.splice(i,1); try{ pushMsg(q.from,replyFor146(q.from,q.txt)) }catch(e){} changed=true } }
+   if(changed&&typeof save==='function')save() }catch(e){} }
+
+ /* ================= R5/T7) XP: cause always, one repaint ================= */
+ var xpCause250={fitness:'being active',social:'time with people',cooking:'cooking',study:'studying',tech:'tech work',street:'street life',strength:'training',fighting:'standing your ground',dealing:'dealing'};
+ var xpRenderT250=0;
+ try{ if(typeof addXp==='function'){ var _ax250=addXp; addXp=function(n,skill){ var s0=S250(); var jl=(s0&&s0.journal)?s0.journal.length:0; var r=_ax250.apply(this,arguments); try{ var s=S250(); if(s&&n>0){ var explained=false;
+     if(s.journal&&s.journal.length>jl){ for(var i=jl;i<s.journal.length;i++){ if(/XP|⭐|level/i.test(s.journal[i]||'')){ explained=true; break } } }
+     if(!explained&&typeof log==='function')log('⭐ +'+n+' XP — '+(xpCause250[skill]||'living your life'));
+     var now=Date.now(); if(now-xpRenderT250>2500&&typeof inGame!=='undefined'&&inGame&&!modalOpen250()){ xpRenderT250=now; setTimeout(function(){ try{ if(typeof render==='function')render() }catch(e){} },300) } } }catch(e){} return r } } }catch(e){}
+
+ /* ================= T1) fishing: Actions at the pond, truthful counter, tank from the Bag ================= */
+ try{ if(typeof fishGo150==='function'){ var _fg250=fishGo150; fishGo150=function(){ var v0=null; try{ v0=(typeof ensure150==='function')?ensure150().casts:0 }catch(e){}
+   var r=_fg250.apply(this,arguments);
+   try{ var V=(typeof ensure150==='function')?ensure150():null; if(V&&V.casts===v0&&typeof activity!=='undefined'&&activity){ V.casts++; if(typeof save==='function')save() } }catch(e){} return r } } }catch(e){}
+ function pondHere250(){ try{ return typeof atPond150==='function'&&atPond150() }catch(e){ return false } }
+ function fishActPass250(){ try{ var s=S250(); if(!s||!pondHere250())return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.fishAct250'))return;
+   if(!panel.querySelector('.actCard101')&&panel.textContent.indexOf('Next steps')<0)return;
+   var btn='<button class="btn gold fishAct250" style="width:100%;margin-top:8px" onclick="fishGo150()">🎣 Fish at the pond — cast a line</button>';
+   var cards=panel.querySelectorAll('.card,.actCard101'); var host=null;
+   for(var i=0;i<cards.length;i++){ var h=cards[i].querySelector('h3,h4,.acT'); if(h&&/Next steps/.test(h.textContent||'')){ host=cards[i]; break } }
+   if(host)host.insertAdjacentHTML('beforeend',btn);
+   else { var grid=panel.querySelector('.grid')||panel; var d=document.createElement('div'); d.className='card'; d.style.borderColor='#38bdf8'; d.innerHTML='<h3>🎣 The Park Pond</h3>'+btn; grid.insertBefore(d,grid.firstChild) }
+   /* live counters on any pond card */
+   try{ var V=(typeof ensure150==='function')?ensure150():null; if(V){ var want='🎣 Casts: <b>'+(V.casts||0)+'</b> • 🐟 Caught: <b>'+(V.caught||0)+'</b>'+(V.best?' • 🌟 Best: <b>'+esc250(V.best)+'</b>':'');
+     panel.querySelectorAll('.fishCard150 p.small,.fishCard247 p.small,.fishCard246 p.small').forEach(function(p){ if(/Casts:/.test(p.innerHTML)&&p.innerHTML!==want)p.innerHTML=want }) } }catch(e){}
+  }catch(e){} }
+ function bagTankPass250(){ try{ var s=S250(); if(!s||!modalOpen250())return; if(!(s.v234&&s.v234.tank))return; var sh=document.getElementById('sheet'); if(!sh)return;
+   var fish=(s.inv||[]).filter(function(it){ try{ return it&&(typeof fishValue150==='function'?fishValue150(it.name)>0:/Bluegill|Koi|Bass|Trout|Catfish|Perch|Carp/.test(it.name||'')) }catch(e){ return false } });
+   if(!fish.length)return; var full=false; try{ full=(s.v234.fish||[]).length>=(typeof TANK_CAP234!=='undefined'?TANK_CAP234:6) }catch(e){}
+   sh.querySelectorAll('.kv,.msg').forEach(function(row){ if(row.getAttribute('data-t250'))return; var t=row.textContent||''; for(var i=0;i<fish.length;i++){ if(t.indexOf(fish[i].name)>=0){ row.setAttribute('data-t250','1'); if(!full){ var b=document.createElement('button'); b.className='btn outline'; b.style.cssText='width:auto;margin:4px 0 0 6px;padding:6px 10px;font-size:12px'; b.textContent='🐠 Move to the catch tank'; b.setAttribute('onclick','tankIn234('+fish[i].id+')'); row.appendChild(b) } break } } });
+  }catch(e){} }
+
+ /* ================= T2) family events key off the real family ================= */
+ function momExists250(){ try{ var s=S250(); if(!s)return false; if(s.origin==='orphan'||s.origin==='boarding')return false;
+   var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
+   if(cgs.some(function(n){ return /mom/i.test(n) }))return true;
+   if(typeof npcs!=='undefined'&&npcs&&npcs.some(function(n){ return n.name==='Mom' }))return true;
+   return false }catch(e){ return false } }
+ try{ if(typeof maybePhoneGift==='function'){ var _mpg250=maybePhoneGift; maybePhoneGift=function(){ try{ var s=S250(); if(s&&s.age<18&&!momExists250()&&s.origin!=='orphan'&&s.origin!=='boarding')return false }catch(e){} return _mpg250.apply(this,arguments) } } }catch(e){}
+ function sleepoverFramePass250(){ try{ var s=S250(); if(!s||!modalOpen250())return; var sh=document.getElementById('sheet'); if(!sh||sh.getAttribute('data-f250'))return; var staffRun=(s.origin==='orphan'||s.origin==='boarding');
+   if(!staffRun&&momExists250())return; var hit=false;
+   sh.querySelectorAll('h2,h3,p,b').forEach(function(el){ if(el.children.length)return; var t=el.textContent||'';
+     if(staffRun&&t.indexOf('Parent to parent')>=0){ el.textContent=t.split('Parent to parent').join('Grown-up to grown-up'); hit=true }
+     var m=t.match(/([A-Z][a-zA-Z]+)’s parent|([A-Z][a-zA-Z]+)'s parent/); if(m){ var nm=m[1]||m[2]; var age=null; try{ age=(typeof charAge79==='function')?charAge79(nm):null }catch(e){}
+       if(age!==null&&age<18){ el.textContent=t.replace(/([A-Z][a-zA-Z]+)(?:’s|'s) parent/g,'$1’s grown-up'); hit=true } } });
+   if(hit)sh.setAttribute('data-f250','1') }catch(e){} }
+
+ /* ================= T3) every sheet closes ================= */
+ function forceClose250(){ setTimeout(function(){ try{ if(modalOpen250()){ var m=document.getElementById('modal'); if(m)m.classList.remove('open') } }catch(e){} },90) }
+ document.addEventListener('click',function(ev){ try{ if(ev.target&&ev.target.closest&&ev.target.closest('.sheetX'))forceClose250() }catch(e){} },true);
+ document.addEventListener('keydown',function(ev){ try{ if(ev.key==='Escape'&&modalOpen250())forceClose250() }catch(e){} },true);
+
+ /* ================= T6) no silent actions ================= */
+ var toastCount250=0;
+ try{ if(typeof toast==='function'){ var _to250=toast; toast=function(){ try{ toastCount250++ }catch(e){} return _to250.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof startActivity==='function'){ var _sa250=startActivity; startActivity=function(){ var a=Array.prototype.slice.call(arguments); var done=a[a.length-1];
+   if(typeof done==='function'){ var icon=String(a[0]||''); a[a.length-1]=function(){ var s0=S250(); var jl=(s0&&s0.journal)?s0.journal.length:0; var tc=toastCount250; var r=done.apply(this,arguments);
+     try{ var s=S250(); var jl2=(s&&s.journal)?s.journal.length:0; if(s&&jl2===jl&&toastCount250===tc&&!modalOpen250()&&typeof log==='function'){ log(icon+' — done. The moment took some of your day, and it counts.'); if(typeof toast==='function')toast(icon+' Done') } }catch(e){} return r } }
+   return _sa250.apply(this,a) } } }catch(e){}
+
+ /* ================= U1) bank counter: repaint on every route; honest quick amounts ================= */
+ function bankRepaint250(){ [80,520].forEach(function(ms){ setTimeout(function(){ try{ if(typeof render==='function')render() }catch(e){} },ms) }) }
+ ['deposit63','withdraw63','depositCheck108'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__u250){ var w=function(){ var r=fn.apply(this,arguments); try{ bankRepaint250() }catch(e){} return r }; w.__u250=true; window[nm]=w } }catch(e){} });
+ try{ if(typeof closeModal==='function'){ var _cm250=closeModal; closeModal=function(){ var r=_cm250.apply(this,arguments); try{ var s=S250(); if(s&&s.location==='bank')bankRepaint250();
+     if(startQueue250.length){ var nx=startQueue250.shift(); setTimeout(function(){ try{ if(typeof openSheet==='function')openSheet(nx) }catch(e){} },420) } }catch(e){} return r } } }catch(e){}
+ function bankCapPass250(){ try{ var s=S250(); if(!s||!modalOpen250())return; var sh=document.getElementById('sheet'); if(!sh)return;
+   sh.querySelectorAll('button').forEach(function(b){ var t=b.textContent||''; var m=t.match(/Deposit \$(\d+)/); if(m&&parseInt(m[1],10)>(s.money||0)){ b.disabled=true; b.style.opacity='.5'; if(t.indexOf('more than your cash')<0)b.textContent=t+' — more than your cash' } }) }catch(e){} }
+
+ /* ================= U2) one pill for every role ================= */
+ try{ if(typeof rainTag193==='function'){ var _rt250=rainTag193; rainTag193=function(ctx,cx,baseY,text,now,fs){ try{ if(/^(Coworker|Co-worker|Classmate|Friend|Stranger|Boss|Teacher|Neighbour|Neighbor|Roommate|Landlord|Coach|Principal|Officer|Mentor|Student|Customer|Crush|Partner|Ex|Client|Teammate)$/.test(String(text||'')))return }catch(e){} return _rt250.apply(this,arguments) } } }catch(e){}
+
+ /* ================= U3) portrait fill at every interior ================= */
+ var stl250=document.createElement('style'); stl250.id='style250';
+ stl250.textContent='.roomWrap{display:flex!important;flex-direction:column!important}'
+ +'.roomWrap #cv{width:100%!important;height:100%!important;max-height:none!important;object-fit:fill!important;aspect-ratio:auto!important;margin:0!important;flex:1 1 auto!important;min-height:0!important}'
+ +'#roomBar86{position:relative!important;z-index:2!important;flex:none!important}';
+ document.head.appendChild(stl250);
+ var need250=0, stable250=0;
+ function sizeBackup250(){ try{ var cv=document.getElementById('cv'); if(!cv)return; var elW=cv.clientWidth, elH=cv.clientHeight; if(elW<40||elH<40)return;
+   var need=Math.round(900*elH/elW); if(need<460)need=460; if(need>920)need=920; if(elW<500&&need>700)need=700;
+   if(Math.abs(cv.height-need)<3){ stable250=0; return }
+   if(need!==need250){ need250=need; stable250=0; return }
+   stable250++; if(stable250>=3){ cv.height=need; stable250=0 } }catch(e){} }
+
+ /* ================= U5b) one card per place in Travel ================= */
+ function travelDedupe250(){ try{ var s=S250(); if(!s||typeof curTab==='undefined'||curTab!=='travel')return; var panel=document.getElementById('panel'); if(!panel)return; var seen={};
+   panel.querySelectorAll('.grid > .card, .grid > div.card').forEach(function(c){ var h=c.querySelector('h3'); if(!h)return; var t=(h.textContent||'').trim(); if(!t)return; if(seen[t]){ c.remove() } else seen[t]=true }) }catch(e){} }
+
+ /* ================= U5c) start-of-life dialogs queue, one at a time ================= */
+ var startQueue250=[];
+ try{ if(typeof openSheet==='function'){ var _os250b=openSheet; openSheet=function(html,opts){ try{ var s=S250();
+     if(s&&lifeStart250&&Date.now()-lifeStart250<150000&&s.day===1&&typeof html==='string'&&modalOpen250()){
+       var cur=document.getElementById('sheet'); var curT=cur?(cur.textContent||''):'';
+       if(/born into|Welcome|letter|Letter|trait|Trait|babysitter|Babysitter|Start living/.test(curT)&&/knock|Knock|visitor|📰|news|News|offers|event|Event/.test(html)){ startQueue250.push(html); return }
+     } }catch(e){} return _os250b.apply(this,arguments) } } }catch(e){}
+
+ /* shared leash: late paints + all cosmetic passes */
+ ['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__p250b){ var w=function(){ var r=fn.apply(this,arguments); try{ fishActPass250(); travelDedupe250() }catch(e){} return r }; w.__p250b=true; window[nm]=w } }catch(e){} });
+ setInterval(function(){ try{ if(H.covPass250)H.covPass250(); if(H.toddlerPanel250)H.toddlerPanel250(); fishActPass250(); travelDedupe250(); storeSparkPass250(); bankCapPass250(); bagTankPass250(); sleepoverFramePass250(); replySweep250(); sizeBackup250() }catch(e){} },1300);
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50b: 💘 Spark locked for minors • 🛒 the Market refuses minors out loud • 💬 one send contract (lock, clear, thread stays, replies always land) • ⭐ every XP gain names its cause • 🎣 fishing lives in the park\u2019s Actions, counters tell the truth, Bag fish offer the tank • 🏠 family events key off the real family • ✕ every sheet closes • 🏦 the bank counter repaints on every route • 🏷️ one pill per figure, every role • 🖼️ portrait fill at every interior • 🃏 one card per place • 🚪 start-of-life dialogs queue in order','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
