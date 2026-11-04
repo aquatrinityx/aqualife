@@ -9218,8 +9218,8 @@ const _dt127=doTrouble; doTrouble=function(t){ if(!S)return; if(typeof jailed98=
  return _dt127(t) };
 const _pls127=pickLockSheet; pickLockSheet=function(){ if(!hasBurner127()){ crimeLockMsg127(); return } return _pls127() };
 const _dd127=dumpsterDive; dumpsterDive=function(){ if(!hasBurner127()){ crimeLockMsg127(); return } return _dd127.apply(null,arguments) };
-const _dm127=dealMenu; dealMenu=function(){ if(S&&typeof dealerStarted117==='function'&&!dealerStarted117()){ dealerGateSheet117(); return } return _dm127() };
-const _sb53_127=streetBuy53; streetBuy53=function(){ if(S&&typeof dealerStarted117==='function'&&!dealerStarted117()){ dealerGateSheet117(); return } return _sb53_127.apply(null,arguments) };
+const _dm127=dealMenu; dealMenu=function(){ return _dm127() }; /* h53 (owner's Maple Street ruling): BUYING IS PERSONAL — the Drug Market sheet opens with no Market start; its Buy buttons are a personal purchase (dealBuy carries the adults-only check in the h53 layer). SELLING inside it still answers to the Market exactly as before: dealSell stays gate117-wrapped, so a sell tap from a player who never started the Market still lands on the Market gate sheet. */
+const _sb53_127=streetBuy53; streetBuy53=function(){ if(S&&S.age<18){ toast('🚫 18+ only — the street does not sell to minors'); log('🚫 TURNED AWAY — the seller took one look and shook their head: “Not a chance, kid.” Street buying is adults-only: no sale, no exceptions. (Running the business is a different door entirely: 🏢 Enterprise → 🛒 Market.)'); return } return _sb53_127.apply(null,arguments) }; /* h53: street BUYING is decoupled from the business layer — an adult buys from the dealer directly: no Market visit, no Enterprise app, no license. The old dealerStarted117 gate on this wrapper is GONE for buying; the adults-only gate stays and refuses minors out loud. All money / stash / Dealing XP / heat / bust mechanics live in the shipped _sb53_127, untouched. */
 function crimeTabFix127(p){ if(!S||!p)return; const burner=hasBurner127(); const started=(typeof dealerStarted117==='function')?dealerStarted117():burner;
  p.querySelectorAll('.card').forEach(function(card){ const h=card.querySelector('h3'); if(!h)return; const t=h.textContent||'';
   const lockBtn=function(note){ const b=card.querySelector('button'); if(b){ const d=document.createElement('p'); d.className='small'; d.style.marginTop='8px'; d.textContent='🔒 '+note; b.replaceWith(d) } };
@@ -9227,7 +9227,7 @@ function crimeTabFix127(p){ if(!S||!p)return; const burner=hasBurner127(); const
   if(/Pickpocket/.test(t)){ if(!nearSomeone127()){ card.remove(); return } if(!burner)lockBtn('Crime runs through the Market — get started in 🏢 Enterprise → 🛒 Market first.'); return }
   if(/Pick a Lock|Dumpster Dive|Rob a House|Rob a Bank/.test(t)){ if(!burner)lockBtn('Crime runs through the Market — get started in 🏢 Enterprise → 🛒 Market first.'); return }
   if(/Drug Market/.test(t)){ if(!started)lockBtn('The drug game starts in the 🛒 Market — dealing and moving product run through it. Get started in 🏢 Enterprise → 🛒 Market.'); return }
-  if(/The Streets — people sell to YOU/.test(t)){ if(!started){ card.querySelectorAll('button').forEach(function(b){ b.disabled=true; b.style.opacity='.5' }); const d=document.createElement('p'); d.className='small'; d.style.marginTop='8px'; d.textContent='🔒 Locked until the 🛒 Market — the street does not sell to a clean phone. Get started: 🏢 Enterprise → 🛒 Market.'; card.appendChild(d) } return }
+  if(/The Streets — people sell to YOU/.test(t)){ return } /* h53: this card is the BUY side of the counter — personal buying is NOT Market-gated (owner's Maple Street ruling). Its Buy buttons stay live for adults; streetBuy53 itself refuses minors out loud. The Market is where you go to RUN the business (selling, crew, guards), not to make a personal buy. */
  }) }
 /* ---------- 🏠 EVENTS NEED SOMEONE HOME (+ none at all in jail) ---------- */
 function personHome127(name){ if(!S||!name)return false;
@@ -25675,7 +25675,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h52', CLASS246='hotfix';
+ var BUILD246='v200-h53', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26888,6 +26888,43 @@ try{
  setInterval(function(){ try{ if(H.covPass250)H.covPass250(); if(H.toddlerPanel250)H.toddlerPanel250(); fishActPass250(); travelDedupe250(); storeSparkPass250(); bankCapPass250(); bagTankPass250(); sleepoverFramePass250(); replySweep250(); sizeBackup250() }catch(e){} },1300);
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50b: 💘 Spark locked for minors • 🛒 the Market refuses minors out loud • 💬 one send contract (lock, clear, thread stays, replies always land) • ⭐ every XP gain names its cause • 🎣 fishing lives in the park\u2019s Actions, counters tell the truth, Bag fish offer the tank • 🏠 family events key off the real family • ✕ every sheet closes • 🏦 the bank counter repaints on every route • 🏷️ one pill per figure, every role • 🖼️ portrait fill at every interior • 🃏 one card per place • 🚪 start-of-life dialogs queue in order','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 53 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   The owner's Maple Street ruling (Nov 4, 2026, his words): "It won't let you buy the drugs at Maple
+   Street. It says you need to go to the market first, but just to buy them, you don't need to have the
+   Enterprise app. It should be optional, unless you want to actually start a business."
+   THE FIX — personal buying is decoupled from the business layer:
+   • streetBuy53 (edited at the v127 wrapper): the dealerStarted117 / Market gate on BUYING is gone.
+     An adult buys from the dealer directly — at Maple Street's park benches (parkDealerBuy219), from
+     corner sellers, the dealer, or a kingpin — with NO Market visit, NO Enterprise app installed, NO
+     business license. The shipped purchase underneath (price, cash check, stash, Dealing XP, heat,
+     maybeBust) is byte-for-byte the one that always ran.
+   • dealMenu (edited at the v127 wrapper): the sheet opens without the Market, so its Buy buttons
+     work for a personal buyer; dealUse's re-open works too. Its SELL buttons still call dealSell,
+     which stays gate117-wrapped — selling is business, and business still starts in the Market.
+   • crimeTabFix127 (edited in place): the "🔒 Locked until the 🛒 Market — the street does not sell
+     to a clean phone" lock on the buy-side Streets card is REMOVED — no copy anywhere tells a buyer
+     to go to the Market first just to buy. The Market's true pitch stands where it belongs (the gate
+     sheet, the crew/guard cards, Enterprise): the Market is where you go to RUN the business.
+   • THIS LAYER: the two remaining buy entry points get the same adults-only rule the street wrapper
+     now carries — dealBuy (the Drug Market sheet's Buy buttons, reached through the pay-choice flow)
+     and parkDealerBuy219 (the Maple Street bench buy). A minor invoking either is refused OUT LOUD
+     (toast + journal), no purchase path, exactly the gate that always stood at Maple Street.
+   UNTOUCHED, by the ruling: every sell gate (gate117 on dealSell / buyerSell38 / burnerSellPhone63 /
+   pawnSellDrug40, dmOrder110's sell mode, doTrouble's Sell gate), crew & bodyguard gates, the
+   Enterprise section gates (sell / streets / crew / guards), the business license, the warehouse,
+   production equipment, crime's Market rule, the Market's own 18+ start, and the park's friendly
+   layer for minors (the shady layer simply never offers to under-18s). */
+(function(){ 'use strict';
+ try{
+  function minorBuyRefusal53(){ try{ toast('🚫 18+ only — nobody sells to a minor'); }catch(e){} try{ log('🚫 TURNED AWAY — one look was enough: “Not a chance, kid.” Buying is adults-only — a personal buy needs no Market and no Enterprise app, but it does need you to be 18. (The 🛒 Market in 🏢 Enterprise is the BUSINESS door: selling, crew, guards — never a toll on buying.)') }catch(e){} }
+  try{ if(typeof dealBuy==='function'){ var _db53=dealBuy; dealBuy=function(k){ if(typeof S!=='undefined'&&S&&S.age<18){ minorBuyRefusal53(); return } return _db53.apply(null,arguments) } } }catch(e){}
+  try{ if(typeof window.parkDealerBuy219==='function'){ var _pdb53=window.parkDealerBuy219; window.parkDealerBuy219=function(k){ if(typeof S!=='undefined'&&S&&S.age<18){ minorBuyRefusal53(); return } return _pdb53.apply(null,arguments) } } }catch(e){}
+  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 53: 🌳 Maple Street buying is PERSONAL — an adult buys from the dealer with no Market visit, no Enterprise app, no license (streetBuy53 + dealMenu buy side decoupled; the "go to the market first" lock copy is out) • 🏢 Enterprise & the 🛒 Market stay the optional BUSINESS layer — every sell / crew / guard / license gate exactly as built • 🔞 buying stays adults-only everywhere, refused out loud','color:#0ea5e9;font-weight:bold') }catch(e){}
+ }catch(e){}
 })();
 </script>
 
