@@ -24523,6 +24523,85 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 39: ✍️ person
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 hotfix 40: ⭐ THE LEVEL-UP PILE-UP REPAIR — Howard's Day-7 video: the merged Level Up card pinned at the top and never yielded (its only exits were a tap or one 6.5s timer that the repaint storm starved), the Day-7 morning sheet arrived UNDERNEATH it, celebration particles (z-135, viewport-centre spawns) burst over the scene AND the Actions panel's words, and the panel's nomad cards (ctx / Only-here / services — each owned by a different injector on a different cadence, over a panel that repaints wholesale) collided, clipped and left an empty shell behind. THE REPAIR: (1) a governor owns the Level Up card's lifetime — 3.2s and gone, dismissed the instant a sheet or the day card needs the stage, and a level-up that lands while a sheet owns the stage is HELD and shown when the stage frees (a toast marks the moment) instead of pinning over it; h216's _lvSpot216 is cleared on dismissal so its watchdog can never resurrect the card. (2) emojiConfetti is re-aimed at the canvas: spawns and flight paths are clamped inside the scene rect, and .emojiFx drops to z-30 — under the dock sheet (44), the day card (48), sheets (50) and the spotlight (95) — so celebrations play in the scene and never over panel text or cards. (3) an Actions reconcile runs after every panel paint and on a cadence: the nomad cards are deduped, homed (ctx heads the panel, Only-here directly behind it — positionDyn217's own rule — services inside the grid), titles the storm stripped are restored, empty shells are swept, and a missing card is re-injected. ================= */
+(function(){ 'use strict';
+try{
+ var st240=document.createElement('style'); st240.id='style240';
+ st240.textContent='.emojiFx{z-index:30!important}'
+ +'#panel .ctxCard200,#panel .dynCard217{position:static!important;float:none!important;clear:both!important}';
+ document.head.appendChild(st240);
+
+ /* ---------- 1) the Level Up card is on a short leash ---------- */
+ var LV_MS240=3200, lvBorn240=0, lvStamp240='', lvPend240=null, _ss240=null;
+ function spotEl240(){ return document.getElementById('spotCard') }
+ function isLvCard240(el){ return !!(el&&el.classList.contains('show')&&/level up/i.test(el.textContent||'')) }
+ function sheetUp240(){ try{ var m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return true }catch(e){} try{ var dc=document.getElementById('dayCard'); if(dc&&dc.classList.contains('show'))return true }catch(e){} return false }
+ function dismissLv240(){ var el=spotEl240(); if(!el)return;
+   try{ if(window._lvSpot216&&typeof el.onclick==='function')el.onclick() }catch(e){} /* h216's own ack: hides the card AND drains its hold queue */
+   try{ el.classList.remove('show') }catch(e){}
+   try{ window._lvSpot216=null }catch(e){} /* the h216 watchdog can never resurrect a dismissed card */
+   lvBorn240=0; lvStamp240='';
+   setTimeout(reconcile240,30) }
+ function guard240(){ try{ var el=spotEl240(); if(!el||!el.classList.contains('show')){ lvBorn240=0; lvStamp240=''; return }
+   if(!isLvCard240(el)){ lvBorn240=0; lvStamp240=''; return }
+   var stamp=(el.textContent||'').slice(0,80);
+   if(stamp!==lvStamp240){ lvStamp240=stamp; lvBorn240=Date.now() }
+   if(sheetUp240()){ dismissLv240(); return } /* a sheet needs the stage — the card yields at once */
+   if(lvBorn240&&Date.now()-lvBorn240>=LV_MS240)dismissLv240();
+  }catch(e){} }
+ setInterval(guard240,200);
+ /* a sheet taking the stage dismisses the card FIRST, synchronously — nothing ever opens beneath it */
+ if(typeof openSheet==='function'){ var _os240=openSheet; openSheet=function(){ try{ if(isLvCard240(spotEl240()))dismissLv240() }catch(e){} return _os240.apply(this,arguments) } }
+ if(typeof showDayCard==='function'){ var _sdc240=showDayCard; showDayCard=function(){ try{ if(isLvCard240(spotEl240()))dismissLv240() }catch(e){} return _sdc240.apply(this,arguments) } }
+ /* a level-up that lands mid-sheet is held, then shown the moment the stage frees */
+ if(typeof showSpotlight==='function'){ _ss240=showSpotlight; showSpotlight=function(icon,title,body,opts){ try{ if(typeof title==='string'&&/^Level Up — Level \d+/.test(title)&&sheetUp240()){ lvPend240={icon:icon,title:title,body:body,at:Date.now()}; try{ toast('⭐ '+title) }catch(e){} return } }catch(e){} return _ss240.apply(this,arguments) } }
+ setInterval(function(){ try{ if(!lvPend240)return; if(Date.now()-lvPend240.at>20000){ lvPend240=null; return } if(sheetUp240())return; var p=lvPend240; lvPend240=null; if(_ss240)_ss240(p.icon,p.title,p.body) }catch(e){} },400);
+
+ /* ---------- 2) the celebration stays in the scene ---------- */
+ function sceneRect240(){ var cv=document.getElementById('cv'); if(!cv)return null; var rc=cv.getBoundingClientRect(); if(!rc||rc.width<40||rc.height<40)return null;
+   var wrap=cv.closest?cv.closest('.roomWrap'):null; if(wrap){ var wr=wrap.getBoundingClientRect(); if(wr&&wr.width>=40&&wr.height>=40){ var x1=Math.max(rc.left,wr.left), y1=Math.max(rc.top,wr.top), x2=Math.min(rc.right,wr.right), y2=Math.min(rc.bottom,wr.bottom); if(x2-x1>=40&&y2-y1>=40)return {left:x1,top:y1,right:x2,bottom:y2,width:x2-x1,height:y2-y1} } }
+   return rc }
+ function aimFx240(){ var rc=sceneRect240(); if(!rc)return;
+   var els=document.querySelectorAll('.emojiFx'); for(var i=0;i<els.length;i++){ var s=els[i]; if(s.getAttribute('data-h240'))continue;
+     if(!/vw|vh/.test((s.style.left||'')+(s.style.top||'')))continue; /* px-anchored bursts (photo moments) already live in the scene */
+     s.setAttribute('data-h240','1');
+     var ox=rc.left+rc.width*(0.28+Math.random()*0.44), oy=rc.top+rc.height*(0.30+Math.random()*0.34);
+     var fx=parseFloat(s.style.getPropertyValue('--fx'))||0, fy=parseFloat(s.style.getPropertyValue('--fy'))||0;
+     var ex=Math.max(rc.left+6,Math.min(rc.right-30,ox+fx)), ey=Math.max(rc.top+6,Math.min(rc.bottom-30,oy+fy));
+     s.style.left=ox+'px'; s.style.top=oy+'px'; s.style.setProperty('--fx',(ex-ox)+'px'); s.style.setProperty('--fy',(ey-oy)+'px') } }
+ if(typeof emojiConfetti==='function'){ var _ec240=emojiConfetti; emojiConfetti=function(set,n){ var r=_ec240.apply(this,arguments); try{ aimFx240() }catch(e){} return r } }
+ /* and any .emojiFx that appears by ANY route is aimed the moment it lands — containment is structural, not caller-dependent */
+ try{ var mo240=new MutationObserver(function(ms){ for(var i=0;i<ms.length;i++){ var ad=ms[i].addedNodes; for(var j=0;j<ad.length;j++){ var nd=ad[j]; if(nd&&nd.nodeType===1&&(nd.classList&&nd.classList.contains('emojiFx')||(nd.querySelector&&nd.querySelector('.emojiFx')))){ aimFx240(); return } } } }); mo240.observe(document.body,{childList:true,subtree:true}) }catch(e){}
+
+ /* ---------- 3) Actions: one reconcile to end the card war ---------- */
+ function fixTitle240(card,txt,html){ try{ if(!card)return; var h=card.querySelector('h3'); if(h&&(h.textContent||'').trim())return; if(h)h.remove(); var n=document.createElement('h3'); if(html)n.innerHTML=html; else n.textContent=txt; card.insertBefore(n,card.firstChild) }catch(e){} }
+ function reconcile240(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return; var grid=panel.querySelector('.actGrid101');
+   var ctxs=panel.querySelectorAll('.ctxCard200'); for(var i=1;i<ctxs.length;i++)ctxs[i].remove();
+   var dyns=panel.querySelectorAll('.dynCard217'); for(var j=1;j<dyns.length;j++)dyns[j].remove();
+   var svcs=panel.querySelectorAll('#svcSec222'); for(var k=1;k<svcs.length;k++)svcs[k].remove();
+   var ctx=panel.querySelector('.ctxCard200'), dyn=panel.querySelector('.dynCard217'), svc=panel.querySelector('#svcSec222');
+   if(ctx){ var cEl=(ctx.closest&&ctx.closest('details.dd132'))||ctx; if(cEl.parentNode!==panel||panel.firstElementChild!==cEl)panel.insertBefore(cEl,panel.firstChild) }
+   if(dyn){ var dEl=(dyn.closest&&dyn.closest('details.dd132'))||dyn; var aEl=ctx?((ctx.closest&&ctx.closest('details.dd132'))||ctx):null; var ref=aEl?aEl.nextSibling:panel.firstChild; if(dEl.parentNode!==panel||ref!==dEl)panel.insertBefore(dEl,ref) }
+   if(svc&&grid&&svc.parentNode!==grid)grid.appendChild(svc);
+   fixTitle240(ctx,'🌤️ Right here, right now','');
+   var dlbl=''; try{ var dd=window.__v217&&window.__v217.data?window.__v217.data():null; if(dd&&dd.html){ var m=dd.html.match(/<h3>([\s\S]*?)<\/h3>/); if(m)dlbl=m[1] } }catch(e){}
+   fixTitle240(dyn,'📍 Only here',dlbl);
+   Array.prototype.slice.call(panel.querySelectorAll('.actCard101,.card')).forEach(function(c){ try{ if(c===ctx||c===dyn)return; if(c.querySelector('button,input,select,img,canvas,svg'))return; if((c.textContent||'').trim())return; c.remove() }catch(e){} });
+   Array.prototype.slice.call(panel.querySelectorAll('details.dd132')).forEach(function(d){ try{ if(!d.querySelector('.card,.actCard101')&&!(d.textContent||'').trim())d.remove() }catch(e){} });
+   if(!panel.querySelector('.ctxCard200')){ try{ if(typeof ctxInject200==='function')ctxInject200() }catch(e){} }
+   if(!panel.querySelector('.dynCard217')){ try{ if(typeof dynPass217==='function')dynPass217() }catch(e){} }
+   if(grid&&!panel.querySelector('#svcSec222')){ try{ if(typeof svcInject222==='function')svcInject222() }catch(e){} }
+  }catch(e){} }
+ ['paintActions101','paintQCards101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__rec240)return; var w=function(){ var r=fn.apply(this,arguments); setTimeout(reconcile240,60); setTimeout(reconcile240,480); return r }; w.__rec240=true; window[nm]=w }catch(e){} });
+ setInterval(reconcile240,900);
+ /* titles on a faster beat than the full reconcile — whatever strips them, they are back within a blink */
+ setInterval(function(){ try{ if(typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return; var ctx=panel.querySelector('.ctxCard200'); if(ctx)fixTitle240(ctx,'🌤️ Right here, right now',''); var dyn=panel.querySelector('.dynCard217'); if(dyn){ var h=dyn.querySelector('h3'); if(!h||!(h.textContent||'').trim()){ var lbl=''; try{ var dd=window.__v217&&window.__v217.data?window.__v217.data():null; if(dd&&dd.html){ var m=dd.html.match(/<h3>([\s\S]*?)<\/h3>/); if(m)lbl=m[1] } }catch(e){} fixTitle240(dyn,'📍 Only here',lbl) } } }catch(e){} },250);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 40: ⭐ LEVEL-UP PILE-UP REPAIR — the Level Up card is on a leash (3.2s and gone; yields the instant a sheet or the day card needs the stage; a level-up landing mid-sheet is held and shown when the stage frees, never pinned over it; the h216 watchdog can no longer resurrect it) • 🎉 celebration confetti is re-aimed into the scene and flies at z-30, under every panel and sheet • ⚡ an Actions reconcile after every paint dedupes and homes the ctx / Only-here / services cards, restores stripped titles, sweeps empty shells and re-injects anything the repaint storm dropped','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
