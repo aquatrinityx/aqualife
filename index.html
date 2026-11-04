@@ -7193,6 +7193,7 @@ function relLabel193(name){
 function rainTag193(ctx,cx,baseY,text,now,fs){
   try{
     if(!text) return;
+    if(/^(Mom|Dad|Step-Mom|Step-Dad|Grandma|Grandpa|Sister|Brother|Step-Sister|Step-Brother|Son|Daughter|Child|Babysitter|Caregiver|Wife|Husband|Girlfriend|Boyfriend)$/.test(String(text))) return; /* h48: a family ROLE is never a second pill over a figure — the name pill is the only pill (roles live on cards/lists) */
     fs=fs||10.5;
     ctx.save();
     ctx.font='900 '+fs+'px sans-serif';
@@ -25674,7 +25675,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h47', CLASS246='hotfix';
+ var BUILD246='v200-h48', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26076,6 +26077,410 @@ try{
  ['depositCheck108','dep133','wd133','deposit63','withdraw63','bankMoney63'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__bank247){ var w=function(){ var r=fn.apply(this,arguments); try{ setTimeout(bankRepaint247,40); setTimeout(bankRepaint247,400) }catch(e){} return r }; w.__bank247=true; window[nm]=w } }catch(e){} });
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 47: 💬 replies PAINT the moment they land + a 12 s settle deadline (typing can never hang) • 🎣 fishing at the park pond (street/park room truth) • 🔤 fused words — inline neighbours get their space back • 🏷️ tags never truncate, no Stranger pill over a name, world tags stack • 📰 a lone headline never doubles in the ticker • 🏦 the bank counter repaints after its own transactions • 💰 "balance" = cash + bank','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 48 — 🛠️ THE STABILIZATION ROUND (the owner's own recorded phone
+   run: a brand-new 1-year-old, "Aqua", Mom "Stacey" + Dad "Pop", Newark — every item below was
+   photographed happening on his phone). GAME_VERSION stays 200; SAVE_KEY untouched; the update
+   stamp above is now 'v200-h48' so every existing player gets the notice. Standing specs held:
+   the anonymous-stats toggle stays default-ON with OFF honoured, the fused-word spacing pass
+   stays, no player-visible changelog, exactly one Send button in chat.
+   A) SCENE LAYOUT — the canvas bitmap now RESIZES to the scene area's real aspect (taller bitmap
+      on tall screens, floor/ground rows extended downward), so the scene FILLS its area: no
+      squeezed band, no tan void, and the top-anchored frame never wanders between paints. The
+      street layer (road surface, traffic, parked world cars, the curb band) renders ONLY where
+      a street actually is: Maple Street / the city, and the home driveway seen from the yard —
+      never inside a house, never at the beach, never inside any other interior.
+   B) THE CRIB IS FURNITURE — it belongs to ONE room (recorded where the life first rests in it,
+      S.v248.cribRoom). The in-crib state and the crib drawing are gated to that room; carried
+      elsewhere, the baby is put down on the floor (a blanket is drawn under them) and the crib
+      stays home in its own room.
+   C) THE CARRY CHAIN RESOLVES ONCE — goRoom86 short-circuits when the baby is already in the
+      target room (one deduped toast, no sheet); the carry sheet re-checks the CURRENT room and
+      can never re-serve for the state a completed carry already resolved. Toasts are deduped:
+      the same line inside 6 s never fires twice.
+   D) TRAIT CATCH-UP NEVER FIRES AT AGE 1 — 'start' offers are purged before presentation when
+      the life started under age 2 (no even birthdays were lived, so none are owed); when a
+      catch-up does fire (start age >= 2) its copy names the REAL even birthdays lived.
+   E) EVENTS ARE SHOWN, NOT NARRATED BY GHOSTS — the toddler DROP can only roll when the
+      caregiver it names is actually present and visible in the scene (the same test the scene
+      itself uses to draw them); after a drop the baby rests on a blanket on the floor, never
+      inside a fixture outline.
+   F) ONE PRESENCE TRUTH — one derived state (withYou248 / truthLoc248) now feeds the scene
+      lists: presentPeople138 drops people whose instance is 'out' or who are at work and adds
+      the escort who is physically with you; Change Rooms lists the player in their own room and
+      the caregiver who carried them in that room only; the ❤️ Relationships roster location is
+      re-derived live on a cadence (With you / At work / Asleep / On the road / Daycare / Home —
+      never a stale "Home"); role words (Mom, Dad…) never draw as a second pill over a figure —
+      the name pill is the only pill; family-scene tags de-collide against the player's own pill;
+      a bare name tag never floats over a MOVING vehicle — parked cars keep their owner tags,
+      traffic is anonymous unless the owner is visibly departing in it.
+   G) THE COVERAGE CARD TELLS THE TRUTH — coverage never books while a parent is physically
+      with the toddler (escort or same-room presence clears it), and the card is rewritten from
+      live truth on every paint: a present parent is named as the coverage; a babysitter is
+      named (the household's actual named sitter) only when a sitting is really booked, and the
+      card distinguishes "booked — knocks first" from "in the room". ONE canonical job: cgJob119
+      now defers its title to jobLine47 (the character-card source), so a person's job string is
+      identical on the card, the résumé and the coverage card.
+   H) BABY AGE GATING — under-5s: the Shower dropdown routes to the caregiver bath (act('shower')),
+      "Cook from groceries" becomes a caregiver-fed meal, the 😈 Bad Actions folder leaves the
+      Actions panel, and the Living World hub loses/locks its adult doors: calls need a real
+      phone AND age 5+ (the call path enforces the same rule texting already did), a call partner
+      is always one named person (never "Family"), Job interview locks under 16, Homes-that-talk
+      and Customers lock under 18. The no-phone sheet for a child under 2 explains face-to-face
+      talking and carries NO ask-for-a-phone button (and the ask paths themselves refuse under 2).
+   I) XP ALWAYS SHOWS ITS CAUSE — addXp is wrapped: every change toasts its cause at the moment
+      it lands (the skill when named, else the action/activity/location that earned it); a 1 s
+      sentinel catches XP that moves by any other route and journals + toasts it the same way.
+   J) NOTHING PAINTS OVER THE HEADLINES — the green 🔌 charging pill (#chargeChip132, fixed at
+      top:8px over the ticker) is moved into the top HUD row, inside its own surface. ================= */
+(function(){
+'use strict';
+try{
+ function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+ function ensure248(){ var s=S248(); if(!s)return null; if(!s.v248||typeof s.v248!=='object')s.v248={}; return s.v248 }
+ function esc248(t){ return String(t==null?'':t) }
+ function homeLoc248(){ try{ return (typeof homeLoc==='function')?homeLoc():'house' }catch(e){ return 'house' } }
+ function curRoomId248(){ try{ var rm=(typeof curRoom86==='function')?curRoom86():null; return rm?rm.id:null }catch(e){ return null } }
+
+ /* ================= A1) the scene fills its area — bitmap follows the frame ================= */
+ var stl248=document.createElement('style'); stl248.id='style248';
+ stl248.textContent='body.inGame51 #cv{width:100%!important;height:100%!important;max-height:none!important;object-fit:fill!important;aspect-ratio:auto!important}'
+ +'.roomWrap.stage193 #cv{flex:1 1 auto!important;height:auto!important;min-height:0!important}'
+ +'#curb193{flex:none!important}'
+ +'#chargeChip132{position:static!important;flex:none;align-self:center;margin-left:2px}';
+ document.head.appendChild(stl248);
+ var tmp248=null;
+ var pendH248=0, pendT248=0;
+ function sizeCanvas248(){ try{ var cv=document.getElementById('cv'); if(!cv)return;
+  /* bitmap only — the ELEMENT's geometry is left to the stylesheet cascade (style248). An earlier build also
+     re-asserted the element box inline on every paint + a 700 ms timer; that warred with v227's fitStage227
+     (which writes the same box inline) and stalled the main thread for seconds around sheet transitions and
+     room walks on phone-sized frames. The bitmap follows whatever box layout gives the canvas.
+     The bitmap height itself is applied DEBOUNCED: a new height is only written once it has been stable for
+     ~260 ms — during sheet/wrap animations the wanted height changes every frame, and writing canvas.height
+     per frame (each write clears the bitmap and forces a full scene repaint, which watchers answer with more
+     renders) is what turned a room tap into a 30 s main-thread stall. */
+  var elW=cv.clientWidth, elH=cv.clientHeight; if(elW<40||elH<40)return;
+  var need=Math.round(900*elH/elW); if(need<460)need=460; if(need>920)need=920; if(elW<500&&need>700)need=700; /* narrow frames: the extension is a smooth gradient, so a shorter bitmap stretched by object-fit is visually identical — and a ~35% smaller bitmap keeps sheet/panel transitions over the canvas from saturating the main thread on phone-sized frames */
+  if(Math.abs(cv.height-need)<3){ pendH248=0; return }
+  var now=Date.now();
+  if(need!==pendH248){ pendH248=need; pendT248=now; return }
+  if(now-pendT248<260)return;
+  cv.height=need; pendH248=0 }catch(e){} }
+ function extendScene248(){ try{ var cv=document.getElementById('cv'); if(!cv||cv.height<=462)return; var ctx=cv.getContext('2d');
+  /* fill the extension with a gradient of the scene's OWN floor tones (average colour of two floor rows):
+     no stretched trim lines, no duplicated rugs or decor — just the floor deepening to the frame's bottom */
+  var d1=ctx.getImageData(0,418,900,1).data, d2=ctx.getImageData(0,450,900,1).data;
+  function avgC(d){ var r=0,g=0,b=0,n=0; for(var x=0;x<900;x+=6){ var i=x*4; r+=d[i]; g+=d[i+1]; b+=d[i+2]; n++ } return 'rgb('+Math.round(r/n)+','+Math.round(g/n)+','+Math.round(b/n)+')' }
+  var gr=ctx.createLinearGradient(0,460,0,cv.height); gr.addColorStop(0,avgC(d1)); gr.addColorStop(1,avgC(d2));
+  ctx.fillStyle=gr; ctx.fillRect(0,460,900,cv.height-460) }catch(e){} }
+ /* camera focus percentages must read the REAL bitmap height, or zooms aim low on tall screens */
+ try{ if(typeof applyCameraTransform==='function'){ var _act248=applyCameraTransform; applyCameraTransform=function(){ var r=_act248.apply(this,arguments); try{ var cv=document.getElementById('cv'); if(cv&&cv.height>460&&typeof camState!=='undefined'&&camState.active&&cv.style.transform)cv.style.transformOrigin=(camState.x/900*100).toFixed(2)+'% '+(camState.y/cv.height*100).toFixed(2)+'%' }catch(e){} return r } } }catch(e){}
+
+ /* ================= A2) the street layer only where a street is ================= */
+ function streetOK248(){ try{ var s=S248(); if(!s)return false; var hl=homeLoc248();
+  if(s.location===hl||s.location==='grandparents'){ var rm=(typeof curRoom86==='function')?curRoom86():null; return !!(rm&&rm.id==='yard') }
+  return s.location==='street'||s.location==='city' }catch(e){ return false } }
+ try{ if(typeof drawCars202==='function'){ var _dc248=drawCars202; drawCars202=function(){ try{ if(typeof S!=='undefined'&&S248()&&typeof inGame!=='undefined'&&inGame&&!streetOK248()){ var pk=document.getElementById('parked193'); if(pk)pk.style.setProperty('display','none','important'); var stb=document.getElementById('cars202'); if(stb)stb.style.display='none'; return } }catch(e){} return _dc248.apply(this,arguments) } } }catch(e){}
+ function curbPass248(){ try{ var curb=document.getElementById('curb193'); if(!curb)return; curb.style.display=streetOK248()?'':'none' }catch(e){} }
+ setInterval(curbPass248,700);
+
+ /* ================= J) the charging pill lives in the HUD row, never over the ticker ================= */
+ setInterval(function(){ try{ var cc=document.getElementById('chargeChip132'); if(!cc||cc.getAttribute('data-h248'))return; var row=document.querySelector('.topRow100'); if(!row)return; cc.setAttribute('data-h248','1'); row.appendChild(cc) }catch(e){} },900);
+
+ /* ================= C2) toasts fire once — an identical line inside 6 s is swallowed ================= */
+ var lastToast248={};
+ try{ if(typeof toast==='function'){ var _t248=toast; toast=function(m){ try{ var k=String(m==null?'':m); var now=Date.now(); if(k&&lastToast248[k]&&now-lastToast248[k]<6000)return; if(k)lastToast248[k]=now }catch(e){} return _t248.apply(this,arguments) } } }catch(e){}
+
+ /* ================= B) the crib belongs to ONE room ================= */
+ function cribRoom248(){ var V=ensure248(); if(!V)return null; if(V.cribRoom)return V.cribRoom; var s=S248(); if(!s)return null; var id=curRoomId248()||s.room86||null; if(id){ V.cribRoom=id; try{ save() }catch(e){} } return id }
+ try{ if(typeof playerInCrib120==='function'){ var _pic248=playerInCrib120; playerInCrib120=function(){ var r=_pic248.apply(this,arguments); try{ if(r){ var s=S248(); if(s&&s.location===homeLoc248()){ var cr=cribRoom248(); var rid=curRoomId248(); if(cr&&rid&&rid!==cr)return false } } }catch(e){} return r } } }catch(e){}
+ var dropRest248=0;
+ function blanket248(ctx){ try{ var s=S248(); if(!s||typeof charX==='undefined')return; var preWalk=(typeof playerPreWalk120==='function')?playerPreWalk120():(s.age<3&&!s.canWalk); if(!preWalk)return; if(s.location!==homeLoc248())return; if(typeof activity!=='undefined'&&activity)return;
+  var rid=curRoomId248(), cr=cribRoom248(); var inCribRoom=!!(cr&&rid===cr&&(typeof playerInCrib120==='function')&&playerInCrib120());
+  var recentDrop=Date.now()<dropRest248;
+  if(inCribRoom&&!recentDrop)return;
+  ctx.save(); ctx.fillStyle='#f9a8d4'; ctx.beginPath(); ctx.ellipse(charX,charY+16,44,11,0,0,7); ctx.fill(); ctx.fillStyle='#fbcfe8'; ctx.beginPath(); ctx.ellipse(charX,charY+13,36,8,0,0,7); ctx.fill(); ctx.restore() }catch(e){} }
+
+ /* ================= the drawRoom master pass: size, fill, blanket ================= */
+ try{ if(typeof drawRoom==='function'){ var _dr248=drawRoom; drawRoom=function(){ sizeCanvas248(); var r=_dr248.apply(this,arguments); try{ extendScene248(); var cv=document.getElementById('cv'); if(cv)blanket248(cv.getContext('2d')) }catch(e){} return r } } }catch(e){}
+
+ /* ================= C1) the carry chain resolves once ================= */
+ try{ if(typeof goRoom86==='function'){ var _gr248=goRoom86; goRoom86=function(id){ try{ var s=S248(); if(s&&s.room86&&id===s.room86){ var rooms=(typeof roomsFor86==='function')?roomsFor86(s.location):null; var t=rooms?rooms.find(function(r){ return r.id===id }):null; if(t){ toast('You are already in the '+t.name); return } } }catch(e){} return _gr248.apply(this,arguments) } } }catch(e){}
+ function carryKey248(roomId){ try{ var s=S248(); return roomId+'|'+(s?s.day:0)+'|'+((typeof moveStage123==='function')?moveStage123():'crib') }catch(e){ return roomId } }
+ try{ if(typeof carrySheet123==='function'){ var _cs248=carrySheet123; carrySheet123=function(roomId){ try{ var s=S248(); if(!s)return; if(roomId===s.room86){ var rooms=(typeof roomsFor86==='function')?roomsFor86(s.location):null; var t=rooms?rooms.find(function(r){ return r.id===roomId }):null; toast('You are already in the '+(t?t.name:roomId)); return } var V=ensure248(); if(V&&V.carryDone===carryKey248(roomId))return }catch(e){} return _cs248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof carryTo123==='function'){ var _ct248=carryTo123; carryTo123=function(roomId){ var r=_ct248.apply(this,arguments); try{ var V=ensure248(); if(V){ V.carryDone=carryKey248(roomId); var cg=''; try{ cg=(typeof careName123==='function')?careName123():'' }catch(e){} if(cg)V.withBaby={name:cg,room:roomId,day:S248()?S248().day:0}; try{ save() }catch(e){} } }catch(e){} return r } } }catch(e){}
+
+ /* ================= D) trait catch-up: never at a start under 2; honest copy when it fires ================= */
+ try{ if(typeof presentOffer107==='function'){ var _po248=presentOffer107; presentOffer107=function(){ try{ var s=S248(); if(s&&s.v107&&Array.isArray(s.v107.offers)){ var startAge=(s.startAge!==undefined&&s.startAge!==null)?s.startAge:s.age;
+   if(startAge<2){ var had=s.v107.offers.some(function(o){ return o&&o.kind==='start' }); if(had){ s.v107.offers=s.v107.offers.filter(function(o){ return !(o&&o.kind==='start') }); try{ save() }catch(e){} var sh=document.getElementById('sheet'); var m=document.getElementById('modal'); if(sh&&m&&m.classList.contains('open')&&(sh.textContent||'').indexOf('Still becoming')>=0&&(typeof closeModal==='function'))closeModal() } }
+  } }catch(e){}
+  var r=_po248.apply(this,arguments);
+  try{ var s2=S248(); if(s2){ var startAge2=(s2.startAge!==undefined&&s2.startAge!==null)?s2.startAge:s2.age; if(startAge2>=2){ var sh2=document.getElementById('sheet'); if(sh2&&(sh2.textContent||'').indexOf('already lived some even birthdays')>=0){ var evs=[]; for(var a=2;a<=startAge2;a+=2)evs.push(a); var list=evs.join(', '); var w=document.createTreeWalker(sh2,NodeFilter.SHOW_TEXT); var n; while((n=w.nextNode())){ if(n.nodeValue.indexOf('(2, 4, 6')>=0)n.nodeValue=n.nodeValue.replace(/\(2, 4, 6[^)]*\)/,'('+list+')') } } } } }catch(e){}
+  return r } } }catch(e){}
+
+ /* ================= F) ONE PRESENCE TRUTH ================= */
+ function npcOf248(name){ try{ if(typeof npcs!=='undefined'&&npcs){ for(var i=0;i<npcs.length;i++)if(npcs[i].name===name)return npcs[i] } }catch(e){} return null }
+ function withYou248(name){ try{ var s=S248(); if(!s||!name)return false;
+  if(s.escort===name)return true;
+  if(s.guest&&s.guest.name===name)return true;
+  try{ if(window._dateWith===name)return true }catch(e){}
+  var n=npcOf248(name); if(n&&n.state==='in'){ if(s.location===homeLoc248()){ try{ return (typeof npcHere86==='function')?npcHere86(n):true }catch(e){ return true } } return true }
+  try{ if(typeof townsfolk!=='undefined'&&townsfolk){ for(var i=0;i<townsfolk.length;i++)if(townsfolk[i].name===name&&townsfolk[i].state==='in')return true } }catch(e){}
+  return false }catch(e){ return false } }
+ function atWork248(name){ try{ if(typeof atWork120==='function'&&atWork120(name))return true }catch(e){} try{ if(typeof cgAtWork119==='function'&&cgAtWork119(name))return true }catch(e){} return false }
+ function asleep248(name){ try{ return (typeof asleep119==='function')?!!asleep119(name):false }catch(e){ return false } }
+ function canonJob248(name){ try{ var jl=(typeof jobLine47==='function')?jobLine47(name):''; if(jl&&jl.indexOf('No job')!==0)return jl.split(' at ')[0] }catch(e){} try{ var j=(typeof cgJob119==='function')?cgJob119(name):null; if(j&&j.title)return j.title }catch(e){} return '' }
+ function placeLabel248(){ try{ if(typeof LOC_LABELS92!=='undefined'&&LOC_LABELS92[S248().location])return LOC_LABELS92[S248().location] }catch(e){} try{ var d=(typeof locDisplay144==='function')?String(locDisplay144(S248().location)).split('—')[0].trim():''; if(d)return d }catch(e){} var s=S248(); return s?s.location:'' }
+ function truthLoc248(name){ try{ var s=S248(); if(!s||!name)return null;
+  if(withYou248(name))return 'With you — '+placeLabel248();
+  if(atWork248(name)){ var j=canonJob248(name); return '💼 At work'+(j?(' — '+j):'') }
+  if(asleep248(name))return '😴 Asleep — 🏠 Home';
+  try{ if(s.v195&&s.v195.dcKids&&s.v195.dcKids.indexOf(name)>=0)return '🏫 Daycare' }catch(e){}
+  try{ if(window._dep216&&window._dep216[name])return '🚗 On the road' }catch(e){}
+  var n=npcOf248(name); if(n&&n.state==='out')return '🌆 Around town';
+  var household=false; try{ household=(s.housemates||[]).indexOf(name)>=0||(s.kids||[]).some(function(k){ return k.name===name })||!!npcOf248(name)||(typeof parentRoleOf47==='function'&&!!parentRoleOf47(name))||(s.v120&&s.v120.sitter&&s.v120.sitter.name===name) }catch(e){}
+  if(household)return '🏠 Home';
+  return null }catch(e){ return null } }
+ /* the area list: out-of-scene and at-work people leave; the person physically with you joins */
+ try{ if(typeof presentPeople138==='function'){ var _pp248=presentPeople138; presentPeople138=function(){ var out=_pp248.apply(this,arguments); try{ var s=S248(); out=out.filter(function(n){ var npc=npcOf248(n); if(npc&&npc.state==='out')return false; if(atWork248(n))return false; return true });
+   if(s&&s.escort&&out.indexOf(s.escort)<0)out.unshift(s.escort) }catch(e){} return out } } }catch(e){}
+ /* Change Rooms: the player is in their room; the carrying caregiver is in the baby's room only */
+ function labelName248(label){ var t=String(label||'').replace(/ 💤 asleep$/,'').replace(/^(👶|🧒) /,'').replace(/ \((in the crib|being carried|toddler)\)$/,''); return t }
+ try{ if(typeof roomFolks106==='function'){ var _rf248=roomFolks106; roomFolks106=function(rid){ var out=_rf248.apply(this,arguments)||[]; try{ var s=S248(); if(!s)return out; if(s.location!==homeLoc248())return out; var curId=curRoomId248(); var V=ensure248(); var wb=V?V.withBaby:null; var wbLive=!!(wb&&wb.day===s.day&&curId===wb.room);
+   if(wbLive&&rid!==wb.room)out=out.filter(function(l){ return labelName248(l)!==wb.name });
+   if(rid===curId){ if(!out.some(function(l){ return labelName248(l)===s.name }))out.push(s.age<2?('👶 '+s.name+' (toddler)'):(s.age<=4?('🧒 '+s.name+' (toddler)'):s.name));
+    if(wbLive&&!out.some(function(l){ return labelName248(l)===wb.name }))out.push(wb.name) }
+  }catch(e){} return out } } }catch(e){}
+ /* the roster's 📍 line re-derives from the same truth, on a cadence */
+ setInterval(function(){ try{ var s=S248(); if(!s||typeof inGame==='undefined'||!inGame||typeof curTab==='undefined'||curTab!=='life')return; var ros=document.getElementById('relRoster196'); if(!ros)return;
+  ros.querySelectorAll('.kv').forEach(function(row){ var nb=row.querySelector('span b'); if(!nb)return; var nm=(nb.textContent||'').trim(); if(!nm||nm===s.name)return; var bs=row.querySelectorAll(':scope > b'); if(!bs.length)return; var locB=bs[bs.length-1]; if((locB.textContent||'').indexOf('📍')!==0)return; var want=truthLoc248(nm); if(want&&locB.textContent!=='📍 '+want)locB.textContent='📍 '+want }) }catch(e){} },1600);
+ /* role words never ride as a second pill over a figure — the name pill is the only pill */
+ var ROLEPILL248={mom:1,dad:1,stepmom:1,stepdad:1,grandma:1,grandpa:1,mother:1,father:1,caregiver:1,babysitter:1,sitter:1,wife:1,husband:1,partner:1,spouse:1,sister:1,brother:1,stepsister:1,stepbrother:1,son:1,daughter:1,child:1,kid:1};
+ try{ if(typeof rainTag193==='function'){ var _rt193248=rainTag193; rainTag193=function(ctx,cx,baseY,text,now,fs){ try{ var norm=String(text||'').replace(/[^a-z]/gi,'').toLowerCase(); if(ROLEPILL248[norm])return }catch(e){} return _rt193248.apply(this,arguments) } } }catch(e){}
+ /* family tags de-collide against the player's own pill too */
+ try{ if(typeof drawNPCSprite==='function'){ var _dn248=drawNPCSprite; var drawn248=[];
+  drawNPCSprite=function(ctx,n,now,stepping){ try{ if(n&&typeof n.x==='number'&&typeof charX!=='undefined'&&typeof charY!=='undefined'){ var nm=String(n.name||''); ctx.font='bold 15px sans-serif'; var w=(ctx.measureText?ctx.measureText(nm).width:60)+18; var mk=function(x){ return {x0:x-w/2,x1:x+w/2,y0:n.y-51,y1:n.y-29} };
+   var pr={x0:charX-52,x1:charX+52,y0:charY-66,y1:charY-40}; var rects=[pr].concat(drawn248.filter(function(q){ return now-q.t<50 }).map(function(q){ return q.r }));
+   var r=mk(n.x); var clash=rects.some(function(q){ return r.x0<q.x1&&r.x1>q.x0&&r.y0<q.y1&&r.y1>q.y0 });
+   if(clash){ var offs=[44,-44,76,-76,108,-108]; for(var i=0;i<offs.length;i++){ var nx=Math.max(30,Math.min(870,n.x+offs[i])); var r2=mk(nx); var c2=rects.some(function(q){ return r2.x0<q.x1&&r2.x1>q.x0&&r2.y0<q.y1&&r2.y1>q.y0 }); if(!c2){ n=Object.assign({},n); n.x=nx; r=r2; break } } }
+   drawn248.push({r:r,t:now}); if(drawn248.length>24)drawn248.splice(0,drawn248.length-24) } }catch(e){}
+   return _dn248.apply(this,arguments) } } }catch(e){}
+ /* a bare tag never floats over a MOVING vehicle: parked tags stay, departures stay, traffic goes anonymous */
+ var carTagTrack248={};
+ try{ if(typeof tagWorld228==='function'){ var _tw248=tagWorld228; tagWorld228=function(ctx,cx,topY,name,dot,mine,slotW,prevR){ try{ var s=S248(); if(s&&name&&name!==s.name&&!(window._dep216&&window._dep216[name])){ var key=String(name)+'|'+(s.location||''); var now=performance.now(); var tr=carTagTrack248[key];
+    if(!tr){ carTagTrack248[key]={x:cx,t:now,moving:false,lx:cx} }
+    else if(tr.moving){ if(Math.abs(cx-tr.lx)<=2){ carTagTrack248[key]={x:cx,t:now,moving:false,lx:cx} } /* it stopped: a parked car again — re-anchor and let the tag draw below */
+     else { tr.lx=cx; tr.t=now; return prevR } }
+    else if(now-tr.t>1500){ carTagTrack248[key]={x:cx,t:now,moving:false,lx:cx} }
+    else if(Math.abs(cx-tr.x)>26){ tr.moving=true; tr.lx=cx; tr.t=now; return prevR }
+    else tr.t=now } }catch(e){} return _tw248.apply(this,arguments) } } }catch(e){}
+
+ window.__truth248={withYou:withYou248,truthLoc:truthLoc248,canonJob:canonJob248,atWork:atWork248,asleep:asleep248,ensure:ensure248,S:S248,setDropRest:function(){ dropRest248=Date.now()+7000 }};
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 48 (part 2) — E • G • H • I, riding the part-1 presence truth ================= */
+(function(){
+'use strict';
+try{
+ var T248=window.__truth248||{};
+ function S248(){ try{ return T248.S?T248.S():(typeof S!=='undefined'?S:null) }catch(e){ return null } }
+ function withYou248(n){ try{ return T248.withYou?T248.withYou(n):false }catch(e){ return false } }
+ function truthLoc248(n){ try{ return T248.truthLoc?T248.truthLoc(n):null }catch(e){ return null } }
+ function esc248(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
+
+ /* ================= E) the DROP only happens with its caregiver visibly present ================= */
+ function dropCgPresent248(cg){ try{ var s=S248(); if(!s||!cg)return false;
+  if(s.escort===cg)return true;
+  try{ if(typeof sitterOnDuty146==='function'&&sitterOnDuty146())return false }catch(e){}
+  if(s.location==='school')return false;
+  /* the scene draws the caregiver-help figure exactly when: under-2 pre-walk, or same room (roomHas141) */
+  if(s.age<2&&!s.canWalk)return true;
+  try{ if(typeof roomHas141==='function')return !!roomHas141(cg) }catch(e){}
+  return withYou248(cg) }catch(e){ return false } }
+ try{ if(typeof dropCheck149==='function'){ var _dc248=dropCheck149; dropCheck149=function(ctx){ try{ var s=S248();
+   if(s&&s.age>=1&&s.age<=4&&(ctx==='activity'||ctx==='travel'||ctx==='playdate')){ var cg=(typeof todCare82==='function')?todCare82():null; if(!cg||!dropCgPresent248(cg))return false }
+  }catch(e){}
+  var r=_dc248.apply(this,arguments);
+  try{ if(r&&T248.setDropRest)T248.setDropRest() }catch(e){}
+  return r } } }catch(e){}
+
+ /* ================= G) coverage: presence first, named sitter only, one canonical job ================= */
+ try{ if(typeof coverageEval119==='function'){ var _ce248=coverageEval119; coverageEval119=function(){ try{ var s=S248();
+   if(s&&s.age>=1&&s.age<=4){ var cgs=(typeof caregiverNames119==='function')?caregiverNames119():[]; var present=cgs.some(function(n){ return s.escort===n||withYou248(n) });
+    if(present){ try{ var V=(typeof ensure119==='function')?ensure119():null; if(V&&V.coverage&&V.coverage.day===s.day){ V.coverage=null; save() } }catch(e){} return } }
+  }catch(e){} return _ce248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof cgJob119==='function'){ var _cj248=cgJob119; cgJob119=function(name){ var j=_cj248.apply(this,arguments); try{ if(j&&name){ var jl=(typeof jobLine47==='function')?jobLine47(name):''; if(jl&&jl.indexOf('No job')!==0){ var t=jl.split(' at ')[0]; if(t&&t!==j.title){ j.title=t; try{ var V=(typeof ensure119==='function')?ensure119():null; if(V&&V.jobs&&V.jobs[name])V.jobs[name].title=t }catch(e){} } } } }catch(e){} return j } } }catch(e){}
+ function covTruthHtml248(){ try{ var s=S248(); if(!s||s.age<1||s.age>4)return null;
+  var cgs=(typeof caregiverNames119==='function')?caregiverNames119():[];
+  for(var i=0;i<cgs.length;i++){ var cg=cgs[i]; if(s.escort===cg||withYou248(cg)){ var job=''; try{ job=T248.canonJob?T248.canonJob(cg):'' }catch(e){} return '<b>'+esc248(cg)+'</b> is with <b>'+esc248(s.name)+'</b> right now — right here, in person'+(job?(' ('+esc248(job)+' — but here with '+esc248(s.name)+' now, not at work)'):'')+'. No babysitter is booked, because none is needed: a parent who is physically here IS the coverage.' } }
+  var V9=(typeof ensure119==='function')?ensure119():null; var cov=V9?V9.coverage:null;
+  if(cov&&cov.day===s.day&&cov.who==='sitter'){ for(var hi=0;hi<cgs.length;hi++){ var hl=(s.home&&s.home.loc)||null; if(hl&&truthLoc248(cgs[hi])===hl)return '<b>'+esc248(cgs[hi])+'</b> is home with <b>'+esc248(s.name)+'</b> right now — in the house, on toddler duty. No babysitter is watching: family is.' }
+   var V=(typeof ensure120==='function')?ensure120():null; var st=V?V.sitter:null; var nm=(st&&st.name)||cov.sitName120||null;
+   if(!nm)return '<b>🧑 The Babysitter</b> is watching <b>'+esc248(cov.for)+'</b> right now — booked and paid by the household because every caregiver is at work or asleep. The sitter is here in the house, and it is all in the journal.';
+   if(V&&V.covState==='in')return '<b>'+esc248(nm)+'</b> — the household\u2019s babysitter — is watching <b>'+esc248(cov.for)+'</b> right now, here in the room. Booked because '+esc248(cov.because)+'.';
+   return '<b>'+esc248(nm)+'</b> — the household\u2019s babysitter — is booked to watch <b>'+esc248(cov.for)+'</b>, because '+esc248(cov.because)+'. Sitters knock at the front door first: the sitting starts when they are let in.' }
+  return null }catch(e){ return null } }
+ function covCardPass248(){ try{ var card=document.querySelector('.covCard119'); if(!card)return; var html=covTruthHtml248(); if(!html)return; var p=card.querySelector('p'); if(p&&p.innerHTML!==html)p.innerHTML=html; var h3=card.querySelector('h3'); if(h3&&h3.textContent.indexOf("Who's with the toddler")!==0)h3.textContent="👶 Who's with the toddler" }catch(e){} }
+ try{ if(typeof render==='function'){ var _r248=render; render=function(){ var r=_r248.apply(this,arguments); try{ covCardPass248(); setTimeout(covCardPass248,350) }catch(e){} return r } } }catch(e){}
+ setInterval(covCardPass248,1800);
+
+ /* ================= H) baby age gating ================= */
+ function canCall248(){ try{ var s=S248(); return !!(s&&s.hasPhone&&s.age>=5) }catch(e){ return false } }
+ function faceToFaceSheet248(){ var s=S248(); openSheet('<h2>🗣️ Talking is face-to-face</h2><p>'+(s?esc248(s.name):'You')+' is '+(s?s.age:'')+' — too little for a phone, and there is no phone here to call on anyway. Little kids talk to the people who are <b>right here</b>: family in the room, face to face. Phones come later — a parent can buy or give a kid phone at ages 2–3, and it grows up with its owner.</p><button class="btn gold" onclick="closeModal()">Fair enough</button>') }
+ /* the hub: adult doors leave or lock, by age and phone */
+ try{ if(typeof hubHtml241==='function'){ var _hub248=hubHtml241; hubHtml241=function(){ var h=_hub248.apply(this,arguments); try{ var s=S248(); if(!s)return h;
+   var strip=function(html,fn){ return html.replace(new RegExp('<button[^>]*onclick="'+fn+'\\(\\)"[^>]*>[\\s\\S]*?</button>'),''); };
+   var lock=function(html,fn,label){ return html.replace(new RegExp('<button[^>]*onclick="'+fn+'\\(\\)"[^>]*>[\\s\\S]*?</button>'),'<button class="btn outline" style="width:100%;opacity:.55" disabled>🔒 '+label+'</button>'); };
+   if(s.age<5){ h=strip(h,'aiCalls241'); h=strip(h,'aiInterviewPick241'); h=strip(h,'aiEstate241'); h=strip(h,'aiBiz241') }
+   else { if(!canCall248())h=lock(h,'aiCalls241','📞 Free-talk call — needs your own phone with service');
+    if(s.age<16)h=lock(h,'aiInterviewPick241','💼 Job interview — working age only');
+    if(s.age<18){ h=lock(h,'aiEstate241','🏠 Homes that talk — adults (18+) only'); h=lock(h,'aiBiz241','🧾 Customers & clients — adults (18+) only') } }
+  }catch(e){} return h } } }catch(e){}
+ /* the call path enforces what texting already did — and a partner is always one named person */
+ try{ if(typeof aiCallGo241==='function'){ var _acg248=aiCallGo241; aiCallGo241=function(who){ try{ if(!who||who==='Family'||who==='School'||who==='FBI'){ openSheet('<h2>📞 Pick a person</h2><p>A call is with <b>one specific person</b> — never “Family” in general. Pick a name and the call is with them.</p><button class="btn gold" onclick="aiCalls241()">📞 Pick who to call</button>'); return } if(!canCall248()){ faceToFaceSheet248(); return } }catch(e){} return _acg248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof aiCalls241==='function'){ var _ac248=aiCalls241; aiCalls241=function(){ try{ if(!canCall248()){ faceToFaceSheet248(); return } }catch(e){} var r=_ac248.apply(this,arguments); try{ setTimeout(function(){ var sh=document.getElementById('sheet'); if(!sh)return; sh.querySelectorAll('button').forEach(function(b){ var oc=b.getAttribute('onclick')||''; if(oc.indexOf("aiCallGo241('Family')")>=0||oc.indexOf('aiCallGo241("Family")')>=0)b.remove() }) },40) }catch(e){} return r } } }catch(e){}
+ try{ if(typeof doCallThread==='function'){ var _dct248=doCallThread; doCallThread=function(who){ try{ if(who&&who!=='School'&&who!=='FBI'&&!canCall248()){ faceToFaceSheet248(); return } }catch(e){} return _dct248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof aiInterviewPick241==='function'){ var _aip248=aiInterviewPick241; aiInterviewPick241=function(){ try{ var s=S248(); if(s&&s.age<16){ openSheet('<h2>💼 Job interviews</h2><p>Interviews are for working-age people. Little kids grow into jobs — kid jobs come first, from the 💼 Work folder.</p><button class="btn gold" onclick="closeModal()">Fair enough</button>'); return } }catch(e){} return _aip248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof aiEstate241==='function'){ var _ae248=aiEstate241; aiEstate241=function(){ try{ var s=S248(); if(s&&s.age<18){ openSheet('<h2>🏠 Homes that talk</h2><p>🔞 <b>Adults (18+) only</b> — listings, haggling and Buy buttons are grown-up business. Kids visit homes with their family; buying one waits for 18.</p><button class="btn gold" onclick="closeModal()">Understood</button>'); return } }catch(e){} return _ae248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof aiBiz241==='function'){ var _ab248=aiBiz241; aiBiz241=function(){ try{ var s=S248(); if(s&&s.age<18){ openSheet('<h2>🧾 Customers & clients</h2><p>Running a business with customers is adult work (18+). That door opens at 18.</p><button class="btn gold" onclick="closeModal()">Understood</button>'); return } }catch(e){} return _ab248.apply(this,arguments) } } }catch(e){}
+ /* the no-phone sheet under age 2: face-to-face only, NO ask button — and the asks themselves refuse */
+ try{ if(typeof noPhoneSheet==='function'){ var _nps248=noPhoneSheet; noPhoneSheet=function(){ try{ var s=S248(); if(s&&s.age<2&&!s.hasPhone){ openSheet('<h2>📵 No phone yet</h2><p>You are '+s.age+' — babies do not have phones, and nobody is handing you one yet. Until then, <b>talking is face-to-face only</b> — the people right here with you. Kid phones arrive at ages 2–3, when a parent buys or gives one.</p><button class="btn gold" onclick="closeModal()">Fair enough</button>'); return } }catch(e){} return _nps248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof kidDevAsk162==='function'){ var _kda248=kidDevAsk162; kidDevAsk162=function(which){ try{ var s=S248(); if(s&&s.age<2){ toast('📵 Too little to ask for a phone — kid phones arrive at ages 2–3, from a parent'); return } }catch(e){} return _kda248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof askPhone==='function'){ var _ap248=askPhone; askPhone=function(){ try{ var s=S248(); if(s&&s.age<2){ toast('📵 Too little to ask for a phone — kid phones arrive at ages 2–3, from a parent'); return } }catch(e){} return _ap248.apply(this,arguments) } } }catch(e){}
+ /* under-5 Actions: caregiver bath, caregiver-fed meals, no Bad Actions folder */
+ try{ if(typeof shower132==='function'){ var _sh248=shower132; shower132=function(kind){ try{ var s=S248(); if(s&&s.age<5){ if(typeof act==='function'){ act('shower'); return } } }catch(e){} return _sh248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof eatItem132==='function'){ var _ei248=eatItem132; eatItem132=function(kind){ try{ var s=S248(); if(s&&s.age<5&&kind==='groceries'){ var fr=s.fridge; if(!fr||(fr.groceries||0)<=0){ toast('🧊 No groceries — a grown-up shops for those'); return } fr.groceries--; var cg='A grown-up'; try{ cg=(typeof careName82==='function')?careName82():'A grown-up' }catch(e){} startActivity('🍽️',2000,470,300,{hunger:28,health:4},function(){ log('🍽️ '+cg+' cooked from the groceries and fed '+(s.name||'you')+' — babies do not cook; grown-ups cook, little ones eat.'); try{ save() }catch(e){} try{ render() }catch(e){} }); return } }catch(e){} return _ei248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof troubleSection171==='function'){ var _ts248=troubleSection171; troubleSection171=function(){ try{ var s=S248(); if(s&&s.age<5)return '' }catch(e){} return _ts248.apply(this,arguments) } } }catch(e){}
+ function babyPanelPass248(){ try{ var s=S248(); if(!s||s.age>=5||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return;
+  panel.querySelectorAll('details.trouble171').forEach(function(d){ d.remove() });
+  panel.querySelectorAll('button').forEach(function(b){ var oc=b.getAttribute('onclick')||''; var tx=b.textContent||''; if(oc.indexOf("eatItem132('groceries')")>=0||tx.indexOf('Cook from groceries')>=0)b.innerHTML='🍽️ A grown-up cooks a meal for you ×'+((s.fridge&&s.fridge.groceries)||0)+' (+28 hunger, +health)'; if(oc.indexOf('shower132(')>=0){ b.remove() } });
+  panel.querySelectorAll('.actCard101,.card').forEach(function(c){ if(c.innerHTML.indexOf("act('shower')")>=0&&c.querySelectorAll('button').length>1){ var keep=c.querySelector('button'); c.querySelectorAll('button').forEach(function(b){ if(b!==keep)b.remove() }) } });
+ }catch(e){} }
+ try{ if(typeof buildActionDropdowns132==='function'){ var _bad248=buildActionDropdowns132; buildActionDropdowns132=function(panel){ var r=_bad248.apply(this,arguments); try{ babyPanelPass248() }catch(e){} return r } } }catch(e){}
+ setInterval(babyPanelPass248,1500);
+ /* seal the panel against re-render leaks: any mutation inside #panel while a toddler's Actions are open re-runs the pass (debounced, re-entry safe), so an age-inappropriate base button can never sit in the tree between cadence ticks */
+ try{ var _bpT248=0,_bpBusy248=false; var _bpObs248=new MutationObserver(function(muts){ if(_bpBusy248)return; var hot=false; try{ for(var i=0;i<muts.length&&!hot;i++){ var an=muts[i].addedNodes||[]; for(var j=0;j<an.length;j++){ var tx=(an[j].textContent||''); if(tx.indexOf('Cook from groceries')>=0||tx.indexOf('Bad Actions')>=0||tx.indexOf('Bubble bath')>=0){ hot=true; break } } } }catch(e){} var now=Date.now(); if(!hot&&now-_bpT248<150)return; _bpT248=now; _bpBusy248=true; try{ babyPanelPass248() }catch(e){} setTimeout(function(){ _bpBusy248=false },60) }); var _bpP248=document.getElementById('panel'); if(_bpP248)_bpObs248.observe(_bpP248,{childList:true,subtree:true}) }catch(e){}
+
+ /* ================= I) XP always shows its cause ================= */
+ var xpStamp248=0, lastAct248={t:0,label:''};
+ var ACTLBL248={'🚿':'bath time','🛁':'bath time','🍽️':'a good meal','🍪':'a snack','🥤':'a drink','💤':'a good rest','📚':'studying','🎮':'play time','📺':'TV time','🏋️':'a workout','🎣':'fishing','🎤':'performing','🏊':'swimming','🚗':'the trip','✈️':'the trip','🏖️':'time at the beach','🧸':'play time','🤗':'time with family','💬':'talking together','🎒':'school','💼':'work'};
+ function xpCause248(skill){ try{ if(skill)return String(skill).charAt(0).toUpperCase()+String(skill).slice(1)+' practice';
+  try{ if(typeof activity!=='undefined'&&activity&&activity.icon&&ACTLBL248[activity.icon])return ACTLBL248[activity.icon] }catch(e){}
+  if(lastAct248.label&&Date.now()-lastAct248.t<25000)return lastAct248.label;
+  var s=S248(); if(s){ var L={beach:'time at the beach with family',street:'time out on Maple Street',park:'time at the park',school:'school',work:'work',city:'time in the city',fair:'time at the fair',mountains:'time in the mountains'}[s.location]; if(L)return L }
+ }catch(e){} return 'living your day' }
+ try{ if(typeof startActivity==='function'){ var _sa248=startActivity; startActivity=function(icon){ try{ if(icon&&ACTLBL248[icon])lastAct248={t:Date.now(),label:ACTLBL248[icon]} }catch(e){} return _sa248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof act==='function'){ var _act248b=act; act=function(t){ try{ if(typeof t==='string')lastAct248={t:Date.now(),label:t} }catch(e){} return _act248b.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof addXp==='function'){ var _ax248=addXp; addXp=function(n,skill){ var s0=S248(); var tx0=s0?(s0.totalXp||0):0; var lv0=s0?(s0.level||1):1; var r=_ax248.apply(this,arguments); try{ var s=S248(); xpStamp248=Date.now(); if(s&&typeof inGame!=='undefined'&&inGame&&!s.deadFlag){ var d=(s.totalXp||0)-tx0; if(d!==0&&s.level===lv0)toast('⭐ '+(d>0?'+':'')+d+' XP — '+xpCause248(skill)) } }catch(e){} return r } } }catch(e){}
+ var xpSnap248=null;
+ setInterval(function(){ try{ var s=S248(); if(!s||typeof inGame==='undefined'||!inGame||s.deadFlag)return; var cur={tx:s.totalXp||0,xp:s.xp||0,lv:s.level||1};
+  if(!xpSnap248){ xpSnap248=cur; return }
+  var d=cur.tx-xpSnap248.tx;
+  if(d!==0&&Date.now()-xpStamp248>1600){ try{ log('⭐ XP '+(d>0?'+':'')+d+' — '+xpCause248(null)+'. (It landed outside the usual action buttons, so it is written down here: XP never moves without a reason on the record.)') }catch(e){} try{ toast('⭐ '+(d>0?'+':'')+d+' XP — '+xpCause248(null)) }catch(e){} }
+  xpSnap248=cur;
+ }catch(e){} },1000);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 48: 🖼️ the scene FILLS its frame (bitmap follows the screen, floor extends — no band, no void, no wandering) • 🚗 the street lives only on streets (never in interiors or at the beach) • 🛏️ the crib stays in its ONE room — carries put the baby down on a blanket • 🔂 the carry sheet resolves once, toasts fire once • 🌱 no trait catch-up at age 1 (honest copy at 2+) • 🤕 the DROP needs its caregiver VISIBLE • 👁️ one presence truth for figures, rooms, roster pins and tags — one name pill per person, tags de-collide in family scenes, no bare tags over moving cars • 👶 coverage names who is REALLY there (a present parent, or the named sitter) and every NPC has ONE job everywhere • 🚼 under-5 gating: caregiver bath & feeding, no Bad Actions, hub doors locked by age & phone, calls need a phone + 5+, no ask-for-a-phone under 2 • ⭐ every XP move names its cause • 🔌 the charging pill moved off the HEADLINES bar','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 48 (part 3) — K) MENUS & LAYERS OBEY THE OWNER (his addendum from
+   the same recording, 12:12 PM). The standing law (Oct 30, reaffirmed now): a menu closes ONLY
+   when the player closes it or leaves the screen — nothing the game does (ticks, events,
+   repaints, arriving in a room) may close or collapse a menu in use; collapse-on-leave stands.
+   K1) CHANGE ROOMS STAYS OPEN — pickRoom106/pickArea123 slammed the dock shut on EVERY pick
+       (setDock(false) by design), and any later game-driven renderTabs could repaint the panel
+       out from under the chooser (the h44 guard only covered 2.5 s after opening). Now: a pick
+       walks, then the chooser RESTORES itself (fresh list, current-room chip on the new room);
+       a game-driven setDock(false) or tab switch while the chooser is open is swallowed unless
+       it is player-initiated (a real pointer tap in the last ~900 ms, or the navIntent91 flag the
+       shipped openers/pickers set). The player's own toggle-close still closes it, instantly.
+   K2) LAYERS STOP FIGHTING — (a) toasts get their own lane: with the dock sheet open the toast
+       floats ABOVE the sheet (sheet height + margin), with a modal open it rides the top lane
+       under the header — it never paints over menu rows, sheet text, or the ticker; the queue
+       already serialises them, so toasts never overlap each other either. (b)+(c) exactly ONE
+       tray tab is lit at any moment — the one matching the panel actually open (the chooser
+       lights the real tab underneath it); a cadence pass repairs any double-light the layered
+       renderTabs wrappers leave behind. (d) the 🧠 Living World card has ONE home — the 🏠 Home
+       tab (its shipped v241 home): the h43 "every Home-family tab" injector is neutralised
+       elsewhere by an invisible marker it reads as "card already here", and any visible copy
+       outside Home is removed; inside Home the card is deduped to one. (e) the chooser's
+       current-room chip is kept truthful on a cadence while it is open. ================= */
+(function(){
+'use strict';
+try{
+ var lastPtr248=0;
+ document.addEventListener('pointerdown',function(){ lastPtr248=Date.now() },true);
+ function playerDrove248(){ try{ if(typeof navIntent91!=='undefined'&&navIntent91)return true }catch(e){} if(Date.now()-lastPtr248<900)return true; try{ var M=window._menu162; if(M&&Date.now()-(M.playerDockAt||0)<900)return true }catch(e){} return false }
+ function chooserOpen248(){ try{ return typeof curTab!=='undefined'&&(curTab==='rooms106'||curTab==='areas123')&&typeof dockOpen!=='undefined'&&dockOpen }catch(e){ return false } }
+ function modalOpen248(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+
+ /* ---------- K1a) a pick walks — then the chooser comes back, chip on the new room ---------- */
+ var restoreTimer248=null;
+ function scheduleChooserRestore248(kind){ try{ if(restoreTimer248)clearTimeout(restoreTimer248); var tries=0; var pickPtr=lastPtr248;
+  var step=function(){ tries++; try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+    if(lastPtr248>pickPtr&&Date.now()-lastPtr248<400&&tries>2)return; /* the player has grabbed something else — their call */
+    if(modalOpen248()){ if(tries<16)restoreTimer248=setTimeout(step,500); return } /* a sheet (e.g. the carry) owns the moment; restore when it closes */
+    var hasRooms=false; try{ var rm=(typeof roomsFor86==='function')?roomsFor86(S.location):null; hasRooms=!!(rm&&rm.length>1) }catch(e){}
+    var hasAreas=false; try{ hasAreas=(typeof AREA_ROOMS123!=='undefined'&&!!AREA_ROOMS123[S.location]) }catch(e){}
+    var tab=(kind==='areas123'&&hasAreas)?'areas123':(hasRooms?'rooms106':(hasAreas?'areas123':null));
+    if(!tab)return;
+    if(typeof renderTabs==='function')renderTabs(tab);
+    if(typeof setDock==='function')setDock(true);
+   }catch(e){} };
+  restoreTimer248=setTimeout(step,450) }catch(e){} }
+ try{ if(typeof pickRoom106==='function'){ var _pr248=pickRoom106; pickRoom106=function(id){ var r=_pr248.apply(this,arguments); scheduleChooserRestore248('rooms106'); return r } } }catch(e){}
+ try{ if(typeof pickArea123==='function'){ var _pa248=pickArea123; pickArea123=function(id){ var r=_pa248.apply(this,arguments); scheduleChooserRestore248('areas123'); return r } } }catch(e){}
+
+ /* ---------- K1b) the game may not close or repaint away a chooser the player is using ---------- */
+ try{ if(typeof setDock==='function'){ var _sd248=setDock; setDock=function(open){ try{ if(open===false&&chooserOpen248()&&!playerDrove248())return }catch(e){} return _sd248.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof renderTabs==='function'){ var _rt248b=renderTabs; renderTabs=function(active){ var wasTab=(typeof curTab!=='undefined')?curTab:''; var wasChooser=chooserOpen248(); var drove248=playerDrove248(); var r=_rt248b.apply(this,arguments); try{ if(wasChooser&&(wasTab==='rooms106'||wasTab==='areas123')&&typeof curTab!=='undefined'&&curTab!=='rooms106'&&curTab!=='areas123'&&typeof dockOpen!=='undefined'&&dockOpen&&!drove248){ _rt248b(wasTab); if(wasTab==='rooms106'&&typeof paintRoomPick106==='function')paintRoomPick106(); if(wasTab==='areas123'&&typeof paintAreaPick123==='function')paintAreaPick123() } }catch(e){} return r } } }catch(e){}
+
+ /* ---------- K2a) the toast lane: above the open sheet, top lane under a modal, never on rows ---------- */
+ function toastLane248(){ try{ var t=document.querySelector('.toast'); if(!t)return;
+  if(modalOpen248()){ t.style.top='118px'; t.style.bottom='auto'; return }
+  t.style.top=''; var sh=document.getElementById('dockSheet');
+  if(sh&&sh.classList.contains('open')){ var h=sh.offsetHeight||0; if(h>40){ var cap=Math.floor(window.innerHeight*0.72); t.style.bottom=Math.min(h+14,cap)+'px'; return } }
+  t.style.bottom='' }catch(e){} }
+ try{ if(typeof toast==='function'){ var _tt248=toast; toast=function(){ var r=_tt248.apply(this,arguments); try{ toastLane248(); setTimeout(toastLane248,60); setTimeout(toastLane248,420) }catch(e){} return r } } }catch(e){}
+ setInterval(toastLane248,600);
+
+ /* ---------- K2b/c) exactly one tray tab lit — the one matching the panel actually open ---------- */
+ function trayTruth248(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var db=document.querySelector('#dockCore100 .dockBtns56')||document.querySelector('#menuDock .dockBtns56'); if(!db)return; var tabs=Array.prototype.slice.call(db.querySelectorAll('.dockTab')); if(!tabs.length)return;
+  var ct=(typeof curTab!=='undefined')?curTab:''; var want=null;
+  if(ct==='actions101')want=db.querySelector('.actBtn101');
+  if(!want&&(ct==='rooms106'||ct==='areas123'))ct=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='rooms106'&&lastRealTab101!=='areas123')?lastRealTab101:'home';
+  if(!want){ for(var i=0;i<tabs.length;i++){ var oc=tabs[i].getAttribute('onclick')||''; if(oc.indexOf("dockGo('"+ct+"')")>=0){ want=tabs[i]; break } } }
+  if(!want&&ct==='actions101')want=db.querySelector('.actBtn101');
+  if(!want)return;
+  tabs.forEach(function(x){ var on=x===want; if(x.classList.contains('on')!==on)x.classList.toggle('on',on); x.setAttribute('aria-pressed',on?'true':'false') }) }catch(e){} }
+ setInterval(trayTruth248,900);
+ try{ if(typeof renderTabs==='function'){ var _rt248c=renderTabs; renderTabs=function(){ var r=_rt248c.apply(this,arguments); try{ setTimeout(trayTruth248,60) }catch(e){} return r } } }catch(e){}
+
+ /* ---------- K2d) the Living World card: ONE home (🏠 Home), deduped, nowhere else ---------- */
+ function lwHome248(){ try{ var panel=document.getElementById('panel'); if(!panel)return; var ct=(typeof curTab!=='undefined')?curTab:'';
+  var cards=Array.prototype.slice.call(panel.querySelectorAll('.aiHubCard241'));
+  if(ct==='home'){ cards.forEach(function(c,i){ if(c.hasAttribute('data-h248mark'))c.remove(); else if(i>0)c.remove() }); return }
+  /* elsewhere: visible copies go; one invisible marker stays so the multi-tab injector sees "already here" and never re-adds it */
+  var marker=null; cards.forEach(function(c){ if(c.hasAttribute('data-h248mark')){ if(marker)c.remove(); else marker=c } else c.remove() });
+  if(!marker){ marker=document.createElement('div'); marker.className='aiHubCard241'; marker.setAttribute('data-h248mark','1'); marker.setAttribute('aria-hidden','true'); marker.style.display='none'; panel.appendChild(marker) }
+ }catch(e){} }
+ setInterval(lwHome248,700);
+
+ /* ---------- K2e) while the chooser is open, its current-room chip stays truthful ---------- */
+ setInterval(function(){ try{ if(!chooserOpen248()||modalOpen248())return; if(typeof curTab!=='undefined'&&curTab==='rooms106'&&typeof curRoom86==='function'&&typeof paintRoomPick106==='function'){ var rm=curRoom86(); if(!rm)return; var on=document.querySelector('#panel .roomRow106.on'); var oc=on?(on.getAttribute('onclick')||''):''; if(!on||oc.indexOf("'"+rm.id+"'")<0)paintRoomPick106() } }catch(e){} },2000);
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 48 (K): 🚪 Change Rooms STAYS OPEN — picks walk and the chooser restores with the chip on the new room; game-driven closes/tab-switches are swallowed, only the player closes it • 🍞 toasts ride their own lane (above the open sheet / top lane under a modal) — never over menu rows or the ticker • 💡 exactly ONE tray tab lit, matching the open panel • 🧠 the Living World card lives on 🏠 Home only','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
