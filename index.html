@@ -23412,6 +23412,225 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 30 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's report (Nov 3, 2026): "The send button on send feedback is broken — Very delayed. After
+   I hit x it said thank you. Very late." His sequence on the live build: tap 📨 Send → nothing
+   visibly happens → he hits ✕ to close the feedback sheet → only THEN does "💬 Thank you!" appear.
+   ROOT CAUSE, two delays stacked: (1) the shipped sender (h214 / h216 no-save) opens the thank-you
+   sheet only inside fetch(...).then(...) — it waits for the Google Forms POST to resolve, which on
+   a phone webview can take many seconds; (2) worse, an openSheet call made while a modal is already
+   open is QUEUED by the v115 wrapper (modalQueue115) and only paints when the current sheet closes
+   — so even a resolved POST's thank-you sat behind the very sheet the player was closing, and the
+   ✕ is what finally let it render. The button was never dead; its confirmation was held hostage
+   by the network and the sheet queue.
+   THE FIX — the confirmation is part of the TAP, not of the network:
+   • On a real send tap (message written, online), this layer delegates to the shipped chain exactly
+     once — h225's single-fire guard locks the button ("📨 Sending…") and fires the one POST,
+     unchanged — and then, in the SAME tap handler, rewrites the open sheet's DOM in place with the
+     thank-you. No openSheet call, so no queue (modalQueue115 / holdQ216 / sheetQ84) can hold it
+     back; no await, so the POST can never delay it. The player sees "💬 Thank you!" in the same
+     moment as the tap, inside the sheet they are looking at.
+   • window._fbState225.phase is flipped to 'done' in that same handler, so when the POST later
+     resolves, the shipped sender's own thank-you openSheet is swallowed by h225's guard — no
+     second, late thank-you, whether the player is still reading the sheet or already closed it
+     with ✕. A belt-and-braces guard in this layer swallows the same sheet too, if this layer
+     already showed it for the current feedback session.
+   • Closing the sheet mid-send cancels nothing and is never required: the POST is fire-and-forget
+     and completes on its own; the ✕ on the in-place thank-you just closes it.
+   • Not-a-send taps (empty box, offline / no fetch) delegate untouched — the shipped hint or
+     offline note shows in the form as before and the one send is not consumed. If the one POST
+     does reject after the thank-you is up, the shipped fail() note still has its #fbStatus214
+     home inside the in-place thank-you, so the player is told plainly. */
+(function(){ 'use strict';
+try{
+ var S230={session:0,shownSession:-1};
+ window.__v230=S230;
+ function fbMsg230(){ try{ var m=document.getElementById('fbMsg214'); return (m&&m.value)?m.value.trim():'' }catch(e){ return '' } }
+ function fbCanPost230(){ try{ return typeof fetch==='function'&&!(typeof navigator!=='undefined'&&navigator.onLine===false) }catch(e){ return false } }
+ function fbThanksInPlace230(){ try{ var sh=document.getElementById('sheet'); if(!sh)return;
+  sh.innerHTML='<button class="sheetX" onclick="closeModal()" aria-label="Close">✕</button>'
+  +'<h2>💬 Thank you!</h2><p>Your feedback is in — it goes straight to the AquaLife feedback sheet. Happy living! 🌊</p>'
+  +'<div id="fbStatus214"></div>'
+  +'<button class="btn gold" onclick="closeModal()">Back to life</button>';
+ }catch(e){} }
+
+ /* a fresh feedback sheet = a fresh session for the belt-and-braces guard */
+ if(typeof window.openFeedback214==='function'){ var _of230=window.openFeedback214; window.openFeedback214=function(){ var r=_of230.apply(this,arguments); S230.session++; return r } }
+
+ /* the send: one delegated POST (h225-guarded), confirmation painted in place in the same tap */
+ if(typeof window.sendFeedback214==='function'){ var _sf230=window.sendFeedback214; window.sendFeedback214=function(){
+  if(!fbMsg230()||!fbCanPost230())return _sf230.apply(this,arguments); /* not a send: shipped hint / offline note only, nothing fires */
+  var r; try{ r=_sf230.apply(this,arguments) }catch(e){} /* the one POST leaves here; the button locks via h225 */
+  try{ if(window._fbState225)window._fbState225.phase='done' }catch(e){} /* the POST's late thank-you is now swallowed by h225's guard */
+  S230.shownSession=S230.session; fbThanksInPlace230();
+  return r;
+ } }
+
+ /* belt-and-braces: a thank-you sheet for a session this layer already confirmed never paints late */
+ if(typeof openSheet==='function'){ var _os230=openSheet; openSheet=function(html,opts){ try{ if(typeof html==='string'&&html.indexOf('Your feedback is in')>=0&&S230.shownSession===S230.session)return }catch(e){} return _os230.apply(this,arguments) } }
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 30: 💬 feedback Send answers on the TAP — the thank-you now paints in place inside the feedback sheet in the same moment Send is hit (no openSheet, so the modal queue can\'t hold it; no fetch await, so the network can\'t delay it), the one POST still leaves exactly once under hotfix 25\'s guard, closing the sheet mid-send cancels nothing, and the POST\'s own late thank-you is swallowed — no trailing second thank-you after ✕, ever','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 31 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Four repairs from Howard's live play (Nov 3, 2026), one layer:
+   A) 📰 THE BRIEFING LEAVES THE DAY CARD — Howard, with his Day-7 screenshot: "Take away while you
+      were away on the days." The "📰 WHILE YOU WERE AWAY — THE BRIEFING" box (Mail / Bills /
+      Headline / Pets / Relationships) is stripped from the day-start sheet (#dayCard) after every
+      showDayCard chain and on a sweep while the card is up. Everything else on the sheet — the day
+      header, the event lines, the Start Day button — is untouched, and NO underlying system changes:
+      mail, bills, pets, relationships and the overnight fold-in machinery all keep working exactly
+      as shipped; only the block's display on the day-start sheet is removed. (Both briefing fills —
+      v209's stack and v213's five lines — only ever targeted #dayInner, so no other surface shows
+      this block; there is no second copy to preserve.)
+   B) 🧸 TODDLER TUSSLE — the ambient path was dead and ghosts still had a door. (1) THE PRE-BURN:
+      the shipped v149 heartbeat (park 10% / preschool 8%, every 12 s) burns V.todFightDay BEFORE
+      calling startTodFight149 — and hotfix 16's cause-first wrapper refuses any start whose day is
+      already burned. Composed, EVERY ambient tussle silently evaporated: the day burned, no
+      escalation sheet, no fight, nothing — tussles could only ever arrive by playdate. This layer
+      recognises a pre-burn with no escalation shown and no fight completed (its own markers,
+      below) and hands the start back un-burned, so the cause-first sheet shows and the day burns
+      at the escalation, exactly as hotfix 16 designed. A burn from a shown escalation (Tussle /
+      Share / Walk away) or a completed fight stays burned — the one-fight-per-day lock is intact.
+      (2) THE GHOST DOOR: every battle-end purge on file covers modalQueue115 and sheetQ84 — but
+      the level-up spotlight's hold queue (holdQ216) can also file a battle sheet, and nothing
+      purges it there. Any sheet whose html carries the toddler battle ("TODDLER TUSSLE") is now
+      swallowed at the openSheet door whenever no toddler battle is actually live — a drained,
+      re-served or re-rendered copy can never paint again, from ANY queue. Live tussle sheets pass
+      untouched (the battle object exists before its first render).
+   C) 🌳 MAPLE ST SHEETS STOP BOUNCING IN AND OUT — in rendered play the park's shady layer fired
+      twice within seconds of arrival (the arrival timer and the lingering interval are independent
+      paths into the same sheet), so the "park, after dark" sheet bounced in, was dismissed, and
+      bounced straight back in. The two paths live inside hotfix 19's closure and cannot be gated
+      from outside — so the spacing is enforced at the openSheet door instead: a "park, after dark"
+      sheet that follows the previous one by under 75 s is swallowed, and the daily hit it consumed
+      is refunded (S.v219.parkHits), so the layer keeps its full 2-a-day allowance for later,
+      properly spaced moments.
+   D) 🚗 PARKED CARS HOLD THEIR SPOTS — the fleet's visible chaos, measured in rendered play at
+      Maple St: parked positions were recomputed from the SET SIZE on every single draw
+      (slotW = 880 / count), so every arrival or departure teleported EVERY parked car to a new
+      slot; and once the set passed 3, the two-row layout gave the far row the SAME slot centres
+      as the near row, so far-lane cars stacked exactly on top of near-lane cars. Cars bounced in
+      and out of place constantly on any busy street. drawCars202 is replaced (the hotfix-21
+      structure kept whole: same road paint, same shared painter, same tags, same traffic, same
+      walk-to-car departures) with ONE change — parking spots are STABLE: each owner keeps the
+      spot they first took at this location (four near-lane spots, four far-lane spots offset by
+      half a spot so the lanes can never align into a stack), a newcomer takes the lowest free
+      spot, a spot frees only after its owner has been gone ~6 s (leaving-state flicker reshuffles
+      nothing), and _carPos216/_carLane216 keep reporting the true spot so departures still start
+      from the car's real position. Present car-owners are parked outside every building, tagged,
+      while traffic — never a present owner's car — keeps driving past. */
+(function(){ 'use strict';
+try{
+
+ /* ---------- A) the briefing block leaves the day-start sheet ---------- */
+ function briefStrip231(){ try{ var dc=document.getElementById('dayCard'); if(!dc)return; var boxes=dc.querySelectorAll('.briefBox209'); for(var i=0;i<boxes.length;i++)boxes[i].remove() }catch(e){} }
+ if(typeof showDayCard==='function'){ var _sdc231=showDayCard; showDayCard=function(){ var r=_sdc231.apply(this,arguments); try{ briefStrip231(); setTimeout(briefStrip231,120); setTimeout(briefStrip231,450) }catch(e){} return r } }
+ setInterval(briefStrip231,900);
+
+ /* ---------- B) toddler tussle: un-burn the heartbeat's pre-burn + seal the ghost door ---------- */
+ var TOD231={escDay:-1,doneDay:-1};
+ window.__v231tod=TOD231;
+ setInterval(function(){ try{ if(window._todEsc216&&(typeof S!=='undefined'&&S))TOD231.escDay=S.day }catch(e){} },400);
+ if(typeof todFightEnd149==='function'){ var _te231=todFightEnd149; todFightEnd149=function(){ try{ if(typeof S!=='undefined'&&S)TOD231.doneDay=S.day }catch(e){} return _te231.apply(this,arguments) } }
+ if(typeof startTodFight149==='function'){ var _st231=startTodFight149; startTodFight149=function(opp,where){
+  try{ var V=(typeof ensure149==='function')?ensure149():null;
+   if(V&&typeof S!=='undefined'&&S&&V.todFightDay===S.day&&!window._b128&&TOD231.escDay!==S.day&&TOD231.doneDay!==S.day)V.todFightDay=0;
+  }catch(e){}
+  return _st231.apply(this,arguments) } }
+
+ /* ---------- B2 + C) the openSheet door: no ghost tussle sheets; park sheets keep their spacing ---------- */
+ var PARK231={last:0};
+ if(typeof openSheet==='function'){ var _os231=openSheet; openSheet=function(html,opts){
+  try{ if(typeof html==='string'){
+   if(html.indexOf('TODDLER TUSSLE')>=0&&!(window._b128&&window._b128.kind==='todfight149'))return;
+   if(html.indexOf('The park, after dark')>=0){ var now=Date.now();
+    if(now-PARK231.last<75000){ try{ if(typeof S!=='undefined'&&S&&S.v219&&S.v219.parkHits>0)S.v219.parkHits-- }catch(e){} return }
+    PARK231.last=now }
+  } }catch(e){}
+  return _os231.apply(this,arguments) } }
+
+ /* ---------- D) drawCars202: same fleet, stable parking spots ---------- */
+ var PARKSPOTS231={near:[130,340,550,760],far:[235,445,655,865]};
+ var SLOT231={loc:null,map:{}};
+ function slotFor231(owner,now){ var m=SLOT231.map[owner]; if(m){ m.lastSeen=now; return m }
+  var used={}; Object.keys(SLOT231.map).forEach(function(k){ used[SLOT231.map[k].lane+':'+SLOT231.map[k].idx]=1 });
+  var lanes=['near','far'];
+  for(var li=0;li<2;li++){ for(var ii=0;ii<4;ii++){ if(!used[li+':'+ii]){ var s={lane:li,idx:ii,lastSeen:now}; SLOT231.map[owner]=s; return s } } }
+  return {lane:0,idx:0,lastSeen:now} }
+ function trafOwner231(){ try{ var present={};
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')present[p.name]=1 });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')present[n.name]=1 });
+   var out=[], seen={};
+   var push=function(nm){ if(!nm||nm===S.name||present[nm]||seen[nm])return; seen[nm]=1; try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)out.push({name:nm,model:v.equipped,col:carColor202(v.equipped,nm)}) }catch(e){} };
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='out')push(p.name) });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='out')push(n.name) });
+   if(S.town&&S.town.people)Object.keys(S.town.people).forEach(push);
+   if(!out.length)return null; return out[Math.floor(Math.random()*out.length)] }catch(e){ return null } }
+ function trafTick231(ctx,now,atHome,night){ try{ var OUT=['street','city','park','beach','fair','mountains'];
+   if(!atHome&&OUT.indexOf(S.location)<0){ if(window._traf221)window._traf221.list=[]; return }
+   var T=window._traf221||(window._traf221={list:[],next:0,last:0});
+   var dt=T.last?Math.min(0.1,(now-T.last)/1000):0; T.last=now;
+   var m=document.getElementById('modal'); var sheetOpen=!!(m&&m.classList.contains('open'));
+   if(!sheetOpen&&!document.hidden&&now>=T.next&&T.list.length<2){ T.next=now+2800+Math.random()*3400;
+    var dirT=Math.random()<0.5?1:-1; var own=trafOwner231();
+    T.list.push({x:dirT>0?-160:1060,dir:dirT,gy:dirT>0?456:428,model:own?own.model:pickArr(['🚗','🚙','🚕','🚐','🛻']),owner:own?own.name:'',col:own?own.col:CAR_COLORS202[Math.floor(Math.random()*CAR_COLORS202.length)],sp:235+Math.random()*50}) }
+   T.list=T.list.filter(function(c){ c.x+=c.dir*c.sp*dt; return c.x>-200&&c.x<1100 });
+   T.list.forEach(function(c){ window.paintCar221(ctx,c.x,c.gy,c.model,c.col,c.dir,night); if(c.owner)tagWorld228(ctx,c.x,c.gy-110,c.owner,c.col.body,false,240,2) });
+  }catch(e){} }
+ drawCars202=function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var wrap=document.querySelector('.roomWrap'); if(!wrap)return; var cvEl=document.getElementById('cv'); var cars=carList202(); var deps=window._dep216||{}; var depKeys=Object.keys(deps);
+  var strip=document.getElementById('cars202'); if(strip)strip.style.display='none';
+  var pk=document.getElementById('parked193'); var hl=(typeof homeLoc==='function')?homeLoc():null; var atHome=S.location===hl||S.location==='grandparents';
+  if(!cvEl)return;
+  var night=S.hour>=18||S.hour<6; var now=performance.now();
+  window._carSig216=S.location+'|'+(night?'n':'d')+'|'+cars.map(function(c){ return c.owner+c.model }).join(',');
+  if(pk&&atHome&&cars.some(function(c){ return c.mine }))pk.style.setProperty('display','none','important'); else if(pk)pk.style.removeProperty('display');
+  if(pk&&S.car&&S.car.owned){ try{ var po=pk.querySelector('.pOwner'); if(!po){ po=document.createElement('span'); po.className='pOwner'; po.style.cssText='position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);background:#111111e8;color:#fff;font-size:11px;font-weight:900;line-height:1;padding:3px 8px;border-radius:999px;border:1.5px solid #ffb703;white-space:nowrap;pointer-events:none'; pk.appendChild(po) } if(po.textContent!==S.name)po.textContent=S.name }catch(e){} }
+  var ctx=cvEl.getContext('2d'); ctx.save(); ctx.beginPath(); ctx.rect(0,300,900,160); ctx.clip();
+  try{ ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  if(atHome){ ctx.fillStyle='#c9b691'; ctx.fillRect(0,420,900,40); ctx.fillStyle='#b3a07c'; ctx.fillRect(0,420,900,3); ctx.fillStyle='#00000014'; for(var dx=40;dx<900;dx+=150)ctx.fillRect(dx,424,2,32) }
+  else { ctx.fillStyle='#cfc8ba'; ctx.fillRect(0,384,900,14); ctx.fillStyle='#00000020'; for(var sx=30;sx<900;sx+=60)ctx.fillRect(sx,386,2,10); ctx.fillStyle='#8f8570'; ctx.fillRect(0,396,900,3);
+   var g=ctx.createLinearGradient(0,398,0,460); g.addColorStop(0,'#3b3936'); g.addColorStop(1,'#282724'); ctx.fillStyle=g; ctx.fillRect(0,398,900,62); ctx.fillStyle='#f7d54d99'; for(var lx=8;lx<900;lx+=80)ctx.fillRect(lx,440,38,4) }
+  var GY={near:456,far:428};
+  window._carPos216={}; if(!window._carLane216)window._carLane216={};
+  /* stable spots: an owner keeps their spot at this location; spots free ~6 s after they are gone */
+  if(SLOT231.loc!==S.location){ SLOT231.loc=S.location; SLOT231.map={} }
+  var present231={}; cars.forEach(function(c){ present231[c.owner]=1 });
+  Object.keys(SLOT231.map).forEach(function(owner){ var s=SLOT231.map[owner];
+   if(!present231[owner]&&!deps[owner]&&(now-(s.lastSeen||0))>6000)delete SLOT231.map[owner];
+   else if(!present231[owner]){ window._carPos216[owner]=(s.lane?PARKSPOTS231.far:PARKSPOTS231.near)[s.idx]; window._carLane216[owner]=s.lane?GY.far:GY.near } });
+  var byLane231={0:[],1:[]};
+  cars.forEach(function(c){ var s=slotFor231(c.owner,now); var cx=(s.lane?PARKSPOTS231.far:PARKSPOTS231.near)[s.idx]; var gy=s.lane?GY.far:GY.near;
+   window._carPos216[c.owner]=cx; window._carLane216[c.owner]=gy; byLane231[s.lane].push({c:c,cx:cx,gy:gy}) });
+  [1,0].forEach(function(li){ var row=byLane231[li]; row.sort(function(a,b){ return a.cx-b.cx }); var prevR=2;
+   row.forEach(function(it){ solidWorld228(ctx,it.cx,it.gy,it.c.model,it.c.col,1,night); prevR=tagWorld228(ctx,it.cx,it.gy-110,it.c.owner,it.c.col.body,it.c.mine,220,prevR) }) });
+  /* ambient traffic on the same road, at the same scale — never a present owner's car */
+  trafTick231(ctx,now,atHome,night);
+  /* departures: the owner walks the sidewalk to their car, gets in, drives off */
+  var depActive=false;
+  depKeys.forEach(function(owner){ var d=deps[owner]; if(!d)return; var el=now-d.t0; var carX=d.x; var gy=(window._carLane216&&window._carLane216[owner])||GY.near;
+   if(el<1500){ depActive=true; var p=el/1500, e2=1-Math.pow(1-p,2); var fx=884+(carX-884)*e2; var bob=Math.abs(Math.sin(now/90))*2; var FY=394, yy=FY-bob;
+    ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(fx,397,11,3,0,0,7); ctx.fill();
+    ctx.fillStyle='#20242c'; ctx.fillRect(fx-5,yy-20,4.5,20); ctx.fillRect(fx+0.5,yy-20,4.5,20);
+    ctx.fillStyle=d.fig||'#3b82f6'; ctx.fillRect(fx-5.5,yy-39,11,20);
+    ctx.fillStyle='#f2c89b'; ctx.beginPath(); ctx.arc(fx,yy-45,6.5,0,7); ctx.fill();
+    tagWorld228(ctx,fx,yy-76,owner,(d.col&&d.col.body)||'#ffffff',false,200,2);
+    solidWorld228(ctx,carX,gy,d.model,d.col,1,night) }
+   else if(el<1950){ depActive=true; solidWorld228(ctx,carX,gy,d.model,d.col,1,night) }
+   else if(el<3400){ depActive=true; var p2=(el-1950)/1450; var out=carX>=450?1:-1; solidWorld228(ctx,carX+out*p2*p2*880,gy,d.model,d.col,out,night) }
+   else { delete deps[owner]; window._carSig216='' } });
+  if(depActive&&!window._depTick216){ window._depTick216=true; setTimeout(function(){ window._depTick216=false; try{ drawCars202() }catch(e){} },55) }
+  }finally{ ctx.restore() }
+ }catch(e){} };
+ window.__v231={slots:SLOT231,park:PARK231,version:function(){ return GAME_VERSION }};
+
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 31: 📰 the WHILE YOU WERE AWAY briefing block no longer renders on the day-start sheet (day header, event lines and Start Day untouched; mail/bills/pets/relationships systems unchanged) • 🧸 toddler tussles live again on the ambient path — the heartbeat\'s pre-burn no longer swallows the cause-first escalation — and a toddler battle sheet can never be re-served once no battle is live, from any queue • 🌳 Maple St\'s park-after-dark sheet keeps 75 s of spacing (repeat swallowed, daily hit refunded) instead of bouncing in and out • 🚗 parked cars hold stable spots per owner (offset lanes, no stacking, no teleporting when others come and go) outside every building, tagged, while traffic drives past','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
