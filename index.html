@@ -17715,6 +17715,198 @@ window.__v193={version:function(){ return GAME_VERSION },state:ST193,syncStage19
 console.log('🌊 AquaLife v'+GAME_VERSION+' — v193: STAGE + CURB (all four phases, presentation only) — live sky band + curb with the parked car at home; stage floor + Eat/TV/Play/Sleep close-ups on the shipped camera; household routines that pause behind sheets; walk-to-curb / pull-out / pull-in bookends on car trips home & away. Dock + top functions untouched; no economy, math or save changes.');
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 45 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Owner evidence (Nov 4, 7:21 AM EST, Astrid age 2, Maple Street, live h39): "The names on the park
+   vehicle is not in the bubble correctly. Name falling out." — the frame shows (1) a name tag whose
+   text spills OUT of its pill ("Micah" on the grass, "Beaumont" inside the pill), (2) the same name
+   twice, one of them misplaced, (3) tags colliding in a cluster, and a parked purple car rendering
+   as a partial shell at the road edge.
+   ROOT CAUSE of the falling-out text, found in source: paintRides233 sets ctx.textAlign='center' to
+   draw its ride glyph, then calls tagWorld228 INSIDE the same save block — and tagWorld228 (like
+   carTag221 and the sprite painter) measures its pill from the text and then fillText()s assuming
+   LEFT alignment. Under a leaked 'center', the text is centred on the pill's text anchor instead:
+   half the name lands outside the pill. Any caller that leaves alignment centred breaks every tag
+   it touches. h229 pinned alignment inside drawNPCSprite/drawRoom only — the car/ride tag paths
+   were never pinned.
+   THE CURE (this layer): the tag painters pin alignment THEMSELVES, outermost, for their own call —
+   tagWorld228 (every live car / ride / traffic / departure tag funnels through it), carTag221 if it
+   is globally reachable, and one more pin around drawNPCSprite for the sprite name pills. A caller's
+   leaked state can no longer reach the text. Pills stay sized from the measured text (that part of
+   the painters was correct); with the anchor honest, the text lands inside, every time, at any zoom.
+   The duplicate/misplaced half of the frame is the same family as the Kayla tag: a present person's
+   ride/car tag drawn at a curb spot while their own sprite tag stands elsewhere — hotfix 42's
+   presence suppression already refuses vehicle tags for people on screen; this layer keeps that
+   behaviour and makes the surviving tags render correctly.
+   (2) UNDER-16 OWNERS NEVER DRIVE (owner rule, Nov 4, 7:23 AM EST: "I seen my sister car driving
+   but she is age 2. Cant see car driving by if they are under 16."): ages resolve through the game's
+   own charAge79. A 250 ms scrub removes any traffic-list entry whose owner is under 16 (cars spawn
+   off-screen and take ~a second to reach the visible road, so a bad spawn is culled before it is
+   seen driving) and deletes any pending departure-drive for an under-16 owner (their car simply
+   stays parked — parked cars are untouched by this rule, exactly as the owner scoped it). ================= */
+(function(){
+try{
+ function pinWrap245(fn){ return function(ctx){ if(!ctx||!ctx.save)return fn.apply(null,arguments); ctx.save(); try{ ctx.textAlign='left'; ctx.textBaseline='alphabetic'; return fn.apply(null,arguments) } finally { try{ ctx.restore() }catch(e){} } } }
+ try{ if(typeof tagWorld228==='function'&&!tagWorld228.__pin245){ var _tw245=pinWrap245(tagWorld228); _tw245.__pin245=true; tagWorld228=_tw245 } }catch(e){}
+ try{ if(typeof carTag221==='function'&&!carTag221.__pin245){ var _ct245=pinWrap245(carTag221); _ct245.__pin245=true; carTag221=_ct245 } }catch(e){}
+ try{ if(typeof drawNPCSprite==='function'&&!drawNPCSprite.__pin245){ var _dn245=pinWrap245(drawNPCSprite); _dn245.__pin245=true; drawNPCSprite=_dn245 } }catch(e){}
+ function ageOf245(name){ try{ if(typeof charAge79==='function'){ var a=charAge79(name); if(typeof a==='number'&&!isNaN(a))return a } }catch(e){} return null }
+ function under16245(name){ var a=ageOf245(name); return a!==null&&a<16 }
+ setInterval(function(){ try{
+  var T=window._traf221; if(T&&T.list&&T.list.length){ var kept=T.list.filter(function(c){ return !(c&&c.owner&&under16245(c.owner)) }); if(kept.length!==T.list.length)T.list=kept }
+  var D=window._dep216; if(D){ Object.keys(D).forEach(function(o){ if(under16245(o))delete D[o] }) }
+ }catch(e){} },250);
+ window.__v245={under16245:under16245,ageOf245:ageOf245,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 45: 🏷️ name tags can no longer fall out of their pills — the tag painters pin left alignment for their own call, so a caller\'s leaked centre-align (the ride painter\'s glyph pass) reaches nothing; one person, one tag, text inside it • 🚗🔞 a car is never seen DRIVING for an under-16 owner — traffic spawns and departure drives for under-16 owners are culled at the population step; parked cars are untouched','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 46 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Three owner directives (Nov 4, 7:19–7:26 AM EST):
+   (1) THE BAG ACCIDENT CHAIN: "As a toddler I took drugs from bag from crack den origin and toddler
+   is buzzed. They need to go to hospital once parents or adult finds them drugged up." — a minor who
+   uses drugs from the Bag (dealUse is the bag's Use path) no longer gets the adult high: the use is
+   an ACCIDENT. One unit is consumed, the minor becomes BUZZED (S.v246.buzz): a visible 😵 Buzzed
+   status over their sprite (statusOf198 normally refuses minors any intox status — this layer serves
+   the buzz for the player only, while it lasts), wobbly player bubbles, a slow health drain. The buzz
+   does NOT wear off on its own and survives day rolls. DISCOVERY: a watchdog checks who is actually
+   present (presentPeople138 — the truth-filtered roster): the moment a parent, the caregiver, an
+   escort, or any present adult (charAge79 ≥ 18) is with the buzzed minor, the discovery sheet fires —
+   that adult rushes them to the hospital through the shipped hospitalize132 flow, and discharge132
+   applies the recovery outcome (buzz cleared, health rebuilt, bond shaken, journal kept). If health
+   crashes first, the minor is found unresponsive and hospitalised critical — still discovered, still
+   recovered. Adults-only purchase/dealing paths are untouched (18+ gates exactly as shipped).
+   (2) ORIGINS BECOME DECISIONS (design revision, 7:26 AM EST — replaces the crack-den birth-origin
+   spec): a life starts in a NORMAL house; story paths arrive as in-game family decisions.
+   • CRACK DEN: the creation menu no longer offers it (nor Boarding — see below), and startGame
+     re-deals any dealt crack-den/boarding start to a normal family, so Quick Life and the dealt
+     questionnaire can never birth one either. Existing crack-den/boarding SAVES are untouched and
+     keep working. In a normal family life, once the child is 2, the parents may decide to start
+     selling (one state-driven roll — likelier when family funds are thin, one re-roll if the family
+     later misses bills): the kitchen-table decision sheet fires, the family MOVES to the crack den
+     (S.origin becomes 'crackden' from that moment, so every shipped crack-den system — family
+     restock into the bag, family-business income, the tree line — applies from the move), and the den
+     household state starts: parents hold the Enterprise app & businesses, sales visibly happen at
+     home (door buyers, Enterprise app orders, regular pickups — money into the family funds), corner
+     pressure builds with the trade and rivals test it in real fight events the PARENTS fight (win:
+     corner held, money in; lose: a parent spends a day in hospital, bills & bond suffer, sales pause)
+     — and the player-child is a bystander to all of it: the under-5 Trouble lock already bars
+     participation, and the den's own sheets give a child witness exactly one option — stay back.
+   • BOARDING SCHOOL: opt-in, never born into. In a normal family life with a 6–12-year-old, the
+     family may face the boarding question once: opt in and the child goes (origin becomes 'boarding',
+     the dorm becomes home, Mr. Chen's world applies); decline and it never re-serves. The family
+     brings them home again at 14 or after ~45 days, restoring the original family start.
+   (3) The through-line with the rest of this repair: every sheet here resolves ONCE, state-driven —
+   decisions roll once, pendings serve once, discovery fires once, recovery applies once. ================= */
+(function(){
+try{
+ function V246(){ if(typeof S==='undefined'||!S)return null; if(!S.v246)S.v246={}; return S.v246 }
+ function modalOpen246(){ try{ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }catch(e){ return false } }
+ function parentNames246(){ try{ return (typeof fam78Parents==='function'?fam78Parents():[]).map(function(p){ return p.name }) }catch(e){ return [] } }
+ var FAM246=['two','mom','dad','step','rich'];
+ /* ---------- creation: crack den & boarding leave the menu; dealt starts re-deal ---------- */
+ setInterval(function(){ try{ var btns=document.querySelectorAll('.pillGrid .opt'); for(var i=0;i<btns.length;i++){ var oc=btns[i].getAttribute('onclick')||''; if(oc.indexOf("'crackden'")>=0||oc.indexOf("'boarding'")>=0)btns[i].remove() } if(typeof selOrigin!=='undefined'&&(selOrigin==='crackden'||selOrigin==='boarding'))selOrigin='two' }catch(e){} },800);
+ try{ if(typeof startGame==='function'&&!startGame.__dec246){ var _sg246=startGame; var _sgw246=function(){ try{ if(typeof selOrigin!=='undefined'&&(selOrigin==='crackden'||selOrigin==='boarding')){ selOrigin=['two','mom','dad','step','rich'][Math.floor(Math.random()*5)] } }catch(e){} return _sg246.apply(this,arguments) }; _sgw246.__dec246=true; startGame=_sgw246 } }catch(e){}
+ /* ---------- (1) the bag accident: minor use = buzzed, not high ---------- */
+ function startBuzz246(k,src){ if(typeof S==='undefined'||!S)return; var V=V246(); if(!V||V.buzz)return; var p=(typeof DRUG_PRODUCTS!=='undefined'&&k&&DRUG_PRODUCTS[k])||null; V.buzz={drug:p?(p.icon+' '+p.name):'something from a bag',day:S.day,at:performance.now(),found:false,by:'',hosp:false,src:src||'bag'}; try{ adj('fun',6); adj('health',-7); adj('energy',-5); S.addiction=Math.min(100,(S.addiction||0)+4) }catch(e){} try{ log('😵 THE BAG ACCIDENT — '+S.name+' got into '+(p?(p.icon+' '+p.name):'the product')+' from a bag that was never meant for little hands. This is not a high, it is an accident: glassy eyes, giggles at nothing, a sway when standing. '+S.name+' is BUZZED — and stays that way until a grown-up finds them like this.') }catch(e){} try{ toast('😵 '+S.name+' is buzzed — got into a bag') }catch(e){} try{ save() }catch(e){} }
+ try{ if(typeof dealUse==='function'&&!dealUse.__buzz246){ var _du246=dealUse; var _duw246=function(k){ try{ if(typeof S!=='undefined'&&S&&S.age<18){ if(typeof S.stash!=='undefined'&&S.stash&&(S.stash[k]||0)>0){ S.stash[k]--; startBuzz246(k,'bag'); try{ save(); render() }catch(e){} } else { try{ toast('💊 None in the Bag') }catch(e){} } return } }catch(e){} return _du246.apply(this,arguments) }; _duw246.__buzz246=true; dealUse=_duw246 } }catch(e){}
+ try{ if(typeof statusOf198==='function'&&!statusOf198.__buzz246){ var _st246=statusOf198; var _stw246=function(name){ try{ var V=V246(); if(V&&V.buzz&&typeof S!=='undefined'&&S&&name===S.name)return {txt:'😵 Buzzed',lvl:3} }catch(e){} return _st246.apply(this,arguments) }; _stw246.__buzz246=true; statusOf198=_stw246 } }catch(e){}
+ var BUZZ_LINES246=['the room feels… spinny','hehe. the floor is wavy','whoa… the ceiling moved','everything is soft and funny','my tummy feels floaty'];
+ var lastBuzzSay246=0, lastBuzzDrain246=0;
+ function buzzHospital246(){ var V=V246(); if(!V||!V.buzz)return; V.buzz.hosp=true; try{ closeModal() }catch(e){} try{ hospitalize132(false,'— '+S.name+' got into drugs from a bag, and '+(V.buzz.by||'a grown-up')+' found them buzzed and got them straight here') }catch(e){} try{ log('🚑 TO THE HOSPITAL — '+(V.buzz.by||'a grown-up')+' did not wait, did not lecture first: car, hospital, now. That is what the grown-ups are FOR.') }catch(e){} try{ save() }catch(e){} }
+ window.buzzHospital246=buzzHospital246;
+ try{ if(typeof discharge132==='function'&&!discharge132.__buzz246){ var _dc246=discharge132; var _dcw246=function(){ var r=_dc246.apply(this,arguments); try{ var V=V246(); if(V&&V.buzz&&V.buzz.hosp){ V.buzz=null; try{ adj('health',10) }catch(e){} try{ S.bond=clamp(S.bond-5) }catch(e){} try{ log('🏥 RECOVERY — the hospital kept '+S.name+' until the buzz was fully gone and the charts read boring again. Home now, watched closer, and the bags in this house live on higher shelves. Bond dipped — fear does that — but '+S.name+' is SAFE, and that is the whole sentence.') }catch(e){} try{ if(S.journal)S.journal.unshift('😵 Day '+S.day+' — got into a bag, got buzzed, got found, got taken to the hospital. Recovered.') }catch(e){} try{ toast('🏥 Home again — recovered') }catch(e){} try{ save() }catch(e){} } }catch(e){} return r }; _dcw246.__buzz246=true; discharge132=_dcw246 } }catch(e){}
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||S.deadFlag)return; var V=V246(); if(!V||!V.buzz)return; var now=performance.now();
+  if(!V.buzz.found){
+   if(now-lastBuzzSay246>40000){ lastBuzzSay246=now; try{ if(typeof playerSay==='function')playerSay(BUZZ_LINES246[Math.floor(Math.random()*BUZZ_LINES246.length)]) }catch(e){} }
+   if(now-lastBuzzDrain246>60000){ lastBuzzDrain246=now; try{ adj('health',-1) }catch(e){} }
+   if(S.needs&&S.needs.health<=25&&!V.buzz.hosp){ V.buzz.found=true; V.buzz.by='a neighbour who called it in'; V.buzz.hosp=true; try{ hospitalize132(true,'— '+S.name+' was found unresponsive after getting into drugs from a bag') }catch(e){} try{ save() }catch(e){} return }
+   var adult=null; try{ var pres=(typeof presentPeople138==='function')?presentPeople138():[]; var pn=parentNames246(); var cg=(typeof caregiverName==='function')?caregiverName():null;
+    for(var i=0;i<pres.length;i++){ var nm=pres[i]; if(pn.indexOf(nm)>=0||nm===cg){ adult=nm; break } var a=null; try{ a=(typeof charAge79==='function')?charAge79(nm):null }catch(e){} if(typeof a==='number'&&a>=18){ adult=nm; break } }
+    if(!adult&&S.escort)adult=S.escort;
+   }catch(e){}
+   if(adult&&!modalOpen246()){ V.buzz.found=true; V.buzz.by=adult; try{ openSheet('<h2>😱 Found — '+adult+' sees it instantly</h2><p style="text-align:left">The glassy eyes. The giggle at nothing. The little sway when '+S.name+' stands up. '+adult+' has seen enough — <b>this is not tired, this is not silly. This is drugs</b>, from a bag '+S.name+' should never have been able to reach.</p><p style="text-align:left">There is exactly one move now, and '+adult+' is already making it:</p><button class="btn gold" style="margin-top:10px" onclick="buzzHospital246()">🚑 To the hospital — now</button>',{person:adult,sfx:'bad'}) }catch(e){} try{ save() }catch(e){} }
+  }
+ }catch(e){} },1500);
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||S.age>=18)return; var V=V246(); if(V&&!V.buzz&&S.drugCrash)startBuzz246(null,'crash') }catch(e){} },2000);
+ /* ---------- (2) crack den: the family decision, then the household ---------- */
+ function denInit246(fromDecision){ var V=V246(); if(!V||V.den)return; V.den={since:S.day,pressure:18+Math.floor(Math.random()*18),sales:0,fights:0,hurt:null,lastSale:0,lastFightDay:-9,lastDay:S.day}; try{ log('🏚️ THE HOUSE IS THE BUSINESS NOW — the parents run it through the 🏢 Enterprise app: orders, businesses, stock, regulars. Deals happen here, at the door and on the app, in the open. The corner is theirs — and corners get tested. '+(S.age<5?('You are '+S.age+': this is grown folks\' business. You can\'t do anything in it until 5 — you just live in the middle of it.'):'')) }catch(e){} try{ if(S.journal)S.journal.unshift('🏚️ Day '+S.day+' — the family got into the game. The house is a crack den now; the business runs through the Enterprise app, and the corner has to be fought for.') }catch(e){} try{ save() }catch(e){} }
+ window.denInit246=denInit246;
+ function denBecome246(){ var V=V246(); if(!V)return; V.denPending=false; try{ closeModal() }catch(e){} S.origin='crackden'; denInit246(true); try{ toast('🏚️ The family moved into the game') }catch(e){} try{ save(); render() }catch(e){} }
+ window.denBecome246=denBecome246;
+ function denFight246(){ var V=V246(); if(!V||!V.den)return; var D=V.den; D.lastFightDay=S.day; D.fights++; var pn=parentNames246(); var fighter=pn.length?pn[Math.floor(Math.random()*pn.length)]:'Mom'; try{ closeModal() }catch(e){}
+  if(Math.random()<0.55){ var take=60+Math.floor(Math.random()*81); try{ if(typeof ensure80==='function')ensure80(); S.famFunds80=(S.famFunds80||150)+take }catch(e){} D.pressure=Math.max(0,D.pressure-45); try{ log('🔫 CORNER HELD — the rivals came for the corner and '+fighter+' sent them home empty. The block saw it, the regulars heard about it, and $'+take+' of corner tax landed in the family funds. The corner stays the family\'s — this time.') }catch(e){} try{ toast('🔫 Corner held — $'+take) }catch(e){} }
+  else { var hurt=pn.length?pn[Math.floor(Math.random()*pn.length)]:'Dad'; D.hurt={name:hurt,untilDay:S.day+1}; try{ if(typeof ensure80==='function')ensure80(); S.famFunds80=(S.famFunds80||150)-80 }catch(e){} D.pressure=Math.max(0,D.pressure-25); try{ S.bond=clamp(S.bond-3) }catch(e){} try{ log('🚑 THE CORNER COSTS — the fight went the other way: '+hurt+' is in the hospital overnight (back tomorrow), the bills took $80 out of the family funds, and the house is quiet in the scared way. No sales while '+hurt+' is down. Corners are not free — somebody always pays.') }catch(e){} try{ toast('🚑 '+hurt+' is in hospital overnight') }catch(e){} }
+  try{ save(); render() }catch(e){} }
+ window.denFight246=denFight246;
+ function boardingGo246(){ var V=V246(); if(!V)return; V.boardingPending=false; V.boarding={from:S.origin,day:S.day}; try{ closeModal() }catch(e){} S.origin='boarding'; try{ if(typeof schoolStageKey==='function')S.enroll.stage=schoolStageKey(S.age) }catch(e){} S.location='boarding'; try{ log('🏫 TO BOARDING — the trunk is packed, the dorm is waiting, and Mr. Chen runs the floor. This was a CHOICE — nobody is born into the dorm; the family opted in, and the family can bring you home again.') }catch(e){} try{ if(S.journal)S.journal.unshift('🏫 Day '+S.day+' — the family opted into boarding school. A decision, not a birth.') }catch(e){} try{ save(); render() }catch(e){} }
+ window.boardingGo246=boardingGo246;
+ function boardingStay246(){ var V=V246(); if(!V)return; V.boardingPending=false; try{ closeModal() }catch(e){} try{ log('🏠 STAYING HOME — the family weighed boarding school and chose the normal school life. The question does not come back.') }catch(e){} try{ save() }catch(e){} }
+ window.boardingStay246=boardingStay246;
+ function boardingReturn246(){ var V=V246(); if(!V||!V.boarding)return; var from=V.boarding.from; V.boarding=null; try{ closeModal() }catch(e){} S.origin=from; try{ S.location=homeLoc() }catch(e){} try{ log('🏠 HOME AGAIN — the family brought you back from boarding. The dorm chapter closes the way it opened: by the family\'s decision.') }catch(e){} try{ save(); render() }catch(e){} }
+ window.boardingReturn246=boardingReturn246;
+ var lastDecDay246=-1;
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||S.deadFlag||typeof inGame==='undefined'||!inGame)return; var V=V246(); if(!V)return;
+  if(S.origin==='crackden'&&!V.den)denInit246(false);
+  if(!modalOpen246()){
+   if(V.denPending){ V.denPending=false; var pn1=parentNames246(); try{ openSheet('<h2>💊 The kitchen-table decision</h2><p style="text-align:left">It has been low voices at the kitchen table for weeks — money worries, a cousin who "knows a way", numbers on the back of an envelope. Tonight '+(pn1.length?pn1.join(' and '):'your parents')+' stopped whispering.</p><p style="text-align:left"><b>They are getting into the game.</b> Selling — for real, through the Enterprise app, out of this house. The house becomes the business: stock in the cupboards, regulars at the door, a corner to hold. Nobody asked you — you are '+S.age+'. Your parents decided, and the life changes around you:</p><button class="btn gold" style="margin-top:10px" onclick="denBecome246()">🏚️ This is home now</button>',{sfx:'pop'}) }catch(e){} return }
+   if(V.boardingPending){ try{ openSheet('<h2>🏫 The boarding question</h2><p style="text-align:left">A brochure has been living on the kitchen counter for a week: a real boarding school — dorms, a supervisor named Mr. Chen, classes on site. The family can afford the question, which is not the same as the answer.</p><p style="text-align:left">Nobody is <b>born</b> into a dorm. This is an opt-in — the family\'s call, made once:</p><button class="btn gold" style="margin-top:10px" onclick="boardingGo246()">🏫 Go — start at boarding school</button><button class="btn outline" style="margin-top:8px" onclick="boardingStay246()">🏠 Stay — keep the normal school life</button>',{sfx:'pop'}) }catch(e){} return }
+   if(V.boarding&&(S.age>=14||S.day-(V.boarding.day||0)>=45)){ try{ openSheet('<h2>🏠 Time to come home</h2><p style="text-align:left">The boarding chapter has run its course — the family is bringing you home. Dorms were a decision; so is this.</p><button class="btn gold" style="margin-top:10px" onclick="boardingReturn246()">🏠 Go home</button>',{sfx:'pop'}) }catch(e){} return }
+   var DD=V.den; if(DD&&DD.pressure>=70&&S.day-(DD.lastFightDay||-9)>=1&&S.location===homeLoc()&&!S.movedOut){ try{ openSheet('<h2>🔫 Corner pressure — they\'re testing it</h2><p style="text-align:left">A rival set has been walking the block all day, counting. Tonight they mean to test the corner — and the corner is the family\'s, so the family answers. Your parents are already moving: this is THEIR fight, run through the same world as every fight — injuries, hospital, bills, all of it live.</p>'+(S.age<5?'<p style="text-align:left"><b>You are '+S.age+'. You can\'t do anything in this until 5</b> — you watch from the window, and that is all.</p>':'<p style="text-align:left">You watch it happen. The business is the grown-ups\' — until the game\'s own age gates say otherwise.</p>')+'<button class="btn gold" style="margin-top:10px" onclick="denFight246()">😶 Stay back — let them handle it</button>',{sfx:'bad'}) }catch(e){} return }
+  }
+  if(S.day!==lastDecDay246){ lastDecDay246=S.day;
+   if(V.den&&V.den.pressure>0)V.den.pressure=Math.max(0,V.den.pressure-2);
+   if(FAM246.indexOf(S.origin)>=0&&!S.movedOut){
+    if(!V.denRolled&&S.age>=2){ V.denRolled=1; var thin=false; try{ thin=(typeof S.famFunds80==='number'&&S.famFunds80<60) }catch(e){} if(Math.random()<(thin?0.55:0.30))V.denPending=true }
+    else if(V.denRolled&&!V.denReRolled&&S.age<=6){ var miss=false; try{ miss=!!(S.broke80&&S.broke80.famMiss>=1) }catch(e){} if(miss){ V.denReRolled=1; if(Math.random()<0.4)V.denPending=true } }
+    if(!V.boardingRolled&&S.age>=6&&S.age<=12){ V.boardingRolled=1; var ch=(S.origin==='rich')?0.45:(S.origin==='step')?0.35:0.30; if(Math.random()<ch)V.boardingPending=true }
+   }
+  }
+ }catch(e){} },2500);
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||S.deadFlag||S.origin!=='crackden')return; var V=V246(); if(!V||!V.den)return; var D=V.den; if(S.movedOut||S.location!==homeLoc())return; if(D.hurt&&D.hurt.untilDay>S.day)return; var now=performance.now(); if(now-(D.lastSale||0)<90000)return; if(Math.random()>0.5)return; D.lastSale=now;
+  var pn=parentNames246(); var who=pn.length?pn[Math.floor(Math.random()*pn.length)]:'Mom'; var keys=(typeof DRUG_PRODUCTS!=='undefined')?Object.keys(DRUG_PRODUCTS):['thc']; var k=keys[Math.floor(Math.random()*keys.length)]; var p=DRUG_PRODUCTS[k]; var qty=1+Math.floor(Math.random()*3); var amt=Math.round(qty*(p?p.price:26)*(0.9+Math.random()*0.3)); try{ if(typeof ensure80==='function')ensure80(); S.famFunds80=(typeof S.famFunds80==='number'?S.famFunds80:150)+amt }catch(e){}
+  D.sales++; D.pressure=Math.min(100,D.pressure+4); var chan=Math.floor(Math.random()*3);
+  var line=chan===0?('💊 THE HOUSE AT WORK — a regular knocked soft, twice, and '+who+' handled it at the door: '+qty+' × '+(p?p.icon+' '+p.name:k)+', $'+amt+' into the family funds. Thirty seconds, no voices raised. This is just Tuesday here.')
+   :chan===1?('💊 ENTERPRISE ORDER — the app lit up on '+who+'\'s phone (🏢 Enterprise → the business line): '+qty+' × '+(p?p.icon+' '+p.name:k)+' out the door inside the hour, $'+amt+' into the family funds. The app keeps the books; the house keeps the corner.')
+   :('💊 A PICKUP — headlights off at the curb, '+who+' out and back in a minute: '+qty+' × '+(p?p.icon+' '+p.name:k)+', $'+amt+' into the family funds. The neighbours saw nothing, the way the neighbours see nothing.');
+  try{ log(line) }catch(e){} try{ save() }catch(e){}
+ }catch(e){} },18000);
+ window.__v246={version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 46: 😵 the bag accident — a minor who gets into bag drugs is BUZZED (visible, persistent) until a parent / caregiver / present adult finds them → discovery → hospital (shipped flow) → recovery; adult gates untouched • 🏚️ origins are DECISIONS now — crack den & boarding leave the creation menu and dealt starts; the crack-den life arrives as the parents\' kitchen-table decision at ~age 2 (family moves, Enterprise household, ambient sales, corner fights the parents fight, child a bystander until 5), and boarding is a one-time family opt-in with a family bring-home','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 47 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   The contextual park, enforced where it can actually hold. Hotfix 44 stood the injectors down by
+   reassigning their globals — but the v217 passes (dynPass217 / passes217, on a 900 ms cadence plus
+   post-render timeouts) live inside their own closure, so the "📍 Only here" card kept being
+   re-injected behind the stand-down. DRIVEN-RUN PROOF (Nov 4, this build, Shawn Day 1): two panel
+   enumerations caught the panel clean, and a screenshot ~30 s later caught the Only-here card
+   ("🧰 Dig through the memory box") sitting at the top of Actions again — injector and deleter
+   fighting forever, the card flickering in and out of the player's panel.
+   THE CURE: the park is now enforced at the DOM. A MutationObserver on #panel removes any
+   .ctxCard200 / .dynCard217 element (with an enclosing details.dd132 fold wrapper, when present)
+   the moment any pass inserts one — observer callbacks run as microtasks, before the next frame
+   can paint, so the card never reaches the player's eyes no matter which closure re-injects it or
+   how often. A 200 ms sweep re-arms the observer (in case the panel node is ever replaced) and
+   strips anything that arrived while it was unarmed. This is a PARK, still not a delete: the
+   earned state behind window.__v217 (ensure / data / V217.done memories) is never touched and
+   stays saved and dormant, and every other Actions section is untouched. ================= */
+(function(){
+try{
+ function strip47(panel){ if(!panel||!panel.querySelectorAll)return; ['.ctxCard200','.dynCard217'].forEach(function(sel){ try{ panel.querySelectorAll(sel).forEach(function(el){ var t=(el.closest?el.closest('details.dd132'):null)||el; if(t&&t.parentNode)t.remove() }) }catch(e){} }) }
+ var busy47=false;
+ var obs47=new MutationObserver(function(){ if(busy47)return; busy47=true; try{ strip47(document.getElementById('panel')) } finally { busy47=false } });
+ function arm47(){ var p=document.getElementById('panel'); if(!p)return; try{ obs47.observe(p,{childList:true,subtree:true}) }catch(e){} strip47(p) }
+ arm47();
+ setInterval(function(){ try{ arm47() }catch(e){} },200);
+ window.__v247={version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 47: 🅿️ the contextual park is enforced at the DOM — a MutationObserver on the Actions panel strips the Contextual / Only-here cards the moment any pass re-injects one (the v217 passes live in a closure the h44 stand-down could not reach — driven-run proof: enumerations clean, screenshot 30 s later caught the card back). Earned state stays saved & dormant','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 </body>
 </html>
 <script>
@@ -25010,6 +25202,404 @@ function legacy241(){ try{ if(!S)return; var V=V241(); var key=S.name+'|'+S.day;
 
 window.__v241={version:function(){ return GAME_VERSION },V:V241,brain:brain241,talk:talkOpen241,hub:hubHtml241};
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 41: 🧠 THE AI EXPANSION (all 16) — ambient NPC↔NPC bubbles with pair memory • AI texting unified into ONE memory with calls/dates/visits • stored talking real-estate listings + a haggling agent • places that know themselves (staff flavor once per visit-day) • parent-teacher conferences & judged job interviews • real-talk dates (adults only) • drama motives spoken aloud • the day\u2019s story written into the Life Storybook • free-talk phone calls • doctor & vet in your own words • living classrooms • interrogation & court (adults) • customers & clients • a living Birdy • real letters • legacies at death — generate-once-and-store, capped, kid-safe, and every failure falls back silently to written lines','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 42 — 🔁 THE REPEAT CURE (owner video Nov 4 06:43 EST, Levi Day 10, guest
+   Kayla Vega present; plus fresh-life reports same morning). SIX targets, one disease family —
+   things that happen twice. Every mechanism below is DELETE-ONLY or GATE-ONLY: nothing in this layer
+   paints, appends, injects or re-homes a single element or figure.
+   1) ACTIONS PANEL DUPLICATION ON REPAINT — the panel is owned by ~15 wrapper layers; h40's
+      reconcile240 re-injects ctx/dyn/svc cards it judges "missing" and two other layers append
+      unguarded cards (the 🔴 Stream card in buildActionDropdowns132 has no presence check at all),
+      so a mid-repaint judgement can leave a second copy standing. sanitize242() runs after every
+      paint and via a re-entrancy-guarded MutationObserver: it deletes (never creates) duplicate
+      top-level sections — same heading + same button set — duplicate buttons inside a card, and
+      extra ctx/dyn/svc copies. A repaint can never again leave two of anything behind.
+   2) 👩 MOM DOUBLED DURING HELP — the toddler caregiver-help figure draws from a NAME (careHelper /
+      todCare82) with no presence check: Mom's real scene instance stands in the room AND the helper
+      copy materialises beside the player. Two instances = two bodies, two name tags. drawNPCSprite
+      now skips the helper copy whenever that same person is genuinely present in the scene.
+   3) NAME TAGS — a character present in the scene no longer also wears their parked car's owner tag:
+      tagWorld228 skips owners who are on screen right now (their sprite tag is the one tag); the tag
+      returns the moment they are absent. Kayla's second "Kayla Vega" in the video was her car's tag.
+   4) 💬 AMBIENT BUBBLE PINNED + CLIPPED — S.guest.sayUntil / untilPerf63 are performance.now()
+      timestamps PERSISTED in the save; after a relaunch the clock restarts near 0 while the saved
+      values keep the old magnitude, so the let-in line never expires, the guest never leaves, and the
+      conversation engine's busy-check stays true forever (no ambient line can ever rotate). A 1 s
+      guard re-anchors impossible ("hours in the future") guest/sleepover clocks. The bubble painter
+      is also replaced outermost: measured wrap, speaker-name header, clamped to the VISIBLE scene
+      rect (canvas ∩ .roomWrap — the CSS zoom crops the canvas, so the old full-bitmap clamp let
+      bubbles drift half off-screen at zoom), plus a 12 s same-text cap as a backstop.
+   5) 👶 BABYSITTER PICK SERVED TWICE — h213's own re-serve interval re-offers the sheet whenever
+      V.pickPending is set and no sitter exists; after a completed pick V.sitter exists, so any
+      re-serve is provably stale. picked242() reads the roster straight from save state (V.sitter,
+      the v195 hire, careHelper) and every re-serve route (the 2.5 s interval AND the re-entrant
+      sitterPickSheet213 re-entry) is vetoed once a pick exists, with the pending flag purged.
+   8) 📍 IN THE AREA (owner directive 7:04 AM): a nearby-people section under Social → Relationships —
+      presentPeople138() at the current location, deduped, 💬 Talk per row (shipped openConvo),
+      recomputed on render + cadence, honest empty state. Scene sprites stay tap-dead.
+   GAME_VERSION stays 200; SAVE_KEY untouched; silent. ================= */
+(function(){
+'use strict';
+try{
+
+ /* ---------- shared: who is genuinely on screen right now ---------- */
+ function presentNames242(){ var out={}; try{
+  if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n&&n.state==='in'&&n.name)out[n.name]=1 });
+ }catch(e){} try{
+  if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p&&p.state==='in'&&p.name)out[p.name]=1 });
+ }catch(e){} try{
+  var S242=(typeof S!=='undefined')?S:null;
+  if(S242){
+   if(S242.guest&&S242.guest.day===S242.day&&typeof homeLoc==='function'&&S242.location===homeLoc())out[S242.guest.name]=1;
+   if(S242.sleepover&&S242.sleepover.at==='mine'&&S242.sleepover.guest)out[S242.sleepover.guest]=1;
+   if(S242.escort)out[S242.escort]=1;
+   if(S242.name)out[S242.name]=1;
+  }
+ }catch(e){} return out }
+
+ /* ---------- 1) ACTIONS PANEL: delete-only sanitizer (ONE copy of everything) ---------- */
+ var sanBusy242=false, sanQueued242=false;
+ function secSig242(el){ try{
+  var h=el.querySelector('h3,.acT,summary'); var head=h?(h.textContent||'').replace(/\s+/g,' ').trim().slice(0,48):'';
+  var oc=[]; el.querySelectorAll('button').forEach(function(b){ oc.push(b.getAttribute('onclick')||((b.textContent||'').replace(/\s+/g,' ').trim().slice(0,30))) });
+  oc.sort(); return head+'‖'+oc.join('|');
+ }catch(e){ return '' } }
+ function sanitize242(){ try{
+  if(sanBusy242){ sanQueued242=true; return }
+  sanBusy242=true;
+  try{
+   if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='actions101')return;
+   var panel=document.getElementById('panel'); if(!panel)return;
+   /* extra ctx / dyn / svc copies — first copy wins, the rest are deleted */
+   ['.ctxCard200','.dynCard217','#svcSec222'].forEach(function(sel){ var els=panel.querySelectorAll(sel); for(var i=1;i<els.length;i++){ var t=els[i].closest?els[i].closest('details.dd132'):null; (t||els[i]).remove() } });
+   /* duplicate buttons inside one card (same handler + same label) */
+   panel.querySelectorAll('.actCard101,.card').forEach(function(card){ var seen={}; card.querySelectorAll('button').forEach(function(b){ var k=(b.getAttribute('onclick')||'')+'‖'+(b.textContent||'').replace(/\s+/g,' ').trim(); if(seen[k])b.remove(); else seen[k]=1 }) });
+   /* duplicate top-level sections (the whole-block second render from the video) */
+   var seen={}; Array.prototype.slice.call(panel.children).forEach(function(ch){ if(ch.nodeType!==1)return; var sig=secSig242(ch); if(!sig)return; if(seen[sig])ch.remove(); else seen[sig]=1 });
+   /* the unguarded 🔴 Stream append in buildActionDropdowns132 can stack copies in the grid */
+   var grid=panel.querySelector('.actGrid101'); if(grid){ var ls=grid.querySelectorAll('.actCard101'); var n=0; Array.prototype.slice.call(ls).forEach(function(c){ if((c.textContent||'').indexOf('🔴 Stream')>=0){ n++; if(n>1)c.remove() } }) }
+  }finally{ sanBusy242=false }
+  if(sanQueued242){ sanQueued242=false; setTimeout(sanitize242,30) }
+ }catch(e){ sanBusy242=false } }
+ ['paintActions101','paintQCards101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__san242)return; var w=function(){ var r=fn.apply(this,arguments); try{ sanitize242() }catch(e){} setTimeout(sanitize242,140); setTimeout(sanitize242,700); return r }; w.__san242=true; window[nm]=w }catch(e){} });
+ try{ var mo242=new MutationObserver(function(){ sanitize242() }); var obs242=function(){ var p=document.getElementById('panel'); if(p)mo242.observe(p,{childList:true,subtree:true}) }; if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',obs242); else obs242() }catch(e){}
+ setInterval(sanitize242,1500);
+
+ /* ---------- 2) ONE PERSON, ONE BODY — the caregiver-help copy yields to the real instance ---------- */
+ try{ if(typeof drawNPCSprite==='function'){ var _dns242=drawNPCSprite; drawNPCSprite=function(ctx,n,now,stepping){ try{
+  if(n&&n.bubble==='🍼'&&n.say===''&&!n.sayUntil&&n.name&&typeof S!=='undefined'&&S&&('x' in n)&&('y' in n)&&!('tx' in n)&&!('room86' in n)){
+   var real=null; try{ if(typeof npcs!=='undefined'&&npcs)real=npcs.find(function(x){ return x.name===n.name&&x.state==='in' }) }catch(e){}
+   if(!real){ try{ if(typeof townsfolk!=='undefined'&&townsfolk)real=townsfolk.find(function(x){ return x.name===n.name&&x.state==='in' }) }catch(e){} }
+   if(real)return; /* the real person is standing in this scene — the helper copy never spawns */
+  }
+ }catch(e){} return _dns242(ctx,n,now,stepping) } } }catch(e){}
+
+ /* ---------- 3) ONE TAG PER CHARACTER — car owner tag yields while the owner is on screen ---------- */
+ try{ if(typeof tagWorld228==='function'){ var _tw242=tagWorld228; tagWorld228=function(ctx,cx,topY,name,dot,mine,slotW,prevR){ try{
+  if(name&&presentNames242()[name])return prevR||2; /* sprite tag present — the car tag would be a second tag */
+ }catch(e){} return _tw242(ctx,cx,topY,name,dot,mine,slotW,prevR) } } }catch(e){}
+ try{ var pkSt242=document.createElement('style'); pkSt242.id='style242parked'; pkSt242.textContent='#parked193.pOwner{display:none!important}'; document.head.appendChild(pkSt242) }catch(e){}
+
+ /* ---------- 6) PARKED CARS ARE SOLID — state normalized at the one painter choke point ----------
+    Every vehicle path (h231 stable-spot parked, traffic, departures, the patrol car) funnels through
+    window.paintCar221. Its own fills are opaque constants, but it paints with whatever globalAlpha /
+    fillStyle the shared room canvas happens to be holding — and a fillStyle assignment of an undefined
+    colour is silently ignored by canvas, keeping a translucent leftover. Either leak washes a parked
+    car hollow. Here: the colour is sanitized, alpha is forced to 1 inside a save/restore, and an
+    opaque silhouette of the car is laid down first — a hollow car becomes structurally impossible. */
+ try{ if(typeof window.paintCar221==='function'){ var _pc242=window.paintCar221; window.paintCar221=function(ctx,cx,gy,model,col,dir,night){ try{
+   var c2={body:(col&&col.body)?col.body:'#3b82f6',dark:(col&&col.dark)?col.dark:'#1e3a5f'};
+   var gl='🚗'; try{ gl=carGlyph202(model) }catch(e){}
+   var sport=(gl==='🏎'||gl==='🏎️'); var L=sport?232:(gl==='🚙'?222:(gl==='🚓'?230:224));
+   var cabH=gl==='🚙'?33:(sport?24:29), cabW=L*(gl==='🚙'?0.56:(sport?0.42:0.48));
+   ctx.save(); ctx.globalAlpha=1; ctx.translate(cx,gy); if(dir<0)ctx.scale(-1,1);
+   ctx.fillStyle=c2.dark;
+   ctx.beginPath(); ctx.roundRect(-L/2,-56,L,48,10); ctx.fill();
+   ctx.beginPath(); ctx.roundRect(-cabW/2-6,-56-cabH+4,cabW+8,cabH+6,8); ctx.fill();
+   ctx.restore();
+   ctx.save(); ctx.globalAlpha=1; try{ return _pc242(ctx,cx,gy,model,c2,dir,night) } finally { ctx.restore() }
+ }catch(e){ try{ return _pc242(ctx,cx,gy,model,col,dir,night) }catch(_){ } } } } }catch(e){}
+
+ /* ---------- 4a) STALE GUEST CLOCKS — persisted performance.now() values can never pin a visit again ---------- */
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S)return; var now=performance.now(); var dirty=false;
+  [['guest',165000],['sleepover',165000]].forEach(function(pair){ var g=S[pair[0]]; if(!g||typeof g!=='object')return;
+   if(typeof g.sayUntil==='number'&&g.sayUntil-now>9000){ g.sayUntil=now; dirty=true } /* a line can never be more than ~9 s from expiring; anything further out is a dead clock from a previous session */
+   var uk=(pair[0]==='guest')?'untilPerf63':'untilPerf'; if(typeof g[uk]==='number'&&g[uk]-now>pair[1]+30000){ g[uk]=now+120000; dirty=true } /* re-anchor an impossible visit clock: two more minutes, then the normal goodbye flow */
+  });
+  if(dirty){ try{ save() }catch(e){} }
+ }catch(e){} },1000);
+
+ /* ---------- 4b) THE BUBBLE PAINTER, OUTERMOST — visible-rect clamp + 12 s same-text cap ---------- */
+ function wrapBub242(ctx,text,maxW){ var raw=String(text).split(/\s+/).filter(Boolean), words=[];
+  raw.forEach(function(w){ while(w.length>1&&ctx.measureText(w).width>maxW){ var cut=w.length-1; while(cut>1&&ctx.measureText(w.slice(0,cut)).width>maxW)cut--; words.push(w.slice(0,cut)); w=w.slice(cut) } words.push(w) });
+  var lines=[], line=''; words.forEach(function(w){ var t=line?line+' '+w:w; if(line&&ctx.measureText(t).width>maxW){ lines.push(line); line=w } else line=t });
+  if(line)lines.push(line); return lines.slice(0,3) }
+ var bubPrev242=(typeof drawSpeechBubble==='function')?drawSpeechBubble:null;
+ var bubSeen242={text:'',since:0};
+ drawSpeechBubble=function(ctx,cx,bottomY,text){
+  var isSay=false; try{ isSay=!!(typeof playerSay!=='undefined'&&playerSay&&playerSay.text===text) }catch(e){}
+  if(isSay){ if(bubPrev242)return bubPrev242(ctx,cx,bottomY,text); return } /* the player's own bubbles keep the shipped chain (h218 colours) */
+  try{
+   var str=String(text==null?'':text); if(!str)return;
+   var nowMs=performance.now();
+   if(str.indexOf('🚔')<0){ if(bubSeen242.text===str){ if(nowMs-bubSeen242.since>12000)return } else { bubSeen242.text=str; bubSeen242.since=nowMs } }
+   var tr=(ctx.getTransform?ctx.getTransform():null); var s=tr?Math.abs(tr.a):1; if(!isFinite(s)||s<=0)s=1;
+   var devX=tr?(tr.a*cx+tr.e):cx, devBY=tr?(tr.d*bottomY+tr.f):bottomY;
+   var CW=(ctx.canvas&&ctx.canvas.width)||900, CH=(ctx.canvas&&ctx.canvas.height)||460;
+   var vx0=0,vy0=0,vx1=CW,vy1=CH;
+   try{ var cvEl=ctx.canvas, wrap=cvEl&&cvEl.closest?cvEl.closest('.roomWrap'):null; if(cvEl&&wrap){ var cr=cvEl.getBoundingClientRect(), wr=wrap.getBoundingClientRect(); if(cr.width>40&&wr.width>40){ vx0=Math.max(0,(Math.max(cr.left,wr.left)-cr.left)/cr.width*CW); vx1=Math.min(CW,(Math.min(cr.right,wr.right)-cr.left)/cr.width*CW); vy0=Math.max(0,(Math.max(cr.top,wr.top)-cr.top)/cr.height*CH); vy1=Math.min(CH,(Math.min(cr.bottom,wr.bottom)-cr.top)/cr.height*CH); if(vx1-vx0<120||vy1-vy0<80){ vx0=0;vy0=0;vx1=CW;vy1=CH } } } }catch(e){}
+   var nm=''; try{ if(typeof bubbleName191==='function')nm=bubbleName191(text)||'' }catch(e){}
+   var bodyF=13.5*s, nameF=10.5*s, padX=11*s, lineH=17*s, headH=nm?15*s:0;
+   ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+   ctx.font='bold '+bodyF+'px sans-serif';
+   var lines=wrapBub242(ctx,text,Math.min(190*s,Math.max(60,(vx1-vx0)-30)));
+   var w=0; lines.forEach(function(l){ w=Math.max(w,ctx.measureText(l).width) });
+   if(nm){ ctx.font='900 '+nameF+'px sans-serif'; w=Math.max(w,ctx.measureText(nm.toUpperCase()).width) }
+   w+=24*s; var h=lines.length*lineH+14*s+headH;
+   var x=Math.max(vx0+3,Math.min(vx1-w-3,devX-w/2));
+   var y=Math.max(vy0+3,Math.min(vy1-h-3,devBY-h));
+   var tailX=Math.max(x+12*s,Math.min(x+w-12*s,devX));
+   ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.roundRect(x+2*s,y+3*s,w,h,10*s); ctx.fill();
+   ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.roundRect(x,y,w,h,10*s); ctx.fill(); ctx.strokeStyle='#14100c'; ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+   ctx.beginPath(); ctx.moveTo(tailX-6*s,y+h-1); ctx.lineTo(tailX+6*s,y+h-1); ctx.lineTo(tailX,Math.min(vy1-2,y+h+8*s)); ctx.closePath(); ctx.fillStyle='#ffffff'; ctx.fill();
+   if(nm){ ctx.font='900 '+nameF+'px sans-serif'; ctx.fillStyle='#b45309'; ctx.fillText(nm.toUpperCase(),x+padX,y+14*s) }
+   ctx.font='bold '+bodyF+'px sans-serif'; ctx.fillStyle='#14100c';
+   lines.forEach(function(l,i){ ctx.fillText(l,x+padX,y+20*s+headH+i*lineH) });
+   ctx.restore();
+  }catch(e){ try{ ctx.restore() }catch(_){} }
+ };
+
+ /* ---------- 5) BABYSITTER PICK — once picked, every serve path sees it as DONE ---------- */
+ function picked242(){ try{ if(typeof S==='undefined'||!S)return false;
+  try{ var V=(typeof ensure120==='function')?ensure120():null; if(V&&V.sitter&&V.sitter.name)return true }catch(e){}
+  try{ if(typeof ensureSitter120==='function'){ var st=ensureSitter120(); if(st&&st.name)return true } }catch(e){}
+  try{ if(typeof careHelper==='function'&&careHelper())return true }catch(e){}
+  return false }catch(e){ return false } }
+ function purgePick242(){ try{ var V=(typeof ensure120==='function')?ensure120():null; if(V&&(V.pickPending||V.pickAfter||V.pickCands)){ V.pickPending=false; V.pickAfter=null; V.pickCands=null; try{ save() }catch(e){} } }catch(e){} }
+ try{ if(typeof sitterPickSheet213==='function'){ var _sps242=sitterPickSheet213; sitterPickSheet213=function(){ if(picked242()){ purgePick242(); return } return _sps242.apply(this,arguments) } } }catch(e){}
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; if(!picked242())return; purgePick242();
+  var sh=document.getElementById('sheet'); if(sh&&/Pick your first babysitter/.test(sh.textContent||'')){ try{ closeModal() }catch(e){} }
+ }catch(e){} },800);
+
+ window.__v242={sanitize242:sanitize242,presentNames242:presentNames242,picked242:picked242,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 42: 🔁 THE REPEAT CURE — the Actions panel is delete-only sanitized after every paint (sections, buttons, ctx/dyn/svc: exactly one of each, a reconcile can never resurrect a copy) • 👩 the caregiver-help figure yields to the real person when they are in the scene (one body, one tag) • 🏷️ a present character\u2019s car tag stands down (one tag per character) • 💬 dead guest clocks from past sessions are re-anchored so visit lines expire and ambient bubbles rotate again, and bubbles now clamp to the VISIBLE scene at every zoom with a 12 s same-line cap • 👶 the first-babysitter pick is once-ever: once picked, every serve path sees it done and the sheet can never re-serve','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 43 — 🚪 FRONT DOORS, ⏱️ SETTLED REPLIES, 🔓 STUCK SCAN, 🔁 ZOMBIE
+   SHEETS, 📰 SINGLE HEADLINES (independent driven run on live h39, Nov 4). Stacks on hotfix 42.
+   1) 🧠 LIVING WORLD CARD NOT FOUND — hubPass241 only inserted the card when curTab==='home', but the
+      dock's Me view reports curTab 'me'/'life' mid-session and the insert silently never ran in the
+      runner's session. The pass now accepts every Home-family tab value and the interval re-checks
+      unconditionally (the pass itself gates), so the card is findable from Home in a fresh life.
+   2) ⏱️ TEXT REPLY LATENCY — h239's brain race had exactly ONE settler (the 5 s timer) and the thread
+      renders "is typing…" from ensure146().pendingReplies, which stays non-empty while a reply is
+      parked at +99999 — so any lost race (parse shape, busy brain, stalled fetch) left typing… up for
+      minutes and the eventual answer was the canned line. settleWatch243() runs every second: a reply
+      parked more than 6 s is settled ON THE SPOT through the shipped canned path, and any pending
+      entry older than 20 s (no race at all) is pulled due — typing can never hang again. The brain
+      race is untouched when it answers inside its window; one-and-done is untouched.
+   3) 🔓 FINGERPRINT SHEET STUCK — after a completed scan ("Scan complete — unlocked"), fpSuccess62
+      re-rendered the phone home INTO the still-open sheet and nothing dismissed it; X / Escape /
+      outside clicks all failed because the sheet's content had been swapped, not closed. A 500 ms
+      watchdog now force-dismisses any sheet still showing a completed scan (fingerprint or face) and
+      lands the player IN the unlocked phone, per the owner's flow.
+   4) 🔁 ZOMBIE SHEETS — household-event dialogs (the "needs a hand" family) are random-pool draws with
+      no memory, so the identical event could serve twice in minutes; handled trait offers could be
+      re-drawn by a later serve pass. A serve-gate ledger (S.v243.served, title|day) wraps openSheet:
+      the same household-event title can serve at most once per day, and an event title already
+      handled today (choice tapped / sheet closed over it) cannot re-serve today. Random events
+      themselves are untouched — only the repeat is gone.
+   5) 📰 HEADLINES DOUBLED — a Headlines button carried the same sentence twice (title + body both
+      rendered, and newsStory composes 'head — body' as ONE string, so a surface that prints the
+      composed string under its own title doubles it). A delete-only sweep runs when sheets/panels
+      settle: any element whose text is exactly the same sentence twice collapses to one.
+   6) 🚗 INTERIOR CAR BLEED — carList202's away-from-home branch lists present NPCs' cars at EVERY
+      location, so a purple car painted across the bottom of interior scenes (boarding Common Room).
+      World cars now exist only outdoors (home, grandparents, and the traffic system's own outdoor
+      set); interiors return an empty list.
+   7) 💬 FEEDBACK CLOCK SCOPED PER LIFE — the hourly feedback ask accumulated in a browser-wide
+      localStorage clock across lives, so a brand-new life was told "about an hour" minutes in. The
+      accumulator now keys to the current character (name|birth day); a different life starts at 0.
+   GAME_VERSION stays 200; SAVE_KEY untouched; silent. ================= */
+(function(){
+'use strict';
+try{
+ function V243(){ try{ if(!S)return null; if(!S.v243||typeof S.v243!=='object')S.v243={}; if(!S.v243.served||typeof S.v243.served!=='object')S.v243.served={}; return S.v243 }catch(e){ return null } }
+
+ /* ---------- 1) Living World card: every Home-family tab counts ---------- */
+ function hubFix243(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var ct=(typeof curTab!=='undefined')?curTab:''; if(['home','me','life',''].indexOf(ct)<0)return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.aiHubCard241'))return;
+  var grid=panel.querySelector('.grid')||panel; var d=document.createElement('div'); d.className='card aiHubCard241'; d.style.borderColor='#38bdf8';
+  d.innerHTML='<h3>🧠 Living World</h3><p>Real conversations with real memory — calls, dates, doctors, teachers, agents, customers — plus a town that posts, writes letters, and tells your story back to you.</p><button class="btn gold" style="width:100%" onclick="aiHub241()">🧠 Open the Living World</button>';
+  grid.insertBefore(d,grid.firstChild) }catch(e){} }
+ setInterval(hubFix243,1200);
+
+ /* ---------- 2) typed-text replies always settle in seconds ---------- */
+ var parkSeen243={};
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; if(typeof ensure146!=='function'||typeof absMin110!=='function')return;
+  var V=ensure146(); if(!V||!Array.isArray(V.pendingReplies)||!V.pendingReplies.length)return; var base=absMin110(); var now=Date.now(); var changed=false;
+  V.pendingReplies.slice().forEach(function(q){ var key=q.from+'|'+q.at+'|'+String(q.txt||'').slice(0,24); var seen=parkSeen243[key]||(parkSeen243[key]=now);
+   if(q.at-base>1000){ if(now-seen>6000){ q.at=base; changed=true } } /* parked for the brain race >6 s → settle now */
+   else if(now-seen>20000){ q.at=base; changed=true } /* no race at all and still pending after 20 s → pull due */
+  });
+  Object.keys(parkSeen243).forEach(function(k){ if(now-parkSeen243[k]>120000)delete parkSeen243[k] });
+  if(changed&&typeof deliverReplies146==='function')deliverReplies146();
+ }catch(e){} },1000);
+
+ /* ---------- 3) a completed scan dismisses its sheet and opens the phone ---------- */
+ setInterval(function(){ try{ if(typeof S==='undefined'||!S)return; var m=document.getElementById('modal'); if(!m||!m.classList.contains('open'))return; var sh=document.getElementById('sheet'); if(!sh)return; var t=sh.textContent||'';
+  var done=/Scan complete|unlocked/i.test(t)&&(/Fingerprint|Face unlock|🖐️|🙂/.test(t)||document.getElementById('fpBtn62')||document.getElementById('faceBtn92'));
+  var stuck=(document.getElementById('fpBtn62')||document.getElementById('faceBtn92'))&&typeof phoneUnlocked!=='undefined'&&phoneUnlocked;
+  if(!done&&!stuck)return;
+  try{ closeModal() }catch(e){}
+  setTimeout(function(){ try{ var m2=document.getElementById('modal'); if(m2&&m2.classList.contains('open')){ m2.classList.remove('open') } }catch(e){} },120);
+  try{ if(typeof openPhone==='function')openPhone() }catch(e){}
+ }catch(e){} },500);
+
+ /* ---------- 4) zombie sheets: serve once per title per day; handled means handled ---------- */
+ var curEv243=null;
+ function evTitle243(html){ try{ if(typeof html!=='string')return ''; var m=html.match(/<h2>([\s\S]*?)<\/h2>/); if(!m)return ''; var t=m[1].replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(); return t }catch(e){ return '' } }
+ function isEventSheet243(html){ return typeof html==='string'&&html.indexOf('houseChoice(')>=0 }
+ try{ if(typeof openSheet==='function'){ var _os243=openSheet; openSheet=function(html,opts){ try{
+   if(typeof S!=='undefined'&&S&&isEventSheet243(html)){ var V=V243(); var title=evTitle243(html); var key=title+'|d'+S.day;
+    if(V&&(V.served[key]==='done'||V.served[key]==='open'))return; /* already handled — or already on screen: never twice */
+    if(V){ V.served[key]='open'; curEv243=key; try{ save() }catch(e){} } }
+  }catch(e){} return _os243.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof houseChoice==='function'){ var _hc243=houseChoice; houseChoice=function(){ try{ var V=V243(); if(V&&curEv243){ V.served[curEv243]='done'; try{ save() }catch(e){} } }catch(e){} return _hc243.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof houseExtra==='function'){ var _he243=houseExtra; houseExtra=function(){ try{ var V=V243(); if(V&&curEv243){ V.served[curEv243]='done'; try{ save() }catch(e){} } }catch(e){} return _he243.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof closeModal==='function'){ var _cm243=closeModal; closeModal=function(){ try{ var V=V243(); if(V&&curEv243&&V.served[curEv243]==='open'){ V.served[curEv243]='done'; try{ save() }catch(e){} } curEv243=null }catch(e){} return _cm243.apply(this,arguments) } } }catch(e){}
+
+ /* ---------- 5) headlines (and any sentence) printed twice collapse to once ---------- */
+ function dedupeText243(){ try{ var roots=[document.getElementById('sheet'),document.getElementById('panel')]; roots.forEach(function(root){ if(!root)return;
+   root.querySelectorAll('button,.card,.msg,p,h3').forEach(function(el){ try{ if(el.children.length)return; var t=(el.textContent||'').replace(/\s+/g,' ').trim(); if(t.length<24)return;
+    var half=Math.floor(t.length/2); for(var cut=half-3;cut<=half+3;cut++){ if(cut<12)continue; var a=t.slice(0,cut).trim(), b=t.slice(cut).trim(); if(a&&a===b){ el.textContent=a; return } }
+    var m=t.match(/^(.{16,120}?[.!?])\s+\1$/); if(m)el.textContent=m[1];
+   }catch(e){} }) }) }catch(e){} }
+ setInterval(dedupeText243,2000);
+
+ /* ---------- 6) world cars live outdoors only ---------- */
+ var OUT243=['street','city','park','beach','fair','mountains'];
+ try{ if(typeof carList202==='function'){ var _cl243=carList202; carList202=function(){ try{ if(typeof S!=='undefined'&&S){ var hl=(typeof homeLoc==='function')?homeLoc():null; if(S.location!==hl&&S.location!=='grandparents'&&OUT243.indexOf(S.location)<0)return [] } }catch(e){} return _cl243.apply(this,arguments) } } }catch(e){}
+
+ /* ---------- 7) the feedback play-clock is scoped to the current life ---------- */
+ setInterval(function(){ try{ var raw=localStorage.getItem('aqualifePlayClock_v1'); if(!raw)return; var c=JSON.parse(raw); if(!c||typeof c!=='object')return;
+  var id=(typeof S!=='undefined'&&S&&S.name)?(S.name+'|'+(S.bornDay||S.introDay||0)):null; if(!id)return;
+  if(c.life243!==id){ c.life243=id; c.acc=0; localStorage.setItem('aqualifePlayClock_v1',JSON.stringify(c)) }
+ }catch(e){} },4000);
+
+
+ /* ---------- 8) 📍 IN THE AREA — who is physically here, under Relationships (owner directive) ----------
+    Below the ❤️ Relationships roster on the Social (life) tab: everyone presentPeople138() reports
+    at the player's current location right now, deduped by that function itself, each with a 💬 Talk
+    button running the shipped openConvo — the same conversation every roster row opens. Rebuilt on
+    every Social render and on a 1.6 s cadence while the tab is open, so it tracks arrivals, and it
+    says so honestly when nobody is around. Scene sprites stay tap-dead, as ruled. */
+ function nearbyHtml243(){ try{ var folks=(typeof presentPeople138==='function')?presentPeople138():[]; var loc=''; try{ loc=(typeof locDisplay144==='function')?String(locDisplay144(S.location)).split('—')[0].trim():S.location }catch(e){ loc=S.location }
+  var rows=folks.map(function(n){ var esc=String(n).replace(/"/g,'&quot;'); var rel=''; try{ rel=(typeof contactRel==='function')?contactRel(n):'' }catch(e){}
+   return '<div class="kv"><span><b>'+String(n).replace(/</g,'&lt;')+'</b>'+(rel?' <span class="small">• '+String(rel).replace(/</g,'&lt;')+'</span>':'')+'</span><button class="btn gold" style="width:auto;margin:0;padding:7px 13px;flex:none" data-nm="'+esc+'" onclick="openConvo(this.getAttribute(\'data-nm\'))">💬 Talk</button></div>' }).join('');
+  return '<h3>📍 In the area — '+String(loc).replace(/</g,'&lt;')+'</h3><p class="small" style="margin-top:0">Standing here with you right now. Talk to them face-to-face — the chat opens with them, same as from their roster row.</p>'+(folks.length?rows:'<p class="small">Nobody else is here right now.</p>') }catch(e){ return '<h3>📍 In the area</h3><p class="small">Nobody else is here right now.</p>' } }
+ function nearbyPass243(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||typeof curTab==='undefined'||curTab!=='life')return; var panel=document.getElementById('panel'); if(!panel)return; var ros=document.getElementById('relRoster196'); if(!ros||!ros.parentNode)return;
+  var html=nearbyHtml243(); var ex=document.getElementById('nearby243');
+  if(ex){ if(ex.getAttribute('data-h')!==html){ ex.innerHTML=html; ex.setAttribute('data-h',html) } return }
+  var d=document.createElement('div'); d.className='card'; d.id='nearby243'; d.style.borderColor='#38bdf8'; d.innerHTML=html; d.setAttribute('data-h',html);
+  ros.parentNode.insertBefore(d,ros.nextSibling) }catch(e){} }
+ ['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__nb243)return; var w=function(){ var r=fn.apply(this,arguments); try{ nearbyPass243() }catch(e){} return r }; w.__nb243=true; window[nm]=w }catch(e){} });
+ setInterval(nearbyPass243,1600);
+
+ window.__v243={version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 43: 🧠 the Living World card is findable from Home in a fresh life (every Home-family tab) • ⏱️ typed-text replies settle in seconds — typing… can never hang (brain race kept, watchdog settles) • 🔓 a completed fingerprint/face scan dismisses its sheet and lands you in the unlocked phone • 🔁 household-event sheets serve once per title per day and never re-serve after being handled • 📰 doubled headline sentences collapse to one • 🚗 world cars stay outdoors (no more cars inside interior rooms) • 💬 the hourly feedback clock is scoped per life • 📍 In the area: people present at your location listed under Relationships with a Talk button','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 44 — 🅿️ CONTEXTUAL ACTIONS PARKED • 💻 THE LAPTOP RULE • 🚪 CHANGE
+   ROOM STAYS OPEN • 👁️ PRESENCE IS TRUE (owner directives Nov 4, 7:15–7:17 AM EST). Stacks on h42/h43.
+   1) 🅿️ PARKED, NOT DELETED — the two contextual systems stop rendering in the Actions panel: the
+      "Contextual actions" card (ctxCard200, the Right here, right now system) and the "Only here" card
+      (dynCard217, per-place dynamic actions). Their injectors are stood down and the h42 sanitizer
+      deletes any copy a painter still emits. All earned state (V217.done one-time memories, ctx data)
+      stays in the save, dormant — the systems can return later without loss. Eat / Sleep / Shower /
+      Play / Bad Actions / Next Steps / store & services cards are untouched.
+   2) 💻 THE LAPTOP RULE — a computer is the player's AquaBook Laptop, a physical Bag item. Location
+      fiction is gone: no place "provides" a computer any more (the library / college / desk paths all
+      funnelled into openLaptop200, which is now gated). To use a computer: own the laptop, carry it
+      in your Bag, PLACE it where you are, USE it there (AquaOS, BookSmith — all functions unchanged),
+      and pick it back up into the Bag when you leave. Using the laptop item in the Bag opens its
+      place / use / pick-up sheet.
+   3) 🚪 CHANGE ROOM STAYS OPEN — the chooser (rooms106 / areas123) was being slammed shut right after
+      opening: stale v91 menu-context redirects (menuCtx91) and stray re-renders could re-point the
+      panel at the previous tab inside the same beat, and a same-beat dock close landed before the
+      player could choose. Opening the chooser now clears the stale context and arms a short guard:
+      for 2.5 s no renderTabs call may hijack the panel away from the chooser, and for 900 ms no
+      setDock(false) lands. Choosing a room flips curTab first (pickRoom106), so the real close on
+      arrival is never blocked.
+   4) 👁️ PRESENCE IS TRUE — room rosters (roomFolks106) and the presence list behind 📍 In the area
+      (presentPeople138) read positional records (RT86 mate/kid rooms) that never learned about work
+      or sleep, so a roster could claim "Mom is in this room" while Mom was at work or in bed. Both
+      lists now post-filter through instance truth: a person with a scene instance must be state 'in'
+      AND in this room; anyone else must be neither at work (atWork120) nor asleep somewhere else
+      (asleep119 — an asleep person counts only in the bedroom, where they actually are).
+   GAME_VERSION stays 200; SAVE_KEY untouched; silent. ================= */
+(function(){
+'use strict';
+try{
+ function V244(){ try{ if(!S)return null; if(!S.v243||typeof S.v243!=='object')S.v243={}; return S.v243 }catch(e){ return null } }
+
+ /* ---------- 1) contextual actions: parked ---------- */
+ try{ if(typeof ctxInject200==='function')ctxInject200=function(){} }catch(e){}
+ try{ if(typeof dynPass217==='function')dynPass217=function(){} }catch(e){}
+ try{ if(typeof passes217==='function'){ var _p217_244=passes217; passes217=function(){ try{ var r=_p217_244.apply(this,arguments); return r }catch(e){} } } }catch(e){}
+ setInterval(function(){ try{ if(typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return;
+  ['.ctxCard200','.dynCard217'].forEach(function(sel){ panel.querySelectorAll(sel).forEach(function(el){ var t=el.closest?el.closest('details.dd132'):null; (t||el).remove() }) });
+ }catch(e){} },600);
+
+ /* ---------- 2) the laptop rule ---------- */
+ function lapItem244(){ try{ return (S.inv||[]).find(function(it){ return /Laptop/i.test(it.name||'') })||null }catch(e){ return null } }
+ function lapRoom244(){ try{ var rm=(typeof curRoom86==='function')?curRoom86():null; return rm?rm.id:(S.room86||null) }catch(e){ return null } }
+ function lapPlaceName244(at){ try{ if(!at)return ''; var dl=''; try{ dl=(typeof locDisplay144==='function')?String(locDisplay144(at.loc)).split('—')[0].trim():at.loc }catch(e){ dl=at.loc } return dl+(at.room?(' — '+at.room):'') }catch(e){ return '' } }
+ function lapUsableHere244(){ try{ if(!lapItem244())return false; var V=V244(); var at=V?V.laptopAt:null; if(!at)return true; return at.loc===S.location&&(at.room||null)===(lapRoom244()||null) }catch(e){ return false } }
+ window.laptopSheet243=function(){ try{ if(!S)return; var it=lapItem244(); if(!it){ toast('💻 No laptop in your Bag — the computer is your AquaBook Laptop. Buy one, carry it, place it, use it.'); return }
+  var V=V244(); var at=V?V.laptopAt:null; var here=lapUsableHere244();
+  var head='<h2>💻 '+(it.name||'AquaBook Laptop')+'</h2>';
+  var body='';
+  if(!at)body='<p>Your laptop is <b>in your 🎒 Bag</b>. Computers are physical now: set it down where you are, then use it there — AquaOS, BookSmith, everything it does.</p><button class="btn gold" style="margin-top:8px" onclick="placeLaptop243()">📍 Place the laptop here</button>';
+  else if(here)body='<p>Your laptop is <b>set up here</b> ('+lapPlaceName244(at)+').</p><button class="btn gold" style="margin-top:8px" onclick="useLaptop243()">💻 Use the laptop — AquaOS</button><button class="btn outline" style="margin-top:8px" onclick="pickupLaptop243()">🎒 Pick it up into your Bag</button>';
+  else body='<p>Your laptop is <b>set up at '+lapPlaceName244(at)+'</b> — it stays where you placed it. Go there to use it or pick it up; it is not in your Bag right now.</p>';
+  openSheet(head+body+'<button class="btn outline" style="margin-top:8px" onclick="closeModal()">Close</button>') }catch(e){} };
+ window.placeLaptop243=function(){ try{ var V=V244(); if(!V)return; V.laptopAt={loc:S.location,room:lapRoom244()}; save(); log('💻 LAPTOP PLACED — your AquaBook is set up here now. Use it while you are here; pick it back up before you leave, or it stays behind.'); window.laptopSheet243() }catch(e){} };
+ window.pickupLaptop243=function(){ try{ var V=V244(); if(!V)return; V.laptopAt=null; save(); log('🎒 LAPTOP PICKED UP — back in your Bag, ready to place wherever you land next.'); toast('🎒 Laptop is in your Bag'); closeModal() }catch(e){} };
+ window.useLaptop243=function(){ try{ closeModal(); if(typeof openLaptop200==='function')openLaptop200('desk') }catch(e){} };
+ try{ if(typeof useItem==='function'){ var _ui244=useItem; useItem=function(id){ try{ var it=(S&&S.inv||[]).find(function(x){ return x.id===id }); if(it&&/Laptop/i.test(it.name||'')){ window.laptopSheet243(); return } }catch(e){} return _ui244.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof openLaptop200==='function'){ var _ol244=openLaptop200; openLaptop200=function(app){ try{ if(typeof S!=='undefined'&&S){ if(!lapItem244()){ toast('💻 No laptop — a computer here is YOUR AquaBook Laptop. Own it, carry it in your Bag, place it, then use it.'); return } if(!lapUsableHere244()){ var V=V244(); toast('💻 Your laptop is set up at '+lapPlaceName244(V?V.laptopAt:null)+' — go there to use it, or pick it up and place it here.'); return } } }catch(e){} return _ol244.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof ctxAct200==='function'){ var _ca244=ctxAct200; ctxAct200=function(k){ if(k==='computer'&&!lapUsableHere244()){ window.laptopSheet243(); return } return _ca244.apply(this,arguments) } } }catch(e){}
+
+ /* ---------- 3) the room chooser stays open ---------- */
+ var chooserUntil244=0;
+ function armChooser244(){ chooserUntil244=Date.now()+2500; try{ menuCtx91=null }catch(e){} }
+ try{ if(typeof openRoomPick106==='function'){ var _orp244=openRoomPick106; openRoomPick106=function(){ var was=(typeof curTab!=='undefined'&&curTab==='rooms106'&&typeof dockOpen!=='undefined'&&dockOpen); var r=_orp244.apply(this,arguments); if(!was)armChooser244(); return r } } }catch(e){}
+ try{ if(typeof openAreaPick123==='function'){ var _oap244=openAreaPick123; openAreaPick123=function(){ var was=(typeof curTab!=='undefined'&&curTab==='areas123'&&typeof dockOpen!=='undefined'&&dockOpen); var r=_oap244.apply(this,arguments); if(!was)armChooser244(); return r } } }catch(e){}
+ try{ if(typeof renderTabs==='function'){ var _rt244=renderTabs; renderTabs=function(active){ try{ if(Date.now()<chooserUntil244&&typeof curTab!=='undefined'&&(curTab==='rooms106'||curTab==='areas123')&&active&&active!==curTab)return; }catch(e){} return _rt244.apply(this,arguments) } } }catch(e){}
+ try{ if(typeof setDock==='function'){ var _sd244=setDock, dockArm244=0; setDock=function(open){ try{ if(open) dockArm244=Date.now(); if(!open&&Date.now()<chooserUntil244&&Date.now()-dockArm244<900&&typeof curTab!=='undefined'&&(curTab==='rooms106'||curTab==='areas123'))return; }catch(e){} return _sd244.apply(this,arguments) } } }catch(e){}
+
+ /* ---------- 4) presence is true ---------- */
+ function presentTruth244(name){ try{ if(typeof S==='undefined'||!S||!name)return false;
+  var npc=null; try{ if(typeof npcs!=='undefined'&&npcs)npc=npcs.find(function(x){ return x.name===name }) }catch(e){}
+  if(npc){ if(npc.state!=='in')return false; try{ return (typeof npcHere86!=='function')?npcHere86(npc):true }catch(e){ return true } }
+  try{ if(typeof atWork120==='function'&&atWork120(name))return false }catch(e){}
+  try{ if(typeof asleep119==='function'&&asleep119(name)){ var rm=(typeof curRoom86==='function')?curRoom86():null; return !!(rm&&/bed/i.test(rm.id)) } }catch(e){}
+  return true }catch(e){ return true } }
+ try{ if(typeof presentPeople138==='function'){ var _pp244=presentPeople138; presentPeople138=function(){ var out=_pp244.apply(this,arguments); try{ return out.filter(function(n){ return presentTruth244(n) }) }catch(e){ return out } } } }catch(e){}
+ try{ if(typeof roomFolks106==='function'){ var _rf244=roomFolks106; roomFolks106=function(rid){ var out=_rf244.apply(this,arguments); try{ return out.filter(function(n){ return presentTruth244(n) }) }catch(e){ return out } } } }catch(e){}
+
+ window.__v244={lapUsableHere244:lapUsableHere244,presentTruth244:presentTruth244,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 44: 🅿️ contextual actions PARKED (both cards stood down; earned state stays saved & dormant) • 💻 the laptop rule — the computer is your AquaBook: own it, carry it in your Bag, place it, use it there, pick it back up; no location provides a computer any more • 🚪 Change Room stays open until you choose (stale menu-context redirects cleared, a short anti-slam guard on the chooser) • 👁️ presence is true — room rosters and 📍 In the area derive from live instances, work and sleep: nobody is listed in a room they are not in','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
