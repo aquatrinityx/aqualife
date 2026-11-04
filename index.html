@@ -24602,6 +24602,417 @@ try{
 }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 41 — 📂 ACTIONS FOLD, UNIFIED ON THE BAD ACTIONS MECHANISM (owner device verdict, Nov 4 6:32 AM: "The action button is still showing everything in a list — Bad action is the only one that is drop down") =================
+   THE DIFF, BY NAME — found by reading the shipped source side by side:
+   • 😈 Bad Actions (trouble171) is emitted as a LITERAL '<details class="dd132 trouble171">' string in its
+     own source HTML. It is BORN folded, needs no painter, consults no store, and survives every
+     panel.innerHTML repaint still folded. It is the only Actions section built that way.
+   • EVERY OTHER Actions section starts life as a bare '<div class="card actCard101">' inside
+     actionsFolderHtml101(). It only becomes a dropdown if wrapDropdowns132() happens to run after the
+     most recent panel repaint — and paintActions101() / paintQCards101() reset panel.innerHTML WITHOUT
+     re-wrapping. On a lived-in save the queue/cooldown signature changes constantly, so the tick keeps
+     repainting the folder back into a flat list of bare cards under the player's thumb. wrapDropdowns132
+     also force-opens its first card (d.open=true), and four disagreeing open-state stores then fight
+     over the result: window._open135 (title-keyed), window._closed134 (inverted, title-keyed), v159's
+     title+ordinal snapshot restore, v162's content-signature map — plus the save-persisted S.v149.menus
+     store that restoreMenus149 re-reads on a 600 ms interval (h36 trapped the object, but the interval
+     and the title-keyed stores were never unified, and h36/h237's arrival-collapse laws both EXEMPT
+     actions101 outright). Fresh saves hide all of this: no queue churn, empty stores, short sessions.
+   THE UNIFICATION — every Actions section becomes a Bad Actions citizen:
+   (1) foldPass241 wraps any bare Actions card in a literal <details class="dd132"> with a <summary>
+       taken from its .acT / heading — born CLOSED, no first-card force-open — synchronously after
+       every paintActions101 / paintQCards101 / render / renderTabs, and again on a 450 ms cadence
+       while Actions is open, so an innerHTML repaint can never leave a flat list standing.
+   (2) ONE open-state store: window.__fold241.open, keyed by content signature (v162's sig162 where
+       available). The player's own toggles are recorded in a capture listener and MIRRORED into
+       v162's map so applyMenus162 never fights this pass; every legacy store is cleared for the
+       Actions panel on entry (title keys out of _open135/_closed134, v162 map reset, S.v149.menus
+       emptied) and the pass closes anything open that the player did not open this visit.
+   (3) ENTRY LAW: arriving at Actions (tab change in, or the folder opening) clears the store —
+       sections start FOLDED, each opens on tap, a closed section STAYS closed across repaints,
+       tab hops and reloads (the store is session-only; nothing is persisted to the save). */
+(function(){ 'use strict';
+try{
+ window.__fold241={open:{},entered:false,gen:0};
+ var F=window.__fold241;
+ function sigOf241(d){ try{ if(typeof sig162==='function'){ var s=sig162(d); if(s)return 'a'+s } }catch(e){}
+   try{ var parts=[]; var btns=d.querySelectorAll('button'); for(var i=0;i<btns.length&&parts.length<4;i++){ var oc=btns[i].getAttribute('onclick')||''; if(oc)parts.push(oc) } var base=parts.join('|'); if(!base)base=(d.textContent||'').replace(/[0-9]/g,'').replace(/\s+/g,' ').slice(0,90); var h=0; for(var k=0;k<base.length;k++)h=((h*31)+base.charCodeAt(k))|0; return 'a'+h }catch(e){ return null } }
+ function clearLegacy241(){ try{ if(window._open135)Object.keys(window._open135).forEach(function(k){ if(k.indexOf('actions101|')===0)delete window._open135[k] }) }catch(e){}
+   try{ if(window._closed134)Object.keys(window._closed134).forEach(function(k){ if(k.indexOf('actions101|')===0)delete window._closed134[k] }) }catch(e){}
+   try{ if(window._menu162)window._menu162.open={} }catch(e){}
+   try{ if(typeof S!=='undefined'&&S&&S.v149&&S.v149.menus&&Object.keys(S.v149.menus).length)S.v149.menus={} }catch(e){} }
+ function enterActions241(){ F.open={}; F.entered=true; F.gen++; clearLegacy241() }
+ function wrapBare241(panel){ var cards=panel.querySelectorAll('.actCard101, .actGrid101 > .card, .grid > .card');
+   Array.prototype.slice.call(cards).forEach(function(card){ try{
+     if(card.closest&&card.closest('details'))return;
+     if(card.classList.contains('ctxCard200')||card.classList.contains('dynCard217'))return;
+     if(card.closest&&card.closest('#svcSec222'))return;
+     var par=card.parentNode; if(!par)return;
+     var h=card.querySelector('.acT')||card.querySelector('h3,h2');
+     var title=h?(h.textContent||'').trim():'';
+     if(!title){ var b=card.querySelector('button'); title=b?(b.textContent||'').trim().slice(0,40):'' }
+     if(!title)title='▸ Section';
+     var d=document.createElement('details'); d.className='dd132 fold241';
+     var sm=document.createElement('summary'); sm.textContent=title;
+     par.insertBefore(d,card); d.appendChild(sm); d.appendChild(card);
+   }catch(e){} }) }
+ function foldPass241(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='actions101')return;
+   var panel=document.getElementById('panel'); if(!panel)return;
+   wrapBare241(panel);
+   Array.prototype.slice.call(panel.querySelectorAll('details.dd132')).forEach(function(d){ try{
+     var sg=sigOf241(d); if(!sg)return;
+     if(F.open[sg]){ if(!d.open)d.setAttribute('open','') }
+     else if(d.open)d.removeAttribute('open');
+   }catch(e){} });
+  }catch(e){} }
+ /* the player's own toggles are the ONLY writes to the store (mirrored into v162's map) */
+ document.addEventListener('toggle',function(e){ try{ var d=e.target; if(!d||d.tagName!=='DETAILS')return;
+   if(typeof curTab==='undefined'||curTab!=='actions101')return;
+   var panel=document.getElementById('panel'); if(!panel||!panel.contains(d))return;
+   var sg=sigOf241(d); if(!sg)return;
+   if(d.open){ F.open[sg]=1; try{ if(window._menu162)window._menu162.open[sg.replace(/^a/,'')]=1 }catch(e){} }
+   else { delete F.open[sg]; try{ if(window._menu162)delete window._menu162.open[sg.replace(/^a/,'')] }catch(e){} }
+  }catch(e){} },true);
+ /* entry detection: a real arrival at Actions resets the store, then folds */
+ var wasActions241=false;
+ function entryWatch241(){ try{ var now=(typeof curTab!=='undefined'&&curTab==='actions101'&&typeof dockOpen!=='undefined'&&dockOpen);
+   if(now&&!wasActions241)enterActions241();
+   wasActions241=!!now;
+   if(now)foldPass241();
+  }catch(e){} }
+ ['paintActions101','paintQCards101','render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__fold241)return;
+   var w=function(){ var r=fn.apply(this,arguments); try{ entryWatch241(); foldPass241(); var g=F.gen; setTimeout(function(){ if(F.gen===g)foldPass241() },90) }catch(e){} return r }; w.__fold241=true; window[nm]=w }catch(e){} });
+ setInterval(entryWatch241,450);
+ window.__v241fold={pass:foldPass241,store:F,version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 41: 📂 Actions fold unified on the Bad Actions mechanism — every section is now a literal details.dd132 born closed (bare actCards are wrapped synchronously after every repaint + on a 450 ms cadence, so the queue tick can no longer flatten the folder into a list), ONE session store keyed by content signature owns open state (player toggles only, mirrored into v162), and the legacy title stores (_open135/_closed134/S.v149.menus) are cleared for Actions on entry: sections start folded, open on tap, and stay closed','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<style id="style241">
+.talkMsgs241{display:flex;flex-direction:column;gap:7px;max-height:46vh;overflow-y:auto;padding:2px}
+.talkRow241{max-width:88%;padding:8px 11px;border-radius:13px;font-size:14px;line-height:1.45}
+.talkNpc241{align-self:flex-start;background:#1e293b;color:#e2e8f0;border:1px solid #38bdf855}
+.talkMe241{align-self:flex-end;background:#2563eb;color:#fff}
+.ambBub241{position:absolute;z-index:7;max-width:62%;background:#0f172acc;border:1.5px solid #38bdf8;border-radius:13px;padding:7px 10px;font-size:12px;line-height:1.45;color:#e0f2fe;pointer-events:none}
+.aiHubBtn241{margin-top:7px}
+</style>
+<script>
+/* ================= v200 HOTFIX 41 — 🧠 THE AI EXPANSION: ALL 16 (wave 1 approved + wave 2 "more ideas", finalized Nov 4) =================
+   Built on the shipped brain (h235/h239): POST https://aqualife-brain.aqualife.workers.dev {system,prompt} → {reply}.
+   LAWS: player-triggered calls first • generate-once-and-store (listings, place flavor, letters, day
+   stories, legacies are written ONCE into S.v241 and never regenerated) • ambient AI only near the
+   player, one call per scene, capped • every failure / timeout / offline falls back SILENTLY to
+   written lines • NO romantic content involving minors, ever — dating is adults-only and adult
+   systems never enter a minor's context • the texting laws hold everywhere: instant delivery, one
+   unanswered text per person, and the brain NEVER writes as the player (it speaks only as the
+   other person; in talk241 the player's lines are only ever what they typed).
+   ONE MEMORY: every channel — face-to-face (h235), texts (h239), free-talk phone calls, dates,
+   conferences, visits — writes the same S.chatMem[person] summary, so a person remembers you
+   across all of them (item 9). Items: 1 ambient NPC↔NPC bubbles • 2 AI texting (shipped h235/h239,
+   memory unified here) • 3 talking real estate (stored listings + haggling agent) • 4 places that
+   know themselves (staff + place flavor, once per visit-day) • 5 conferences & interviews as real
+   conversations • 6 dates with real talk (adults only) • 7 drama motives spoken aloud • 8 the
+   day's story in the Life Storybook (journal) • 9 real phone calls, one memory • 10 doctor & vet
+   in your own words • 11 living classrooms • 12 interrogations & court (adults) • 13 customers &
+   clients • 14 a living Birdy • 15 real letters • 16 legacies written at death. */
+(function(){ 'use strict';
+try{
+var BRAIN241='https://aqualife-brain.aqualife.workers.dev';
+function V241(){ if(!S)return null; if(!S.v241||typeof S.v241!=='object')S.v241={}; var V=S.v241;
+ if(!V.listings)V.listings={}; if(!V.placeDay)V.placeDay={}; if(!V.mail)V.mail=[]; if(!V.stories)V.stories={};
+ if(!V.legacies)V.legacies={}; if(!V.npcMem)V.npcMem={}; if(!V.birdy)V.birdy=[]; if(!V.biz)V.biz={};
+ if(V.callsDay!==S.day){ V.callsDay=S.day; V.calls=0 } return V }
+function ageOf241(name){ try{ if(window.__v235&&typeof window.__v235.packet==='function'){ /* reuse h235 pools via packet minor logic below */ } var pools=[]; if(typeof npcs!=='undefined'&&npcs)pools.push(npcs); if(typeof townsfolk!=='undefined'&&townsfolk)pools.push(townsfolk); for(var i=0;i<pools.length;i++){ var p=pools[i].find(function(x){ return x&&x.name===name }); if(p&&(p.age||p.age===0))return p.age } if(S.town&&S.town.people&&S.town.people[name])return S.town.people[name].age }catch(e){} return null }
+function isMinor241(name){ if(S.age<18)return true; if(name){ var a=ageOf241(name); if(a!==null&&a!==undefined&&a<18)return true } return false }
+function ctx241(extra){ var L=[]; try{
+ L.push('Player character: '+S.name+', age '+S.age+', Day '+S.day+', '+(typeof clockStr==='function'?clockStr():'')+', weather '+(S.weather||'clear')+', at '+(S.location||'home')+' in '+((typeof placeOf==='function'&&placeOf().city)||'town')+'.');
+ L.push('Money $'+S.money+', level '+S.level+', fame level '+(S.fame||0)+' ('+(S.followers||0)+' followers), wanted stars '+(S.wanted||0)+', job: '+((S.jobInfo&&S.jobInfo.title)||'none')+', grades '+(S.grades!=null?S.grades:'n/a')+'.');
+ var n=S.needs||{}; L.push('Needs — health '+Math.round(n.health||0)+', energy '+Math.round(n.energy||0)+', fun '+Math.round(n.fun||0)+', social '+Math.round(n.social||0)+'.');
+ if(S.partner)L.push('Partner: '+S.partner+'.');
+ if(S.kids&&S.kids.length)L.push('Children: '+S.kids.map(function(k){ return k.name+' ('+k.age+')' }).join(', ')+'.');
+ if(S.pets&&S.pets.length)L.push('Pets: '+S.pets.map(function(p){ return p.name+' the '+p.type }).join(', ')+'.');
+ var rec=(S.journal||[]).slice(0,4).map(function(j){ return String(j).replace(/<[^>]*>/g,'').slice(0,150) }).filter(Boolean);
+ if(rec.length)L.push('Recent life events (newest first): '+rec.join(' | '));
+ }catch(e){}
+ if(extra)L.push(extra);
+ return L.join('\n') }
+function mem241(who,summary,tone){ try{ if(!who||!summary)return; if(!S.chatMem)S.chatMem={}; var m=S.chatMem[who]=S.chatMem[who]||{};
+ m.aiSummary=String(summary).slice(0,180); m.aiTone=tone||m.aiTone||'neutral'; m.aiDay=S.day; m.aiCount=(m.aiCount||0)+1;
+ m.lastTone=(tone==='warm'||tone==='funny')?tone:(tone==='tense'||tone==='cold')?'distant':(m.lastTone||'neutral'); save() }catch(e){} }
+var brainBusy241=false;
+function brain241(system,prompt,ms,cb){ var V; try{ V=V241(); if(!V||V.calls>=40){ cb(null); return } }catch(e){ cb(null); return }
+ if(brainBusy241){ cb(null); return } brainBusy241=true; V.calls++;
+ var done=false; function fin(t){ if(done)return; done=true; brainBusy241=false; try{ cb(t) }catch(e){} }
+ var ctrl=(typeof AbortController!=='undefined')?new AbortController():null;
+ var to=setTimeout(function(){ try{ if(ctrl)ctrl.abort() }catch(e){} fin(null) },ms||9000);
+ try{ fetch(BRAIN241,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:system,prompt:prompt}),signal:ctrl?ctrl.signal:undefined})
+  .then(function(r){ if(!r.ok)throw new Error('brain '+r.status); return r.json() })
+  .then(function(j){ clearTimeout(to); fin(j&&typeof j.reply==='string'?j.reply:null) })
+  .catch(function(){ clearTimeout(to); fin(null) }) }catch(e){ clearTimeout(to); fin(null) } }
+function sys241(role,who,extra){ var minor=isMinor241(who);
+ var p='You are '+role+' in a life-sim game, speaking ONLY as yourself, in first person, naturally and specifically — use the facts given, never generic filler. Keep each reply short (1-3 sentences). Never write lines for the player. Never break character or mention being an AI.\nAt the very end of your reply, on its own line, add: SUMMARY: <one line, third person, what was discussed/decided>\nThen: TONE: <one word: warm, funny, neutral, tense, cold>';
+ if(extra)p+='\n'+extra;
+ if(minor)p+='\nKID SAFETY — STRICT: a minor is involved. Age-appropriate everyday topics ONLY: school, family, friends, games, food, pets, hobbies, plans. Absolutely NO romantic, dating, flirting, alcohol, drug, crime, violence or adult content.';
+ return p }
+function esc241(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;') }
+
+/* ---------- the generic real-conversation sheet (calls, dates, visits, interviews…) ---------- */
+window._talk241=null;
+function talkOpen241(cfg){ window._talk241={cfg:cfg,hist:[],marks:{},busy:false,ended:false};
+ var body='<h2>'+cfg.title+'</h2>'+(cfg.intro?'<p style="font-size:13.5px;line-height:1.5">'+cfg.intro+'</p>':'')
+ +'<div class="talkMsgs241" id="talkMsgs241"></div>'
+ +'<div style="display:flex;gap:6px;margin-top:9px"><input id="talkIn241" type="text" maxlength="300" placeholder="Say it in your own words…" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ffffff33;background:#00000030;font-size:16px"><button class="btn gold" style="width:auto;margin:0;padding:10px 14px" onclick="talkSend241()">Say it</button></div>'
+ +'<button class="btn outline" style="margin-top:8px" onclick="talkEnd241()">👋 Wrap up</button>';
+ openSheet(body);
+ var inp=document.getElementById('talkIn241'); if(inp)inp.addEventListener('keydown',function(ev){ if(ev.key==='Enter'){ ev.preventDefault(); talkSend241() } });
+ if(cfg.openLine){ var T=window._talk241; T.busy=true; paintTalk241();
+  brain241(cfg.system,ctx241(cfg.context||'')+'\nOpen the conversation now, as '+cfg.who+', with one natural opening line'+(cfg.openAsk?(': '+cfg.openAsk):'')+'.',9000,function(rep){ T.busy=false; var c=cleanReply241(rep); if(c)T.hist.push({who:cfg.who,text:c.text}); else if(cfg.openFallback)T.hist.push({who:cfg.who,text:cfg.openFallback}); paintTalk241() }) }
+ else if(cfg.openFallback){ window._talk241.hist.push({who:cfg.who,text:cfg.openFallback}); paintTalk241() } }
+function cleanReply241(rep){ if(!rep)return null; var marks={},lines=[];
+ rep.split(/\r?\n/).forEach(function(ln){ ln=ln.trim(); if(!ln)return;
+  var m=ln.match(/^(SUMMARY|TONE|SCORE|VERDICT|DEAL|PLAN):\s*(.+)$/i); if(m){ marks[m[1].toUpperCase()]=m[2].trim(); return }
+  lines.push(ln.replace(/^[^:]{1,40}:\s*/,'').replace(/^["“]|["”]$/g,'')) });
+ var T=window._talk241; if(T)Object.keys(marks).forEach(function(k){ T.marks[k]=marks[k] });
+ var text=lines.join(' ').slice(0,420); return text?{text:text,marks:marks}:null }
+function paintTalk241(){ var T=window._talk241; var box=document.getElementById('talkMsgs241'); if(!T||!box)return;
+ box.innerHTML=T.hist.map(function(h){ var me=h.who==='You'; return '<div class="talkRow241 '+(me?'talkMe241':'talkNpc241')+'"><b>'+(me?'You':esc241(h.who))+':</b> '+esc241(h.text)+'</div>' }).join('')+(T.busy?'<div class="talkRow241 talkNpc241"><i>…thinking</i></div>':'');
+ box.scrollTop=box.scrollHeight }
+window.talkSend241=function(){ var T=window._talk241; if(!T||T.busy||T.ended)return; var inp=document.getElementById('talkIn241'); var txt=inp?inp.value.trim():''; if(!txt)return; inp.value='';
+ T.hist.push({who:'You',text:txt}); T.busy=true; paintTalk241();
+ var transcript=T.hist.map(function(h){ return (h.who==='You'?S.name+' (the player)':h.who)+': '+h.text }).join('\n');
+ brain241(T.cfg.system,ctx241(T.cfg.context||'')+'\nConversation so far:\n'+transcript+'\nReply now as '+T.cfg.who+', answering what '+S.name+' just said.',10000,function(rep){ T.busy=false; var c=cleanReply241(rep);
+  if(c)T.hist.push({who:T.cfg.who,text:c.text});
+  else if(T.cfg.fallback)T.hist.push({who:T.cfg.who,text:T.cfg.fallback(txt)});
+  paintTalk241() }) };
+window.talkEnd241=function(){ var T=window._talk241; if(!T||T.ended)return; T.ended=true; var cfg=T.cfg;
+ try{ if(cfg.memWho!==null)mem241(cfg.memWho||cfg.who,T.marks.SUMMARY||(T.hist.length?T.hist[T.hist.length-1].text:''),T.marks.TONE) }catch(e){}
+ try{ if(typeof cfg.onEnd==='function')cfg.onEnd(T.marks,T.hist) }catch(e){}
+ try{ save() }catch(e){}
+ if(!cfg.stayOpen)closeModal(); if(typeof render==='function')render() };
+
+/* ---------- the 🧠 Living World hub (home tab card + sheet) ---------- */
+function hubBtn241(label,fn,dis){ return '<button class="btn '+(dis?'outline':'gold')+' aiHubBtn241" style="width:100%" onclick="'+fn+'"'+(dis?' disabled style="width:100%;opacity:.5"':'')+'>'+label+'</button>' }
+function hubHtml241(){ var adult=S.age>=18; var partner=adult&&S.partner&&!isMinor241(S.partner);
+ var h='<h2>🧠 Living World — real conversations</h2><p style="font-size:13.5px;line-height:1.55">People here really talk: they remember you across chats, calls and visits, and answer what YOU actually say. Type your own words — nobody speaks for you.</p>';
+ h+=hubBtn241('📞 Free-talk call — pick a person','aiCalls241()');
+ if(partner)h+=hubBtn241('💕 A real date with '+esc241(S.partner),'aiDate241()');
+ h+=hubBtn241('🏫 Parent-teacher conference','aiConference241()');
+ h+=hubBtn241('💼 Job interview — judged on your answers','aiInterviewPick241()');
+ h+=hubBtn241('🩺 Doctor — describe symptoms in your words','aiDoctor241()');
+ if(S.pets&&S.pets.length)h+=hubBtn241('🐾 Vet — for '+esc241(S.pets[0].name),'aiVet241()');
+ if((S.age>=5&&S.age<18)||(S.kids&&S.kids.length))h+=hubBtn241('🎒 Classroom — today\u2019s lesson & homework help','aiClass241()');
+ if(adult)h+=hubBtn241('🚔 Interrogation & court','aiCourt241()',!((S.wanted||0)>0||S.record));
+ h+=hubBtn241('🏠 Homes that talk — listings & the agent','aiEstate241()');
+ h+=hubBtn241('🧾 Customers & clients','aiBiz241()');
+ h+=hubBtn241('🐦 Birdy — the town, posting','aiBirdy241()');
+ h+=hubBtn241('✉️ Your mail ('+((V241()||{}).mail||[]).filter(function(m){ return !m.read }).length+' unread)','aiMail241()');
+ h+=hubBtn241('📖 Life Storybook — your days, written','aiStorybook241()');
+ return h }
+window.aiHub241=function(){ openSheet(hubHtml241()) };
+function hubPass241(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='home')return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.aiHubCard241'))return;
+ var grid=panel.querySelector('.grid')||panel; var d=document.createElement('div'); d.className='card aiHubCard241'; d.style.borderColor='#38bdf8';
+ d.innerHTML='<h3>🧠 Living World</h3><p>Real conversations with real memory — calls, dates, doctors, teachers, agents, customers — plus a town that posts, writes letters, and tells your story back to you.</p><button class="btn gold" style="width:100%" onclick="aiHub241()">🧠 Open the Living World</button>';
+ grid.insertBefore(d,grid.firstChild) }catch(e){} }
+['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__hub241)return; var w=function(){ var r=fn.apply(this,arguments); try{ hubPass241() }catch(e){} return r }; w.__hub241=true; window[nm]=w }catch(e){} });
+setInterval(hubPass241,1600);
+
+/* ---------- 9) real phone calls — free talk, ONE memory with texts & face-to-face ---------- */
+window.aiCalls241=function(){ var names=Object.keys(S.contacts||{}).filter(function(n){ return n!=='School'&&n!=='FBI' });
+ if(!names.length){ openSheet('<h2>📞 Calls</h2><p>No numbers yet — meet people and swap numbers first.</p><button class="btn gold" onclick="aiHub241()">‹ Living World</button>'); return }
+ openSheet('<h2>📞 Who are you calling?</h2>'+names.map(function(n){ return '<button class="btn outline" style="width:100%;margin-top:7px;color:#fff;border-color:#ffffff66" onclick="aiCallGo241(\''+n.replace(/'/g,"\\'")+'\')">📞 '+esc241(n)+' — '+esc241(typeof contactRel==='function'?contactRel(n):'')+'</button>' }).join('')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
+window.aiCallGo241=function(who){ var mem=(S.chatMem&&S.chatMem[who])||{};
+ talkOpen241({title:'📞 On the phone with '+who,who:who,memWho:who,openLine:true,
+  system:sys241('a person on a real phone call with '+S.name,who),
+  context:'This is a PHONE CALL (voice, not text). '+(mem.aiSummary?('You two last talked about: "'+mem.aiSummary+'" — this is the SAME relationship and memory as your texts and face-to-face chats; continue from it, do not restart.'):'First real call between you two.'),
+  openAsk:'greet them like a real call starting', openFallback:'Hey! Good to hear your actual voice for once — what\u2019s up?',
+  fallback:function(){ return 'Sorry, say that again? You\u2019re breaking up a little — no wait, I heard you. Go on.' },
+  onEnd:function(marks){ try{ log('📞 You and '+who+' had a real call — '+(marks.SUMMARY||'you talked.')) }catch(e){} } }) };
+try{ var _dct241=doCallThread; doCallThread=function(who){ try{ if(who==='School'||who==='FBI')return _dct241.apply(this,arguments);
+  openSheet('<h2>📞 Call '+esc241(who)+'</h2><button class="btn gold" style="width:100%" onclick="closeModal();aiCallGo241(\''+who.replace(/'/g,"\\'")+'\')">🧠 Just talk — a real conversation</button><button class="btn outline" style="width:100%;margin-top:8px;color:#fff;border-color:#ffffff66" onclick="closeModal();window.__classicCall241(\''+who.replace(/'/g,"\\'")+'\')">📞 Quick call (the classic ask)</button>');
+  window.__classicCall241=function(w){ return _dct241(w) }; return }catch(e){ return _dct241.apply(this,arguments) } } }catch(e){}
+
+/* ---------- 6) dates with real talk (ADULTS ONLY) ---------- */
+window.aiDate241=function(){ if(S.age<18||!S.partner||isMinor241(S.partner)){ toast('💕 Dates are for adults in a relationship'); return }
+ var who=S.partner; var r=(typeof romOf==='function')?romOf(who):null; var fameLine=(S.fame||0)>=3?' People in town know your name — fame has a voice on this date: it can come up, honestly.':'';
+ talkOpen241({title:'💕 A date with '+who,who:who,memWho:who,openLine:true,
+  system:sys241(S.name+'\u2019s romantic partner on a real date — warm, present, honest; you remember your history together',who,'Romance is between two consenting ADULTS here.'),
+  context:'You are on a date together right now.'+(r?(' Closeness meter: '+r.meter+'/100, stage '+r.stage+'.'):'')+fameLine+' Dates remember: whatever is said here goes into the same memory as your texts and calls.',
+  openAsk:'open the date like it just started, in the moment', openFallback:'There you are. I\u2019ve been looking forward to this all day — sit, tell me everything.',
+  fallback:function(){ return 'Ha — okay, you have my full attention. Keep going.' },
+  onEnd:function(marks){ try{ var rr=romOf(who); if(rr){ var d=(marks.TONE==='warm'||marks.TONE==='funny')?6:(marks.TONE==='tense'||marks.TONE==='cold')?-4:2; rr.meter=Math.max(0,Math.min(100,rr.meter+d)); rr.lastTouch=S.day } adj('social',5); adj('fun',6); log('💕 A real date with '+who+' — '+(marks.SUMMARY||'you talked, really talked.')) }catch(e){} } }) };
+
+/* ---------- 5a) parent-teacher conference ---------- */
+window.aiConference241=function(){ var kid=(S.kids&&S.kids.length)?S.kids[0]:null; var aboutSelf=!kid&&S.age>=5&&S.age<18;
+ if(!kid&&!aboutSelf){ openSheet('<h2>🏫 Conference</h2><p>Conferences happen for a student in your life — you at school age, or your kids once they\u2019re in school.</p><button class="btn gold" onclick="aiHub241()">‹ Living World</button>'); return }
+ var who=aboutSelf?'Your teacher':'Ms. Alvarez (teacher)';
+ var facts=aboutSelf?('The student is '+S.name+', age '+S.age+', grades '+S.grades+'%.'):('The student is '+kid.name+', age '+kid.age+', happiness '+Math.round(kid.happy!=null?kid.happy:70)+'%. The parent across from you is '+S.name+'. Household grades snapshot: '+S.grades+'%.');
+ talkOpen241({title:'🏫 Parent-teacher conference',who:who,memWho:null,openLine:true,
+  system:sys241('a school teacher in a parent-teacher conference — specific, honest, kind, concrete about THIS student\u2019s real record',null),
+  context:facts+' Base every claim on these facts and the recent events given. If asked something the facts don\u2019t cover, say what you\u2019d check.',
+  openAsk:'open with the headline on this student — one strength, one thing to work on', openFallback:'Thanks for coming in. Let\u2019s talk about how the year is really going — the good first, then the work.',
+  fallback:function(){ return 'That\u2019s a fair question — here\u2019s what I\u2019m seeing in class, concretely.' },
+  onEnd:function(marks){ try{ log('🏫 Parent-teacher conference — '+(marks.SUMMARY||'you talked through the report.')) }catch(e){} } }) };
+
+/* ---------- 5b) job interviews, judged on typed answers ---------- */
+window.aiInterviewPick241=function(){ var jobs=['💻 Junior Developer','☕ Barista','🛍️ Retail Associate','🏠 Real Estate Agent','🩺 Nurse Assistant','🔌 Electrician'];
+ openSheet('<h2>💼 Interview for which job?</h2><p style="font-size:13px">You answer in your own words. The interviewer judges the answers themselves — preparation and honesty land; bluffing shows.</p>'+jobs.map(function(j){ return '<button class="btn outline" style="width:100%;margin-top:7px;color:#fff;border-color:#ffffff66" onclick="aiInterview241(\''+j.replace(/'/g,"\\'")+'\')">'+j+'</button>' }).join('')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
+window.aiInterview241=function(job){ talkOpen241({title:'💼 Interview — '+job,who:'The interviewer',memWho:null,openLine:true,
+ system:sys241('a hiring manager interviewing '+S.name+' for '+job+' — ask real questions one at a time, react to the ACTUAL answers, and judge them',null,'After at least two answers from the player, when wrapping up or when you have heard enough, you may add a line: SCORE: <0-100, how this candidate did>. Be fair and specific.'),
+ context:'The role is '+job+'. '+(S.jobInfo?('The candidate currently works as '+S.jobInfo.title+'.'):'The candidate is not currently employed.')+' Skills on record: '+JSON.stringify(S.skills||{})+'.',
+ openAsk:'greet them and ask your first real interview question', openFallback:'Thanks for coming in. Let\u2019s skip the script — tell me why this job, and why you.',
+ fallback:function(){ return 'Mm. Give me a concrete example — something that actually happened.' },
+ onEnd:function(marks){ try{ var sc=parseInt(marks.SCORE,10); if(!isNaN(sc)){ if(sc>=60){ addXp(10,'social'); log('💼 Interview for '+job+' — you scored '+sc+'/100. They were impressed by your actual answers — doors open from days like this.') } else log('💼 Interview for '+job+' — '+sc+'/100. Not this time; the feedback was specific, and specific can be fixed.') } else log('💼 Interview for '+job+' — done. No score was given.') }catch(e){} } }) };
+
+/* ---------- 10) doctor & vet, in your own words ---------- */
+window.aiDoctor241=function(){ var hosp=null; try{ hosp=(typeof ensure199==='function')?ensure199().hosp:null }catch(e){}
+ talkOpen241({title:'🩺 At the doctor',who:'Dr. Patel',memWho:null,openLine:true,
+  system:sys241('a doctor seeing a patient — listen to the symptoms THEY describe, ask one good follow-up, then diagnose from the patient\u2019s REAL condition in the facts, never inventing a different body',null,'When you are ready to state the care plan, add a line: PLAN: <the plan in a few words>.'),
+  context:'Patient facts — health need at '+Math.round((S.needs&&S.needs.health)||0)+'%. '+(hosp?('There is a hospital stay on record: '+hosp.who+', bill $'+hosp.cost+'.'):'')+' The diagnosis must tie to these facts and what the patient describes.',
+  openAsk:'greet the patient and ask what brings them in', openFallback:'Come in, sit down. Tell me what\u2019s been going on — in your own words, start wherever it started.',
+  fallback:function(){ return 'Okay — and when did that start? Walk me through it.' },
+  onEnd:function(marks){ try{ if(marks.PLAN){ adj('health',6); log('🩺 Doctor visit — plan: '+marks.PLAN+'. Health tended (+6).') } else log('🩺 Doctor visit — '+(marks.SUMMARY||'you were seen.')) }catch(e){} } }) };
+window.aiVet241=function(){ var pet=(S.pets&&S.pets[0]); if(!pet){ toast('🐾 No pet to bring in'); return }
+ talkOpen241({title:'🐾 Vet visit — '+pet.name,who:'The vet',memWho:null,openLine:true,
+  system:sys241('a veterinarian — the owner describes what they\u2019ve noticed; you examine and answer about THIS animal',null,'When you are ready to state the care plan, add a line: PLAN: <the plan in a few words>.'),
+  context:'The pet: '+pet.name+', a '+(pet.type||'pet')+'. '+(pet.care47!=null?('Last full care day left them at '+pet.care47+'%.'):'')+' The owner, '+S.name+', brought them in.',
+  openAsk:'greet them and ask what they\u2019ve noticed about '+pet.name, openFallback:'Hey there — and hello, '+pet.name+'. What have you been noticing?',
+  fallback:function(){ return 'Let me take a look… and how long has that been going on?' },
+  onEnd:function(marks){ try{ if(marks.PLAN){ if(pet)pet.care47=100; adj('fun',3); log('🐾 Vet visit for '+pet.name+' — plan: '+marks.PLAN+'.') } else log('🐾 Vet visit for '+pet.name+' — '+(marks.SUMMARY||'checked over.')) }catch(e){} } }) };
+
+/* ---------- 11) living classrooms ---------- */
+window.aiClass241=function(){ var who='Your teacher';
+ talkOpen241({title:'🎒 Classroom — live lesson',who:who,memWho:null,openLine:true,
+  system:sys241('a real classroom teacher teaching '+S.name+' (age '+S.age+') — teach an actual tiny lesson at their level, ask real questions, and help with homework like it matters',null),
+  context:'Student: '+S.name+', age '+S.age+', grades '+S.grades+'%. Teach something real and age-appropriate in small steps; when they answer, respond to THEIR answer. Classmates may chime in briefly through you ("— from the back row:") at most once.',
+  openAsk:'start today\u2019s mini-lesson with the first idea and one question for the student', openFallback:'Alright, eyes up — today\u2019s lesson is short and it\u2019s a good one. First question\u2019s yours.',
+  fallback:function(){ return 'Good — say more. What makes you think that?' },
+  onEnd:function(marks){ try{ addXp(6,'study'); log('🎒 Classroom — '+(marks.SUMMARY||'a real lesson, with real questions.')) }catch(e){} } }) };
+
+/* ---------- 12) interrogations & court (adults' crime world only) ---------- */
+window.aiCourt241=function(){ if(S.age<18){ toast('🚔 Adults only'); return }
+ talkOpen241({title:'🚔 Interrogation & court',who:'Officer Reyes',memWho:null,openLine:true,
+  system:sys241('a police officer questioning a suspect, then a court that hears actual statements — procedural, specific to the record, never cartoonish',null,'When the matter is decided, add a line: VERDICT: clear — or — VERDICT: fine <amount>. Base it on the record and how the questioning actually went.'),
+  context:'The record: wanted stars '+(S.wanted||0)+', record "'+(S.record||'clean')+'". Recent events (which include anything the law would know): see above. The suspect is '+S.name+', an adult. Everything they say here is a real statement with real consequences.',
+  openAsk:'open the questioning on the most recent thing on the record', openFallback:'Sit down. You know why you\u2019re here — let\u2019s start with the most recent thing on your record.',
+  fallback:function(){ return 'That\u2019s a statement. It goes in the file exactly like that. Continue.' },
+  onEnd:function(marks){ try{ var v=String(marks.VERDICT||''); if(/clear/i.test(v)){ if((S.wanted||0)>0)S.wanted=Math.max(0,S.wanted-1); log('⚖️ Court heard you out — VERDICT: clear. One star comes off the record.') } else { var f=v.match(/fine\s*\$?(\d+)/i); if(f){ var amt=Math.min(S.money,parseInt(f[1],10)||0); if(amt>0)money(-amt,'⚖️ Court fine'); log('⚖️ VERDICT: fine $'+amt+' — paid. The statement you made is the one on file.') } else log('🚔 Interrogation — '+(marks.SUMMARY||'questioning ended without a verdict.')) } }catch(e){} } }) };
+
+/* ---------- 3) real estate that talks — stored listings, a haggling agent ---------- */
+var PROPS241=[{id:'maple',name:'🏠 Maple Walk Cottage',facts:'2 bed, 1 bath, small garden, quiet street near the park',price:14000},{id:'riverside',name:'🏡 Riverside Family House',facts:'3 bed, 2 bath, big kitchen, river path at the end of the road',price:26000},{id:'downtown',name:'🏙️ Downtown Sky Flat',facts:'1 bed, high floor, skyline view, doorman building, loud on weekends',price:32000},{id:'hillcrest',name:'🏰 Hillcrest Grand House',facts:'5 bed, 3 bath, double garage, the hill everyone knows',price:58000}];
+window.aiEstate241=function(){ var V=V241(); var h='<h2>🏠 Homes that talk</h2><p style="font-size:13px">Every listing below was written once, from the property\u2019s real facts, and is kept — it never changes under you. The agent is a person: ask anything, haggle in your own words.</p>';
+ PROPS241.forEach(function(p){ var L=V.listings[p.id]; h+='<div class="card" style="margin-top:9px"><h3>'+p.name+'</h3><p class="small">'+p.facts+' • <b>$'+p.price+'</b></p><p style="font-size:13.5px;line-height:1.5">'+(L?esc241(L.blurb):'<i>✍️ Writing this listing…</i>')+'</p>'+(V.home===p.id?'<p><b>🏠 You own this home.</b></p>':'<button class="btn gold" style="width:100%" onclick="aiAgent241(\''+p.id+'\')">💬 Talk to the agent — ask & haggle</button><button class="btn outline" style="width:100%;margin-top:7px;color:#fff;border-color:#ffffff66" onclick="aiBuy241(\''+p.id+'\','+p.price+')">🏠 Buy at asking — $'+p.price+'</button>')+'</div>' });
+ openSheet(h);
+ PROPS241.forEach(function(p){ if(V.listings[p.id])return; V.listings[p.id]={blurb:'',price:p.price};
+  brain241('You write real-estate listings. One short, vivid paragraph (2-3 sentences) from the facts given — specific, honest, no hype words like "stunning" more than once. No summary lines, just the paragraph.',ctx241('Write the listing for: '+p.name+' — '+p.facts+', priced $'+p.price+'.'),9000,function(rep){ var V2=V241(); if(rep)V2.listings[p.id].blurb=rep.replace(/\s+/g,' ').slice(0,340); else V2.listings[p.id].blurb='A real home with real bones: '+p.facts+'. Priced at $'+p.price+' — come and stand in it before you judge it.'; try{ save(); var sh=document.getElementById('sheet'); if(sh&&sh.innerHTML.indexOf('Homes that talk')>=0)aiEstate241() }catch(e){} }) }) };
+window.aiBuy241=function(id,price){ var V=V241(); var p=PROPS241.find(function(x){ return x.id===id }); if(!p)return; if(S.money<price){ toast('🏠 Need $'+price+' — you have $'+S.money); return }
+ money(-price,'🏠 Bought '+p.name); V.home=id; log('🏠 You bought '+p.name+' for $'+price+'. The deed is yours — it\u2019s written into your story.'); try{ save() }catch(e){} aiEstate241() };
+window.aiAgent241=function(id){ var p=PROPS241.find(function(x){ return x.id===id }); if(!p)return; var V=V241(); var L=V.listings[id];
+ talkOpen241({title:'💬 The agent — '+p.name,who:'Dana (agent)',memWho:null,openLine:true,
+  system:sys241('a real-estate agent selling one specific home — you know its facts cold, you answer real questions, and you CAN be haggled with if the buyer argues well',null,'If — and only if — the buyer makes a genuinely good case, you may accept by adding a line: DEAL: <price, at most 15% under asking>. Never accept a lowball with no argument.'),
+  context:'The property: '+p.name+' — '+p.facts+', asking $'+p.price+'. Listing text: '+((L&&L.blurb)||'(being written)')+'. The buyer is '+S.name+' with $'+S.money+'.',
+  openAsk:'welcome them to the viewing and name one true thing about this home', openFallback:'Welcome in! Mind the step — now, this place\u2019s best trick is what you see from the kitchen window. Questions?',
+  fallback:function(){ return 'Fair question — here\u2019s the honest answer, not the brochure one.' },
+  onEnd:function(marks){ try{ var d=parseInt(String(marks.DEAL||'').replace(/[^0-9]/g,''),10); if(d&&d<p.price&&d>=Math.round(p.price*0.8)){ openSheet('<h2>🤝 Deal struck — '+p.name+'</h2><p>Dana accepted <b>$'+d+'</b> (asking $'+p.price+'). That price exists because of what YOU said in there.</p><button class="btn gold" onclick="aiBuy241(\''+p.id+'\','+d+')">🏠 Buy it at $'+d+'</button><button class="btn outline" style="margin-top:8px;color:#fff;border-color:#ffffff66" onclick="aiEstate241()">‹ Back to listings</button>'); return } log('🏠 You talked with the agent about '+p.name+' — '+(marks.SUMMARY||'no deal this time.')) }catch(e){} } }) };
+
+/* ---------- 4) places that know themselves — staff + flavor, once per visit-day ---------- */
+var STAFF241=[['librar','📚 the librarian'],['diner','🍳 the diner cook'],['cafe','☕ the barista'],['coffee','☕ the barista'],['gym','🏋️ the trainer'],['park','🌳 the park keeper'],['school','🏫 a teacher on duty'],['hospital','🩺 the nurse on duty'],['vet','🐾 the vet tech'],['shop','🛍️ the shopkeeper'],['store','🛍️ the shopkeeper'],['mart','🛒 the cashier'],['arcade','🕹️ the arcade attendant'],['cinema','🎬 the usher'],['movie','🎬 the usher'],['beach','🏖️ the lifeguard'],['barber','💈 the barber'],['salon','💇 the stylist']];
+function staffFor241(loc){ var l=String(loc||'').toLowerCase(); for(var i=0;i<STAFF241.length;i++)if(l.indexOf(STAFF241[i][0])>=0)return STAFF241[i][1]; return 'someone who works here' }
+try{ var _gl241=goLoc; goLoc=function(id){ var r=_gl241.apply(this,arguments); try{ if(!S||!id)return r; var V=V241(); var key=id+'|'+S.day; if(V.placeDay[key])return r; V.placeDay[key]='…'; try{ save() }catch(e){}
+  brain241(sys241(staffFor241(id)+' at this place, greeting a regular in ONE short line that reacts to the weather, the time, the recent town events, or who is around — in character',null),ctx241('Write ONLY the greeting line, nothing else.'),8000,function(rep){ var V2=V241(); var line=rep?rep.split(/\r?\n/)[0].replace(/^(SUMMARY|TONE):.*$/i,'').trim().slice(0,180):''; if(!line)line=''; V2.placeDay[key]=line; try{ save() }catch(e){}
+   if(line){ try{ toast(line) }catch(e){} try{ log('📍 '+line) }catch(e){} } });
+ }catch(e){} return r } }catch(e){}
+
+/* ---------- 1) ambient NPC↔NPC chat bubbles — near the player, one call per scene ---------- */
+var ambLast241=0;
+function ambient241(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var m=document.getElementById('modal'); if(m&&m.classList.contains('open'))return;
+ if(Date.now()-ambLast241<80000)return; var V=V241(); var sceneKey=(S.location||'home')+'|'+S.day+'|'+Math.floor((S.hour||8)/3); if(V.ambScene===sceneKey)return;
+ var names=Object.keys(S.contacts||{}).filter(function(n){ return n!=='School'&&n!=='FBI'&&n!=='Family' }); if(names.length<2)return;
+ if(Math.random()>0.5)return; V.ambScene=sceneKey; ambLast241=Date.now();
+ var a=names[Math.floor(Math.random()*names.length)], b=names[Math.floor(Math.random()*names.length)]; if(a===b)return;
+ var pairKey=[a,b].sort().join('|'); var pm=V.npcMem[pairKey]||'';
+ var minor=isMinor241(a)||isMinor241(b);
+ var sys='You write a tiny overheard conversation between two townsfolk in a life-sim. 2-3 short lines, alternating, each starting with the speaker\u2019s first name and a colon. They talk about REAL recent events from the facts — a fight, a parade, who is dating whom, the weather turning. Specific, never generic. Then a line: SUMMARY: <one line>'+(minor?'\nKID SAFETY — STRICT: a minor is involved; everyday topics only, nothing romantic or adult.':'');
+ brain241(sys,ctx241('The two people: '+a+' and '+b+', both near '+S.name+' at '+(S.location||'home')+'. '+(pm?('Their last overheard chat was about: "'+pm+'" — do NOT repeat it; move their story on.'):'They have not been overheard talking before.')),9000,function(rep){ if(!rep)return; var lines=[],summary='';
+  rep.split(/\r?\n/).forEach(function(ln){ ln=ln.trim(); if(!ln)return; var sm=ln.match(/^SUMMARY:\s*(.+)$/i); if(sm){ summary=sm[1]; return } var mm=ln.match(/^([^:]{1,30}):\s*(.+)$/); if(mm)lines.push('<b>'+esc241(mm[1].trim())+':</b> '+esc241(mm[2].trim().slice(0,140))) });
+  if(!lines.length)return; var V2=V241(); if(summary)V2.npcMem[pairKey]=summary.slice(0,160); try{ save() }catch(e){}
+  var wrap=document.querySelector('.roomWrap'); if(!wrap)return; var old=document.getElementById('ambBub241'); if(old)old.remove();
+  var d=document.createElement('div'); d.className='ambBub241'; d.id='ambBub241'; d.style.cssText+=';right:10px;top:44px'; d.innerHTML=lines.slice(0,3).join('<br>'); wrap.appendChild(d);
+  setTimeout(function(){ try{ d.remove() }catch(e){} },7000) });
+ }catch(e){} }
+setInterval(ambient241,20000);
+
+/* ---------- 7) drama motives, spoken aloud ---------- */
+function dramaWhy241(){ try{ if(!S||!S.v114||!S.v114.drama||!S.v114.drama.arc)return; var arc=S.v114.drama.arc; var V=V241(); var key='why|'+S.day+'|'+(arc.who||''); if(V.stories[key])return; V.stories[key]='…';
+ var facts='The drama: '+JSON.stringify(arc).slice(0,400);
+ brain241('You voice the WHY behind a street drama in a life-sim: one or two sentences, first person plural or as the people involved would say it — the real motive, from the real causes given. No summary lines.',ctx241(facts),8000,function(rep){ var line=rep?rep.replace(/\s+/g,' ').replace(/^(SUMMARY|TONE):.*$/,'').trim().slice(0,220):''; var V2=V241(); V2.stories[key]=line; try{ save() }catch(e){}
+  if(line){ try{ log('🗣️ Why it happened — '+line) }catch(e){} try{ toast('🗣️ '+line) }catch(e){} } });
+ }catch(e){} }
+['dramaPresent199','dramaAbsent199'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__why241)return; var w=function(){ var r=fn.apply(this,arguments); setTimeout(dramaWhy241,600); return r }; w.__why241=true; window[nm]=w }catch(e){} });
+
+/* ---------- 13) customers & clients ---------- */
+window.aiBiz241=function(){ var V=V241(); var job=(S.jobInfo&&S.jobInfo.title)||'your side work'; var key=S.day+'';
+ if(!V.biz[key]){ V.biz[key]={from:'A customer',text:'',done:false};
+  brain241('You are a customer/client messaging a small worker in a life-sim. Write ONE short message — praise, a complaint, or a negotiation — based on what their work REALLY did lately (use the recent events). Then a line: SUMMARY: <one line>. No other format.',ctx241('Their work: '+job+'. Write the customer message now.'),8000,function(rep){ var V2=V241(); var msg='',sum=''; if(rep)rep.split(/\r?\n/).forEach(function(ln){ ln=ln.trim(); if(!ln)return; var sm=ln.match(/^SUMMARY:\s*(.+)$/i); if(sm){ sum=sm[1]; return } if(!msg)msg=ln.replace(/^[^:]{1,30}:\s*/,'') });
+   if(!msg)msg='Hi — heard good things about your work. Can we talk about a job this week?';
+   V2.biz[key]={from:'A customer of '+(job||'your work'),text:msg,sum:sum,done:false}; try{ save(); var sh=document.getElementById('sheet'); if(sh&&sh.innerHTML.indexOf('Customers')>=0)aiBiz241() }catch(e){} }) }
+ var B=V.biz[key];
+ openSheet('<h2>🧾 Customers & clients</h2>'+(B&&B.text?'<div class="card"><h3>'+esc241(B.from)+'</h3><p style="font-size:14px;line-height:1.55">“'+esc241(B.text)+'”</p>'+(B.done?'<p class="small">✅ Handled — how you handled it is part of your work story now.</p>':'<button class="btn gold" style="width:100%" onclick="aiBizReply241()">💬 Answer them — in your own words</button>')+'</div>':'<p><i>✍️ Listening for today\u2019s customer…</i></p>')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
+window.aiBizReply241=function(){ var V=V241(); var B=V.biz[S.day+'']; if(!B)return; var job=(S.jobInfo&&S.jobInfo.title)||'your side work';
+ talkOpen241({title:'🧾 '+B.from,who:B.from,memWho:null,openLine:false,openFallback:B.text,
+  system:sys241('a customer/client in a real back-and-forth about actual work — you react to how you are ACTUALLY treated',null,'When the matter is settled either way, you may add: SCORE: <0-100, how well you were handled>.'),
+  context:'You first wrote: "'+B.text+'". The worker is '+S.name+' ('+job+'). Their recent real work is in the events above.',
+  fallback:function(){ return 'Okay. And what does that mean for my order, exactly?' },
+  onEnd:function(marks){ try{ var V2=V241(); var B2=V2.biz[S.day+'']; if(B2)B2.done=true; var sc=parseInt(marks.SCORE,10);
+   if(!isNaN(sc)&&sc>=60){ var tip=10+Math.floor(Math.random()*16); money(tip,'🧾 Happy customer — '+job); log('🧾 Customer handled well ('+sc+'/100) — $'+tip+' followed. Word travels.') } else log('🧾 Customer exchange ended — '+(marks.SUMMARY||'it is part of the work story now.')); try{ save() }catch(e){} }catch(e){} } }) };
+
+/* ---------- 14) a living Birdy ---------- */
+function birdyGen241(){ try{ var V=V241(); if(V.birdyDay===S.day)return; V.birdyDay=S.day;
+ var names=Object.keys(S.contacts||{}).filter(function(n){ return n!=='School'&&n!=='FBI' }); if(!names.length)return;
+ brain241('You write Birdy posts for a life-sim town feed. Write exactly 3 posts, one per line, each starting with the poster\u2019s first name and a colon. Posters are IN-GAME townsfolk ONLY, posting about real events they could have witnessed from the facts — never about the reader, never real-world news.',ctx241('Townsfolk who might post: '+names.slice(0,8).join(', ')+'.'),9000,function(rep){ if(!rep)return; var V2=V241();
+  rep.split(/\r?\n/).forEach(function(ln){ ln=ln.trim(); var mm=ln.match(/^([^:]{1,30}):\s*(.+)$/); if(mm)V2.birdy.unshift({who:mm[1].trim(),text:mm[2].trim().slice(0,180),day:S.day}) });
+  if(V2.birdy.length>30)V2.birdy.length=30; try{ save() }catch(e){} }) }catch(e){} }
+window.aiBirdy241=function(){ birdyGen241(); var V=V241();
+ openSheet('<h2>🐦 Birdy — the town, posting</h2>'+(V.birdy.length?V.birdy.slice(0,12).map(function(p){ return '<div class="card" style="margin-top:8px"><b>'+esc241(p.who)+'</b> <span class="small">• Day '+p.day+'</span><p style="font-size:14px;line-height:1.5;margin-top:3px">'+esc241(p.text)+'</p></div>' }).join(''):'<p><i>✍️ The town is typing… open Birdy again in a moment.</i></p>')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
+try{ var _pb241=phoneBirdy132; phoneBirdy132=function(){ birdyGen241(); var r=_pb241.apply(this,arguments); setTimeout(function(){ try{ var V=V241(); var sh=document.getElementById('sheet'); if(!sh||!V.birdy.length)return; if(sh.innerHTML.indexOf('birdyLive241')>=0)return; var d=document.createElement('div'); d.id='birdyLive241'; d.innerHTML='<h3 style="margin-top:14px">🐦 Town voices — live</h3>'+V.birdy.slice(0,3).map(function(p){ return '<div class="card" style="margin-top:7px"><b>'+esc241(p.who)+'</b><p style="font-size:13.5px;line-height:1.5;margin-top:2px">'+esc241(p.text)+'</p></div>' }).join(''); sh.appendChild(d) }catch(e){} },700); return r } }catch(e){}
+
+/* ---------- 15) real letters + 8) the day's story + death-day hooks on nextDay ---------- */
+function letterGen241(){ try{ var V=V241(); if(V.letterDay===S.day)return; V.letterDay=S.day; if(Math.random()>0.55)return;
+ var kind=(S.wanted||0)>=3?'summons':((S.fame||0)>=3&&Math.random()<0.5?'fan':'family');
+ var fam=(Object.keys(S.contacts||{}).filter(function(n){ return n!=='School'&&n!=='FBI' })[0])||'Mom';
+ var who=kind==='summons'?'The Court':kind==='fan'?'A fan':fam;
+ var sys='You hand-write a physical letter for a life-sim. '+(kind==='summons'?'It is a court summons — formal, specific about the record, real dates and consequences.':kind==='fan'?'It is fan mail — warm, specific about what the person actually did lately.':'It is a family letter — personal, remembering the shared story, asking real questions.')+' 4-7 sentences. Sign it as the sender. No summary lines.';
+ brain241(sys,ctx241('The letter is FROM: '+who+'. The recipient is '+S.name+'. Write the letter body only.'),9000,function(rep){ var body=rep?rep.replace(/\s+\n/g,'\n').trim().slice(0,700):''; var V2=V241();
+  if(!body)body=kind==='summons'?('Dear '+S.name+',\nThis letter concerns matters on your record that require your appearance. Do not ignore it — paper like this does not go away on its own.\n— The Court'):('Dear '+S.name+',\nThinking of you and everything lately. Write back when you can — actually write.\n— '+who);
+  V2.mail.unshift({from:who,kind:kind,body:body,day:S.day,read:false}); if(V2.mail.length>20)V2.mail.length=20; try{ save() }catch(e){}
+  try{ toast('✉️ New letter — from '+who) }catch(e){} try{ log('✉️ A letter arrived from '+who+' — it\u2019s in 🧠 Living World → Your mail.') }catch(e){} }) }catch(e){} }
+window.aiMail241=function(){ var V=V241(); V.mail.forEach(function(m){ m.read=true }); try{ save() }catch(e){}
+ openSheet('<h2>✉️ Your mail</h2>'+(V.mail.length?V.mail.map(function(m){ return '<div class="card" style="margin-top:8px"><b>'+(m.kind==='summons'?'⚖️ ':m.kind==='fan'?'💌 ':'')+esc241(m.from)+'</b> <span class="small">• Day '+m.day+'</span><p style="font-size:14px;line-height:1.6;margin-top:4px;white-space:pre-wrap">'+esc241(m.body)+'</p></div>' }).join(''):'<p>No letters yet. Paper takes a day to arrive — family, fans and (if it comes to it) courts all still write.</p>')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
+function storyGen241(dayDone,entries){ try{ if(!entries||!entries.length)return; var key='story|'+dayDone; var V=V241(); if(V.stories[key])return; V.stories[key]='…';
+ brain241('You are the Life Storybook of a life-sim. Rewrite the day\u2019s raw events into a short, readable story — 3-5 sentences, warm, specific, in past tense, using the real names and facts. No summary lines, just the story.', 'Day '+dayDone+' in the life of '+S.name+' (age '+S.age+'). Raw events:\n'+entries.join('\n'),11000,function(rep){ var story=rep?rep.replace(/\s+/g,' ').trim().slice(0,600):''; var V2=V241(); V2.stories[key]=story||entries.slice(0,3).join(' ');
+  try{ log('📖 Day '+dayDone+' — '+V2.stories[key]) }catch(e){} try{ save() }catch(e){} }) }catch(e){} }
+window.aiStorybook241=function(){ var V=V241(); var keys=Object.keys(V.stories).filter(function(k){ return k.indexOf('story|')===0 }).sort().reverse();
+ openSheet('<h2>📖 Life Storybook</h2><p style="font-size:13px">Your days, written as a story — also kept in your 📖 Journal forever.</p>'+(keys.length?keys.map(function(k){ return '<div class="card" style="margin-top:8px"><b>Day '+k.slice(6)+'</b><p style="font-size:14px;line-height:1.6;margin-top:3px">'+esc241(V.stories[k]==='…'?'(being written…)':V.stories[k])+'</p></div>' }).join(''):'<p>No written days yet — the first one is written tonight, from today.</p>')+'<button class="btn gold" style="margin-top:10px" onclick="aiHub241()">‹ Living World</button>') };
+try{ var _nd241=nextDay; nextDay=function(skip){ var dayDone=S?S.day:0; var entries=[]; try{ entries=(S.journal||[]).filter(function(j){ return String(j).indexOf('Day '+dayDone+' •')===0 }).slice(0,8).map(function(j){ return String(j).replace(/<[^>]*>/g,'') }) }catch(e){}
+  var r=_nd241.apply(this,arguments);
+  try{ setTimeout(function(){ storyGen241(dayDone,entries); letterGen241(); birdyGen241() },900) }catch(e){}
+  return r } }catch(e){}
+
+/* ---------- 16) legacies — a life, written at its end ---------- */
+function legacy241(){ try{ if(!S)return; var V=V241(); var key=S.name+'|'+S.day; if(V.legacies[key])return; V.legacies[key]='…';
+ var facts=ctx241('Write the legacy now.')+'\nLifetime facts — level '+S.level+', money $'+S.money+', followers '+(S.followers||0)+', generation '+(S.generation||1)+'. Journal (the life, newest first):\n'+(S.journal||[]).slice(0,14).map(function(j){ return String(j).replace(/<[^>]*>/g,'').slice(0,160) }).join('\n');
+ var fallback=S.name+' lived '+S.age+' years — level '+S.level+', '+(S.kids&&S.kids.length?('leaving '+S.kids.length+' child'+(S.kids.length>1?'ren':'')+' to carry the story'):'a story the journal keeps page by page')+'. What they did is all in there, in their own days.';
+ setTimeout(function(){ try{ var sh=document.getElementById('sheet'); if(sh&&document.getElementById('modal').classList.contains('open')&&!/legacy241/.test(sh.innerHTML)){ var d=document.createElement('div'); d.id='legacy241'; d.innerHTML='<div class="card" style="border-color:#f59e0b;margin-top:10px"><h3>🕊️ '+esc241(S.name)+' — the legacy</h3><p style="font-size:14px;line-height:1.65">'+esc241(fallback)+'</p></div>'; sh.appendChild(d) } }catch(e){} },400);
+ brain241('You write a legacy for a life-sim character who has just died: an obituary and short eulogy, 4-6 sentences, built ONLY from their real history — their people, their work, their turning points. Warm, honest, specific. No summary lines.',facts,12000,function(rep){ var text=rep?rep.replace(/\s+/g,' ').trim().slice(0,800):''; var V2=V241(); V2.legacies[key]=text||fallback; try{ save() }catch(e){}
+  try{ log('🕊️ THE LEGACY OF '+String(S.name).toUpperCase()+' — '+V2.legacies[key]) }catch(e){}
+  try{ var d2=document.getElementById('legacy241'); if(d2)d2.querySelector('p').textContent=V2.legacies[key] }catch(e){} }) }catch(e){} }
+['maybeDeath','die78','starveDie98'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__leg241)return; var w=function(){ var r=fn.apply(this,arguments); try{ if(S&&S.deadFlag)legacy241() }catch(e){} return r }; w.__leg241=true; window[nm]=w }catch(e){} });
+
+window.__v241={version:function(){ return GAME_VERSION },V:V241,brain:brain241,talk:talkOpen241,hub:hubHtml241};
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 41: 🧠 THE AI EXPANSION (all 16) — ambient NPC↔NPC bubbles with pair memory • AI texting unified into ONE memory with calls/dates/visits • stored talking real-estate listings + a haggling agent • places that know themselves (staff flavor once per visit-day) • parent-teacher conferences & judged job interviews • real-talk dates (adults only) • drama motives spoken aloud • the day\u2019s story written into the Life Storybook • free-talk phone calls • doctor & vet in your own words • living classrooms • interrogation & court (adults) • customers & clients • a living Birdy • real letters • legacies at death — generate-once-and-store, capped, kid-safe, and every failure falls back silently to written lines','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
