@@ -24069,6 +24069,147 @@ window.__v235={version:function(){ return GAME_VERSION },packet:packet235,parse:
 try{ console.log('%cAquaLife v200 — hotfix 35: 🧠 real AI conversations (one brain call per chat, pair memory, kid-safe, scripted fallback)','color:#0ea5e9;font-weight:bold') }catch(e){}
 })();
 </script>
+<script>
+/* ================= v200 HOTFIX 36 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's escalation (Nov 3, late): all three h33 "verified" items still broken on his phone.
+   Each was reproduced FIRST on a long session / lived-in state before any code was touched:
+
+   A) WORDS & NUMBERS GLITCHING (the "Actions is glitching with words" report) — REPRODUCED in a
+      long session: the HUD's rolling numbers ran away to the billions and kept growing with
+      session age (needs reading 8,668,411,992-style garbage, XP at −52,424,729,653) while the
+      bars right beside them stayed sane. ROOT: rollNum's easing progress p was clamped only
+      ABOVE (Math.min(1,…)) — never below. Whenever the rAF timestamp lands EARLIER than the
+      performance.now() captured at roll start (compositor/webview clock skew — worst after the
+      app has been backgrounded, throttled, or simply open a long time; in the test rig the skew
+      grew to ~an hour), p goes hugely negative, the cubic ease extrapolates astronomically, and
+      the span paints garbage. Every render starts fresh rolls on every changed stat, so in a
+      long session the whole top of the screen flickers garbage numbers — the glitching words.
+      FIX: rollNum is replaced with a hardened twin (same signature, same 650 ms cubic feel):
+      endpoints sanitized, progress clamped to [0,1] on BOTH ends, the painted value fenced into
+      the from→to interval on every frame (garbage is now mathematically impossible whatever the
+      clocks do), a per-element token so a newer roll retires the older loop instead of two loops
+      fighting over one span, and a frame cap so a frozen clock ends the roll instead of spinning.
+
+   B) MENUS WON'T COLLAPSE ON A REAL SAVE — REPRODUCED in a long session: Travel opened with
+      EVERY category section sprawled open at once, and a deliberate close of the 🧭 Locations
+      section did not stick — it was open again in the very next captured frame and stayed open.
+      ROOT: the v149 layer persists menu open-state INTO THE SAVE (S.v149.menus, keyed by summary
+      TITLE) and restoreMenus149 re-opens anything listed there on a 600 ms interval + after
+      every renderTabs. Its toggle listener also records PROGRAMMATIC opens (painters that
+      force-open a card fire real toggle events), and summary titles drift (stock counts ×5→×4,
+      actionsClean134 rewrites), so on any save that has lived a while the store fills with keys
+      whose close-time title no longer matches the recorded one — the delete misses and the
+      section is resurrected within 600 ms of every close, forever. Fresh saves start with an
+      empty store, which is why every short rig test "passed". The shipped law since v162 is
+      that open state is session-only, owned by v162's content-signature map. FIX: S.v149.menus
+      is defanged at the object level — the property becomes a trap whose getter always returns
+      an empty object and whose setter swallows writes. The v149 interval/restore then find
+      nothing to resurrect, its listener's writes land in a throwaway, and the next save() writes
+      menus:{} — the save heals itself. The trap is re-applied after every render/renderTabs and
+      on a slow interval (the save object is replaced on load/continue). v162's signature system
+      — the rightful owner — is untouched: menus the player opens still stay open in-screen and
+      still collapse on leave, exactly as shipped. As a final guarantee, this layer also enforces
+      the arrival law directly at the DOM level: whenever the real tab changes, once the whole
+      render chain has run, every panel section is closed (sparing the designed "you are here"
+      current-place cards and anything v162's map holds) — so sections START collapsed on every
+      screen, on every save, no matter which legacy pass tried to re-open them during the paint.
+
+   C) SKY & STREET STILL GLITCHING — root-caused in source (h33's sweep only watched a still
+      camera at home, where every writer agrees on "no transform", so it saw nothing): THREE
+      systems write the home bands' transforms on three cadences — bandCam221 (500 ms interval,
+      plain inline), bandSync227 (300 ms interval, !important, scale-only) and h33's
+      bandFrame233 (per frame, !important, full matrix) — and the v221 stylesheet still puts a
+      .75 s CSS transition on the bands' transform, so every stomp starts a fresh ¾-second chase:
+      during any camera glide/zoom the sky and street smear, lag and snap instead of riding the
+      scene — worse the more the camera works (location-hopping, actions, long sessions).
+      bandFrame233 also derives each band's pivot from that band's OWN post-transform
+      getBoundingClientRect, feeding its last output back into its next correction. FIX: (1) the
+      transition comes off the bands for good (!important — frame mirroring must be frame-exact);
+      (2) ONE owner: a per-frame pass in this layer, registered after h33's loop so its write is
+      the frame's last word (the timer-driven writers fire in tasks whose rendering steps end
+      with this pass, so their writes never reach paint), mirrors the canvas's computed
+      transform onto both bands with the pivot computed from LAYOUT geometry only
+      (offsetLeft/offsetTop — values transforms cannot contaminate), copying the FULL transform
+      (pans included) and clearing cleanly when the camera rests. Canvas sizing, the sky painter
+      and street traffic are untouched. */
+(function(){ 'use strict';
+try{
+
+ /* ---------- A) rollNum, hardened ---------- */
+ try{ rollNum=function(el,from,to,dur){ try{
+   if(!el)return;
+   from=+from; to=+to;
+   if(!isFinite(from)&&!isFinite(to))return;
+   if(!isFinite(from))from=to; if(!isFinite(to))to=from;
+   if(Math.abs(from)>1000000000000)from=to; if(Math.abs(to)>1000000000000)to=from;
+   var tok=(el.__rn236=(el.__rn236||0)+1);
+   if(from===to){ el.textContent=to; return }
+   var d=(typeof dur==='number'&&isFinite(dur)&&dur>0)?dur:650;
+   var lo=Math.min(from,to), hi=Math.max(from,to);
+   var t0=performance.now(), frames=0, maxFrames=Math.ceil(d/8)+45;
+   var step=function(t){ try{ if(el.__rn236!==tok)return;
+     var p=(t-t0)/d; if(!(p>0))p=0; if(p>1)p=1;
+     var e=1-Math.pow(1-p,3);
+     var v=Math.round(from+(to-from)*e); if(v<lo)v=lo; else if(v>hi)v=hi;
+     el.textContent=v;
+     if(p<1&&++frames<maxFrames)requestAnimationFrame(step); else el.textContent=to;
+    }catch(_){} };
+   requestAnimationFrame(step);
+  }catch(e){} } }catch(e){}
+
+ /* ---------- B) the v149 save-persisted menu store is defanged ---------- */
+ function trapMenus236(){ try{
+   if(typeof S==='undefined'||!S||!S.v149||typeof S.v149!=='object')return;
+   var V=S.v149; var desc=null; try{ desc=Object.getOwnPropertyDescriptor(V,'menus') }catch(e){}
+   if(desc&&desc.get&&desc.get.__m236)return;
+   var get236=function(){ return {} }; get236.__m236=1;
+   Object.defineProperty(V,'menus',{ configurable:true, enumerable:true, get:get236, set:function(){ /* the legacy store stays empty — writes are swallowed */ } });
+  }catch(e){} }
+ trapMenus236();
+ ['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__trap236)return;
+   var w=function(){ var r=fn.apply(this,arguments); trapMenus236(); return r }; w.__trap236=true; window[nm]=w }catch(e){} });
+ setInterval(trapMenus236,1500);
+ /* …and the arrival law enforced at the DOM level: on a REAL tab change, after the whole
+    render chain has run, every panel section starts collapsed — no matter which legacy pass
+    re-opened it during the paint. Spared: the designed current-place cards ("you are here")
+    and anything v162's signature map holds (player-opened this visit; the map is reset on
+    arrival, so on entry that set is empty). In-visit opens/closes are never touched. */
+ var lastTab236=null;
+ function realTab236(t){ if(!t)return null; if(t==='actions101'||t==='rooms106'||t==='areas123')return null; if(t==='trouble')return 'home'; return t }
+ function arrivalClose236(){ try{ var p=document.getElementById('panel'); if(!p)return;
+   var held={}; try{ if(window._menu162&&window._menu162.open)held=window._menu162.open }catch(e){}
+   Array.prototype.slice.call(p.querySelectorAll('details')).forEach(function(d){ try{
+     var sm=d.querySelector(':scope > summary'); var t=sm?sm.textContent:'';
+     if(/you are here/i.test(t))return;
+     if(typeof sig162==='function'){ var sg=sig162(d); if(sg&&held[sg])return }
+     if(d.open)d.removeAttribute('open');
+   }catch(e){} }) }catch(e){} }
+ try{ var rt236=window.renderTabs; if(typeof rt236==='function'&&!rt236.__arr236){ var w2=function(tab){ var r=rt236.apply(this,arguments); try{ var rt=realTab236(tab); if(rt){ if(lastTab236&&rt!==lastTab236)arrivalClose236(); lastTab236=rt } }catch(e){} return r }; w2.__arr236=true; window.renderTabs=w2 } }catch(e){}
+
+ /* ---------- C) one owner for the sky & street bands ---------- */
+ var st236=document.createElement('style'); st236.id='style236';
+ st236.textContent='#sky193,#curb193{transition:none!important}';
+ document.head.appendChild(st236);
+ function bandFrame236(){ requestAnimationFrame(bandFrame236); try{
+   if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return;
+   var cv=document.getElementById('cv'); if(!cv)return;
+   var sky=document.getElementById('sky193'), curb=document.getElementById('curb193');
+   if(!sky&&!curb)return;
+   var cs=getComputedStyle(cv); var tr=cs.transform||'none';
+   if(tr==='none'){ [sky,curb].forEach(function(b){ if(b)b.style.setProperty('transform','none','important') }); return }
+   var org=(cs.transformOrigin||'').split(/\s+/); var ox=parseFloat(org[0])||0, oy=parseFloat(org[1])||0;
+   var px0=cv.offsetLeft+ox, py0=cv.offsetTop+oy;
+   [sky,curb].forEach(function(b){ if(!b)return;
+     b.style.setProperty('transform-origin',(px0-b.offsetLeft).toFixed(1)+'px '+(py0-b.offsetTop).toFixed(1)+'px','important');
+     b.style.setProperty('transform',tr,'important') });
+  }catch(e){} }
+ requestAnimationFrame(bandFrame236);
+
+ window.__v236={version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 36: 🔢 rollNum hardened (progress clamped at both ends, painted value fenced to the from→to range, stale rolls retire — runaway billion-numbers impossible) • 📂 the v149 save-persisted menu store defanged (getter returns empty, writes swallowed — sections collapse on real saves again; v162 signature state still owns in-screen opens) • 🌤️ one owner for the sky/street bands (transition off, per-frame mirror from layout geometry, full transform)','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
