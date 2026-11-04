@@ -13862,6 +13862,7 @@ function atPond150(){ if(!S||S.location!=='street')return false; try{ const rm=c
 function fishGo150(){ if(!S||!inGame)return; const V=ensure150();
  if(typeof activity!=='undefined'&&activity){ toast('🎣 One thing at a time — let this moment finish first'); return }
  if(S.location!=='street'){ toast('🎣 The pond is at 🌳 Maple Street & Park'); return }
+ if(S.age<6){ toast('🎣 Too young to cast a line — fishing at the Maple Street pond starts at age 6'); log('🎣 From the bank, you watched the bobbers drift. Casting a line at the Maple Street pond is a 6-and-up thing — the fish are safe from you. For now.'); save(); return }
  if(!atPond150()){ try{ goArea123('park') }catch(e){} }
  if((S.weather||'sunny')==='storm'){ toast('⛈️ Storm! Nobody fishes in a thunderstorm — the pond will wait.'); log('⛈️ A thunderstorm cancelled your fishing — the pond keeps, the lightning does not negotiate.'); save(); return }
  const res=rollFish150(); V.casts++; save();
@@ -13879,7 +13880,7 @@ function fishGo150(){ if(!S||!inGame)return; const V=ensure150();
 window.fishGo150=fishGo150;
 /* the pond card on the Home panel while you are at Maple Street & Park */
 try{ const _rt150=renderTabs; renderTabs=function(active){ const r=_rt150(active); try{ if(S&&inGame&&active==='home'){ const panel=document.getElementById('panel'); if(panel&&S.location==='street'&&!panel.querySelector('.fishCard150')){ const V=ensure150(); const grid=panel.querySelector('.grid')||panel; const d=document.createElement('div'); d.className='card fishCard150'; d.style.borderColor='#0ea5e9';
-  if(atPond150()){ d.innerHTML='<h3>🎣 The Park Pond</h3><p>Cast a line here. Caught fish land in your 🎒 Bag — eat them or sell them at the 🏪 Pawn Shop.</p>'+(V.casts?'<p class="small">🎣 Casts: <b>'+V.casts+'</b> • 🐟 Caught: <b>'+V.caught+'</b>'+(V.best?' • 🌟 Best: <b>'+V.best+'</b>':'')+'</p>':'')+'<button class="btn gold" onclick="fishGo150()">🎣 Fish — cast a line (free)</button>' }
+  if(atPond150()){ d.innerHTML='<h3>🎣 The Park Pond</h3><p>Cast a line here. Caught fish land in your 🎒 Bag — eat them or sell them at the 🏪 Pawn Shop.</p>'+(V.casts?'<p class="small">🎣 Casts: <b>'+V.casts+'</b> • 🐟 Caught: <b>'+V.caught+'</b>'+(V.best?' • 🌟 Best: <b>'+V.best+'</b>':'')+'</p>':'')+(S.age<6?'<button class="btn outline" disabled style="opacity:.55;width:100%">🔒 Cast a line — unlocks at age 6</button><p class="small" style="margin-top:6px">Under 6, the bank is yours — watch the bobbers. Casting starts on your 6th birthday.</p>':'<button class="btn gold" onclick="fishGo150()">🎣 Fish — cast a line (free)</button>') }
   else { d.innerHTML='<h3>🎣 The Park Pond</h3><p>Fishing pond.</p><button class="btn outline" onclick="goArea123(\'park\')">🚶 Head to the pond</button>' }
   grid.insertBefore(d,grid.firstChild) } } }catch(e){} return r } }catch(e){}
 /* the fishing scene itself: pond, rod, line, bobber — cast, wait, and the catch moment,
@@ -21183,7 +21184,7 @@ try{
    if(n.nodeType===1||(n.nodeType===3&&n.textContent.trim()))secs.game.push(n);
   });
   if(trail)secs.looks.push(trail);
-  const ver=document.createElement('div'); ver.innerHTML='<div class="kv"><span>🌊 Version</span><b>'+(typeof verTag124==='function'?verTag124():('AquaLife v'+GAME_VERSION))+'</b></div><p class="small" style="margin-top:6px">Your life saves in this browser, on this device — it is written as you play, every action, automatically.</p><button class="btn outline" style="margin-top:8px" onclick="confirmNewLife()">↻ Start a New Life</button>';
+  const ver=document.createElement('div'); ver.innerHTML='<div class="kv"><span>🌊 Version</span><b>'+(typeof verTag124==='function'?verTag124():('AquaLife v'+GAME_VERSION))+'</b></div><p class="small" style="margin-top:6px">Your life saves in this browser, on this device — it is written as you play, every action, automatically.</p>'; /* Howard's dedupe: the accordion's bare ↻ Start a New Life button is REMOVED — Settings keeps exactly ONE new-life entry, the full ↻ card settingsCardHtml121 appends under the Settings card. */
   secs.data.push(ver);
   const mk=function(id,ic,title,nodes,extra){ const d=document.createElement('details'); d.className='dd132 acc209'; d.setAttribute('data-sec',id); if(setSec209===id)d.setAttribute('open','');
    const sm=document.createElement('summary'); sm.textContent=ic+' '+title; d.appendChild(sm);
@@ -21562,7 +21563,64 @@ try{
  function curDay214(){ try{ return (typeof S!=='undefined'&&S&&S.day!=null)?String(S.day):'' }catch(e){ return '' } }
  function curLvl214(){ try{ return (typeof S!=='undefined'&&S&&S.level!=null)?String(S.level):'' }catch(e){ return '' } }
  function post214(params){ try{ var body=new URLSearchParams(); Object.keys(params).forEach(function(k){ body.append(k,params[k]) }); var p=fetch(EP214,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}); if(p&&p.catch)p.catch(function(){}) }catch(e){} }
- function ping214(ev,detail){ try{ if(!statsOn214())return; post214({'entry.810057987':installId214(),'entry.1257175784':ev,'entry.1820728039':curDay214(),'entry.686270592':curLvl214(),'entry.1069628396':String((typeof GAME_VERSION!=='undefined')?GAME_VERSION:200),'entry.1917171974':detail||''}) }catch(e){} }
+ /* ---- ANALYTICS REBUILD (Howard, Nov 3): ONE sender for everything. Pings now ride the EXACT
+    construction of the proven feedback sender (post214 above: URLSearchParams body, POST,
+    mode:'no-cors', urlencoded) and carry the FULL nine-field set themselves — type + message +
+    how-far included, so a ping row reads exactly like a feedback row in the sheet instead of
+    landing blank. The 27 extra form fields' entry IDs are unknown (Google never exposed them),
+    so the full approved snapshot rides INSIDE the detail field as compact key=value text.
+    Counters + session facts live in their OWN localStorage keys (never in the save), same law
+    as the install ID. No name, no character names, no phone number, no IP — ever. ---- */
+ var K_SESS236='aqualifeSess_v1', K_CNT236='aqualifeCnt_v1', lastAct236='', lastErrPing236=0;
+ function jGet236(k){ try{ return JSON.parse(lsGet214(k)||'{}') }catch(e){ return {} } }
+ function sess236(){ var s=jGet236(K_SESS236); var now=Date.now();
+  if(!s.cur){ s.count=(s.count||0)+1; s.cur='s-'+Math.random().toString(36).slice(2,8); s.start=now; s.base=(s.totalMin||0); lsSet214(K_SESS236,JSON.stringify(s)) }
+  var mins=Math.max(0,Math.round((now-(s.start||now))/60000)); s.totalMin=(s.base||0)+mins; try{ lsSet214(K_SESS236,JSON.stringify(s)) }catch(e){}
+  return {id:s.cur||'', mins:mins, count:s.count||1, total:s.totalMin||0} }
+ function cnt236(){ return jGet236(K_CNT236) }
+ function bump236(kind,key){ try{ if(!key)return; var c=cnt236(); c[kind]=c[kind]||{}; c[kind][key]=(c[kind][key]||0)+1; lsSet214(K_CNT236,JSON.stringify(c)) }catch(e){} }
+ try{ document.addEventListener('click',function(ev){ try{ var t=ev.target; if(!t||!t.closest)return; var b=t.closest('button,[onclick]'); if(!b)return;
+   var oc=b.getAttribute&&b.getAttribute('onclick')||''; var tx=((b.textContent||'').trim().replace(/\s+/g,' ').slice(0,26));
+   var key='tap'; if(/openPhone\(\)/.test(oc))key='phone'; else if(/openStore199/.test(oc))key='shop'; else if(/openFeedback214/.test(oc))key='feedback';
+   else if(/openSettings/.test(oc))key='settings'; else if(/dockGo\(/.test(oc))key='tab:'+(oc.match(/dockGo\('([^']+)'\)/)||[])[1]; else if(/travelTo|goLoc|goTo\(/.test(oc))key='travel';
+   else if(tx)key='btn:'+tx.replace(/[^\w :+-]/g,'').slice(0,18);
+   bump236('click',key); lastAct236=key+(tx?(' — '+tx):'');
+  }catch(e){} },true) }catch(e){}
+ function flat236(obj,prefix){ var out=[]; try{ Object.keys(obj||{}).slice(0,14).forEach(function(k){ out.push(prefix+k+'='+obj[k]) }) }catch(e){} return out }
+ function snap236(ev){ var p=[]; function add(k,v){ if(v===undefined||v===null||v==='')return; p.push(k+'='+String(v).replace(/[·=\n]/g,' ').slice(0,60)) }
+  try{ if(typeof S!=='undefined'&&S){
+   add('age',S.age); try{ add('stage',(typeof stage==='function')?stage():'') }catch(e){}
+   add('gen',S.generation||1); add('place',S.location); add('lvl',S.level); add('xp',S.xp);
+   try{ var hr=(typeof S.min==='number')?Math.floor(S.min/60)%24:null; add('tod',hr==null?'':(hr<5?'night':hr<12?'morning':hr<17?'afternoon':hr<21?'evening':'night')) }catch(e){}
+   add('job',(S.jobInfo&&(S.jobInfo.title||S.jobInfo.name))||S.job||''); add('school',S.schoolName||(S.school&&S.school.name)||'');
+   try{ add('ach',(S.achievements&&S.achievements.length)||(S.scrapbook&&S.scrapbook.length)||0) }catch(e){}
+   add('cash',Math.round(S.money||0)); try{ add('bank',Math.round((S.bank63&&S.bank63.bank!=null)?S.bank63.bank:(S.bank||0))) }catch(e){}
+   try{ var n=S.needs||{}; add('health',n.health!=null?Math.round(n.health):''); add('hunger',n.hunger!=null?Math.round(n.hunger):''); add('energy',n.energy!=null?Math.round(n.energy):''); add('mood',(n.fun!=null&&n.social!=null)?Math.round((n.fun+n.social)/2):'') }catch(e){}
+   add('married',(S.partner||S.married)?1:0); try{ add('kids',(S.kids&&S.kids.length)||(S.dependents&&S.dependents.length)||0) }catch(e){}
+   try{ add('rels',Object.keys(S.rels||S.relationships||S.chatMem||{}).length) }catch(e){}
+   try{ add('house',(typeof ownHome==='function'&&ownHome())?1:0) }catch(e){}
+   add('car',(S.car&&S.car.owned)?1:0); add('phone',S.hasPhone?1:0); try{ add('laptop',(typeof hasLaptop200==='function'&&hasLaptop200())?1:0) }catch(e){}
+   try{ var ec=S.econ77||{}; add('earned',Math.round(ec.totIn||ec.in||0)); add('spent',Math.round(ec.totOut||ec.out||0)) }catch(e){}
+   var f=[]; f.push('license:'+((S.car&&S.car.license)?1:0)); f.push('phone:'+(S.hasPhone?1:0)); f.push('enrolled:'+(S.enrolled?1:0)); f.push('job:'+((S.jobInfo||S.job)?1:0)); add('funnel',f.join(','));
+  } }catch(e){}
+  try{ var ss=sess236(); add('session_id',ss.id); add('session_minutes',ss.mins); add('sessions_played',ss.count); add('total_playtime_min',ss.total) }catch(e){}
+  try{ var ua=(typeof navigator!=='undefined'&&navigator.userAgent)||''; add('device',/Mobi|Android|iPhone|iPad/i.test(ua)?'mobile':'desktop');
+   add('os',/Android/i.test(ua)?'Android':/iPhone|iPad|iPod/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'other');
+   add('browser',/Edg\//i.test(ua)?'Edge':/OPR\//i.test(ua)?'Opera':/Chrome\//i.test(ua)?'Chrome':/Firefox\//i.test(ua)?'Firefox':/Safari\//i.test(ua)?'Safari':'other');
+   add('lang',(typeof navigator!=='undefined'&&navigator.language)||''); try{ add('tz',Intl.DateTimeFormat().resolvedOptions().timeZone||'') }catch(e){}
+   add('pwa',((typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||(typeof navigator!=='undefined'&&navigator.standalone))?1:0);
+  }catch(e){}
+  try{ var c=cnt236(); p=p.concat(flat236(c.feat,'feat.')); p=p.concat(flat236(c.click,'click.')) }catch(e){}
+  if(ev==='error')add('last_action',lastAct236||'(none yet)');
+  return p.join(' · ').slice(0,1600) }
+ function ping214(ev,detail){ try{ if(!statsOn214())return; try{ bump236('feat',ev) }catch(e){} var day=curDay214(), lvl=curLvl214();
+  var det=snap236(ev); if(detail)det=(det?det+' · ':'')+'note='+String(detail).replace(/[·=\n]/g,' ').slice(0,120);
+  var human='📊 '+ev+' — Day '+(day||'—')+', Level '+(lvl||'—');
+  /* the Feedback-type question is a fixed-choice list (Bug report / Idea / How I'm doing / Other):
+     any other value makes Google reject the WHOLE submission with a 400 — proven live Nov 3.
+     Pings therefore file under 'Other'; the event name rides in the message + its own field. */
+  post214({'entry.2083096370':'Other','entry.1048300260':human,'entry.2144211601':(day||lvl)?('Day '+(day||'—')+', Level '+(lvl||'—')):'','entry.810057987':installId214(),'entry.1257175784':ev,'entry.1820728039':day,'entry.686270592':lvl,'entry.1069628396':String((typeof GAME_VERSION!=='undefined')?GAME_VERSION:200),'entry.1917171974':det}) }catch(e){} }
+ try{ window.addEventListener('error',function(e){ try{ var now=Date.now(); if(now-lastErrPing236<60000)return; lastErrPing236=now; ping214('error',String((e&&e.message)||'script error').slice(0,80)) }catch(_){} }) }catch(e){}
  function openCheck214(){ try{ if(!statsOn214())return; var s=sent214(); var today=new Date().toDateString(); if(s.openDay!==today){ ping214('daily_open',''); markSent214('openDay',today) } }catch(e){} }
  function bootStats214(){ try{ installId214(); if(!statsOn214())return; var s=sent214(); if(!s.install){ ping214('install',''); markSent214('install',1) } openCheck214() }catch(e){} }
  function watch214(){ try{ if(typeof S==='undefined'||!S)return; var s=sent214(); var on=statsOn214();
@@ -21583,7 +21641,7 @@ try{
  /* ================= ⚙️ SETTINGS → 💾 Data & Save: the toggle + the feedback door ================= */
  function statsBlock214(){ var on=statsOn214();
   return '<div class="kv" style="margin-top:10px"><span>📊 Share anonymous stats</span><b>'+(on?'ON':'OFF')+'</b></div>'
-  +'<p class="small" style="margin-top:6px">Anonymous counts only — installs, days &amp; levels reached, and big moments like passing your driving test or getting a phone or laptop. No name, no save data, nothing about your characters ever leaves this device.</p>'
+  +'<p class="small" style="margin-top:6px">Anonymous numbers only: a random install ID kept on this device (never inside your save), the event, your in-game day &amp; level, and a plain-numbers snapshot of the life — age, place, cash &amp; bank, needs, job/school, tap &amp; feature counters, play sessions — plus your device type, OS, browser family, language and timezone. No name, no character names, no phone number, no exact location, nothing that identifies you. Feedback you type yourself is the only text that ever leaves.</p>'
   +'<button class="btn '+(on?'outline':'gold')+'" style="margin-top:8px" onclick="statsToggle214()">📊 Anonymous stats: '+(on?'ON — tap to turn off':'OFF — tap to turn on')+'</button>'
   +'<button class="btn gold" style="margin-top:8px" onclick="openFeedback214()">💬 Send feedback</button>' }
  function injectStats214(){ try{ var sh=document.getElementById('sheet'); if(!sh||sh.querySelector('.statsBlock214'))return;
@@ -21605,11 +21663,14 @@ try{
   +'<select id="fbType214" style="width:100%;padding:11px;border-radius:10px;font:inherit;margin-top:5px;box-sizing:border-box"><option>Bug report</option><option>Idea</option><option>How I\'m doing</option><option>Other</option></select>'
   +'<label style="display:block;font-weight:800;margin-top:12px">Your message</label>'
   +'<textarea id="fbMsg214" rows="5" placeholder="Type it like you\'d say it…" style="width:100%;padding:11px;border-radius:10px;font:inherit;margin-top:5px;box-sizing:border-box"></textarea>'
+  +'<label style="display:block;font-weight:800;margin-top:12px">Your name — only if you want credit (optional)</label>'
+  +'<input id="fbName214" type="text" placeholder="Leave blank to stay anonymous" style="width:100%;padding:11px;border-radius:10px;font:inherit;margin-top:5px;box-sizing:border-box">'
   +'<div id="fbStatus214"></div>'
   +'<button class="btn gold" style="margin-top:12px" onclick="sendFeedback214()">📨 Send feedback</button>'
   +'<button class="btn outline" onclick="closeModal()">Cancel</button>',{quiet:true}) }catch(e){} };
  window.sendFeedback214=function(){ try{ var t=document.getElementById('fbType214'); var m=document.getElementById('fbMsg214'); var st=document.getElementById('fbStatus214');
   var msg=(m&&m.value)?m.value.trim():'';
+  try{ var nm=document.getElementById('fbName214'); var credit=(nm&&nm.value)?nm.value.trim():''; if(credit)msg+='\n— credit: '+credit.slice(0,60) }catch(e){}
   if(!msg){ if(st)st.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">Write a little something first — even one line helps.</p>'; return }
   var fail=function(){ try{ var s2=document.getElementById('fbStatus214'); if(s2)s2.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">📡 Couldn\'t send — looks like you\'re offline. Your words are still in the box above; try again when you\'re back online.</p>' }catch(e){} };
   if(typeof fetch!=='function'||(typeof navigator!=='undefined'&&navigator.onLine===false)){ fail(); return }
@@ -21955,6 +22016,7 @@ if(typeof window.sendFeedback214==='function'){ var _sf216=window.sendFeedback21
    if(!msg){ if(st)st.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">Write a little something first — even one line helps.</p>'; return }
    var fail=function(){ try{ var s2=document.getElementById('fbStatus214'); if(s2)s2.innerHTML='<p class="small" style="color:#ef4444;margin-top:8px">📡 Couldn\'t send — looks like you\'re offline. Your words are still in the box above; try again when you\'re back online.</p>' }catch(e){} };
    if(typeof fetch!=='function'||(typeof navigator!=='undefined'&&navigator.onLine===false)){ fail(); return }
+   try{ var nm2=document.getElementById('fbName214'); var credit2=(nm2&&nm2.value)?nm2.value.trim():''; if(credit2)msg+='\n— credit: '+credit2.slice(0,60) }catch(e){}
    var body=new URLSearchParams(); body.append('entry.2083096370',t?t.value:'Other'); body.append('entry.1048300260',msg); body.append('entry.2144211601','Not started yet');
    fetch('https://docs.google.com/forms/d/e/1FAIpQLSerzlldqjpGD9zX0P6X80U7ujMLMJSJFrksiVV9Ui4isbC8eA/formResponse',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()}).then(function(){ try{ openSheet('<h2>💬 Thank you!</h2><p>Your feedback is in — it goes straight to the AquaLife feedback sheet. Happy living! 🌊</p><button class="btn gold" onclick="closeModal()">Back to life</button>',{quiet:true}) }catch(e){} }).catch(fail);
   }catch(e){ return _sf216.apply(this,arguments) } } }
@@ -22333,7 +22395,12 @@ try{
  }catch(e){} };
  window.exprCycleSet218=function(k){ try{ var V=window.ensure216(); if(!V)return; if(!V.expr.feel)V.expr.feel={}; var pool=[]; (window.EXPR_UNLOCK216||[]).forEach(function(t){ Object.keys(t.feel||{}).forEach(function(key){ if(pool.indexOf(t.feel[key])<0)pool.push(t.feel[key]) }) }); if(!pool.length)return; var cur=(V.expr.feel&&V.expr.feel[k])||pool[0]; var i=pool.indexOf(cur); V.expr.feel[k]=pool[((i<0?0:i)+1)%pool.length]; save(); exprSettings218() }catch(e){} };
  window.exprBubSet218=function(kind,val){ try{ var V=window.ensure216(); if(!V)return; if(kind==='color')V.expr.bubColor=val; else V.expr.bubFont=val; save(); exprSettings218() }catch(e){} };
- try{ var _sch218=settingsCardHtml121; settingsCardHtml121=function(){ var c=_sch218.apply(this,arguments); try{ if(c&&c.indexOf('exprSettings218')<0){ var blk='<div style="margin-top:12px;border-top:1.5px dashed #80808040;padding-top:10px"><b>😊 Expressions & speech bubbles</b><p class="small" style="margin:4px 0 8px">The emoji over your head is your real state talking. Choose what each feeling wears, plus your speech bubbles\' colour and font — everything unlocked, for everyone.</p><button class="btn gold" style="width:auto;margin:0;padding:8px 14px" onclick="exprSettings218()">😊 Customise expressions & bubbles</button></div>'; var ix=c.lastIndexOf('</div>'); if(ix>0)c=c.slice(0,ix)+blk+c.slice(ix) } }catch(e){} return c } }catch(e){}
+ /* REMOVED (Howard's order): the "😊 Expressions & speech bubbles" section no longer joins
+    ⚙️ Settings — the settingsCardHtml121 injection that added it is gone. The saved picks
+    themselves (S.v216.expr: per-feeling emoji, bubble colour & font) are NOT touched:
+    bubStyle218 / the drawSpeechBubble wrap above still read them, so a player who already
+    chose a custom bubble colour/font KEEPS wearing it in game — there is simply no longer
+    a Settings control to change it. exprSettings218 stays defined but unreachable. */
  /* ambient pops: at random free moments your character blurts a line — in YOUR bubble colours */
  var ambNext218=performance.now()+20000+Math.random()*20000;
  setInterval(function(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame||S.deadFlag)return; var now=performance.now(); if(now<ambNext218)return; ambNext218=now+22000+Math.random()*26000;
@@ -23089,11 +23156,11 @@ try{
   +'<button class="btn outline" style="margin-top:10px" onclick="closeModal()">Back to life</button>',{quiet:true});
  }catch(e){} };
  V226.show=window.showSheet226;
- function injectSheetBtn226(){ try{ var b=document.querySelector('.statsBlock214'); if(!b||b.querySelector('.sheetBtn226'))return;
-  var btn=document.createElement('button'); btn.type='button'; btn.className='btn sheetBtn226'; btn.style.marginTop='8px'; btn.textContent='📊 Show the sheet so far'; btn.onclick=function(){ try{ window.showSheet226() }catch(e){} };
-  b.appendChild(btn);
- }catch(e){} }
- setInterval(injectSheetBtn226,900);
+ /* NOTE (Howard's removal): the 📊 "Show the sheet so far" BUTTON is removed from
+    ⚙️ Settings → 💾 Data & Save — the injector below is gone, so the button never joins
+    the Stats & Feedback block. The anonymous tracker and the part-B ping mirror above
+    are untouched and keep running; showSheet226 stays defined but unreachable. */
+ function injectSheetBtn226(){ /* removed — the sheet-so-far viewer button no longer appears in Settings */ }
 
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 26: 📊 "Show the sheet so far" (Settings → Data & Save) renders the Nov 3, 2026 Responses snapshot — 34 responses: 2 feedback messages ×3 copies each ("Game doesn\'t work" Day 5 Lv 4 · "Try again" Day 1 Lv 1) and 28 BLANK stats pings — plus the blank-ping repair: every stats ping now also writes a readable copy of itself into the proven feedback fields on the same single send, so its event/day/level can never land blank again','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
@@ -23650,6 +23717,356 @@ try{ var _oc232=openConvo; openConvo=function(from){ try{ if(S&&from&&!S.hasPhon
  return r } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 32: 💬 every ❤️ Relationships entry carries the chat button — day-one family, the babysitter, classmates and talked-with friends included, not just number-swapped contacts — opening the same phone chat (📞 call / text / 🏠 invite over) for everyone; a no-service 📱 Kid Phone gets call + invite from the roster instead of the ask-for-a-phone sheet; a first chat with an unsaved number says so on the thread','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
+})();
+</script>
+
+<script>
+/* ================= ITEM 6 (this build): THE LOCATION'S OWN STORE, NAMED TRULY, PINNED ON TOP =================
+   Howard (with Levi's screenshot): the card under "📍 Next steps — <Place>" read "🎓 School — classroom,
+   cafeteria, library, gym — the store" with generic big-store boilerplate and an "Enter the store"
+   button. That card IS the place's own store. Now: (1) it is labelled by what it actually is —
+   "🛒 School Store" at school, the snack cart on Maple Street, concessions at the cinema, the merch
+   table at concerts, and so on for every location that has one; (2) its line describes THAT store's
+   real stock (from SHOP128 / the store's own shelves), briefly — no shared boilerplate; (3) the card
+   is pinned at the TOP of the place's Next steps list, always: svcInject222's section is re-ordered
+   after every paint (and watched for stage-change rebuilds) so the store card sits first, above the
+   stage card and every other service. The store itself (openStore199, stock, counter, cashiers) is
+   untouched — only the card's name, line, button and position change. */
+(function(){ 'use strict';
+try{
+ var STORE_META233={
+  school:{name:'🛒 School Store',desc:'Pencils, backpacks and geometry sets at the school store counter — Ms. P runs it between classes.',btn:'🛒 Enter the School Store'},
+  store:{name:'🛒 The Corner Store',desc:'Rosa\u2019s counter — sodas, chips, batteries and wallets. The corner-store basics.',btn:'🛒 Enter the store'},
+  grocery:{name:'🛒 FreshMart Grocery',desc:'Gus\u2019s aisles — milk, bread, apples and frozen pizza, straight into the fridge.',btn:'🛒 Shop FreshMart'},
+  mall:{name:'🛍️ The Mall Stores',desc:'The mall\u2019s shops share one stock: clothes, sneakers, video games, movies and the phone store\u2019s display shelf.',btn:'🛒 Enter the mall stores'},
+  street:{name:'🌭 Maple Street Snack Cart',desc:'The cart by the park: hot dogs with the good onions, street caps and today\u2019s paper.',btn:'🌭 Visit the cart'},
+  arcade:{name:'🕹️ Arcade Prize Counter',desc:'Token rolls, arcade tees and gaming headsets at the prize counter.',btn:'🛒 Visit the counter'},
+  cinema:{name:'🍿 Cinema Concessions',desc:'Large popcorn, movie sodas and posters at the lobby stand.',btn:'🍿 Visit concessions'},
+  concert:{name:'🎤 The Merch Table',desc:'Tour shirts, signed CDs and caps at the merch table by the door.',btn:'🛒 Visit the merch table'},
+  fair:{name:'🎡 Fairground Stand',desc:'Cotton candy, balloons and a goldfish in a bag — the fairground stand.',btn:'🛒 Visit the stand'},
+  pawn:{name:'🏪 Pawn Shop',desc:'Vic\u2019s shelves: vintage watches, old guitars and film cameras — secondhand, sold as seen.',btn:'🛒 Browse the shelves'},
+  spa:{name:'🧖 The Spa Shop',desc:'Bath salts, candle sets and the plush robe, at the little shop by the lobby desk.',btn:'🛒 Visit the shop'},
+  barber:{name:'💈 Barbershop Counter',desc:'Pomade and razor kits at Sal\u2019s counter.',btn:'🛒 Visit the counter'},
+  salon:{name:'💇 Salon Counter',desc:'Nail polish sets and hair masks at the salon counter.',btn:'🛒 Visit the counter'},
+  vet:{name:'🐾 The Vet\u2019s Counter',desc:'Dog treats, cat toys and pet plushies at Dr. Okafor\u2019s counter.',btn:'🛒 Visit the counter'},
+  liquor:{name:'🍾 Bottle & Vine',desc:'Lager, wine, whiskey and cocktail mixers — Frank checks ID: 21+ to buy.',btn:'🛒 Enter the store'},
+  grandparents:{name:'🧶 Grandma & Grandpa\u2019s Shop',desc:'Handmade from their house: knit scarves, a full cookie jar and framed photos.',btn:'🛒 Have a look'},
+  hospital:{name:'💐 Hospital Gift Shop',desc:'Get-well flowers, plush bears and magazines by the ward doors.',btn:'🛒 Visit the gift shop'},
+  restaurant:{name:'🍰 Salty Cup To-Go Counter',desc:'Cake slices, garlic bread and the house wine to take home — Jo packs it at the counter.',btn:'🛒 Order to go'},
+  bank:{name:'🏦 The Bank Shop',desc:'Wallets, lockboxes and coin rolls at the bank\u2019s little shop counter.',btn:'🛒 Visit the counter'},
+  orphanage:{name:'🧸 Hope House Shop',desc:'Story books, plush bears and cookie tins for the whole table — the little shop inside Hope House.',btn:'🛒 Visit the shop'},
+  boarding:{name:'🛒 The Dorm Shop',desc:'Notebooks, clip-on reading lights and chocolate bars — dorm essentials.',btn:'🛒 Visit the shop'}
+ };
+ function shortPlace233(loc){ try{ var l=(typeof locLabel199==='function')?locLabel199(loc):loc; return String(l).replace(/^[^A-Za-z]+/,'').split('—')[0].trim()||loc }catch(e){ return loc } }
+ shopCard128=function(loc){ if(!S||!loc)return ''; if(typeof SHOP128==='undefined'||!SHOP128[loc])return ''; var m=STORE_META233[loc]||{name:'🛒 '+shortPlace233(loc)+' Store',desc:'The shop here — shelves stocked for this place, restocked with tomorrow\u2019s delivery.',btn:'🛒 Enter the store'}; return '<div class="card storeCard233" style="border-color:#22c55e"><h3>'+m.name+'</h3><p>'+m.desc+'</p><button class="btn gold" onclick="openStore199(\''+loc+'\')">'+m.btn+'</button></div>' };
+ window.__storeMeta233=STORE_META233;
+
+ /* pin the store card at the top of the Next steps section */
+ function pinStore233(){ try{ var wrap=document.getElementById('svcSec222'); if(!wrap)return; var kids=Array.prototype.slice.call(wrap.children); var store=null; for(var i=0;i<kids.length;i++){ if(kids[i].querySelector&&kids[i].querySelector('button[onclick*="openStore199("]')){ store=kids[i]; break } } if(!store)return; var head=wrap.querySelector('.catHead58'); if(head&&head.nextSibling!==store)wrap.insertBefore(store,head.nextSibling); else if(!head&&wrap.firstChild!==store)wrap.insertBefore(store,wrap.firstChild) }catch(e){} }
+ window._pinStore233=pinStore233;
+ ['paintActions101','paintQCards101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__pin233)return; var w=function(){ var r=fn.apply(this,arguments); try{ pinStore233() }catch(e){} return r }; w.__pin233=true; window[nm]=w }catch(e){} });
+ try{ var _rt233=renderTabs; renderTabs=function(a){ var r=_rt233.apply(this,arguments); try{ pinStore233() }catch(e){} return r } }catch(e){}
+ try{ var _pend233=false; var mo233=new MutationObserver(function(){ if(_pend233)return; _pend233=true; setTimeout(function(){ _pend233=false; pinStore233() },120) }); var p233=document.getElementById('panel'); if(p233)mo233.observe(p233,{childList:true,subtree:true}) }catch(e){}
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — item 6: every location\u2019s own store card carries its real name (School Store, the Maple Street snack cart, Cinema Concessions, the Merch Table…) with a short line about its real stock, and sits pinned at the TOP of that place\u2019s Next steps','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+
+<script>
+/* ================= v200 HOTFIX 33 — GAME_VERSION stays 200; SAVE_KEY untouched; silent =================
+   Howard's batch, one layer:
+   2) THE MENU STAYS LIVE DURING ACTIONS — the action engine (startActivity) re-renders the panel
+      in chunks; each rebuild reset #panel's scroll, and v91's rescue restored the position from
+      the last pointerdown, not where the player had actually scrolled to — so the open menu
+      visibly would not move while an action played. The panel's LIVE scroll position is now
+      tracked continuously and re-asserted across every rebuild for as long as an activity runs.
+   8) SKY & STREET BANDS STOP STEPPING — hf27 mirrored the camera transform onto the DOM sky/curb
+      bands and re-fitted the scene canvas from a 300 ms poll, so during every camera glide the
+      bands and the canvas resized in visible steps ("bouncing in and out"). The bands now copy
+      the canvas's computed transform on the animation frame itself (frame-accurate), and if the
+      canvas size is rewritten repeatedly inside a second (duelling fitters), the size is pinned
+      to the settled value until the layout calms down.
+   9) BIKES & OTHER RIDES PARK TOO — carList202's car-only filter (🚗🚙🏎️🚘) silently dropped
+      every bike, scooter, skateboard and hoverboard a present character owns, so only cars ever
+      parked outside. Present owners' non-car rides now park at the curb in the same road band,
+      glyph + owner name tag, appearing and leaving with their owners. Cars untouched; traffic
+      still never takes a present owner's ride.
+   10–15) THE MINOR'S PHONE (S.age < 18; adults untouched) + TRUTHFUL PHONES EVERYWHERE:
+      PocketPal and Miami Nights no longer sit loose on a minor's home screen (they stay in the
+      Games folder); Invest leaves the minor's Money folder, the Bank app's Investing block is
+      hidden for minors and the Invest app itself answers "opens at 18"; the Record / Wanted
+      lines leave the minor's home screen (the systems themselves are untouched); Birdy is no
+      longer loose on ANY home screen — it lives in the App Store (its store row is restored,
+      alongside the other store-filed apps that had no row: Casino, Rip It, Spark) and only
+      shows once installed; folder preview tiles and counts are rebuilt from each folder's
+      effective contents (real apps, install gates applied), and folder contents get the same
+      gate, so previews can no longer show apps that are not really inside.
+   16) KID JOBS ARE WORKED AT THE JOB — doKidJob (the one choke point behind the Work tab, the
+      phone Jobs app and the Ways-to-earn list) now refuses away from the job's place with a
+      clear "go there first" answer: the Lemonade Stand is your own front yard (home), the rest
+      are Maple Street work. Applying and everything else about the Jobs app / Work is unchanged;
+      at the place, shifts run and pay exactly as before.
+   17) ONE LEVEL-UP MESSAGE, NON-BLOCKING — a level-up used to fire the exclusive, queue-blocking
+      "🎥 SPOTLIGHT" card (v216 held every sheet/notif behind it until tapped) AND v141's separate
+      celebrate banner. Level-ups now render ONE merged card — level reached, what it pays (cash,
+      bag slots), the unlocks and the next rung, all already computed by addXp — which never holds
+      the sheet queue, never blocks the game (taps land normally while it is up), dismisses by
+      tapping the card or on its own after a few seconds, and the duplicate celebrate banner for
+      player level-ups is suppressed. Other spotlights keep their shipped behaviour.
+   18) ORDER OUT LEAVES ACTIONS — the 📱 Order Out door is removed from the Actions Eat card
+      (ordering lives in the phone, untouched), and when nothing edible remains in that card
+      away from home the whole card goes too; eating from the Bag and the fridge at home is
+      exactly as shipped.
+   19) ONE CLOCK — the v110 location clock pill (.locClock110) that floated a second time at the
+      top-right of the scene is hidden for good; the canonical clock under the Calendar
+      (.clockPill125 / .jsClock) is untouched.
+   20) THE POST-SCAN TAP CAN'T BE EATEN — fpSuccess62 (and the pattern/face equivalents) swap
+      the sheet to the phone home mid-press, pointer capture held by the removed sensor button;
+      a queued close/paint gap could eat that first home paint, so the phone only opened on a
+      second tap. After any unlock success the home paint is now re-asserted at +130 ms and
+      +380 ms if it did not land — the second tap happens by itself, the scanner flow unchanged. */
+(function(){ 'use strict';
+try{
+
+ /* ---------- 19) one clock: the scene's floating duplicate goes ---------- */
+ var st233=document.createElement('style'); st233.id='style233';
+ st233.textContent='.locClock110{display:none!important}';
+ document.head.appendChild(st233);
+
+ /* ---------- 2) menus stay scrollable while actions play ---------- */
+ var panelScroll233=0;
+ document.addEventListener('scroll',function(e){ try{ var p=document.getElementById('panel'); if(p&&e.target===p)panelScroll233=p.scrollTop }catch(_){} },true);
+ function wrapScroll233(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__s233)return;
+  var w=function(){ var p=document.getElementById('panel'); if(p&&p.scrollTop>0)panelScroll233=p.scrollTop;
+   var keep=0; try{ if(typeof activity!=='undefined'&&activity)keep=panelScroll233 }catch(_){}
+   var r=fn.apply(this,arguments);
+   if(keep>0){ var rs=function(){ try{ var p2=document.getElementById('panel'); if(p2&&Math.abs(p2.scrollTop-keep)>2)p2.scrollTop=keep }catch(_){} }; rs(); setTimeout(rs,50); setTimeout(rs,160) }
+   return r };
+  w.__s233=true; window[nm]=w }catch(e){} }
+ wrapScroll233('render'); wrapScroll233('renderTabs');
+
+ /* ---------- 8) bands ride the camera per-frame; canvas size can't oscillate ---------- */
+ var cvWrites233=[]; var cvPin233=null; var cvEl233=document.getElementById('cv');
+ try{ if(cvEl233)new MutationObserver(function(){ try{ var now=Date.now(); cvWrites233.push(now); while(cvWrites233.length&&now-cvWrites233[0]>900)cvWrites233.shift();
+  if(cvWrites233.length>=5){ var w=cvEl233.style.width,h=cvEl233.style.height; if(w&&h)cvPin233={w:w,h:h,until:now+1300} } }catch(_){} }).observe(cvEl233,{attributes:true,attributeFilter:['style']}) }catch(e){}
+ var bandKey233='';
+ function bandFrame233(){ try{
+  if(typeof S!=='undefined'&&S&&typeof inGame!=='undefined'&&inGame){ var cv=document.getElementById('cv');
+   if(cv){ var cs=getComputedStyle(cv); var tr=cs.transform||'none'; var r=cv.getBoundingClientRect();
+    var key=tr+'|'+Math.round(r.top)+'|'+Math.round(r.left);
+    if(key!==bandKey233){ bandKey233=key;
+     ['sky193','curb193'].forEach(function(id){ var b=document.getElementById(id); if(!b)return;
+      if(tr==='none'){ if(b.style.transform)b.style.setProperty('transform','none','important') }
+      else { var org=cs.transformOrigin.split(' '); var ox=parseFloat(org[0])||0, oy=parseFloat(org[1])||0; var br=b.getBoundingClientRect(); var dx=(r.left+ox)-br.left, dy=(r.top+oy)-br.top; b.style.setProperty('transform-origin',(ox-dx)+'px '+(oy-dy)+'px','important'); b.style.setProperty('transform',tr,'important') } }) }
+    if(cvPin233&&Date.now()<cvPin233.until){ if(cv.style.width!==cvPin233.w)cv.style.setProperty('width',cvPin233.w,'important'); if(cv.style.height!==cvPin233.h)cv.style.setProperty('height',cvPin233.h,'important') }
+   } }
+ }catch(e){} requestAnimationFrame(bandFrame233) }
+ requestAnimationFrame(bandFrame233);
+
+ /* ---------- 9) bikes & other rides park at the curb, tagged ---------- */
+ function ridesPresent233(){ try{ if(typeof S==='undefined'||!S)return []; var out=[],seen={};
+  var add=function(nm,mine){ if(!nm||seen[nm])return; var model=null;
+   try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)model=v.equipped }catch(e){}
+   if(!model&&mine&&S.rides50&&S.rides50.length&&!(S.car&&S.car.owned)){ try{ var rd=(typeof RIDES50!=='undefined')?RIDES50:null; if(rd){ for(var i=S.rides50.length-1;i>=0;i--){ var d=null; for(var j=0;j<rd.length;j++)if(rd[j].id===S.rides50[i].id)d=rd[j]; if(d){ model=d.icon+' '+d.name; break } } } }catch(e){} }
+   if(!model)return; if(/🚗|🚙|🏎️|🚘/.test(model))return; seen[nm]=1; out.push({name:nm,model:model,mine:!!mine}) };
+  var hl=(typeof homeLoc==='function')?homeLoc():null; var atHome=S.location===hl||S.location==='grandparents';
+  if(atHome){ add(S.name,true); if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')add(n.name,false) }) }
+  else { var drove=false; try{ drove=(typeof carTrip193==='function')&&carTrip193() }catch(e){} if(!drove)add(S.name,true);
+   if(S.escort)add(S.escort,false);
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')add(p.name,false) });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')add(n.name,false) }) }
+  return out.slice(0,4) }catch(e){ return [] } }
+ function paintRides233(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var cv=document.getElementById('cv'); if(!cv)return; var rides=ridesPresent233(); if(!rides.length)return;
+  var hl=(typeof homeLoc==='function')?homeLoc():null; var atHome=S.location===hl||S.location==='grandparents';
+  var ctx=cv.getContext('2d'); var baseY=atHome?448:420; var spots=[120,330,540,750]; var usedX=[]; try{ var cp=window._carPos216||{}; Object.keys(cp).forEach(function(k){ usedX.push(cp[k]) }) }catch(e){}
+  ctx.save(); ctx.beginPath(); ctx.rect(0,300,900,160); ctx.clip();
+  rides.forEach(function(rd,i){ var x=spots[i%spots.length]; for(var t=0;t<spots.length;t++){ var cand=spots[(i+t)%spots.length]; var clash=false; for(var u=0;u<usedX.length;u++)if(Math.abs(usedX[u]-cand)<120)clash=true; if(!clash){ x=cand; break } }
+   var glyph='🚲'; try{ var m=String(rd.model).match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u); if(m)glyph=m[0] }catch(e){}
+   ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.ellipse(x,baseY+3,30,5,0,0,7); ctx.fill();
+   ctx.font='44px serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillText(glyph,x,baseY);
+   if(typeof tagWorld228==='function'){ try{ tagWorld228(ctx,x,baseY-72,rd.name,'#7dd3fc',rd.mine,200,2) }catch(e){} }
+   else { ctx.font='900 15px sans-serif'; var tw=ctx.measureText(rd.name).width; var pw=tw+22,px=Math.max(2,Math.min(898-pw,x-pw/2)); ctx.fillStyle='#0d0d10f2'; ctx.beginPath(); if(ctx.roundRect)ctx.roundRect(px,baseY-70,pw,24,10); else ctx.rect(px,baseY-70,pw,24); ctx.fill(); ctx.strokeStyle=rd.mine?'#ffb703':'#ffffffd0'; ctx.lineWidth=1.6; ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#fff'; ctx.textAlign='left'; ctx.fillText(rd.name,px+11,baseY-53) }
+  }); ctx.restore() }catch(e){} }
+ if(typeof drawCars202==='function'){ var _dc233=drawCars202; drawCars202=function(){ var r=_dc233.apply(this,arguments); paintRides233(); return r } }
+
+ /* ---------- 16) kid jobs are worked at the job's place ---------- */
+ function kidJobNeed233(label){ return label==='🍋 Lemonade Stand'?'home':'street' }
+ if(typeof doKidJob==='function'){ var _dkj233=doKidJob; doKidJob=function(label,pay){ try{ if(typeof S!=='undefined'&&S){ var need=kidJobNeed233(label); var needId=need==='home'?((typeof homeLoc==='function')?homeLoc():'house'):need;
+   if(S.location!==needId){ var placeName=need==='home'?'home — your own front yard':'🌳 Maple Street'; try{ toast('🧒 '+label+' happens at '+placeName+' — go there first, then work it') }catch(e){} try{ log('🧒 '+label+' — you have to be at '+placeName+' to work this one; it can\'t be done from here.') }catch(e){} return } } }catch(e){} return _dkj233.apply(this,arguments) } }
+
+ /* ---------- 17) one level-up message, non-blocking ---------- */
+ var lvHide233=null;
+ function lvHideNow233(){ try{ clearTimeout(lvHide233); var el=document.getElementById('spotCard'); if(el)el.classList.remove('show') }catch(e){} }
+ function lvShow233(title,body){ var el=document.getElementById('spotCard'); if(!el)return;
+  el.innerHTML='<div class="spotIcon">⭐</div><div style="flex:1;min-width:0"><b style="color:#ffb703;font-size:11px;letter-spacing:.07em">⭐ LEVEL UP</b><div style="font-weight:900;font-size:15px;margin:2px 0 3px">'+title+'</div><div style="font-size:13px;line-height:1.5;opacity:.93">'+body+'</div><div style="margin-top:7px;font-size:11.5px;font-weight:800;opacity:.75">👆 Tap this card to dismiss — the game stays live underneath</div></div>';
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  el.onclick=function(){ lvHideNow233() };
+  clearTimeout(lvHide233); lvHide233=setTimeout(lvHideNow233,6500) }
+ if(typeof showSpotlight==='function'){ var _ss233=showSpotlight; showSpotlight=function(icon,title,body,opts){ try{ if(typeof title==='string'&&/^Level Up — Level \d+/.test(title)){ lvShow233(title,body); return } }catch(e){} return _ss233.apply(this,arguments) } }
+ if(typeof celebrate141==='function'){ var _c141b233=celebrate141; celebrate141=function(title,sub,size){ try{ if(typeof title==='string'&&/^⭐ LEVEL \d+!$/.test(title))return }catch(e){} return _c141b233.apply(this,arguments) } }
+
+ /* ---------- 10–15) the minor's phone + truthful folders & store ---------- */
+ try{ if(typeof STORE_APPS110!=='undefined'){
+  if(!STORE_APPS110.birdy)STORE_APPS110.birdy={icon:'🐦',name:'Birdy',price:0,blurb:'News & posts from around town — the town feed, on your phone. Free.'};
+  if(!STORE_APPS110.casino)STORE_APPS110.casino={icon:'🎰',name:'Casino',price:0,blurb:'Slots, table games and the high life — the tables themselves are 18+. Free.'};
+  if(!STORE_APPS110.ripit)STORE_APPS110.ripit={icon:'🎁',name:'Rip It',price:0,blurb:'Open packs, chase the chase cards. Free.'};
+  if(!STORE_APPS110.spark)STORE_APPS110.spark={icon:'💘',name:'Spark',price:0,blurb:'Meet people and chat — dating, on your phone. Free.'} } }catch(e){}
+ function gateClosed233(id){ try{ if(typeof STORE7_158!=='undefined'&&STORE7_158.indexOf(id)>=0&&!(typeof appInstalled110==='function'&&appInstalled110(id)))return true;
+  if(typeof STORE_APPS110!=='undefined'&&STORE_APPS110[id]&&id!=='burner'&&!(typeof appInstalled110==='function'&&appInstalled110(id)))return true }catch(e){} return false }
+ function effApps233(f,minor){ try{ return (f.apps||[]).filter(function(id){ var a=(typeof phoneAppById==='function')?phoneAppById(id):null; if(!a)return false; if(gateClosed233(id))return false; if(minor&&id==='invest')return false; if(id==='burner'&&!(typeof burnerOn63==='function'&&burnerOn63()))return false; return true }) }catch(e){ return (f&&f.apps)||[] } }
+ function phoneFix233(){ try{ if(typeof S==='undefined'||!S)return; var sh=document.getElementById('sheet'); if(!sh)return; var scr=sh.querySelector('.phoneScreen'); if(!scr)return; var minor=S.age<18;
+  var tiles=scr.querySelectorAll('.pfFolder'); if(tiles.length&&Array.isArray(S.phoneFolders))tiles.forEach(function(t,fi){ var f=S.phoneFolders[fi]; if(!f)return; var eff=effApps233(f,minor); var box=t.querySelector('.pfBox'); if(box)box.innerHTML=eff.slice(0,4).map(function(id){ var a=phoneAppById(id); return '<span>'+(a?a.icon:'·')+'</span>' }).join('');
+   var divs=t.querySelectorAll('div'); for(var i=0;i<divs.length;i++){ if(/^\d+ apps?$/.test(divs[i].textContent||'')){ divs[i].textContent=eff.length+' app'+(eff.length===1?'':'s'); break } } });
+  scr.querySelectorAll('.appCell').forEach(function(c){ var m=(c.getAttribute('onclick')||'').match(/phoneTapApp\('([^']+)'\)/); if(!m)return; var id=m[1];
+   if(id==='birdy'&&!(typeof appInstalled110==='function'&&appInstalled110('birdy')))c.remove();
+   else if(minor&&(id==='tama'||id==='miami'))c.remove() });
+  if(minor){ var ps=scr.querySelectorAll('p'); for(var i=0;i<ps.length;i++){ var tx=ps[i].textContent||''; if(tx.indexOf('Record')>=0&&tx.indexOf('Wanted')>=0){ ps[i].innerHTML='Tap a folder to open it — every app works.'; break } } }
+ }catch(e){} }
+ if(typeof renderPhoneHome==='function'){ var _rph233=renderPhoneHome; renderPhoneHome=function(){ var r=_rph233.apply(this,arguments); try{ phoneFix233(); setTimeout(phoneFix233,120); setTimeout(phoneFix233,300) }catch(e){} return r } }
+ if(typeof renderPhoneFolder==='function'){ var _rpf233=renderPhoneFolder; renderPhoneFolder=function(){ var r=_rpf233.apply(this,arguments); try{ var sh=document.getElementById('sheet'); if(sh&&typeof S!=='undefined'&&S){ var minor=S.age<18; sh.querySelectorAll('.appCell').forEach(function(c){ var m=(c.getAttribute('onclick')||'').match(/phoneTapApp\('([^']+)'\)/); if(!m)return; var id=m[1]; if(gateClosed233(id)||(minor&&id==='invest'))c.remove() }) } }catch(e){} return r } }
+ if(typeof recordPatch144==='function'){ var _rp233=recordPatch144; recordPatch144=function(){ try{ if(typeof S!=='undefined'&&S&&S.age<18)return }catch(e){} return _rp233.apply(this,arguments) } }
+ if(typeof phoneInvest==='function'){ var _pi233=phoneInvest; phoneInvest=function(){ try{ if(typeof S!=='undefined'&&S&&S.age<18){ toast('📈 Investing is a grown-up app — it opens at 18'); return } }catch(e){} return _pi233.apply(this,arguments) } }
+ if(typeof phoneBank==='function'){ var _pb233=phoneBank; phoneBank=function(){ var r=_pb233.apply(this,arguments); try{ if(typeof S!=='undefined'&&S&&S.age<18){ var strip=function(){ try{ var sh=document.getElementById('sheet'); if(!sh)return; var scr=sh.querySelector('.phoneScreen'); if(!scr)return; var kids=Array.prototype.slice.call(scr.children); var si=-1,ei=kids.length; for(var i=0;i<kids.length;i++){ if(si<0&&kids[i].tagName==='H4'&&kids[i].textContent.indexOf('Investing')>=0)si=i; else if(si>=0&&kids[i].tagName==='H4'){ ei=i; break } } if(si>=0)for(var j=ei-1;j>=si;j--)if(kids[j].parentNode===scr)scr.removeChild(kids[j]) }catch(e){} }; setTimeout(strip,60); setTimeout(strip,220) } }catch(e){} return r } }
+
+ /* ---------- 18) Order Out leaves Actions ---------- */
+ function eatFix233(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return;
+  var cards=panel.querySelectorAll('.actCard101,.card');
+  for(var i=0;i<cards.length;i++){ var c=cards[i]; if(!c.isConnected)continue; var h=c.innerHTML||''; if(h.indexOf('eatInv132')<0&&h.indexOf('eatItem132')<0&&h.indexOf('🍽️ Eat')<0)continue;
+   var allBtns=c.querySelectorAll('button'); for(var j=0;j<allBtns.length;j++){ var ocj=allBtns[j].getAttribute('onclick')||''; if(ocj.indexOf('phoneServices')>=0||/Order Out/.test(allBtns[j].textContent||''))allBtns[j].remove() }
+   var dwrap=c.querySelector('.eatDoors173'); if(dwrap&&!dwrap.querySelector('button'))dwrap.remove();
+   var hasFood=false,hasRestock=false; var btns=c.querySelectorAll('button'); for(var k=0;k<btns.length;k++){ var oc=btns[k].getAttribute('onclick')||''; if(oc.indexOf('eatItem132(')>=0||oc.indexOf('eatBag133(')>=0||oc.indexOf('eatInv132(')>=0)hasFood=true; if(oc.indexOf('restockSheet173')>=0)hasRestock=true }
+   var atHome233=false; try{ atHome233=(typeof homeLoc==='function'&&S.location===homeLoc()) }catch(e){}
+   if(!hasFood&&!(atHome233&&hasRestock)){ var dd=c.closest?c.closest('details.dd132'):null; if(dd&&c.parentNode===dd)dd.remove(); else c.remove() } }
+ }catch(e){} }
+ ['paintActions101','paintQCards101','renderTabs'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__e233)return; var w=function(){ var r=fn.apply(this,arguments); try{ eatFix233(); setTimeout(eatFix233,120); setTimeout(eatFix233,450) }catch(e){} return r }; w.__e233=true; window[nm]=w }catch(e){} });
+
+ /* ---------- 20) the post-scan tap can't be eaten ---------- */
+ var fpHome233=0;
+ function fpAssert233(){ try{ if(!fpHome233||Date.now()-fpHome233>600)return; if(typeof S==='undefined'||!S||!S.hasPhone)return;
+  var sh=document.getElementById('sheet'); if(!sh)return;
+  var homePainted=!!sh.querySelector('.phoneScreen .appGrid');
+  var lockShown=!!(document.getElementById('fpBtn62')||sh.querySelector('[id^="patDot"]')||sh.querySelector('.pinKey41'));
+  if(!homePainted&&!lockShown){ try{ renderPhoneHome() }catch(e){} } }catch(e){} }
+ function wrapUnlock233(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__fp233)return; var w=function(){ var r=fn.apply(this,arguments); try{ fpHome233=Date.now(); setTimeout(fpAssert233,130); setTimeout(fpAssert233,380) }catch(e){} return r }; w.__fp233=true; window[nm]=w }catch(e){} }
+ wrapUnlock233('fpSuccess62'); wrapUnlock233('patRelease62'); wrapUnlock233('faceSuccess92');
+
+ /* ---------- 21) the v200 new-apps batch leaves the phone entirely ---------- */
+ /* Howard: Creator Sim, Miami Nights, Flip It, Pocket League, Food Truck and Windowsill go —
+    "and those other new apps we added" — i.e. the whole NEWAPPS200 wave (Land, Cast & Collect,
+    Gossip Page, Underground, Midnight Circuit, Rescue Shelter) — removed from the phone itself,
+    not just the home screen, until he re-adds them one by one. Core apps, PocketPal and Birdy
+    are NOT in this list and stay exactly as ruled. Save data for the removed apps is left in
+    place (dormant) so a later re-add picks the player's progress back up. */
+ var REMOVED233=['miami','land','creatorsim','league','flip','truck','cast','gossip','underground','circuit','shelter','windowsill'];
+ try{ if(typeof PHONE_APPS!=='undefined'&&Array.isArray(PHONE_APPS)){ for(var ri=PHONE_APPS.length-1;ri>=0;ri--){ if(REMOVED233.indexOf(PHONE_APPS[ri].id)>=0)PHONE_APPS.splice(ri,1) } } }catch(e){}
+ function pruneRemoved233(){ try{ if(typeof S==='undefined'||!S||!Array.isArray(S.phoneFolders))return; var changed=false;
+  S.phoneFolders.forEach(function(f){ if(f&&Array.isArray(f.apps)){ var before=f.apps.length; f.apps=f.apps.filter(function(id){ return REMOVED233.indexOf(id)<0 }); if(f.apps.length!==before)changed=true } });
+  if(changed){ try{ save() }catch(e){} } }catch(e){} }
+ try{ var _op233=openPhone; if(typeof _op233==='function'){ openPhone=function(){ pruneRemoved233(); return _op233.apply(this,arguments) } } }catch(e){}
+
+ window.__v233={version:function(){ return GAME_VERSION }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 33: 🖱️ menus stay scrollable mid-action (live panel scroll, not the pointerdown snapshot) • 🌤️ sky/street bands ride the camera per-frame + canvas-size oscillation pin • 🚲 bikes & other rides park at the curb with owner tags • 📱 minor phone cleaned (no PocketPal/Miami Nights/Birdy/Invest/Record/Wanted on the home screen; Birdy + Casino + Rip It + Spark installable from the App Store; folder previews show real contents) • 🧒 kid jobs worked at the job • ⭐ one non-blocking level-up message • 🍽️ Order Out leaves Actions • 🕐 the duplicate scene clock is gone • 🖐️ the post-fingerprint tap can no longer be eaten','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ============================================================
+   🐠 v200 HOTFIX 34 — THE CATCH TANK (Howard: "You can have a aquarium and put fish you have
+   from the pound into the aquarium and you can sell at pawn shop or fish store.")
+   "Pound" = the POND. A home aquarium bought at the 🐾 Pet Store (the Vet) holds the fish YOU
+   catch at the Maple Street pond: every catch while you own the tank asks — into the aquarium
+   (alive, on display at home) or keep it in the Bag (eat it, or sell it at the 🏪 Pawn Shop —
+   the game's fish-selling counter; there is no separate fish-store location). Tank fish need
+   no feeding and never die — they just live there. Capacity 6; a full tank says so plainly
+   and the catch simply stays in the Bag. Releasing a fish puts it back in the Bag.
+   ============================================================ */
+(function(){
+'use strict';
+var TANK_PRICE234=40, TANK_CAP234=6;
+var FISH_NAMES234=['🐟 Sunfish','🐠 Bluegill','🐡 Largemouth bass','🌟 Golden koi'];
+function tank234(){ if(!S)return null; if(!S.v234)S.v234={tank:false,fish:[]}; if(!Array.isArray(S.v234.fish))S.v234.fish=[]; return S.v234 }
+function tankRoom234(){ try{ return S&&S.location===homeLoc() }catch(e){ return false } }
+window.buyTank234=function(){ try{ var T=tank234(); if(!T||T.tank)return; if(S.money<TANK_PRICE234){ toast('🐠 The catch tank is $'+TANK_PRICE234+' — you have $'+S.money); return } money(-TANK_PRICE234,'🐠 Bought the home aquarium (catch tank)'); T.tank=true; log('🐠 The catch tank is set up at home — a real glass aquarium, humming softly. Fish you catch at the 🎣 pond can live in it now: on display, no feeding, no fuss.'); toast('🐠 Aquarium bought — it is set up at home'); save(); render() }catch(e){} };
+window.tankRelease234=function(i){ try{ var T=tank234(); if(!T||!T.fish[i])return; var f=T.fish[i]; var it=addItem(f.name,'food',f.v,false,f.d||'A pond catch, released from your aquarium back into your 🎒 Bag.',null); if(!it)return; T.fish.splice(i,1); log('🐠 '+f.name+' is back in your 🎒 Bag — sell it at the 🏪 Pawn Shop or keep it.'); toast('🐠 '+f.name+' → 🎒 Bag'); save(); render() }catch(e){} };
+window.tankIn234=function(id){ try{ var T=tank234(); if(!T||!T.tank)return; var ix=S.inv.findIndex(function(it){ return it.id===id }); if(ix<0)return; var it=S.inv[ix]; if(T.fish.length>=TANK_CAP234){ toast('🐠 The tank is FULL ('+TANK_CAP234+' fish) — '+it.name+' stays in your Bag'); return } S.inv.splice(ix,1); T.fish.push({name:it.name,v:it.value||0,d:it.desc||''}); log('🐠 '+it.name+' slipped into the home aquarium — alive and on display. ('+T.fish.length+'/'+TANK_CAP234+' in the tank.)'); toast('🐠 '+it.name+' is in the tank'); try{ sfx('win') }catch(e){} save(); render() }catch(e){} };
+function tankCatchSheet234(it){ try{ var T=tank234(); if(!T||!T.tank||T.fish.length>=TANK_CAP234)return; openSheet('<h2>🎣🐟 Caught — '+it.name+'!</h2><p>It is alive in the bucket, watching you. Your home aquarium has room ('+T.fish.length+'/'+TANK_CAP234+').</p><button class="btn gold" onclick="closeModal();tankIn234('+it.id+')">🐠 Put it in the aquarium — alive, on display at home</button><button class="btn outline" style="margin-top:8px" onclick="closeModal()">🎒 Keep it in the Bag — eat it, or sell it at the 🏪 Pawn Shop</button>',{sfx:'pop'}) }catch(e){} }
+/* a pond catch while the tank is owned → the choice (addItem is the one door fish come through) */
+try{ var _ai234=addItem; if(typeof _ai234==='function'){ addItem=function(name,kind,value,hot,desc,use){ var it=_ai234.apply(this,arguments); try{ if(it&&kind==='food'&&FISH_NAMES234.indexOf(name)>=0){ var T=tank234(); if(T&&T.tank&&T.fish.length<TANK_CAP234){ var theItem=it; setTimeout(function(){ try{ if(S&&S.inv.some(function(x){ return x.id===theItem.id }))tankCatchSheet234(theItem) }catch(e){} },1100) } else if(T&&T.tank){ setTimeout(function(){ try{ toast('🐠 Tank is FULL ('+TANK_CAP234+'/'+TANK_CAP234+') — the catch stays in your Bag') }catch(e){} },1100) } } }catch(e){} return it } } }catch(e){}
+/* the Pet Store card (Travel tab at the Vet) gets the catch-tank counter */
+function tankPass234(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined')return; var panel=document.getElementById('panel'); if(!panel)return; var T=tank234(); if(!T)return;
+ if(curTab==='travel'&&S.location==='vet'&&!panel.querySelector('.tankCard234')){ var grid=panel.querySelector('.grid')||panel; var d=document.createElement('div'); d.className='card tankCard234'; d.style.borderColor='#0ea5e9'; d.innerHTML='<h3>🐠 The Catch Tank — home aquarium</h3><p>A real glass tank for the fish <b>you catch yourself</b> at the 🎣 Maple Street pond — not the pre-stocked pet aquarium: YOUR catches, alive and on display at home. No feeding, they never fade — they just live there. Holds '+TANK_CAP234+'.</p>'+(T.tank?'<p class="small">✅ <b>Yours is set up at home</b> — '+T.fish.length+'/'+TANK_CAP234+' fish in it.</p>':'<button class="btn gold" style="width:100%" onclick="buyTank234()">🐠 Buy the catch tank — $'+TANK_PRICE234+'</button>'); grid.appendChild(d) }
+ if(curTab==='home'&&T.tank&&!panel.querySelector('.tankCard234')){ var grid2=panel.querySelector('.grid')||panel; var d2=document.createElement('div'); d2.className='card tankCard234'; d2.style.borderColor='#0ea5e9'; d2.innerHTML='<h3>🐠 Your Aquarium — '+T.fish.length+'/'+TANK_CAP234+'</h3>'+(T.fish.length?T.fish.map(function(f,i){ return '<div class="kv"><span>'+f.name+'</span><button class="btn outline" style="width:auto;margin:0;padding:6px 11px;flex:none" onclick="tankRelease234('+i+')">🎒 Back to Bag</button></div>' }).join(''):'<p class="small">Empty glass and a quiet hum. Catch a fish at the 🎣 Maple Street pond and it can live here.</p>')+'<p class="small" style="margin-top:6px">Tank fish are happy as they are — no feeding, no fuss, they never die. Release one to the Bag to sell it at the 🏪 Pawn Shop.</p>'; grid2.insertBefore(d2,grid2.firstChild) }
+ /* the visible tank in the home scene: glass + your actual fish, drifting */
+ var wrap=document.querySelector('.roomWrap'); var old=document.getElementById('tankStrip234');
+ if(wrap&&T.tank&&tankRoom234()){ var html='<div style="font-size:10px;font-weight:800;color:#bae6fd;letter-spacing:.4px;margin:0 0 1px 2px">🐠 AQUARIUM · '+T.fish.length+'</div><div style="display:flex;gap:7px;align-items:center;min-height:22px">'+(T.fish.length?T.fish.map(function(f,i){ return '<span style="display:inline-block;font-size:19px;animation:tankSwim234 '+(2.6+i*0.7)+'s ease-in-out infinite alternate">'+(f.name.split(' ')[0])+'</span>' }).join(''):'<span style="font-size:11px;color:#7dd3fc">empty — catch a fish at the pond</span>')+'</div>';
+  if(!old){ old=document.createElement('div'); old.id='tankStrip234'; old.style.cssText='position:absolute;left:10px;bottom:52px;z-index:6;background:linear-gradient(180deg,#0c4a6e99,#082f49cc);border:2px solid #38bdf8;border-radius:10px;padding:4px 9px 5px;pointer-events:none;max-width:46%'; var st=document.createElement('style'); st.textContent='@keyframes tankSwim234{from{transform:translateX(0) translateY(0)}to{transform:translateX(9px) translateY(-3px)}}'; document.head.appendChild(st); wrap.appendChild(old) }
+  if(old._h234!==html){ old.innerHTML=html; old._h234=html } }
+ else if(old)old.remove();
+ }catch(e){} }
+['renderTabs','render'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn!=='function'||fn.__t234)return; var w=function(){ var r=fn.apply(this,arguments); try{ tankPass234() }catch(e){} return r }; w.__t234=true; window[nm]=w }catch(e){} });
+try{ setInterval(tankPass234,1500) }catch(e){}
+window.__v234={version:function(){ return GAME_VERSION },cap:TANK_CAP234,price:TANK_PRICE234};
+try{ console.log('%cAquaLife v200 — hotfix 34: 🐠 the catch tank (buy at the Pet Store, pond catches move in alive, sell via the Pawn Shop)','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+<script>
+/* ============================================================
+   🧠 v200 HOTFIX 35 — REAL CONVERSATIONS (Howard: "Build ai wiring")
+   When a chat conversation starts (openConvo), ONE call goes to the AquaLife brain
+   (POST https://aqualife-brain.aqualife.workers.dev {system, prompt} → {reply}) and the
+   single reply carries the whole short exchange. The context packet holds both people,
+   their relationship, place, day/time, weather, needs, the recent journal — and the
+   stored summary of this pair's LAST conversation, so people continue their story.
+   When it lands, the exchange is saved as the thread's messages, a one-line summary +
+   tone go into S.chatMem (the pair's memory), and small mood/relationship effects
+   follow the tone. A typing… beat shows while waiting; the world stays live.
+   FALLBACK: offline / error / timeout / unparseable → nothing changes: the game's
+   written lines and reply choices carry the conversation, and the player never sees
+   a brain error. KID SAFETY: if either side is a minor, the system prompt locks the
+   exchange to age-appropriate everyday topics and the packet carries no adult systems.
+   ============================================================ */
+(function(){
+'use strict';
+var BRAIN235='https://aqualife-brain.aqualife.workers.dev';
+var busy235=false, lastFire235={};
+function ageOf235(name){ try{ var pools=[]; if(typeof npcs!=='undefined'&&npcs)pools.push(npcs); if(typeof townsfolk!=='undefined'&&townsfolk)pools.push(townsfolk); for(var i=0;i<pools.length;i++){ var p=pools[i].find(function(x){ return x&&x.name===name }); if(p&&(p.age||p.age===0))return p.age } if(S.town&&S.town.people&&S.town.people[name]&&S.town.people[name].age)return S.town.people[name].age }catch(e){} return null }
+function locLabel235(){ try{ var o=(typeof TRAVEL_OPTS!=='undefined'?TRAVEL_OPTS:[]).find(function(x){ return x[0]===S.location }); if(o)return o[1].replace(/^[^\w]*\s*/,'') }catch(e){} return S.location }
+function packet235(from){ var mem=(S.chatMem&&S.chatMem[from])||{}; var theirAge=ageOf235(from); var minor=(S.age<18)||(theirAge!==null&&theirAge<18);
+ var needs=S.needs||{}; var low=Object.keys(needs).sort(function(a,b){ return needs[a]-needs[b] }).slice(0,2).map(function(k){ return k+' '+Math.round(needs[k])+'%' }).join(', ');
+ var rel='Relationship: '+from+' is '+(typeof contactRel==='function'?contactRel(from):'someone in the player\u2019s life')+'.';
+ try{ if(typeof romOf==='function'){ var r=romOf(from); if(r&&(r.stage>0||r.meter>0))rel+=' Romance: stage '+r.stage+' of 2, closeness meter '+r.meter+'/100.' } }catch(e){}
+ var recent=(S.journal||[]).slice(0,3).map(function(j){ return String(j).replace(/^Day \d+ • Age \d+ • [^—]+— /,'').replace(/<[^>]*>/g,'') }).filter(Boolean);
+ var lines=[];
+ lines.push('The player character: '+S.name+', age '+S.age+' ('+(typeof stage==='function'?stage(S.age):'')+').');
+ lines.push('The other person: '+from+(theirAge!==null?', age '+theirAge:'')+'.');
+ lines.push(rel);
+ lines.push('Place: '+locLabel235()+' in '+((typeof placeOf==='function'&&placeOf().city)||'town')+'. It is Day '+S.day+', '+(typeof clockStr==='function'?clockStr():'')+', weather: '+(S.weather||'clear')+'.');
+ if(low)lines.push(S.name+'\u2019s lowest needs right now: '+low+'.');
+ if(recent.length)lines.push('What has been happening in '+S.name+'\u2019s life lately (newest first): '+recent.join(' | '));
+ if(mem.aiSummary)lines.push('IMPORTANT — the last time these two talked (Day '+(mem.aiDay||'?')+', tone: '+(mem.aiTone||'neutral')+'): "'+mem.aiSummary+'" Continue naturally FROM that conversation: reference it, follow up on it, do NOT restart introductions or repeat it.');
+ else lines.push('These two have not had a real conversation yet in this life.');
+ return {text:lines.join('\n'), minor:minor} }
+function system235(from,minor){ var p='You write short, natural text-message conversations for a life-sim game. Two people are chatting by text. Write the exchange in EXACTLY this format and nothing else:\n- 4 to 6 lines, alternating speakers, each line starting with the speaker\u2019s first name then a colon, like "'+from.split(' ')[0]+': ..."\n- Every line is ONE short text message (under 18 words), in character, specific to the facts you are given — places, events, feelings. No generic small talk, no narration, no stage directions, no emoji spam (one emoji max, only if it fits).\n- Then a line: SUMMARY: <one line, third person, what they talked about and anything promised or decided>\n- Then a line: TONE: <one word: warm, funny, neutral, tense, or cold>';
+ if(minor)p+='\nKID SAFETY — STRICT: at least one speaker is a MINOR. The conversation must stay on age-appropriate everyday topics only: school, family, friends, games, food, pets, hobbies, the weather, plans for the day. Absolutely NO romantic, dating, flirting, alcohol, drug, crime, money-lending or adult content of any kind, in any line.';
+ return p }
+function parse235(reply,from){ if(!reply||typeof reply!=='string')return null; var summary='',tone='neutral',dlg=[]; reply.split(/\r?\n/).forEach(function(ln){ ln=ln.trim(); if(!ln)return; var sm=ln.match(/^SUMMARY:\s*(.+)$/i); if(sm){ summary=sm[1].trim(); return } var tm=ln.match(/^TONE:\s*(\w+)/i); if(tm){ tone=tm[1].toLowerCase(); return } var m=ln.match(/^([^:]{1,42}):\s*(.+)$/); if(m){ var who=m[1].trim(); var mine=(who.toLowerCase()===String(S.name).split(' ')[0].toLowerCase())||who==='You'; dlg.push({you:mine,text:m[2].trim().slice(0,220)}) } });
+ if(dlg.length<2||!dlg.some(function(d){ return !d.you })||!dlg.some(function(d){ return d.you }))return null;
+ if(['warm','funny','neutral','tense','cold'].indexOf(tone)<0)tone='neutral';
+ return {dlg:dlg.slice(0,6),summary:(summary||dlg.map(function(d){ return d.text }).join(' ')).slice(0,180),tone:tone} }
+function apply235(from,ex){ try{ var base=Date.now(); ex.dlg.slice().reverse().forEach(function(d,i){ var chrono=ex.dlg.length-1-i; S.phoneMsgs.unshift({id:base+chrono*7+3,from:d.you?'You':from,to:d.you?from:undefined,text:d.text,read:true,replied:chrono<ex.dlg.length-1||d.you?true:false}) }); if(S.phoneMsgs.length>60)S.phoneMsgs.length=60;
+  if(!S.chatMem)S.chatMem={}; var mem=S.chatMem[from]=S.chatMem[from]||{}; mem.aiSummary=ex.summary; mem.aiTone=ex.tone; mem.aiDay=S.day; mem.aiCount=(mem.aiCount||0)+1; mem.lastTone=(ex.tone==='warm'||ex.tone==='funny')?ex.tone:(ex.tone==='tense'||ex.tone==='cold')?'distant':(mem.lastTone||'neutral'); try{ mem.lastTopic=topicOf(ex.summary) }catch(e){}
+  try{ if(ex.tone==='warm'||ex.tone==='funny'){ adj('social',4); if(typeof romOf==='function'){ var r=romOf(from); if(r&&r.stage>0)r.meter=Math.min(100,r.meter+2) } } else if(ex.tone==='tense'||ex.tone==='cold'){ adj('social',-2) } else adj('social',1) }catch(e){}
+  try{ markTalk69(from) }catch(e){}
+  log('💬 You and '+from+' talked — '+ex.summary); save() }catch(e){} }
+function typing235(from,on){ try{ var sh=document.getElementById('sheet'); var old=document.getElementById('typing235'); if(old)old.remove(); if(!on||!sh)return; var d=document.createElement('div'); d.id='typing235'; d.style.cssText='margin:10px 2px;padding:9px 12px;border-radius:12px;background:#1e293b;color:#bae6fd;font-size:13px;font-style:italic'; d.textContent='💬 '+from+' is typing…'; sh.appendChild(d) }catch(e){} }
+function maybeAi235(from){ try{ if(!S||!S.hasPhone||!from)return; if(from==='School'||from==='FBI')return; if(busy235)return; var now=Date.now(); if(lastFire235[from]&&now-lastFire235[from]<20000)return; lastFire235[from]=now; busy235=true;
+  var pk=packet235(from); var ctrl=(typeof AbortController!=='undefined')?new AbortController():null; var to=ctrl?setTimeout(function(){ try{ ctrl.abort() }catch(e){} },25000):null;
+  setTimeout(function(){ typing235(from,true) },350);
+  fetch(BRAIN235,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:system235(from,pk.minor),prompt:pk.text}),signal:ctrl?ctrl.signal:undefined}).then(function(r){ if(!r.ok)throw new Error('brain '+r.status); return r.json() }).then(function(j){ if(to)clearTimeout(to); typing235(from,false); var ex=parse235(j&&j.reply,from); if(ex){ apply235(from,ex); try{ if(typeof openThread42!=='undefined'&&openThread42&&openThread42.who===from&&document.getElementById('modal')&&document.getElementById('modal').classList.contains('open'))openConvo(from) }catch(e){} } busy235=false }).catch(function(){ if(to)clearTimeout(to); typing235(from,false); busy235=false });
+ }catch(e){ busy235=false } }
+try{ var _oc235=openConvo; if(typeof _oc235==='function'){ openConvo=function(from){ var r=_oc235.apply(this,arguments); try{ maybeAi235(from) }catch(e){} return r } } }catch(e){}
+window.__v235={version:function(){ return GAME_VERSION },packet:packet235,parse:parse235,system:system235};
+try{ console.log('%cAquaLife v200 — hotfix 35: 🧠 real AI conversations (one brain call per chat, pair memory, kid-safe, scripted fallback)','color:#0ea5e9;font-weight:bold') }catch(e){}
 })();
 </script>
 
