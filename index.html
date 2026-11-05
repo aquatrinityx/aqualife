@@ -4083,7 +4083,7 @@ function inAppBrowser68(){ try{ if(window.self!==window.top)return true }catch(e
 function installPromptNow68(){ if(!deferredInstall67)return; const p=deferredInstall67; deferredInstall67=null; syncInstall67(); closeModal(); p['prompt'](); if(p.userChoice)p.userChoice.then(function(c){ console.log('[AquaLife] install choice:',c&&c.outcome) }) }
 function installApp67(){ if(isStandalone67()){ toast('✅ AquaLife is already running as the installed app'); return } if(deferredInstall67){ installPromptNow68(); return } openInstallSheet68() }
 function openInstallSheet68(){ const ua=navigator.userAgent||''; const ios=/iphone|ipad|ipod/i.test(ua); const chromeSteps='<p><b>🤖 Android — in Chrome:</b></p><p>1️⃣ Tap the <b>⋮ menu</b> at the top-right of Chrome.<br>2️⃣ Tap <b>Install app</b> (on some phones it says <b>Add to Home screen</b>).<br>3️⃣ Tap <b>Install</b>. AquaLife lands on your home screen with its own icon and opens full-screen, no browser bar — like any app.</p>'; const iosSteps='<p><b>🍎 iPhone / iPad — in Safari:</b></p><p>1️⃣ Tap the <b>Share</b> button (the square with an arrow pointing up).<br>2️⃣ Scroll down and tap <b>Add to Home Screen</b>.<br>3️⃣ Tap <b>Add</b>. The AquaLife icon lands on your home screen and opens full-screen, no browser bars.</p>'; const first=ios?iosSteps:chromeSteps; const second=ios?chromeSteps:iosSteps; openSheet('<h2>📲 Get the AquaLife app</h2>'+(deferredInstall67?'<p>Good news — your browser is offering a real one-tap install right now:</p><button class="btn gold" onclick="installPromptNow68()">📲 Install AquaLife — one tap</button><p class="small" style="margin-top:8px">…or use your browser\u2019s own menu route below:</p>':'<p>AquaLife installs from your browser — about ten seconds, and it is this exact game:</p>')+first+'<div style="margin-top:12px">'+second+'</div>'+(inAppBrowser68()?'<p style="margin-top:10px;background:#7f1d1d;border:1px solid #f87171;border-radius:10px;padding:9px 11px">⚠️ <b>You are reading this inside another app\u2019s built-in browser</b> — it cannot install anything, and its menus have no install option. Open this same link in <b>Chrome</b> (Android) or <b>Safari</b> (iPhone) first, then follow the steps above.</p>':'<p class="small" style="margin-top:8px">Reading this inside another app (Muse, Messages, Facebook…)? Its built-in browser cannot install — open the link in Chrome or Safari first.</p>')+'<h3 style="margin-top:14px">🤖 The Android app (APK)</h3><p>There is also a real Android app package of this exact game — built with PWABuilder, package name <b>com.minilifesim.game</b>. It is not a different game: the app opens this same live link, so it is always the newest version. Install the APK file on an Android phone (Android may ask you to allow installs from that source — that is normal for APK files) and AquaLife gets its own home-screen icon and opens full-screen with no browser bar. No APK handy? The Chrome install above gives you the same app, straight from the browser.</p><p class="small" style="margin-top:8px">Whichever way you install, it is this same game at this same address — a life saved in Chrome on this phone carries straight over.</p><p class="small" style="margin-top:10px;text-align:center;font-weight:700">Made by AquaTechFantasy 🌊</p><button class="btn gold" style="margin-top:10px" onclick="closeModal()">Got it</button>') }
-// ---- v67, synced v124: SERVICE WORKER — registers the offline shell (data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0Nyc7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg==, cache aqualife-shell-v125; the static host scopes it to assets/ — see the note in that file). v124: after registering, ask for an update check right away and again whenever the app comes back to the foreground; and if a NEW worker takes control mid-session, reload ONCE so the fresh build is what is actually on screen — that is how an installed copy that was holding an old build lands on the newest one at the next open instead of staying stale. ----
+// ---- v67, synced v124: SERVICE WORKER — registers the offline shell (data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0OCc7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg==, cache aqualife-shell-v125; the static host scopes it to assets/ — see the note in that file). v124: after registering, ask for an update check right away and again whenever the app comes back to the foreground; and if a NEW worker takes control mid-session, reload ONCE so the fresh build is what is actually on screen — that is how an installed copy that was holding an old build lands on the newest one at the next open instead of staying stale. ----
 if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').then(function(reg){ console.log('[AquaLife] service worker registered — scope:',reg.scope); try{ reg.update() }catch(e){} document.addEventListener('visibilitychange',function(){ if(!document.hidden){ try{ reg.update() }catch(e){} } }); var hadCtl124=!!navigator.serviceWorker.controller, reloaded124=false; try{ reg.addEventListener('updatefound',function(){ var nw=reg.installing; if(!nw)return; nw.addEventListener('statechange',function(){ if(nw.state==='installed'&&navigator.serviceWorker.controller){ try{ if(typeof window.__upd246Offer==='function'){ window.__upd246Offer(); return } }catch(e){} } }) }) }catch(e){} navigator.serviceWorker.addEventListener('controllerchange',function(){ if(!hadCtl124||reloaded124)return; try{ if(typeof window.__upd246Offer==='function'){ window.__upd246Offer(); return } }catch(e){} reloaded124=true; window.location.reload() }) }).catch(function(err){ console.warn('[AquaLife] service worker registration failed:',err) }) }) }
 syncInstall67();
 
@@ -7575,6 +7575,8 @@ try{ console.log('[AquaLife v193] Social single-home + creator letter armed: '+A
 
 
 
+
+
 </body>
 </html>
 <style>
@@ -8976,7 +8978,7 @@ const _r123=render; render=function(){ const r=_r123.apply(null,arguments); try{
 if(typeof TIPS!=='undefined'){ if(!TIPS['quick123'])TIPS['quick123']={t:'⚡ Quick Life',b:'New lives now start with a choice: ⚡ Quick Life (the dice roll a boy or girl, a name, a style, a family and a town, and place you straight in) or 🎨 Normal Life (the full custom setup). Inside Normal, 🎲 Random style rolls just the look.'}; if(!TIPS['crib123'])TIPS['crib123']={t:'🛏️ Crib → stand → crawl → walk',b:'Toddlers stay in the crib until they learn to stand. Before that they cannot change rooms at all — a caregiver picks them up, carries them, and puts them down. Standing unlocks crawling; walking is the next milestone.'}; if(!TIPS['doctor123'])TIPS['doctor123']={t:'🏥 The doctor',b:'Checkups and flu shots live in 👽 Me → 🏥 Doctor & Health (and at the hospital Clinic). Shots are tracked — overdue flu shots invite sick days, and a checkup fixes a sickness today.'}; if(!TIPS['relbars123'])TIPS['relbars123']={t:'💖 The relationship ladder',b:'💖 Relationships & Dating lives in ❤️ Social now: every person you start to like gets a progress bar — Unknown → Friendly → Cool → Interested → Like → Dating → Engaged → Married (Divorced is remembered too).'}; if(!TIPS['mallrooms123'])TIPS['mallrooms123']={t:'🛍️ The mall is rooms now',b:'Atrium, Clothes Wing, Food Court, Games & Movies, Phone Store and a Bag Shop — walk between them with the room chips and shop room by room. Other places have rooms too: check the chips under the scene.'}; if(!TIPS['bookbag123'])TIPS['bookbag123']={t:'🎒 Bookbags',b:'The bag is locked for toddlers — a grown-up opens it with them. More bookbags are sold at the Corner Store and the mall Bag Shop, and you can wear & repaint yours in 👽 Me → 🎒 Your Bookbag.'} }
 window.__v123={ensure123:ensure123,quickLife123:quickLife123,randomStyle123:randomStyle123,moveStage123:moveStage123,carryTo123:carryTo123,doctorSheet123:doctorSheet123,docDo123:docDo123,relStage123:relStage123,relPct123:relPct123,buyBookbag123:buyBookbag123,wearBookbag123:wearBookbag123,bagColor123:bagColor123,bagSheet123:bagSheet123,mallGo123:mallGo123,mallSheet123:mallSheet123,goArea123:goArea123,paintTop123:paintTop123};
 
-/* ================= v124: 🔢 THE VERSION IS VISIBLE NOW — GAME_VERSION existed only inside the code (save stamps & update checks), with no label anywhere on screen, so a player had no way to tell which version they were running — and an installed copy holding an older build looked identical to the newest one. Now the version is printed where a player can actually see it: a small line at the bottom of every start screen (the install gate, the welcome-back screen and the new-life setup), a line + a ✨ update-notes button inside ⚙️ Settings, and a small v-tag on the bottom bar while playing — every one of them reads the live GAME_VERSION constant, so the label can never drift from the code. ✨ ONE-TIME UPDATE NOTE: when a returning player's seen-version (the existing SEEN_KEY record, written at every life start) is behind GAME_VERSION, the welcome-back screen opens with a 🎉 update banner and its note (both removed in v155), and either button marks the version seen so it never nags twice. New players never see it — a fresh life stamps the seen-version at start, as it always has. 🔄 FRESHER OPENS: the service-worker registration (above) now checks for a new worker on load and on every return to the foreground, and reloads once if a new worker takes control; data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0Nyc7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg== itself is hardened to match (new cache name, network-first revalidated navigations, error/redirected responses never cached as the shell, stale-while-revalidate assets). Saves carry over untouched: nothing in the save format changes. ================= */
+/* ================= v124: 🔢 THE VERSION IS VISIBLE NOW — GAME_VERSION existed only inside the code (save stamps & update checks), with no label anywhere on screen, so a player had no way to tell which version they were running — and an installed copy holding an older build looked identical to the newest one. Now the version is printed where a player can actually see it: a small line at the bottom of every start screen (the install gate, the welcome-back screen and the new-life setup), a line + a ✨ update-notes button inside ⚙️ Settings, and a small v-tag on the bottom bar while playing — every one of them reads the live GAME_VERSION constant, so the label can never drift from the code. ✨ ONE-TIME UPDATE NOTE: when a returning player's seen-version (the existing SEEN_KEY record, written at every life start) is behind GAME_VERSION, the welcome-back screen opens with a 🎉 update banner and its note (both removed in v155), and either button marks the version seen so it never nags twice. New players never see it — a fresh life stamps the seen-version at start, as it always has. 🔄 FRESHER OPENS: the service-worker registration (above) now checks for a new worker on load and on every return to the foreground, and reloads once if a new worker takes control; data:application/javascript;base64,LyogQXF1YUxpZmUgc2VydmljZSB3b3JrZXIgKHYxMzIpIOKAlCBpbnN0YWxsIHN1cHBvcnQgKyBvZmZsaW5lIHNoZWxsLgogICBIb3N0aW5nIG5vdGU6IHRoaXMgZmlsZSBpcyBzZXJ2ZWQgZnJvbSBhc3NldHMvLCBzbyB0aGUgc3RhdGljIGhvc3Qgc2NvcGVzIGl0IHRvCiAgIGFzc2V0cy8gKG5vIFNlcnZpY2UtV29ya2VyLUFsbG93ZWQgaGVhZGVyIGlzIGF2YWlsYWJsZSBvbiB0aGlzIHJ1bnRpbWUpLiBJdCBzdGlsbAogICBwcm92aWRlcyB0aGUgZmV0Y2ggaGFuZGxlciBpbnN0YWxsYWJpbGl0eSBjaGVja3MgbG9vayBmb3IsIGFuZCBpdCBjYWNoZXMgdGhlIGdhbWUKICAgc2hlbGwgb3Bwb3J0dW5pc3RpY2FsbHkgc28gcmVwZWF0IG9wZW5zIGFyZSBmYXN0IGFuZCB0aGUgc2hlbGwgY2FuIG9wZW4gb2ZmbGluZQogICB3aGVyZXZlciB0aGUgd29ya2VyIGlzIGFsbG93ZWQgdG8gY29udHJvbCB0aGUgcGFnZS4gU2F2ZXMgbGl2ZSBpbiBsb2NhbFN0b3JhZ2UKICAgb24gdGhlIHBhZ2UncyBvcmlnaW4gYW5kIGFyZSBuZXZlciB0b3VjaGVkIGJ5IHRoaXMgd29ya2VyLgogICB2MTI1IGZyZXNobmVzcyBydWxlczogdGhlIGNhY2hlIE5BTUUgY2FycmllcyB0aGUgdmVyc2lvbiAoaW5zdGFsbGluZyB0aGlzIHdvcmtlcgogICBkZWxldGVzIGV2ZXJ5IG9sZGVyIHNoZWxsIGNhY2hlIG9uIGFjdGl2YXRlKTsgbmF2aWdhdGlvbnMgYXJlIG5ldHdvcmstZmlyc3QgYW5kCiAgIHJldmFsaWRhdGVkLCBhbmQgYSByZXNwb25zZSBpcyBvbmx5IGV2ZXIgc3RvcmVkIGFzIHRoZSBzaGVsbCB3aGVuIGl0IGlzIGEgcmVhbCwKICAgc3VjY2Vzc2Z1bCwgbm9uLXJlZGlyZWN0ZWQgcmVzcG9uc2Ug4oCUIGFuIGVycm9yIHBhZ2Ugb3IgYSByZWRpcmVjdCBjYW4gbmV2ZXIKICAgYmVjb21lIHRoZSBjYWNoZWQgc2hlbGw7IG90aGVyIEdFVHMgYXJlIHN0YWxlLXdoaWxlLXJldmFsaWRhdGUsIHNvIGEgY2hhbmdlZAogICBhc3NldCBpcyBwaWNrZWQgdXAgb24gdGhlIG5leHQgb3BlbiBpbnN0ZWFkIG9mIGJlaW5nIHNlcnZlZCBzdGFsZSBmb3JldmVyLiAqLwp2YXIgQ0FDSEUxMjQgPSAnYXF1YWxpZmUtc2hlbGwtdjE0OCc7CnZhciBDT1JFMTI0ID0gWwogICcuL21hbmlmZXN0LndlYm1hbmlmZXN0JywKICAnLi9pY29uLTE5Mi5wbmcnLAogICcuL2ljb24tNTEyLnBuZycsCiAgJy4vaWNvbi1tYXNrYWJsZS01MTIucG5nJywKICAnLi9hcHBsZS10b3VjaC1pY29uLnBuZycsCiAgJy4uL2luZGV4Lmh0bWwnCl07CmZ1bmN0aW9uIGdvb2RSZXMocikgeyByZXR1cm4gISFyICYmIHIub2sgJiYgIXIucmVkaXJlY3RlZCAmJiByLnR5cGUgIT09ICdlcnJvcic7IH0Kc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7CiAgICAgIHJldHVybiBQcm9taXNlLmFsbChDT1JFMTI0Lm1hcChmdW5jdGlvbiAodSkgewogICAgICAgIHJldHVybiBmZXRjaCh1LCB7IGNhY2hlOiAnbm8tY2FjaGUnIH0pLnRoZW4oZnVuY3Rpb24gKHIpIHsKICAgICAgICAgIGlmIChnb29kUmVzKHIpKSByZXR1cm4gYy5wdXQodSwgcik7CiAgICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgeyAvKiBvbmUgbWlzc2luZyBmaWxlIG11c3Qgbm90IHNpbmsgdGhlIGluc3RhbGwgKi8gfSk7CiAgICAgIH0pKTsKICAgIH0pLnRoZW4oZnVuY3Rpb24gKCkgeyByZXR1cm4gc2VsZi5za2lwV2FpdGluZygpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZnVuY3Rpb24gKGUpIHsKICBlLndhaXRVbnRpbCgKICAgIGNhY2hlcy5rZXlzKCkudGhlbihmdW5jdGlvbiAoa3MpIHsKICAgICAgcmV0dXJuIFByb21pc2UuYWxsKGtzLm1hcChmdW5jdGlvbiAoaykgeyBpZiAoayAhPT0gQ0FDSEUxMjQpIHJldHVybiBjYWNoZXMuZGVsZXRlKGspOyB9KSk7CiAgICB9KS50aGVuKGZ1bmN0aW9uICgpIHsgcmV0dXJuIHNlbGYuY2xpZW50cy5jbGFpbSgpOyB9KQogICk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgZnVuY3Rpb24gKGUpIHsKICB2YXIgcmVxID0gZS5yZXF1ZXN0OwogIGlmIChyZXEubWV0aG9kICE9PSAnR0VUJykgcmV0dXJuOwogIHZhciB1cmw7CiAgdHJ5IHsgdXJsID0gbmV3IFVSTChyZXEudXJsKTsgfSBjYXRjaCAoZXJyKSB7IHJldHVybjsgfQogIGlmICh1cmwub3JpZ2luICE9PSBzZWxmLmxvY2F0aW9uLm9yaWdpbikgcmV0dXJuOwogIGlmIChyZXEubW9kZSA9PT0gJ25hdmlnYXRlJykgewogICAgLyogbmV0d29yay1maXJzdDogYSBmcmVzaCBidWlsZCBhbHdheXMgd2lucyB3aGVuIG9ubGluZTsgb25seSBhIGdvb2QgcmVzcG9uc2UKICAgICAgIG1heSBiZWNvbWUgdGhlIGNhY2hlZCBzaGVsbDsgdGhlIHByZXZpb3VzIGNhY2hlZCBzaGVsbCBpcyB0aGUgb2ZmbGluZSAvCiAgICAgICBiYWQtcmVzcG9uc2UgZmFsbGJhY2sgKGFuZCBhIGJhZCByZXNwb25zZSB3aXRoIG5vIGNhY2hlIGlzIHBhc3NlZCB0aHJvdWdoCiAgICAgICB1bnRvdWNoZWQgcmF0aGVyIHRoYW4gc3RvcmVkKSAqLwogICAgZS5yZXNwb25kV2l0aCgKICAgICAgZmV0Y2gocmVxKS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KCcuLi9pbmRleC5odG1sJywgY3ApOyB9KTsKICAgICAgICAgIHJldHVybiByOwogICAgICAgIH0KICAgICAgICByZXR1cm4gY2FjaGVzLm1hdGNoKCcuLi9pbmRleC5odG1sJykudGhlbihmdW5jdGlvbiAobSkgeyByZXR1cm4gbSB8fCByOyB9KTsKICAgICAgfSkuY2F0Y2goZnVuY3Rpb24gKCkgewogICAgICAgIHJldHVybiBjYWNoZXMubWF0Y2goJy4uL2luZGV4Lmh0bWwnKS50aGVuKGZ1bmN0aW9uIChtKSB7CiAgICAgICAgICByZXR1cm4gbSB8fCBjYWNoZXMubWF0Y2gocmVxKTsKICAgICAgICB9KTsKICAgICAgfSkKICAgICk7CiAgICByZXR1cm47CiAgfQogIC8qIGV2ZXJ5dGhpbmcgZWxzZTogc3RhbGUtd2hpbGUtcmV2YWxpZGF0ZSDigJQgc2VydmUgdGhlIGNhY2hlIGluc3RhbnRseSwgYnV0CiAgICAgYWx3YXlzIHJlZmV0Y2ggaW4gdGhlIGJhY2tncm91bmQgc28gYW4gdXBkYXRlZCBhc3NldCBsYW5kcyBvbiB0aGUgbmV4dCBvcGVuICovCiAgZS5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChyZXEpLnRoZW4oZnVuY3Rpb24gKG0pIHsKICAgICAgdmFyIGZyZXNoID0gZmV0Y2gocmVxLnVybCwgeyBjYWNoZTogJ25vLWNhY2hlJyB9KS50aGVuKGZ1bmN0aW9uIChyKSB7CiAgICAgICAgaWYgKGdvb2RSZXMocikpIHsKICAgICAgICAgIHZhciBjcCA9IHIuY2xvbmUoKTsKICAgICAgICAgIGNhY2hlcy5vcGVuKENBQ0hFMTI0KS50aGVuKGZ1bmN0aW9uIChjKSB7IGMucHV0KHJlcSwgY3ApOyB9KTsKICAgICAgICB9CiAgICAgICAgcmV0dXJuIHI7CiAgICAgIH0pLmNhdGNoKGZ1bmN0aW9uICgpIHsgcmV0dXJuIG07IH0pOwogICAgICByZXR1cm4gbSB8fCBmcmVzaDsKICAgIH0pCiAgKTsKfSk7Cg== itself is hardened to match (new cache name, network-first revalidated navigations, error/redirected responses never cached as the shell, stale-while-revalidate assets). Saves carry over untouched: nothing in the save format changes. ================= */
 (function(){ try{ const st=document.createElement('style'); st.id='style124'; st.textContent='.verLine124{text-align:center;font-weight:800;font-size:12px;letter-spacing:.05em;opacity:.7;margin:14px 0 2px}.verChip124{font-size:9.5px;font-weight:800;letter-spacing:.05em;opacity:.65;color:#fff;white-space:nowrap;flex:none}.upd124{margin-bottom:14px;border:2.5px solid var(--accent2);background:var(--card);border-radius:16px;padding:16px}.upd124 h3{margin:0 0 4px}.upd124 p{margin:0 0 6px;color:var(--mut);font-size:13.5px;line-height:1.5}'; document.head.appendChild(st) }catch(e){} })();
 function verTag124(){ return 'AquaLife v'+GAME_VERSION }
 function verLineHtml124(){ return '<p class="verLine124">🌊 '+verTag124()+'</p>' }
@@ -25698,7 +25700,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h57', CLASS246='hotfix';
+ var BUILD246='v200-h58', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26662,7 +26664,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h57'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h58'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -27210,7 +27212,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h57';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h58';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27504,7 +27506,7 @@ try{
    ================================================================ */
 (function(){
 'use strict';
-var BUILD248='v200-h57';
+var BUILD248='v200-h58';
 function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $248(id){ return document.getElementById(id) }
 function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28203,7 +28205,7 @@ body.dockOpen47 #sheet49 .dockSheet{display:flex}
      player is offered the update exactly once. ================= */
 (function(){
 'use strict';
-var BUILD249='v200-h57';
+var BUILD249='v200-h58';
 function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function chooser49(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
 function toggle49(){ try{
@@ -28276,5 +28278,386 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 49 (THE MENU REBU
 })();
 </script>
 
+
+<style id="style250h">
+/* ===== v200 HOTFIX 50 (h58) — CSS half =====
+   ITEM 2: the stage box is CONSTANT. The v51 dock-open HUD compaction (topPin
+   max-height drop + row hiding) is what re-fit the scene into a strip on
+   portrait shapes — it is stood down: the pinned block keeps its closed-state
+   height and rows whether the sheet peeks or stands open, so .roomWrap (and
+   the cover-fit canvas inside it) never changes size. The sheet overlays. */
+body.inGame51.dockOpen47 .topPin{max-height:48dvh}
+body.inGame51.dockOpen47 .topPin .factRow{display:flex}
+body.inGame51.dockOpen47 .topPin .chips{display:flex}
+body.inGame51.dockOpen47 .topPin .idLoc{display:block}
+body.inGame51.dockOpen47 .topPin .socStrip{display:block}
+/* ITEM 3: the sheet lives on the game's cream ground — its labels take the
+   game's ink, not the old dark dock's white. Unlit tabs are dark on cream;
+   the lit tab is the game's orange with white text. */
+#sheet49{color:var(--ink)}
+#sheet49 .dockTab{color:var(--ink);background:#0000000d}
+#sheet49 .dockTab .dtL{color:var(--ink)}
+#sheet49 .dockTab.on{background:var(--accent);color:#fff;box-shadow:inset 0 0 0 2px #00000026}
+#sheet49 .dockTab.on .dtL{color:#fff}
+#sheet49 .dockTab.locked55{color:var(--mut)}
+#sheet49 .dockTab.locked55 .dtL{color:var(--mut)}
+#sheet49 summary{color:var(--ink)}
+#sheet49 .folderHead{color:var(--ink)}
+#sheet49 .folderHead span{color:var(--mut)}
+#sheet49 .dsTitle{color:var(--ink)}
+#sheet49 .acT{color:var(--ink)}
+#sheet49 .grab49 span{background:#00000038}
+/* ITEM 9: no width ceiling the cover math cannot cross — past the old
+   1480/1740 caps the app (and its dock) span the full viewport width. */
+@media(min-width:1180px){.app{max-width:none!important}.menuDock{max-width:none!important}}
+/* ITEM 10: the header's room-name chip (only painted when no shipped painter
+   named the room — single-room places like the Library). */
+#roomName58{display:inline-flex;align-items:center;gap:5px;background:#111;color:#fff;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:900;line-height:1.3;white-space:nowrap}
+</style>
+<script>
+/* ================= 🌊 AquaLife v200 — HOTFIX 50 (build stamp v200-h58): THE TRUTH PASS 2 —
+   fourteen fixes from the four-tester rerun on the LIVE h49 build, all at the outermost
+   layer or the exact choke point, over architecture D (untouched: one sheet, one room
+   bar, tab row inside the sheet). GAME_VERSION stays 200, SAVE_KEY stays
+   miniLifeSimShareable_v3, the anonymous-stats tracker is untouched and default-ON.
+   1) START SCREEN — root cause found in the layer stack: the update notice is created by
+      an unconditional 1.4 s timer (h45), but a later layer's MutationObserver DELETES
+      #updNotice246 whenever it appears at a "wrong stage" (dock or modal open) and
+      restores the old stamp — while the creator's own shown-latch stays set, so it can
+      never re-offer that load; other layers adopt the stamp silently from timers that
+      run regardless of stage. Whether a player ever saw the notice depended on what
+      happened to be open at ~1.4 s. The save offer had the twin flaw: it was painted
+      only if the one parse-time load() result survived every boot route, and the
+      rescue watchdogs keyed on stages the first load often never reaches. THIS layer
+      runs one ordered sequencer instead: (a) adopt the stored life, (b) put the
+      Welcome-back offer on screen, (c) only then — at a menu-safe stage — offer the
+      update notice under a new id no observer deletes, exactly once, Later persisting
+      for the session, restart-to-menu semantics identical to the shipped notice.
+   2) STAGE PINNING — the scene re-framed because opening the dock compacted the
+      pinned HUD (max-height 48→36dvh + rows hidden), growing .roomWrap and re-fitting
+      the contain canvas; wider rigs (HUD under both caps) saw occlusion only. The
+      compaction is stood down in CSS above and --sheetH51 is pinned to 0 at its one
+      writer, so peek / open / expanded share one stage box; the sheet overlays.
+   3) SHEET LABELS — #sheet49 sits inside #menuDock{color:#fff}: every label that did
+      not set its own colour inherited white onto the sheet's cream ground. The sheet
+      now takes var(--ink) (CSS above). Expansion: panel repaints wiped <details>
+      state and the eaten-tap re-fire could toggle a summary twice — open sections
+      are snapshotted/restored across repaints and synthetic re-clicks are swallowed.
+   4) FACE-TO-FACE — every Talk button ran openConvo, whose final binding hard-gates
+      on S.hasPhone, so in-person talk demanded a phone. Persons physically present
+      now open a real face-to-face conversation sheet with no phone involved; the
+      phone thread keeps its gate for everyone not standing here.
+   5) ZOOM — focusCamera defaulted to 1.55× and the glide path only ever RAISED
+      camState.scale; holds could outlive their moment. Every entry point is clamped
+      at the two choke points (focusCamera + applyCameraTransform) to the owner's
+      1.2×, and a watchdog returns the camera to wide if a zoom outlives its scene.
+   6) CLASSROOM CROWD — the pill solver now keeps a per-frame registry of placed
+      pill RECTANGLES (width-aware): a pill that would overlap a placed one lifts
+      clear instead of clipping; NPC separation targets are pill-width-aware too.
+   7) COVERAGE — the card had several writers with different truths (an on-duty
+      eval vs presence passes), so it oscillated. One writer now derives it from
+      scene presence (roomHas141 / npcHere86 / mateHere86 — the Change Rooms data)
+      and the ONE sitter flag (ensure120().covState), and a sitter teach-dialog
+      cannot fire while that flag says the sitter has not been let in.
+   8) BORN-INTO — the rich origin's static desc promised a Mansion, a jewelry set
+      and a loaded card, and the base journal template printed "Cash: $0" before
+      the origin money landed. The desc is corrected at the data, the journal's
+      cash line is reconciled to the dealt balance, and the reveal/dealt cards
+      gain a truth line composed from the dealt household itself.
+   9) ULTRA-WIDE — .app/.menuDock max-width caps (1480/1740) flanked scenes with
+      page backdrop at 1920px; removed above 1180px (CSS above).
+   10) HEADER NAMES — locations with neither roomsFor86 rooms nor AREA_ROOMS123
+       areas (the Library & friends) painted no name anywhere, and painters only
+       ran on renders, so the header lagged travel. A change detector repaints
+       the bar the same tick location/room changes, and a fallback chip names
+       the place whenever no shipped painter did.
+   11) FISHING — the catch only ever logged (no toast), and S.weather re-rolls
+       hourly (7%/h in nextHour) while the day briefing reads it at paint time,
+       so pond and briefing disagreed. The day's weather is now locked at day
+       start — one state, read by both — and a landed catch toasts its name + XP.
+   12) MARKET REFUSAL — the teen refusal could land as a journal-only line behind
+       later sheet wrappers. The three Market doors now refuse out loud at the
+       click: toast every time, journal once per day.
+   13) PLAY TRUTH — XP toasts took their cause from the SKILL fed ("Study
+       practice" for a Play click). Toasts now take the cause from the action
+       actually tapped, and act('play') guarantees its XP at every place.
+   14) CAR TAGS — parked cars wore owner tags; ambient traffic cars with no
+       resolved owner drove past bare, and departing cars lost their tag once
+       they pulled out. Traffic cars now resolve an owner from the town's real
+       car-owners and keep the tag, and departures keep theirs through pull-out. */
+(function(){
+'use strict';
+try{ var BUILD250H='v200-h58';
+function S58(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+function esc58(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function modalOpen58(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+function dockOpen58(){ try{ return (typeof dockOpen!=='undefined')?!!dockOpen:false }catch(e){ return false } }
+function inGame58(){ try{ return (typeof inGame!=='undefined')?!!inGame:false }catch(e){ return false } }
+
+/* ================= ITEM 1 — the start-screen sequencer ================= */
+var prevStamp58=null; try{ prevStamp58=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
+var updatePending58=!!(prevStamp58&&prevStamp58!==BUILD250H);
+var welcomeUp58=false, welcomeForced58=false, noticeDone58=false, seqT058=Date.now();
+function storedSave58(){ try{ return !!localStorage.getItem(SAVE_KEY) }catch(e){ return false } }
+function adopt58(){ try{ if(S58())return true; if(window.__h50a&&typeof window.__h50a.adoptSave250==='function')return window.__h50a.adoptSave250(); if(typeof load!=='function')return false; var o=load(); if(!o||typeof o!=='object')return false; try{ S=o }catch(e){ return false } var s=S58(); if(!s)return false; if(!s.phoneMsgs)s.phoneMsgs=[]; if(!s.journal)s.journal=[]; if(!s.inv)s.inv=[]; if(!s.skills)s.skills={}; if(s.money===undefined)s.money=0; if(s.day===undefined)s.day=1; return true }catch(e){ return false } }
+function showNotice58(){ try{ if(noticeDone58)return; noticeDone58=true; updatePending58=false;
+ try{ localStorage.setItem('miniLifeSimShareable_buildStamp',BUILD250H) }catch(e){}
+ if(document.getElementById('updNotice58')||document.getElementById('updNotice246'))return;
+ var el=document.createElement('div'); el.id='updNotice58';
+ el.style.cssText='position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,8,6,.55);padding:14px;box-sizing:border-box';
+ el.innerHTML='<div style="background:var(--card,#fff8ec);color:var(--ink,#241a12);max-width:520px;width:100%;border-radius:20px;padding:20px 18px 16px;box-shadow:0 18px 50px rgba(0,0,0,.45);border:2px solid #ffb703">'
+ +'<h2 style="margin:0 0 8px;font-size:21px">🔔 An update is ready</h2>'
+ +'<p style="margin:0 0 10px;font-size:14.5px;line-height:1.55">Small fixes and polish are ready.</p>'
+ +'<p style="margin:0 0 14px;font-size:13.5px;line-height:1.55;opacity:.85">Restarting takes you to the <b>main menu</b> — your life is saved and untouched. From the menu you can jump straight back in, or start a new life.</p>'
+ +'<button type="button" id="updGo58" style="display:block;width:100%;padding:14px;border:0;border-radius:13px;background:#ffb703;color:#191104;font-weight:900;font-size:15.5px;cursor:pointer">🔄 Restart for the update</button>'
+ +'<button type="button" id="updLater58" style="display:block;width:100%;padding:12px;margin-top:8px;border:2px solid var(--line,#d8c9ae);border-radius:13px;background:transparent;color:inherit;font-weight:800;font-size:14px;cursor:pointer">Later</button></div>';
+ document.body.appendChild(el);
+ document.getElementById('updGo58').addEventListener('click',function(){ try{ if(typeof save==='function')save() }catch(e){} try{ localStorage.setItem('miniLifeSimShareable_toMenu','1'); localStorage.setItem('upd246_justRestarted','1') }catch(e){} window.location.reload() });
+ document.getElementById('updLater58').addEventListener('click',function(){ try{ sessionStorage.setItem('upd246_dismissed','1') }catch(e){} el.remove() });
+}catch(e){} }
+function noticeStage58(){ try{ if(modalOpen58())return false; var app=document.getElementById('app'); if(app&&app.querySelector('.setup'))return true; if(inGame58()&&!dockOpen58())return true; return false }catch(e){ return false } }
+var seq58=setInterval(function(){ try{ var now=Date.now(), age=now-seqT058;
+ /* (a)+(b): adopt, then offer */
+ if(!inGame58()){
+  if(!S58()&&storedSave58())adopt58();
+  var app=document.getElementById('app');
+  if(S58()&&app&&app.querySelector('.setup')){
+   var has=false; app.querySelectorAll('button').forEach(function(b){ if(/Keep/.test(b.textContent||'')&&/Life/.test(b.textContent||''))has=true });
+   if(has){ welcomeUp58=true }
+   else if(!welcomeUp58&&!welcomeForced58&&age<30000&&typeof renderWelcome==='function'){ welcomeForced58=true; renderWelcome(); welcomeUp58=true }
+  }
+ }
+ /* (c): the notice, once, at a menu-safe stage, after the offer has had its beat */
+ if(updatePending58&&!noticeDone58){
+  if(document.getElementById('updNotice246')){ noticeDone58=true; updatePending58=false; try{ localStorage.setItem('miniLifeSimShareable_buildStamp',BUILD250H) }catch(e){} }
+  else { var dismissed=false; try{ dismissed=sessionStorage.getItem('upd246_dismissed')==='1' }catch(e){}
+   if(dismissed){ noticeDone58=true; updatePending58=false }
+   else if(noticeStage58()&&(welcomeUp58||inGame58()||age>6000))showNotice58();
+  }
+ }
+ if(age>90000)clearInterval(seq58);
+}catch(e){} },700);
+
+/* ================= ITEM 2 — sheet height can never reserve stage space ================= */
+try{ syncSheetH51=function(){ try{ document.documentElement.style.setProperty('--sheetH51','0px') }catch(e){} } }catch(e){}
+try{ syncSheetH51() }catch(e){}
+
+/* ================= ITEM 3 — section state survives repaints; one tap = one toggle ================= */
+function openSecs58(){ var out={}; try{ var p=document.getElementById('panel'); if(!p)return out; p.querySelectorAll('details').forEach(function(d){ if(!d.open)return; var sm=d.querySelector('summary'); if(sm)out[(sm.textContent||'').replace(/\s+/g,' ').trim()]=1 }) }catch(e){} return out }
+function restoreSecs58(snap){ try{ if(!snap)return; var p=document.getElementById('panel'); if(!p)return; p.querySelectorAll('details').forEach(function(d){ var sm=d.querySelector('summary'); if(!sm)return; var k=(sm.textContent||'').replace(/\s+/g,' ').trim(); if(snap[k]&&!d.open)d.open=true }) }catch(e){} }
+['renderTabs','paintActions101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__sec58){ var w=function(){ var snap=openSecs58(); var r=fn.apply(this,arguments); setTimeout(function(){ restoreSecs58(snap) },30); setTimeout(function(){ restoreSecs58(snap) },320); return r }; w.__sec58=true; window[nm]=w } }catch(e){} });
+var sumDown58={el:null,t:0}, sumTog58={el:null,t:0};
+document.addEventListener('pointerdown',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#sheet49 summary'):null; if(sm)sumDown58={el:sm,t:Date.now()} }catch(err){} },true);
+document.addEventListener('click',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#sheet49 summary'):null; if(!sm)return; var now=Date.now();
+ if(sumTog58.el===sm&&now-sumTog58.t<600&&!(sumDown58.el===sm&&sumDown58.t>sumTog58.t)){ e.preventDefault(); e.stopPropagation(); return }
+ sumTog58={el:sm,t:now};
+}catch(err){} },true);
+
+/* ================= ITEM 4 — face-to-face talk needs no phone ================= */
+function present58(name){ try{ var s=S58(); if(!s||!name)return false; if(s.escort===name)return true;
+ if(typeof presentPeople138==='function'){ var pp=presentPeople138(); if(pp&&pp.indexOf(name)>=0)return true }
+ if(typeof npcs!=='undefined'&&npcs){ for(var i=0;i<npcs.length;i++){ if(npcs[i].name===name&&npcs[i].state==='in'){ try{ if(typeof npcHere86==='function'&&npcHere86(npcs[i]))return true }catch(e){ return true } } } }
+ var hl=null; try{ hl=(typeof homeLoc==='function')?homeLoc():null }catch(e){}
+ if(hl&&s.location===hl){ if((s.housemates||[]).indexOf(name)>=0)return true; try{ if(typeof caregiverNames119==='function'&&caregiverNames119().indexOf(name)>=0&&typeof cgAtWork119==='function'&&!cgAtWork119(name))return true }catch(e){} }
+ return false }catch(e){ return false } }
+var FACE_LINES58={
+ chat:['so what have you actually been up to lately?','okay, real talk — how has your day been treating you?','I was just thinking about you the other day, no lie.','you always have the best stories. catch me up.'],
+ compliment:['oh — stop it. …okay, do not stop, that made my day.','you really know how to make a person smile, you know that?','that is genuinely the nicest thing anyone has said to me all week.'],
+ joke:['HA — okay, that one actually got me.','you are ridiculous. never change.','I snorted. in public. this is your fault.'],
+ ask:['honestly? a lot of little things. work, people, the usual beautiful mess.','my day? better now, honestly. what about yours?','same town, same chaos — but I am not complaining.']
+};
+var faceCount58={};
+window.talkFace58=function(name){ try{ var s=S58(); if(!s)return; faceCount58[name]=0;
+ var rel=''; try{ rel=(typeof contactRel==='function')?contactRel(name):'' }catch(e){}
+ openSheet('<h2>🗣️ Face-to-face — '+esc58(name)+'</h2><p class="small" style="margin-top:0">Right here, in person'+(rel?' • '+esc58(rel):'')+'. No phone needed — talking is what people do.</p>'
+ +'<div id="faceLog58" style="display:flex;flex-direction:column;gap:7px;margin:10px 0"><div class="msg" style="margin:0"><b style="color:#ffd166">'+esc58(name)+':</b> hey! good to see you in the actual world for once.</div></div>'
+ +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">'
+ +'<button class="btn" onclick="talkAct58(\''+esc58(name).replace(/'/g,"\\'")+'\',\'chat\')">💬 Chat</button>'
+ +'<button class="btn" onclick="talkAct58(\''+esc58(name).replace(/'/g,"\\'")+'\',\'compliment\')">😊 Compliment</button>'
+ +'<button class="btn" onclick="talkAct58(\''+esc58(name).replace(/'/g,"\\'")+'\',\'joke\')">😂 Tell a joke</button>'
+ +'<button class="btn" onclick="talkAct58(\''+esc58(name).replace(/'/g,"\\'")+'\',\'ask\')">❓ Ask about their day</button></div>'
+ +'<button class="btn outline" style="margin-top:9px" onclick="closeModal()">👋 That\'s all for now</button>');
+ try{ if(typeof focusCamera==='function'){ var n=(typeof npcs!=='undefined'&&npcs)?npcs.find(function(x){ return x.name===name }):null; focusCamera(n?n.x:charX,n?n.y:charY,{dur:3000,scale:1.2}) } }catch(e){}
+}catch(e){} };
+window.talkAct58=function(name,kind){ try{ var s=S58(); if(!s)return; var pool=FACE_LINES58[kind]||FACE_LINES58.chat; faceCount58[name]=(faceCount58[name]||0)+1;
+ var line=pool[Math.floor(Math.random()*pool.length)]; var you={chat:'Catches up, properly — the small stuff and the real stuff.',compliment:'Says the kind thing, out loud, to their face.',joke:'Tells the joke. Commits to the bit.',ask:'“So — how has your day actually been?”'}[kind]||'Talks.';
+ var lg=document.getElementById('faceLog58'); if(lg){ var d1=document.createElement('div'); d1.className='msg'; d1.style.cssText='margin:0;background:#2563eb;border-color:#93c5fd'; d1.innerHTML='<b style="color:#fff">You:</b> '+esc58(you); lg.appendChild(d1);
+  var d2=document.createElement('div'); d2.className='msg'; d2.style.margin='0'; d2.innerHTML='<b style="color:#ffd166">'+esc58(name)+':</b> '+esc58(line); lg.appendChild(d2); lg.scrollTop=lg.scrollHeight }
+ try{ if(typeof adj==='function')adj('social',3) }catch(e){}
+ try{ if(typeof addXp==='function')addXp(2,'social') }catch(e){}
+ try{ if(typeof log==='function'&&faceCount58[name]===1)log('🗣️ FACE-TO-FACE — you and '+name+' talked in person. No phone, no thread — just two people in the same place, talking.') }catch(e){}
+ try{ if(typeof save==='function')save() }catch(e){}
+}catch(e){} };
+try{ if(typeof openConvo==='function'){ var _oc58=openConvo; openConvo=function(from){ try{ var s=S58(); if(s&&!s.hasPhone&&present58(from)){ window.talkFace58(from); return } }catch(e){} return _oc58.apply(this,arguments) } } }catch(e){}
+
+/* ================= ITEM 5 — the camera law: 1.2× is the only zoom ================= */
+try{ if(typeof focusCamera==='function'){ var _fc58=focusCamera; focusCamera=function(x,y,opts){ try{ opts=opts||{}; var o={}; for(var k in opts)o[k]=opts[k]; o.scale=1.2; if(o.dur&&o.dur>6000)o.dur=6000; return _fc58.call(this,x,y,o) }catch(e){ return _fc58.apply(this,arguments) } } } }catch(e){}
+try{ if(typeof applyCameraTransform==='function'){ var _at58=applyCameraTransform; applyCameraTransform=function(){ try{ if(typeof camState!=='undefined'&&camState&&camState.scale>1.2)camState.scale=1.2 }catch(e){} return _at58.apply(this,arguments) } } }catch(e){}
+var zoomSince58=0;
+setInterval(function(){ try{ if(typeof camState==='undefined'||!camState)return;
+ if(!camState.active){ zoomSince58=0; return }
+ if(!zoomSince58)zoomSince58=Date.now();
+ var stale=performance.now()>Math.max(camState.until||0,(typeof camHoldUntil!=='undefined'?camHoldUntil:0))+2500;
+ if((stale||Date.now()-zoomSince58>9000)&&!modalOpen58()){ camState.active=false; try{ camHoldUntil=0 }catch(e){} try{ applyCameraTransform() }catch(e){} zoomSince58=0 }
+}catch(e){} },800);
+
+/* ================= ITEM 6 — pill-aware crowd separation ================= */
+var pillReg58=[], pillRegT58=0;
+try{ if(typeof drawRoom==='function'){ var _dr58=drawRoom; drawRoom=function(){ pillReg58=[]; pillRegT58=Date.now(); var r=_dr58.apply(this,arguments); return r } } }catch(e){}
+try{ if(typeof window.__pillFix248==='function'){ var _pf58=window.__pillFix248; window.__pillFix248=function(nx,ny,yy,nw,tl){ var r=_pf58.apply(this,arguments)||{dx:0,lift:0};
+ try{ if(Date.now()-pillRegT58>1500){ pillReg58=[]; pillRegT58=Date.now() }
+  var dx=r.dx||0, lift=r.lift||0, w=nw+18, guard=0;
+  while(guard++<6){ var x0=tl+dx, x1=x0+w, y1=yy-29-lift, y0=y1-22, hit=false;
+   for(var i=0;i<pillReg58.length;i++){ var q=pillReg58[i]; if(x0<q.x1+3&&x1>q.x0-3&&y0<q.y1+3&&y1>q.y0-3){ hit=true; break } }
+   if(!hit){ pillReg58.push({x0:x0,x1:x1,y0:y0,y1:y1}); break }
+   lift+=25;
+   if(guard===6)pillReg58.push({x0:tl+dx,x1:tl+dx+w,y0:yy-29-lift-22,y1:yy-29-lift});
+  }
+  return {dx:dx,lift:lift};
+ }catch(e){ return r } } } }catch(e){}
+var pillCtx58=null;
+function pillW58(name){ try{ if(!pillCtx58)pillCtx58=document.createElement('canvas').getContext('2d'); pillCtx58.font='bold 15px sans-serif'; return pillCtx58.measureText(String(name||'')).width+18 }catch(e){ return 90 } }
+setInterval(function(){ try{ var s=S58(); if(!s||!inGame58()||typeof npcs==='undefined'||!npcs)return;
+ var here=npcs.filter(function(n){ if(n.state!=='in')return false; try{ return (typeof npcHere86==='function')?!!npcHere86(n):true }catch(e){ return true } });
+ for(var i=0;i<here.length;i++)for(var j=i+1;j<here.length;j++){ var a=here[i], b=here[j]; var dx=b.x-a.x, dy=Math.abs((b.y||0)-(a.y||0)); if(dy>42)continue;
+  var need=(pillW58(a.name)+pillW58(b.name))/2+16; if(Math.abs(dx)>=need)continue;
+  var push=(need-Math.abs(dx))/2+3, sgn=dx<0?-1:1;
+  if(typeof a.tx==='number')a.tx=Math.max(56,Math.min(844,a.tx-push*sgn));
+  if(typeof b.tx==='number')b.tx=Math.max(56,Math.min(844,b.tx+push*sgn));
+ }
+ here.forEach(function(n){ if(typeof charX!=='number'||typeof n.tx!=='number')return; var dx=n.x-charX; if(Math.abs(dx)<(pillW58(n.name)+pillW58(s.name))/2+16&&Math.abs((n.y||0)-(typeof charY==='number'?charY:0))<42){ n.tx=Math.max(56,Math.min(844,n.tx+(dx<0?-26:26))) } });
+}catch(e){} },600);
+
+/* ================= ITEM 7 — coverage from physical presence, one sitter flag ================= */
+function hereRoom58(name){ try{ var s=S58(); if(!s)return false; if(s.escort===name)return true;
+ if(typeof npcs!=='undefined'&&npcs){ var n=npcs.find(function(x){ return x.name===name }); if(n&&n.state==='in'){ try{ return (typeof npcHere86==='function')?!!npcHere86(n):true }catch(e){ return true } } }
+ if((s.housemates||[]).indexOf(name)>=0){ try{ return (typeof mateHere86==='function')?!!mateHere86(name):true }catch(e){ return true } }
+ return false }catch(e){ return false } }
+function inHouse58(name){ try{ var s=S58(); if(!s)return null; var hl=null; try{ hl=(typeof homeLoc==='function')?homeLoc():null }catch(e){} if(!hl||s.location!==hl)return null;
+ if(typeof npcs!=='undefined'&&npcs){ var n=npcs.find(function(x){ return x.name===name }); if(n&&n.state==='in'&&!hereRoom58(name)){ var rooms=null; try{ rooms=(typeof homeRooms86==='function')?homeRooms86():null }catch(e){} var rd=rooms?rooms.find(function(r){ return r.id===n.room86 }):null; return (rd&&(rd.name||rd.label))||'another room' } }
+ if((s.housemates||[]).indexOf(name)>=0&&!hereRoom58(name))return 'another room';
+ return null }catch(e){ return null } }
+function covTruth58(){ try{ var s=S58(); if(!s||s.age<1||s.age>4)return null;
+ var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
+ for(var i=0;i<cgs.length;i++){ if(hereRoom58(cgs[i]))return '<b>'+esc58(cgs[i])+'</b> is with <b>'+esc58(s.name)+'</b> right now — right here, in person. No babysitter is watching: family is.' }
+ var V120=null; try{ V120=(typeof ensure120==='function')?ensure120():null }catch(e){}
+ var sitNm=(V120&&V120.sitter&&V120.sitter.name)||null;
+ if(V120&&sitNm&&V120.covState==='in'&&hereRoom58(sitNm))return '<b>'+esc58(sitNm)+'</b> — the household\'s babysitter — is watching <b>'+esc58(s.name)+'</b> right now, here in the room.';
+ for(var j=0;j<cgs.length;j++){ var rm=inHouse58(cgs[j]); if(rm)return '<b>'+esc58(cgs[j])+'</b> is home — in the <b>'+esc58(rm)+'</b> right now, not in this room with <b>'+esc58(s.name)+'</b>.' }
+ if(s.location==='daycare')return '<b>'+esc58(s.name)+'</b> is at <b>🏫 Daycare</b> right now — the daycare staff are the coverage, in person.';
+ var V119=null; try{ V119=(typeof ensure119==='function')?ensure119():null }catch(e){}
+ var cov=V119?V119.coverage:null;
+ if((cov&&cov.day===s.day&&cov.who==='sitter')||(V120&&(V120.covState==='booked'||V120.knockPending))){ return sitNm?('<b>'+esc58(sitNm)+'</b> — the household\'s babysitter — is booked to watch <b>'+esc58(s.name)+'</b> today, but no sitter is here yet: the sitting starts when they are let in at the front door.'):'A sitter was booked for <b>'+esc58(s.name)+'</b> today, but no sitter is here yet — the sitting starts when they are let in at the front door.' }
+ var visitors=[]; try{ if(typeof peopleHere200==='function')visitors=peopleHere200().filter(function(n){ return cgs.indexOf(n)<0&&n!==s.name&&n!==sitNm }) }catch(e){}
+ if(visitors.length)return '<b>'+esc58(s.name)+'</b> is with <b>'+esc58(visitors.join(', '))+'</b> right now — they are who is actually here. No caregiver is home, and no babysitter is booked.';
+ return '<b>'+esc58(s.name)+'</b> is on their own right now — no caregiver is here, and no babysitter is booked or has arrived.';
+}catch(e){ return null } }
+function covPass58(){ try{ var s=S58(); if(!s||s.age<1||s.age>4)return; var card=document.querySelector('.covCard119'); if(!card)return; var html=covTruth58(); if(!html)return; var p=card.querySelector('p'); if(p&&p.innerHTML!==html)p.innerHTML=html; var h3=card.querySelector('h3'); if(h3)h3.textContent='👶 Who\'s with the toddler' }catch(e){} }
+setInterval(covPass58,700);
+try{ if(typeof openSheet==='function'){ var _os58=openSheet; openSheet=function(html,opts){ try{ if(typeof html==='string'&&html.indexOf('offers to teach')>=0){ var V120=(typeof ensure120==='function')?ensure120():null; var sitNm=(V120&&V120.sitter&&V120.sitter.name)||null; if(sitNm&&html.indexOf(sitNm)>=0&&V120.covState!=='in')return } }catch(e){} return _os58.apply(this,arguments) } } }catch(e){}
+
+/* ================= ITEM 8 — born-into text = the dealt life ================= */
+try{ if(typeof ORIGINS!=='undefined'){ var ro=ORIGINS.find(function(o){ return o.id==='rich' }); if(ro)ro.desc='A big family house, fancy things with your name on them, and real family money.' } }catch(e){}
+function famNames58(){ try{ var s=S58(); if(!s)return ''; var out=[]; try{ var roles=(typeof parentRolesForOrigin47==='function')?parentRolesForOrigin47(s.origin):[]; roles.forEach(function(r){ try{ var nm=(typeof parentName47==='function')?parentName47(r):r; if(nm&&out.indexOf(nm)<0)out.push(nm+' ('+r+')') }catch(e){} }) }catch(e){}
+ try{ var sibs=(s.fam78&&s.fam78.siblings)||[]; sibs.forEach(function(x){ var nm=typeof x==='string'?x:(x&&x.name); if(nm&&out.indexOf(nm)<0)out.push(nm+' (sibling)') }) }catch(e){}
+ return out.join(', ') }catch(e){ return '' } }
+function bornPass58(){ try{ var s=S58(); if(!s)return; var host=null;
+ var sh=document.getElementById('sheet'); if(sh&&/You were born into/.test(sh.textContent||''))host=sh;
+ if(!host){ var dc=document.querySelector('.dealtCard159'); if(dc)host=dc }
+ if(!host)return; if(host.querySelector('.bornTruth58')){ var ex=host.querySelector('.bornTruth58'); var want=bornText58(); if(want&&ex.getAttribute('data-t')!==want){ ex.innerHTML=want; ex.setAttribute('data-t',want) } return }
+ var d=document.createElement('p'); d.className='bornTruth58'; d.style.cssText='font-size:13.5px;line-height:1.55;margin-top:8px'; var t=bornText58(); if(!t)return; d.innerHTML=t; d.setAttribute('data-t',t); host.appendChild(d);
+}catch(e){} }
+function bornText58(){ try{ var s=S58(); if(!s)return ''; var home='Family House'; try{ home=(s.startHome80&&s.startHome80.label)||((typeof homeLoc==='function'&&homeLoc()==='house')?'Family House':(typeof locDisplay144==='function'?locDisplay144(s.location):'Home')) }catch(e){}
+ var bank=(s.bank63&&s.bank63.bank)||0;
+ var items=(s.inv||[]).map(function(it){ return it&&it.name }).filter(Boolean);
+ var fam=famNames58();
+ return '🏠 <b>Home:</b> '+esc58(home)+' • 💵 <b>Cash: $'+s.money+'</b>'+(bank?' • 🏦 <b>$'+bank+' in the bank</b>':'')+'<br>🎒 <b>In your Bag:</b> '+(items.length?esc58(items.join(', ')):'nothing yet')+(fam?'<br>👨‍👩‍👧 <b>Family:</b> '+esc58(fam):'');
+}catch(e){ return '' } }
+setInterval(bornPass58,800);
+try{ if(typeof startGame==='function'){ var _sg58=startGame; startGame=function(){ var r=_sg58.apply(this,arguments); try{ var s=S58(); if(s&&Array.isArray(s.journal)){ s.journal=s.journal.map(function(en){ if(typeof en!=='string')return en; if(en.indexOf('Cash: $0')>=0&&s.money!==0)en=en.replace('Cash: $0','Cash: $'+s.money); if(s.origin==='rich'&&en.indexOf('$500 of family money')>=0)en=en.replace('$500 of family money','$'+s.money+' of family money'); return en }); if(typeof save==='function')save() } }catch(e){} return r } } }catch(e){}
+
+/* ================= ITEM 10 — the header names every room, in the same beat ================= */
+function roomName58(){ try{ var s=S58(); if(!s)return '';
+ try{ var rm=(typeof curRoom86==='function')?curRoom86():null; if(rm)return (rm.icon?rm.icon+' ':'🚪 ')+(rm.name||rm.label||rm.id) }catch(e){}
+ try{ if(typeof AREA_ROOMS123!=='undefined'&&AREA_ROOMS123[s.location]&&typeof ensure123==='function'){ var V=ensure123(); var cur=(V&&V.areaRoom)?V.areaRoom[s.location]:null; var def=AREA_ROOMS123[s.location].find(function(a){ return a[0]===cur })||AREA_ROOMS123[s.location][0]; if(def)return def[1]+' '+def[2] } }catch(e){}
+ try{ if(typeof locDisplay144==='function')return locDisplay144(s.location) }catch(e){}
+ return String(s.location||'');
+}catch(e){ return '' } }
+function headPass58(){ try{ var s=S58(); if(!s||!inGame58())return; var head=document.querySelector('.sheetHead49 .tabsRow100')||document.querySelector('.tabsRow100'); if(!head)return;
+ var named=false;
+ head.querySelectorAll('#roomBar86,#areaBar123,.rsName106,.roomBarLab86').forEach(function(el){ if(named)return; if(el.style&&el.style.display==='none')return; if((el.textContent||'').trim().length>1)named=true });
+ var chip=document.getElementById('roomName58');
+ if(named){ if(chip)chip.remove(); return }
+ var nm=roomName58(); if(!nm)return;
+ if(!chip){ chip=document.createElement('span'); chip.id='roomName58'; head.insertBefore(chip,head.firstChild) }
+ var want='🚪 '+nm; if(chip.textContent!==want)chip.textContent=want;
+}catch(e){} }
+var lastPlace58='';
+setInterval(function(){ try{ var s=S58(); if(!s||!inGame58())return;
+ var key=s.location+'|'+(s.room86||'')+'|'+((s.v123&&s.v123.areaRoom)?(s.v123.areaRoom[s.location]||''): '');
+ if(key!==lastPlace58){ var first=!lastPlace58; lastPlace58=key; if(!first){ try{ if(typeof paintRoomBar86==='function')paintRoomBar86() }catch(e){} try{ if(typeof paintAreas123==='function')paintAreas123() }catch(e){} } }
+ headPass58();
+}catch(e){} },300);
+
+/* ================= ITEM 11 — fishing truth: one weather, a spoken catch ================= */
+var dayWx58={day:null,wx:null};
+function lockWx58(){ try{ var s=S58(); if(!s)return; if(dayWx58.day!==s.day){ dayWx58={day:s.day,wx:s.weather||'sunny'} } else if(s.weather&&s.weather!==dayWx58.wx){ s.weather=dayWx58.wx } }catch(e){} }
+setInterval(lockWx58,800);
+try{ if(typeof nextDay==='function'){ var _nd58=nextDay; nextDay=function(){ var r=_nd58.apply(this,arguments); try{ var s=S58(); if(s)dayWx58={day:s.day,wx:s.weather||'sunny'} }catch(e){} return r } } }catch(e){}
+try{ if(typeof nextHour==='function'){ var _nh58=nextHour; nextHour=function(){ var r=_nh58.apply(this,arguments); try{ lockWx58() }catch(e){} return r } } }catch(e){}
+try{ if(typeof fishGo150==='function'){ var _fg58=fishGo150; fishGo150=function(){ var s0=S58(); var caught0=0, invSig0=''; try{ caught0=(typeof ensure150==='function')?ensure150().caught:0 }catch(e){} try{ invSig0=(s0.inv||[]).map(function(it){ return it&&it.name }).join('|') }catch(e){}
+  var r=_fg58.apply(this,arguments);
+  var tries=0; var iv=setInterval(function(){ tries++; try{ var s=S58(); if(!s||tries>22){ clearInterval(iv); return }
+   var caught1=caught0; try{ caught1=(typeof ensure150==='function')?ensure150().caught:caught0 }catch(e){}
+   var invSig1=''; try{ invSig1=(s.inv||[]).map(function(it){ return it&&it.name }).join('|') }catch(e){}
+   if(caught1>caught0||invSig1!==invSig0){ clearInterval(iv); var nm=''; (s.inv||[]).forEach(function(it){ if(it&&it.name&&invSig0.indexOf(it.name)<0)nm=it.name });
+    if(!nm&&typeof FISH_TABLE150!=='undefined'){ for(var i=0;i<FISH_TABLE150.length;i++){ if(invSig1.indexOf(FISH_TABLE150[i].name)>=0&&invSig0.indexOf(FISH_TABLE150[i].name)<0){ nm=FISH_TABLE150[i].name; break } } }
+    if(nm&&typeof toast==='function')toast('🎣 Caught — '+nm+'! +7 XP');
+   }
+  }catch(e){} },450);
+  return r } } }catch(e){}
+
+/* ================= ITEM 12 — the Market refuses minors out loud ================= */
+var mktLogDay58=-1;
+function mktRefuse58(){ try{ var s=S58(); if(typeof toast==='function')toast('🔞 The Market is 18+ — your ID says no');
+ if(s&&mktLogDay58!==s.day){ mktLogDay58=s.day; try{ if(typeof log==='function')log('🛒 TURNED AWAY — the Market is 18+, and your ID says no. The refusal is the whole conversation.') }catch(e){} }
+ if(typeof openSheet==='function')openSheet('<h2>🛒 The Market</h2><p>🔞 <b>18+ only</b> — your ID says no. This side of the street does not open for minors.</p><button class="btn" onclick="closeModal()">Fair enough</button>');
+}catch(e){} }
+[['phoneBurner63'],['entMarket173'],['burnerGet63']].forEach(function(nmA){ var nm=nmA[0]; try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__mkt58){ var w=function(){ try{ var s=S58(); if(s&&s.age<18){ mktRefuse58(); return } }catch(e){} return fn.apply(this,arguments) }; w.__mkt58=true; window[nm]=w } }catch(e){} });
+
+/* ================= ITEM 13 — Play truth: the toast names the action taken ================= */
+var lastAct58={label:'',oc:'',t:0};
+document.addEventListener('pointerdown',function(e){ try{ var b=e.target&&e.target.closest?e.target.closest('#panel button, #sheet49 button'):null; if(!b)return; lastAct58={label:(b.textContent||'').replace(/\s+/g,' ').trim(),oc:b.getAttribute('onclick')||'',t:Date.now()} }catch(err){} },true);
+function actLabel58(){ try{ if(Date.now()-lastAct58.t>20000)return ''; if(lastAct58.oc.indexOf("act('play')")>=0||/play/i.test(lastAct58.label))return 'Play'; if(/practice$/i.test(lastAct58.label))return ''; var l=lastAct58.label.replace(/^[^\w]+/,'').split('—')[0].trim(); if(l.length>=2&&l.length<=42&&!/hide|close|back/i.test(l))return l; return '' }catch(e){ return '' } }
+try{ if(typeof toast==='function'){ var _t58=toast; toast=function(msg){ try{ var m=String(msg==null?'':msg); var mm=m.match(/^(.+?\+\d+\s*XP\s*—\s*)(.+)$/); if(mm&&/practice$/i.test(mm[2])){ var lbl=actLabel58(); if(lbl&&mm[2]!==lbl)msg=mm[1]+lbl } }catch(e){} return _t58.apply(this,arguments) } } }catch(e){}
+try{ if(typeof act==='function'){ var _act58=act; act=function(t){ var tx0=0; try{ var s=S58(); tx0=s?(s.totalXp||0):0; if(t==='play')lastAct58={label:'🎮 Play games',oc:"act('play')",t:Date.now()} }catch(e){}
+ var r=_act58.apply(this,arguments);
+ try{ if(t==='play'){ var tx1=tx0; setTimeout(function(){ try{ var s2=S58(); if(s2&&inGame58()&&(s2.totalXp||0)===tx1&&typeof addXp==='function'){ lastAct58={label:'🎮 Play games',oc:"act('play')",t:Date.now()}; addXp(8,'social') } }catch(e){} },3600) } }catch(e){}
+ return r } } }catch(e){}
+
+/* ================= ITEM 14 — world cars keep their owner's name tag ================= */
+function trafOwnerPool58(){ try{ var out=[]; var seen={};
+  var add=function(nm){ if(nm&&!seen[nm]){ seen[nm]=1; out.push(nm) } };
+  if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ try{ var v=(typeof vehOf119==='function')?vehOf119(p.name):null; if(v&&v.equipped)add(p.name) }catch(e){} });
+  if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ try{ var v=(typeof vehOf119==='function')?vehOf119(n.name):null; if(v&&v.equipped)add(n.name) }catch(e){} });
+  if(!out.length){ var s=S58(); if(s&&s.town&&s.town.people)Object.keys(s.town.people).forEach(add) }
+  return out }catch(e){ return [] } }
+setInterval(function(){ try{ var T=window._traf221; if(!T||!T.list||!T.list.length)return; var pool=trafOwnerPool58(); if(!pool.length)return;
+ T.list.forEach(function(c){ if(!c.owner){ c.owner=pool[Math.floor(Math.random()*pool.length)]; try{ var v=(typeof vehOf119==='function')?vehOf119(c.owner):null; if(v&&v.equipped)c.model=v.equipped }catch(e){} } });
+}catch(e){} },900);
+try{ if(typeof drawCars202==='function'){ var _dc58=drawCars202; drawCars202=function(){ var r=_dc58.apply(this,arguments); try{ var s=S58(); if(!s||!inGame58())return r; var cvEl=document.getElementById('cv'); if(!cvEl)return r; var deps=window._dep216||{}; var keys=Object.keys(deps); if(!keys.length)return r;
+  var ctx=cvEl.getContext('2d'); var now=performance.now(); ctx.save();
+  keys.forEach(function(owner){ var d=deps[owner]; if(!d)return; var el=now-d.t0; if(el<1950||el>=3400)return; var gy=(window._carLane216&&window._carLane216[owner])||456; var x=d.x;
+   if(el>=1950){ var p2=(el-1950)/1450; var out=d.x>=450?1:-1; x=d.x+out*p2*p2*880 }
+   try{ if(typeof tagWorld228==='function')tagWorld228(ctx,x,gy-110,owner,(d.col&&d.col.body)||'#ffffff',false,240,2); else if(typeof carTag221==='function')carTag221(ctx,x,gy-110,owner,(d.col&&d.col.body)||'#ffffff',false,240,2) }catch(e){}
+  });
+  ctx.restore();
+ }catch(e){} return r } } }catch(e){}
+
+window.__h58={build:BUILD250H,covTruth58:covTruth58,roomName58:roomName58,present58:present58,lockWx58:lockWx58};
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50 (stamp '+BUILD250H+'): ▶️ the start screen assembles in order — save adopted, Welcome-back offered, update notice exactly once at a menu-safe stage • 🖼️ the stage box is identical peeking/open/expanded (HUD compaction stood down, sheet overlays) • 🔤 sheet labels take the game ink; sections toggle once and keep their state • 🗣️ face-to-face talk needs no phone • 🎥 every zoom is the 1.2× conversation zoom, and it always comes back • 👥 classroom pills are width-aware — no overlaps, no clipped names • 👶 coverage reads physical presence + the one sitter flag • 🎲 born-into text is composed from the dealt life • 🌆 scenes span full width at 1920px • 🚪 the header names every room, in the same beat • 🎣 one weather for the day, and a catch announces itself • 🛒 the Market refuses minors out loud • 🎮 Play XP names Play, at every place • 🚗 world cars keep their owner name tags','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
 </body>
 </html>
