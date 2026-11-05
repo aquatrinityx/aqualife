@@ -25698,7 +25698,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h56', CLASS246='hotfix';
+ var BUILD246='v200-h57', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26662,7 +26662,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h56'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h57'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -27210,7 +27210,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h56';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h57';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27504,7 +27504,7 @@ try{
    ================================================================ */
 (function(){
 'use strict';
-var BUILD248='v200-h56';
+var BUILD248='v200-h57';
 function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $248(id){ return document.getElementById(id) }
 function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28127,6 +28127,152 @@ setInterval(chooserOwnsF,400);
 try{ if(typeof renderTabs==='function'){ var _rtF=renderTabs; renderTabs=function(){ var r=_rtF.apply(this,arguments); chooserOwnsF(); setTimeout(chooserOwnsF,50); setTimeout(chooserOwnsF,300); return r } } }catch(e){}
 try{ if(typeof render==='function'){ var _rF=render; render=function(){ var r=_rF.apply(this,arguments); chooserOwnsF(); return r } } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — hotfix 48.5: 🚪 the room panel owns the dock highlight while it is open (stamp v200-h56)','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+
+<style id="style249">
+/* ===== v200 HOTFIX 49 — 🗂️ THE MENU REBUILD (direction D: ONE SHEET, OWN TABS) =====
+   The slim bottom bar: --dockH shrinks to toggle + money height in EVERY state, so the
+   bar, the toasts and the app padding all follow the one slim bar. The app reserves a
+   CONSTANT bottom space — the slim bar plus the sheet header's own height (--headH49,
+   measured by the h49 script) — never the open sheet's height, so the scene's box is
+   the same size in peek, in open, and on every tab. */
+body.inGame51{--dockH:calc(48px + env(safe-area-inset-bottom,0px))}
+body.inGame51.dockOpen47{--dockH:calc(48px + env(safe-area-inset-bottom,0px))}
+body.inGame51 .app{padding-bottom:calc(var(--dockH) + var(--headH49,52px))}
+.menuDock{overflow:visible}
+#dockCore100{flex-direction:row;align-items:center;gap:8px;width:100%}
+#dockCore100 .dockMoney56{margin-left:auto;padding:0 4px 0 0;flex:none}
+.sheetToggle49{flex:none;display:flex;align-items:center;gap:6px;background:#14101f;color:#fff;border:2px solid var(--accent2,#ffb703);border-radius:999px;padding:7px 14px;font-family:inherit;font-weight:900;font-size:13.5px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sheetToggle49:active{transform:scale(.96)}
+/* THE ONE SHEET — rides directly above the slim bar, inside the dock's own stacking
+   context so every existing tray-truth / lock / highlight pass that looks under
+   #menuDock keeps finding the real tabs. Its header IS the room bar; below the header
+   its OWN tab row; below that, the folder panel itself. */
+#sheet49{position:absolute;left:0;right:0;bottom:100%;display:flex;flex-direction:column;border-top:3px solid transparent;border-radius:20px 20px 0 0;background-color:var(--bg);background-image:linear-gradient(var(--bg),var(--bg)),conic-gradient(from var(--rgba),var(--g1),var(--g2),var(--g3),var(--g4),var(--g5),var(--g6),var(--g1));background-origin:border-box;background-clip:padding-box,border-box;animation:rgbSpin 5s linear infinite;box-shadow:0 -14px 38px #00000055}
+.grab49{flex:none;display:flex;justify-content:center;padding:7px 0 3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.grab49 span{display:block;width:46px;height:5px;border-radius:99px;background:#ffffff45}
+.sheetHead49{flex:none;min-width:0}
+.sheetHead49 .tabsRow100{padding:3px 6px 5px}
+.sheetTabs49{flex:none;display:none;padding:5px 6px 3px;border-top:1.5px solid #ffffff1f}
+body.dockOpen47 .sheetTabs49{display:block}
+.sheetTabs49 .dockBtns56{display:flex;gap:3px;width:100%}
+.sheetBody49{flex:none;min-height:0}
+/* the folder panel inside the sheet: an in-flow region of the sheet, not a second
+   fixed tray — one surface, one border, no ghost bar can ever paint inside it */
+#sheet49 .dockSheet{position:relative;left:auto;right:auto;bottom:auto;width:auto;margin:0;max-height:min(52dvh,600px);transform:none;border-top:0;border-radius:0;box-shadow:none;background-image:none;background-color:transparent;display:none;visibility:visible;pointer-events:auto}
+body.dockOpen47 #sheet49 .dockSheet{display:flex}
+/* scene-corner furniture that used to key off the tall dock now clears the peek header */
+.homeBtn190{bottom:calc(var(--dockH,48px) + var(--headH49,52px) + 10px)!important}
+.v176DriveMini{bottom:calc(var(--dockH,48px) + var(--headH49,52px) + 10px)}
+@media(prefers-reduced-motion:reduce){#sheet49{animation:none}.sheetToggle49{transition:none}}
+</style>
+<script>
+/* ================= 🌊 AquaLife v200 — HOTFIX 49: THE MENU REBUILD (direction D — "One Sheet, Own Tabs", the owner's pick, Nov 4)
+   THE SHELL, REBUILT — content untouched. The old stack (in-flow room-bar row + a fixed
+   folder tray + a fixed tab dock, three separately-positioned pieces whose heights were
+   synced by a CSS var) is replaced by ONE persistent bottom sheet:
+   • The sheet is a child of the dock element, riding directly above a SLIM bottom bar.
+     The slim bar carries exactly two things: the ▴ Menu / ▾ Hide sheet toggle and the
+     player's money (the owner's standing layout rule: money stays on the bottom bar).
+   • THE SHEET HEADER IS THE ROOM BAR. The one .tabsRow100 node (🚪 room name + Change
+     rooms ▾ + 🎒 Bag + 📸 Scrapbook, painted by the shipped painters) is moved INTO the
+     sheet's header — there is exactly one room bar in the game by construction, in peek,
+     in open, and in the room chooser, because the bar is part of the sheet itself. The
+     h48 ghost-bar class (the in-flow bar painting over the tray) dies structurally.
+   • THE SHEET HAS ITS OWN TAB ROW inside, directly under the header: the shipped folder
+     buttons (⚡ Actions · 👽 Me · 🎓 School · 💼 Work · ❤️ Social · 🚗 Travel · 🚨 Crime)
+     move into it — same buttons, same dockGo/dockGo101 handlers, same lock painters and
+     tray-truth passes (they all look under #menuDock / .dockBtns56 and still find them),
+     so the lit tab is painted by the one shipped tab system and always matches the panel.
+     Locked folders keep their shipped behaviour (🔒 paint + the honest lock sheet).
+   • THE SCENE NEVER RESCALES. The sheet slides OVER the scene's lower area: the app
+     reserves only the slim bar + the header's constant height, and the sheet content's
+     measured height is reported as 0 to the --sheetH51 machinery, so the h48 framing
+     freeze's basis (wrap height + reservation) is identical in peek, open, every tab,
+     every section expansion — framing pixel-identical, the tray-height coupling dead.
+   • CHANGE ROOMS lives inside the sheet exactly as shipped: the header's Change rooms ▾
+     swaps the sheet's panel content to the chooser (header stays visible above it), the
+     h48 stay-open / force-close / three-way-close behaviour is untouched, and switching
+     LOCATION still collapses the sheet to peek (the h48 tray-truth tick closes the dock
+     on arrival — peek IS the closed dock now) with the header naming the new room.
+   • Panels still open at the top of their scroll (h48 tab-change reset), panel content,
+     rows, order and behaviours are byte-for-byte the shipped ones — only their container
+     moved. GAME_VERSION stays 200, SAVE_KEY stays miniLifeSimShareable_v3, the anonymous
+     stats tracker is untouched, and the build stamp moves to v200-h57 so every existing
+     player is offered the update exactly once. ================= */
+(function(){
+'use strict';
+var BUILD249='v200-h57';
+function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+function chooser49(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
+function toggle49(){ try{
+  if(typeof dockOpen!=='undefined'&&dockOpen){
+   if(chooser49()){ /* the room toggle closes through its own door (h48.2) */
+    if(curTab==='rooms106'&&typeof openRoomPick106==='function'){ openRoomPick106(); return }
+    if(curTab==='areas123'&&typeof openAreaPick123==='function'){ openAreaPick123(); return }
+   }
+   if(typeof setDock==='function')setDock(false);
+   return;
+  }
+  var t='home'; try{ if(typeof curTab!=='undefined'&&curTab)t=curTab }catch(e){}
+  if(t==='actions101'){ if(typeof dockGo101==='function'){ dockGo101(); return } t='home' }
+  if(t==='rooms106'||t==='areas123')t='home';
+  if(typeof dockGo==='function')dockGo(t);
+ }catch(e){} }
+function fixNav49(){ try{ /* the shipped fixNav101 looks for the tab row under #dockCore100;
+   inside the sheet it runs against the moved row instead — same ⚡ Actions button, same state */
+  var db=document.querySelector('#sheet49 .dockBtns56'); if(!db)return;
+  var b=db.querySelector('.actBtn101');
+  if(!b){ b=document.createElement('button'); b.type='button'; b.className='dockTab actBtn101'; b.setAttribute('aria-label','Folder: Actions'); b.innerHTML='<span class="dtE">⚡</span><span class="dtL">Actions</span>'; b.onclick=function(){ if(typeof dockGo101==='function')dockGo101() }; db.insertBefore(b,db.firstChild) }
+  var on=(typeof curTab!=='undefined'&&curTab==='actions101');
+  b.classList.toggle('on',!!on);
+  if(on)db.querySelectorAll('.dockTab').forEach(function(x){ if(x!==b)x.classList.remove('on') });
+ }catch(e){} }
+function layout49(){ try{
+  if(!S_()||typeof inGame==='undefined'||!inGame)return;
+  var dock=document.getElementById('menuDock'); if(!dock)return;
+  var sheet=document.getElementById('sheet49');
+  if(!sheet||sheet.parentNode!==dock){
+   if(sheet)sheet.remove();
+   sheet=document.createElement('div'); sheet.id='sheet49';
+   sheet.innerHTML='<div class="grab49" role="button" aria-label="Menu sheet — tap to open or close"><span></span></div><div class="sheetHead49"></div><div class="sheetTabs49"></div><div class="sheetBody49"></div>';
+   dock.appendChild(sheet);
+   sheet.querySelector('.grab49').addEventListener('click',function(){ toggle49() });
+  }
+  var md=document.getElementById('modal'); var modalUp=!!(md&&md.classList.contains('open'));
+  sheet.style.display=modalUp?'none':''; /* a modal sheet owns the screen alone — the menu sheet steps aside and returns when it closes (the slim bar stays, as the dock always did) */
+  var head=sheet.querySelector('.sheetHead49'), tabs=sheet.querySelector('.sheetTabs49'), body49=sheet.querySelector('.sheetBody49');
+  var tr=document.querySelector('.tabsRow100');
+  if(tr&&tr.parentNode!==head)head.appendChild(tr);
+  var btns=document.querySelector('#dockCore100 .dockBtns56');
+  if(btns&&btns.parentNode!==tabs){ var stale=tabs.querySelector('.dockBtns56'); if(stale&&stale!==btns)stale.remove(); tabs.appendChild(btns) }
+  var dsh=document.getElementById('dockSheet');
+  if(dsh){
+   if(dsh.parentNode!==body49)body49.appendChild(dsh);
+   if(!dsh.__h49oh){ try{ Object.defineProperty(dsh,'offsetHeight',{configurable:true,get:function(){ return 0 }}) }catch(e){} dsh.__h49oh=1 }
+  }
+  var core=document.getElementById('dockCore100');
+  if(core){
+   var tg=document.getElementById('sheetToggle49');
+   if(!tg){ tg=document.createElement('button'); tg.type='button'; tg.id='sheetToggle49'; tg.className='sheetToggle49'; tg.setAttribute('aria-label','Menu — open or close the menu sheet'); tg.addEventListener('click',function(){ toggle49() }); core.insertBefore(tg,core.firstChild) }
+   else if(tg.parentNode!==core)core.insertBefore(tg,core.firstChild);
+   var open=false; try{ open=!!dockOpen }catch(e){}
+   var lbl=open?'▾ Hide':'▴ Menu';
+   if(tg.textContent!==lbl)tg.textContent=lbl;
+  }
+  if(tr){ var h=tr.offsetHeight; if(h>8){ var cur=document.documentElement.style.getPropertyValue('--headH49'); if(cur!==h+'px')document.documentElement.style.setProperty('--headH49',h+'px') } }
+  fixNav49();
+ }catch(e){} }
+try{ if(typeof render==='function'){ var _r49=render; render=function(){ var r=_r49.apply(this,arguments); try{ layout49(); setTimeout(layout49,60); setTimeout(layout49,420) }catch(e){} return r } } }catch(e){}
+try{ if(typeof renderTabs==='function'){ var _rt49=renderTabs; renderTabs=function(){ var r=_rt49.apply(this,arguments); try{ layout49() }catch(e){} return r } } }catch(e){}
+try{ if(typeof setDock==='function'){ var _sd49=setDock; setDock=function(){ var r=_sd49.apply(this,arguments); try{ layout49() }catch(e){} return r } } }catch(e){}
+try{ if(typeof openSheet==='function'){ var _os49=openSheet; openSheet=function(){ var r=_os49.apply(this,arguments); try{ layout49(); setTimeout(layout49,40) }catch(e){} return r } } }catch(e){}
+try{ if(typeof closeModal==='function'){ var _cm49=closeModal; closeModal=function(){ var r=_cm49.apply(this,arguments); try{ layout49(); setTimeout(layout49,40) }catch(e){} return r } } }catch(e){}
+window.addEventListener('resize',function(){ try{ layout49() }catch(e){} });
+setInterval(layout49,500);
+try{ layout49() }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 49 (THE MENU REBUILD — direction D, One Sheet, Own Tabs): 🗂️ ONE persistent bottom sheet is the whole menu — grab handle, its header IS the room bar (🚪 room • Change rooms ▾ • 🎒 Bag • 📸 Scrapbook), its own tab row inside (⚡ Actions · 👽 Me · 🎓 School · 💼 Work · ❤️ Social · 🚗 Travel · 🚨 Crime — locks unchanged), folder panels unchanged inside it • the old outer dock is now a slim bar: ▴ Menu toggle + 💰 money only • 🖼️ the scene never rescales — the sheet slides OVER it, framing identical in peek, open and every tab • 🚪 Change Rooms swaps the sheet content under the same header, closable all three ways as shipped (stamp '+BUILD249+')','color:#0ea5e9;font-weight:bold') }catch(e){}
 })();
 </script>
 
