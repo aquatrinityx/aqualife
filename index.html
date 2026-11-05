@@ -1183,7 +1183,7 @@ function renderTabs(active){
  if(active==='home') p.innerHTML=`<div class="grid">${(S.age>=1&&S.age<=4)?todCardHtml72():''}${S.gender?'':`<div class="card" style="border-color:var(--pink)"><h3>♂️♀️ Boy or Girl?</h3><p>One-time pick — sets ${S.name}'s look and pronouns (he/him or she/her) everywhere.</p><button class="btn orange" onclick="setGender('boy')">♂️ Boy — he/him</button><button class="btn" style="background:#ec4899;color:#fff" onclick="setGender('girl')">♀️ Girl — she/her</button></div>`}${marriageFamilyHtml()}<div class="card"><h3>📖 My Story</h3><p>Origin: <b>${ORIGINS.find(o=>o.id===S.origin).name}</b> • Environment: ${S.location}${startHomeLine80()}<br>📍 Home town: <b>${placeOf().city}, ${placeOf().state} — ${placeOf().country}</b><br>Family bond: ${S.bond}%</p><div class="progress" style="margin-top:10px"><i style="width:${S.xp}%"></i></div><p class="small" style="margin-top:6px">Level ${S.level} • ${S.xp}/100 XP • Lifetime ${S.totalXp} XP</p></div><div class="card"><h3>🧠 Skills</h3>${Object.entries(S.skills).map(([k,v])=>`<div class="kv"><span style="text-transform:capitalize">${k}</span><b>${v} pts • Lv ${Math.floor(v/50)+1}</b></div>`).join('')}</div></div>`;
  if(active==='school'){ const sk31=schoolStageKey(S.age); if(!sk31){ p.innerHTML=`<div class="grid"><div class="card"><h3>🎓 School</h3><p>Stages: 🧸 Preschool (3–4), 📚 Elementary (5–10), 🎒 Middle School (11–13), 🏫 High School (14–17). Enroll at each stage's school.</p></div></div>` } else if(!stageEnrolled()){ p.innerHTML=enrollCardHtml(sk31) } else if(sk31==='pre'){ p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>🧸 ${schoolName('pre')}</h3><p>Preschool in ${placeOf().city} • <b>Enrolled ✓</b><br>🕐 <b>School day: ${schoolHoursLbl()}</b> — preschool runs on the schedule, like a job: in for the whole block, the day runs on the clock (circle time, recess, lunch, afternoon play), and the final bell at ${schoolEndLbl()} sends you straight home.<br>📅 <b>Term ends Day ${(S.term&&S.term.endDay)||termEndDay()}</b> — then a break, the little report settles, and a new term begins.</p></div></div>` } else { p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>${SCHOOL_STAGES[sk31].icon} ${schoolName(sk31)}</h3><p>${SCHOOL_STAGES[sk31].label} in ${placeOf().city} • <b>Enrolled ✓</b> — every school day opens with one question, exactly like a work shift: 🎒 <b>Go to school</b> and live the day in person, or ⏩ <b>Fast-forward</b> straight through it. Either way the day counts in full — attendance, grades and progress.<br>🕐 <b>School day: ${schoolHoursLbl()}</b> — it runs on the clock, and the final bell at ${schoolEndLbl()} sends you straight home.<br>📅 <b>Term ends Day ${(S.term&&S.term.endDay)||termEndDay()}</b> — then a break, the report card settles your grades (${S.grades}%), and you move up.${S.term&&S.term.report?'<br>'+S.term.report:''}</p></div></div>` } }
  if(active==='trouble') p.innerHTML=(S.age<5)?troubleLockedHtml55():`<div style="background:#111;color:#fff;padding:12px;border-radius:12px;margin-bottom:10px"><b>🚔 Wanted ${S.wanted}★</b> · Record ${S.record} · Addiction ${S.addiction}% · 😈 Street Lv ${streetLv()} (${(S.skills&&S.skills.street)||0} pts, ${S.streetClean||0} clean runs): uncaught crime ↑, caught ↓ · 💊 Dealing Lv ${dealingLv()} (${(S.skills&&S.skills.dealing)||0} pts): clean sales ↑ — better prices, bigger moves, cooler heat · 💪 Strength Lv ${skillLv('strength')} · 🥊 Fighting Lv ${skillLv('fighting')} (fights ↑ both) · Cops scale with wanted ★ · Weapon in Bag = edge · Cops: street heat · FBI: 4★+ or bank jobs · Caught: fines, custody, record — blocks police/FBI careers · 🌡️ Heat: no new crimes → −1★ ~every 6 hrs · 🛒 Market record wipe: pricey, instant, risky.</div><div class="catHead58">😈 Crimes — the scores</div><div class="grid">${[['Shoplift','+$18, low heat — sometimes an item too'],['Pickpocket','+$35, medium heat — sometimes an item too'],['Pick a Lock','Break in & come out with ITEMS for your Bag — risk scales with the place'],['Dumpster Dive','Mostly junk… sometimes sellable goods, valuables or straight cash'],['Rob a House','+$120 & loot items, high heat'],['Rob a Bank','+$600, FBI heat']].map(([t,d])=>`<div class="card"><h3>😈 ${t}</h3><p>${d}</p><button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff" onclick="doTrouble('${t}')">Do It</button></div>`).join('')}</div><div class="catHead58">🌆 Street Life — the gun & drug world, under one name</div><div class="grid"><div class="card" style="border-color:#7f1d1d"><h3>💊 The Drug Market</h3><p>ONE market, both sides of the counter, never split up: <b>buy</b> stock in, <b>sell</b> it on the street, or <b>use</b> your own — 🌿 THC · 🌀 LSD · 🍄 Shrooms with stock, street prices & heat per product, and your ⭐ regulars listed inside.</p><button class="btn" data-bad="1" style="background:#7f1d1d;color:#fff" onclick="dealMenu()">💊 Open the market — buy & sell together</button></div><div class="card"><h3>🔫 Guns & the people out there</h3><p>The 🔫 Gun & Sporting Counter and 🪪 license are below, beside the 🌆 street sellers & 👑 kingpins.</p></div></div>${streetCard53()}${gunShopCardHtml()}${typeof crewCard63==='function'?crewCard63():''}${typeof guardCard63==='function'?guardCard63():''}<div class="card" style="border-color:#14532d"><h3>🛒 The Market — orders & regulars</h3><p>A line for <b>regulars and buyers only</b>. Orders land there — close them on the phone for a bank transfer, or meet in person.</p><button class="btn" data-bad="1" style="background:#14532d;color:#fff" onclick="phoneBurner63()">🛒 Open the Market</button></div>`;
- if(active==='work') p.innerHTML=`<div class="grid">${resumeCard54()}${S.age<18?kidCardHtml():''}${S.age>=5&&S.age<18?`<div class="card"><h3>🧒 Kid Jobs</h3><p>Everyone starts at $0. Family ${S.origin==='orphan'?'stipend':'allowance'} lands weekly — these pay today, in cash, straight into your 🏦 Bank ledger. Bigger kid jobs unlock as you grow.</p>${KID_JOBS.map(j=>S.age>=j[2]?`<button class="btn" onclick="doKidJob('${j[0]}',${j[1]})">${j[0]} • +$${j[1]}</button>`:`<button class="btn outline" disabled style="opacity:.5">${j[0]} • unlocks at age ${j[2]}</button>`).join('')}${S.age<4?'<p class="small" style="margin-top:6px">Too little for jobs just yet — family money carries you for now.</p>':''}</div>`:''}${S.age>=14&&S.age<18?` <div class="card"><h3>Teen Jobs (14+)</h3><p>Fast food $12/hr, Retail $13/hr, Lawn work $15/hr</p><button class="btn" onclick="doWork('Teen Job',48)">Work Shift • Earn ~$48</button></div>`:''}<div class="card"><h3>Chores — Ages 5+</h3><p>${S.age<5?`Babies and toddlers can't do chores yet — family money carries you for now, and housework unlocks on your 5th birthday.`:`Earn cash at home, build responsibility. Helping out also makes 💵 asking your family for money go better.`}</p>${S.age<5?`<button class="btn outline" disabled style="opacity:.5">🔒 Do Chores • unlocks at age 5</button>`:`<button class="btn" onclick="doWork('Chores',12)">Do Chores • +$12</button>`}</div>${jobBoardHtml()}${jobAppsCardHtml43()}${certCardHtml53()}${taxCardHtml59()}${S.age>=18?`<div class="catHead58" style="grid-column:1/-1;margin:0 2px">🧑 Adults — college & one-off shifts</div>`+collegeCardHtml():''}</div>`;
+ if(active==='work') p.innerHTML=`<div class="grid">${resumeCard54()}${S.age<18?kidCardHtml():''}${S.age>=5&&S.age<18?`<div class="card"><h3>🧒 Kid Jobs</h3><p>Everyone starts at $0. Family ${S.origin==='orphan'?'stipend':'allowance'} lands weekly — these pay today, straight into your 🏦 Bank ledger. Bigger kid jobs unlock as you grow.</p>${KID_JOBS.map(j=>S.age>=j[2]?`<button class="btn" onclick="doKidJob('${j[0]}',${j[1]})">${j[0]} • +$${j[1]}</button>`:`<button class="btn outline" disabled style="opacity:.5">${j[0]} • unlocks at age ${j[2]}</button>`).join('')}${S.age<4?'<p class="small" style="margin-top:6px">Too little for jobs just yet — family money carries you for now.</p>':''}</div>`:''}${S.age>=14&&S.age<18?` <div class="card"><h3>Teen Jobs (14+)</h3><p>Fast food $12/hr, Retail $13/hr, Lawn work $15/hr</p><button class="btn" onclick="doWork('Teen Job',48)">Work Shift • Earn ~$48</button></div>`:''}<div class="card"><h3>Chores — Ages 5+</h3><p>${S.age<5?`Babies and toddlers can't do chores yet — family money carries you for now, and housework unlocks on your 5th birthday.`:`Earn cash at home, build responsibility. Helping out also makes 💵 asking your family for money go better.`}</p>${S.age<5?`<button class="btn outline" disabled style="opacity:.5">🔒 Do Chores • unlocks at age 5</button>`:`<button class="btn" onclick="doWork('Chores',12)">Do Chores • +$12</button>`}</div>${jobBoardHtml()}${jobAppsCardHtml43()}${certCardHtml53()}${taxCardHtml59()}${S.age>=18?`<div class="catHead58" style="grid-column:1/-1;margin:0 2px">🧑 Adults — college & one-off shifts</div>`+collegeCardHtml():''}</div>`;
  if(active==='life') p.innerHTML=`<div class="grid"><div class="card" style="border-color:var(--accent2)"><h3>📊 Social &amp; Level</h3><p>Social breakdown, drain/gain %, followers, Level &amp; lifetime XP, skills, relationships, roommate bonds.</p><button class="btn gold" onclick="openSocialSheet()">📊 Open Full Social &amp; Level</button></div><div class="card"><h3>💖 Dating & Relationships</h3><p>${S.partner?`💍 Partner: <b>${S.partner}</b> ❤️ ${S.romance[S.partner]?S.romance[S.partner].meter:0}/100 — dates keep the meter high; days of silence let it slip, and partners can end it.`:S.age>=13?`Meet people face-to-face, get their number, then flirt from the chat: 💘 Crush → 💕 Dating → 💍 Partner. Dates happen in the scene, with bubbles — and cost real money.`:`Dating unlocks at 13 — for now, family & friends are the whole world.`}</p>${DATEABLE.filter(nm=>hasContact(nm)&&S.romance&&S.romance[nm]&&S.romance[nm].stage>=1).map(nm=>`<button class="btn outline" onclick="openConvo('${nm}')">${stageName(S.romance[nm].stage)} ${nm} — ❤️ ${S.romance[nm].meter}/100</button>`).join('')||'<p class="small" style="margin-top:8px">No sparks yet — your relationships will show up here.</p>'}</div>${townsfolkCardHtml()}<div class="card"><h3>🧑 Character</h3>${[['Gender',S.gender?(S.gender==='girl'?'♀️ Girl • she/her':'♂️ Boy • he/him'):'Not picked yet — see Life tab'],['Level',S.level],['Age / Stage',S.age+' • '+stage(S.age)],['School / Path',schoolStatusLine()],['🧭 Life Path',pathDef43(effectivePath43()).icon+' '+pathDef43(effectivePath43()).label],['Followers',S.followers],['Addiction',S.addiction+'%'],['Record',S.record]].map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}<div class="kv"><span>Style — skin · hair · clothes</span><span>${[lookOf(S).skin,lookOf(S).hair,lookOf(S).shirt].map(c=>`<i style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${c};border:1.5px solid #00000030;vertical-align:-3px;margin-left:5px"></i>`).join('')}</span></div><div class="kv"><span>Hat</span><b>${(HATS.find(h=>h.id===lookOf(S).hat)||HATS[0]).label}</b></div><div class="kv"><span>Glasses</span><b>${(GLASSES.find(g=>g.id===lookOf(S).glasses)||GLASSES[0]).label}</b></div><div class="kv"><span>Shoes</span><b>${(SHOES.find(s=>s.id===lookOf(S).shoes)||SHOES[0]).label}</b></div><div class="kv"><span>Face style</span><b>${(FACE_STYLES.find(f=>f.id===lookOf(S).face)||FACE_STYLES[0]).label}</b></div><div class="kv"><span>Hairstyle</span><b>${(HAIRSTYLES.find(h=>h.id===lookOf(S).hairStyle)||HAIRSTYLES[0]).label}</b></div><div class="kv"><span>🧤 Gloves</span><b>${(GLOVES.find(g=>g.id===lookOf(S).gloves)||GLOVES[0]).label}</b></div><div class="kv"><span>⌚ Watch</span><b>${(WATCHES.find(w=>w.id===lookOf(S).watch)||WATCHES[0]).label}</b></div><div class="kv"><span>💎 Jewelry</span><b>${(JEWELRY.find(j=>j.id===lookOf(S).jewelry)||JEWELRY[0]).label}</b></div><button class="btn gold" style="margin-top:10px" onclick="openStyleSheet()">🎨 Change style — face, hair, gloves, watch, jewelry & more</button></div></div>`;
  if(active==='travel') p.innerHTML=travelTabHtml();
  if(active==='more') p.innerHTML=moreLifeHtml();
@@ -2384,7 +2384,7 @@ function drawNPCSprite(ctx,n,now,stepping){
   ctx.fillStyle=n.hair; ctx.beginPath(); ctx.arc(nx-40,ny+22,12,Math.PI,Math.PI*2); ctx.fill();
   ctx.strokeStyle='#1f2937'; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(nx-46,ny+26); ctx.lineTo(nx-41,ny+26); ctx.moveTo(nx-38,ny+26); ctx.lineTo(nx-33,ny+26); ctx.stroke(); ctx.lineWidth=1;
   ctx.font='15px sans-serif'; ctx.fillText('💤',nx-36+Math.sin(now/600+nx)*2,ny-4);
-  ctx.font='bold 15px sans-serif'; const nw2=ctx.measureText(n.name).width; const tl2=Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw2+18),nx-nw2/2-9)); ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl2+2,ny-47,nw2+18,22,10); ctx.fill(); ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl2,ny-49,nw2+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#fff'; ctx.fillText(n.name,tl2+9,ny-33);
+  ctx.font='bold 15px sans-serif'; const nw2=ctx.measureText(n.name).width; const tl2=Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw2+18),nx-nw2/2-9))+(typeof window!=='undefined'&&window.__pillClampX248?window.__pillClampX248(nx,nw2,Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw2+18),nx-nw2/2-9))):0); ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl2+2,ny-47,nw2+18,22,10); ctx.fill(); ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl2,ny-49,nw2+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle='#fff'; ctx.fillText(n.name,tl2+9,ny-33);
   ctx.restore(); return }
  const nx=n.x, ny=n.y; ctx.save(); ctx.translate(nx,ny); ctx.scale(1.43,1.43); ctx.translate(-nx,-ny); const bob=stepping?Math.abs(Math.sin(now/130+nx))*3:0; const yy=ny-bob;
  ctx.fillStyle='#00000035'; ctx.beginPath(); ctx.ellipse(nx,ny+44,20,7,0,0,Math.PI*2); ctx.fill();
@@ -2395,9 +2395,11 @@ function drawNPCSprite(ctx,n,now,stepping){
  drawFace(ctx,nx,yy-9,npcExpr(n,now),0.66,4.5);
  /* h18: NO cheek-level glyphs — n.icon / n.hatEmoji used to print at (nx+13 / nx-27, yy-6), which read as stray tiny faces peeking out beside characters. The ONLY emoji anchored to a character now is the over-head expression (exprNpc216, below) and the asleep 💤. */
  ctx.font='bold 15px sans-serif'; const nw=ctx.measureText(n.name).width; const tl216=Math.max(nx-(nx-3)/1.43,Math.min(nx+(897-nx)/1.43-(nw+18),nx-nw/2-9));
- ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl216+2,yy-49,nw+18,22,10); ctx.fill();
- ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl216,yy-51,nw+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1;
- ctx.fillStyle='#fff'; ctx.fillText(n.name,tl216+9,yy-35);
+ /* h48: the pill clamps into the VISIBLE (cover-fit) frame and lifts clear of any pill already placed this frame — a name is never clipped by the stage edge and never hides behind another pill */
+ const pf248=(typeof window!=='undefined'&&window.__pillFix248)?window.__pillFix248(nx,ny,yy,nw,tl216):null; const tl248=tl216+(pf248?pf248.dx:0), lift248=pf248?pf248.lift:0;
+ ctx.fillStyle='#00000040'; ctx.beginPath(); ctx.roundRect(tl248+2,yy-49-lift248,nw+18,22,10); ctx.fill();
+ ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(tl248,yy-51-lift248,nw+18,22,10); ctx.fill(); ctx.strokeStyle='#ffffffa0'; ctx.lineWidth=1.2; ctx.stroke(); ctx.lineWidth=1;
+ ctx.fillStyle='#fff'; ctx.fillText(n.name,tl248+9,yy-35-lift248);
  if(n.say&&now<n.sayUntil){ drawSpeechBubble(ctx,nx,yy-66,n.say) }
  else if(n.state==='in'){ const ee216=(typeof window.exprNpc216==='function')?window.exprNpc216(n):null; if(ee216){ ctx.font='21px sans-serif'; ctx.fillText(ee216,tl216+nw+22,yy-33+Math.sin(now/340+nx)*2) } }
  ctx.restore();
@@ -2975,7 +2977,7 @@ function drawRoom(){
   ctx.fillStyle='#fff'; ctx.beginPath(); ctx.ellipse(x-8,y+20,17,6,0,0,7); ctx.fill(); ctx.fillStyle='#f97316'; ctx.beginPath(); ctx.ellipse(x-8,y+19.4,11,4,0,0,7); ctx.fill(); ctx.fillStyle='#84cc16'; ctx.beginPath(); ctx.ellipse(x-13,y+19,4,2.4,0,0,7); ctx.fill(); ctx.font='15px sans-serif'; ctx.fillText('🍗',x+14,y+23); ctx.fillStyle='#7dd3fc'; ctx.fillRect(x+34,y+12,5,9);
  }
  // CLEAR NAME TAG over the player — bold white on a dark pill with a gold rim
- ctx.font='bold 15px sans-serif'; const pnm=S.name; const pw2=ctx.measureText(pnm).width; const lyingTag=(actIcon==='💤'||(typeof playerAsleep128==='function'&&playerAsleep128()))&&!crawling; const ppx=x+(lyingTag?38:0)-pw2/2-9, ppy=lyingTag?y+66:y-(crawling?54:70);
+ ctx.font='bold 15px sans-serif'; const pnm=S.name; const pw2=ctx.measureText(pnm).width; const lyingTag=(actIcon==='💤'||(typeof playerAsleep128==='function'&&playerAsleep128()))&&!crawling; const ppx0=x+(lyingTag?38:0)-pw2/2-9, ppx=(typeof window!=='undefined'&&window.__pillPlayer248?window.__pillPlayer248(ppx0,pw2):ppx0), ppy=lyingTag?y+66:y-(crawling?54:70);
  ctx.fillStyle='#00000038'; ctx.beginPath(); ctx.roundRect(ppx+2,ppy+2,pw2+18,21,10); ctx.fill();
  ctx.fillStyle='#111111e8'; ctx.beginPath(); ctx.roundRect(ppx,ppy,pw2+18,21,10); ctx.fill(); ctx.strokeStyle='#ffb703'; ctx.lineWidth=1.5; ctx.stroke(); ctx.lineWidth=1;
  ctx.fillStyle='#fff'; ctx.fillText(pnm,ppx+9,ppy+15); try{ const eeP216=(typeof window.exprPlayer216==='function')?window.exprPlayer216():null; if(eeP216&&!actIcon&&!lyingTag){ ctx.font='22px sans-serif'; ctx.fillText(eeP216,ppx+(pw2+18)/2-11,ppy-12+Math.sin(nowMs/340)*2) } }catch(e){} /* v126: the text starts INSIDE the pill (pill x + its 9px padding) — it used to be drawn at the standing x even when the pill had shifted right for the lying/sleeping pose, so the name slid out of its box while sleeping */
@@ -3757,7 +3759,7 @@ function attendSkip(){ closeModal(); ensure21(); ensure33(); S.attend.schoolSkip
 // ---- v33: BULLIES — sometimes a bully confronts you at school (recess, lunch, hallway). Fight them (🥊 Fighting decides), tell a teacher, pay them off, befriend them, or run — every outcome lands for real. ----
 const BULLY_SPOTS=['recess','the lunch line','the hallway','the bus queue','the water fountain'];
 function maybeBully(){ if(!S)return false; ensure33(); if(!schoolStageKey(S.age)||S.age<5)return false; if(S.location!=='school')return false; if(S.day<=(S.bully.calmUntil||0))return false; if(S.bully.day===S.day)return false; if(Math.random()>0.30)return false; S.bully.day=S.day; if(!S.bully.name||Math.random()<0.4){ S.bully.girl=Math.random()<0.5; S.bully.name=nameForGender(S.bully.girl) } const b=S.bully.name; const spot=pickArr(BULLY_SPOTS); showTip('bully');
- openSheet('<h2>😤 A bully steps up</h2><p>At '+spot+', <b>'+b+'</b> — bigger, louder, and bored — blocks your path. <i>“Well? What are YOU gonna do about it?”</i> The yard goes quiet. This is a real moment, '+S.name+': fight, talk, pay, befriend, or run — it all lands in your story.</p><p class="small">🥊 Your fight math: attack ~'+Math.round(fightPowerBase())+' (💪 Strength Lv '+skillLv('strength')+' • 🥊 Fighting Lv '+skillLv('fighting')+') — fights at school train both, win or lose. Bullies scale with your age, like everything else.</p><button class="btn" data-bad="1" style="margin-top:8px;background:#7f1d1d;color:#fff" onclick="bullyResolve(\'fight\')">🥊 Fight '+b+'</button><button class="btn" style="margin-top:8px" onclick="bullyResolve(\'teacher\')">🧑‍🏫 Tell a teacher</button><button class="btn gold" style="margin-top:8px" onclick="bullyResolve(\'pay\')">💸 Pay them off — up to $15</button><button class="btn" style="margin-top:8px" onclick="bullyResolve(\'friend\')">🤝 Try to befriend them</button><button class="btn outline" style="margin-top:8px" onclick="bullyResolve(\'run\')">🏃 Run for it</button>',{person:b,sfx:'hit',buzz:[90,40,90]});
+ openSheet('<h2>😤 A bully steps up</h2><p>At '+spot+', <b>'+b+'</b> — bigger, louder, and bored — blocks your path. <i>“Well? What are YOU gonna do about it?”</i> The yard goes quiet. This is a real moment, '+S.name+': fight, tell a teacher, pay, befriend, or run — it all lands in your story.</p><p class="small">🥊 Your fight math: attack ~'+Math.round(fightPowerBase())+' (💪 Strength Lv '+skillLv('strength')+' • 🥊 Fighting Lv '+skillLv('fighting')+') — fights at school train both, win or lose. Bullies scale with your age, like everything else.</p><button class="btn" data-bad="1" style="margin-top:8px;background:#7f1d1d;color:#fff" onclick="bullyResolve(\'fight\')">🥊 Fight '+b+'</button><button class="btn" style="margin-top:8px" onclick="bullyResolve(\'teacher\')">🧑‍🏫 Tell a teacher</button><button class="btn gold" style="margin-top:8px" onclick="bullyResolve(\'pay\')">💸 Pay them off — up to $15</button><button class="btn" style="margin-top:8px" onclick="bullyResolve(\'friend\')">🤝 Try to befriend them</button><button class="btn outline" style="margin-top:8px" onclick="bullyResolve(\'run\')">🏃 Run for it</button>',{person:b,sfx:'hit',buzz:[90,40,90]});
  return true }
 function bullyResolve(how){ if(!S)return; ensure33(); const b=(S.bully&&S.bully.name)||'The bully'; closeModal();
  if(how==='fight'){ sfx('hit'); buzz([120,40,120]); showTip('bully'); startActivity('🥊',2300,charX,charY,null,function(){ const mine=fightPower(false), theirs=14+S.age*2.2+Math.random()*22; addXp(10,'fighting'); addXp(5,'strength');
@@ -5302,6 +5304,9 @@ function drawRoomFurn86(ctx,th,rm){ const inst=S.location!=='house'; switch(rm.f
  default: drawFridgeF(ctx,84,196,th.fridge); drawTableF(ctx,214,246,inst); drawCouchF(ctx,368,240,th.couch,168); drawDeskF(ctx,556,224,false); drawBedF(ctx,676,224,th,inst); drawShowerF(ctx,806,228,inst) } }
 function paintRoomBar86(){ const bar=document.getElementById('roomBar86'); if(!bar)return; if(!S||!inGame){ bar.style.display='none'; return } const rooms=roomsFor86(S.location); if(!rooms){ bar.style.display='none'; bar.innerHTML=''; return } const rm=curRoom86(); if(!rm){ bar.style.display='none'; return } bar.style.display='flex'; const here=[];
  if(npcs)npcs.forEach(function(n){ if(n.state!=='in')return; if(isParentNpc(n.name)&&S.location!==homeLoc())return; if(npcHere86(n))here.push(n.name) });
+ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state!=='in')return; if(npcHere86(p)&&here.indexOf(p.name)<0)here.push(p.name) });
+ if(S.guest&&S.guest.name&&here.indexOf(S.guest.name)<0)here.push(S.guest.name);
+ if(S.sleepover&&S.sleepover.guest&&here.indexOf(S.sleepover.guest)<0)here.push(S.sleepover.guest);
  if(S.escort)here.push(S.escort);
  if(S.location===homeLoc()){ (S.housemates||[]).forEach(function(h){ if(mateHere86(h))here.push(h) }); (S.kids||[]).forEach(function(k){ if(kidHere86(k))here.push(k.name) }) }
  if(S.location==='grandparents'&&rm.id==='living')here.push('Grandma 👵','Grandpa 👴');
@@ -6838,7 +6843,7 @@ const _pw63_108=payWage63; payWage63=function(net,label){ if(!S||!(net>0)){ _pw6
 function ddSet108(on){ if(!S)return; ensure63(); ensure108(); S.bank63.dd108=!!on; log(on?'💼 DIRECT DEPOSIT ON — paydays now land straight in your bank. No more paper to chase.':'💼 DIRECT DEPOSIT OFF — paydays arrive as 🧾 paper checks again; deposit each one at the bank or by 📸 photo in the Bank app.'); toast(on?'💼 Direct deposit: ON':'🧾 Paper checks it is'); save(); const sh=document.getElementById('sheet'); if(sh&&document.getElementById('modal').classList.contains('open')&&sh.textContent.indexOf('hiring paperwork')>=0)closeModal() }
 const _tj108=takeJob; takeJob=function(t){ const had=S&&S.jobInfo?S.jobInfo.title:null; _tj108(t); try{ if(S&&S.jobInfo&&S.jobInfo.title===t&&had!==t){ ensure63(); ensure108(); if(S.bank63.debit&&!S.bank63.dd108){ setTimeout(function(){ if(S&&!document.getElementById('modal').classList.contains('open'))openSheet('<h2>💼 One bit of hiring paperwork</h2><p>New job, one choice: how does your pay reach you?</p><p><b>Direct deposit</b> — payday lands straight in your bank, spendable with your 💳 debit card. No errands.</p><p><b>Paper checks</b> — each payday arrives as a 🧾 check in your 🎒 Bag. It is <b>not spendable</b> until you deposit it: at the 🏦 bank, or by 📸 photo in the Bank app.</p><button class="btn gold" style="margin-top:8px" onclick="ddSet108(true)">✅ Direct deposit — to my bank</button><button class="btn outline" style="margin-top:8px" onclick="ddSet108(false)">🧾 Paper checks for me</button><p class="small" style="margin-top:8px">You can flip this any time in 📱 Phone → 🏦 Bank.</p>') },1300) } else if(!S.bank63.debit){ /* v192 D6: one hire = one journal entry — the pay stub explains paper checks at payday */ } } }catch(e){} };
 /* ---------- 🏦 the bank: the card is issued HERE, and the app is introduced HERE ---------- */
-function bankVisit108(){ if(!S)return; ensure63(); ensure108(); try{ const nowP=performance.now(); if(!window._bankTrip108||nowP-window._bankTrip108>30000){ window._bankTrip108=nowP; advanceMinutes57(20,true) } }catch(e){} const b=S.bank63; const held=b.checks108||[]; let h='<h2>🏦 The Bank</h2><p>The branch on the main street — tellers, a queue, that hushed money feeling. Coming here is the errand: this is where cards are issued and checks become money.</p>';
+function bankVisit108(){ if(!S)return; ensure63(); ensure108(); try{ const nowP=performance.now(); if(!window._bankTrip108||nowP-window._bankTrip108>30000){ window._bankTrip108=nowP; advanceMinutes57(20,true); log('🏦 The trip to the bank took 20 minutes — the clock says so out loud, like every other errand.') } }catch(e){} const b=S.bank63; const held=b.checks108||[]; let h='<h2>🏦 The Bank</h2><p>The branch on the main street — tellers, a queue, that hushed money feeling. Coming here is the errand: this is where cards are issued and checks become money.</p>';
  if(!b.debit&&!b.appIntro108)h+='<div style="background:#00000010;border:1.5px dashed var(--line);border-radius:12px;padding:11px 12px;margin-top:10px"><b>📱 “And this is your banking app.”</b><br><span class="small">The teller walks every new cardholder through it: balances, the ledger, deposits — it lives in 📱 Phone → 🏦 Bank, and it wakes up the moment your first card is issued. No card, no app — the app IS the card\'s other half.</span></div>';
  h+='<h4 style="margin:14px 0 4px">💳 Debit card</h4>';
  if(b.debit){ h+='<p>💳 <b>Debit card: ACTIVE</b> — '+(b.cardKind108==='kid'?('a kid card <b>linked to '+giverName()+'\'s account</b>. It spends from the bank like a grown-up card; at 18 it becomes fully your own — balance and history carry over. Linked-card rule: <b>purchases cap at $25 each under 13, $75 each at 13–17</b> — bigger buys are declined on the spot.'):('your <b>own account</b>, your name on the card.'))+' Bank money is spendable, ATMs are open, and direct deposit '+(b.dd108?'is <b>ON</b>':'is <b>OFF</b> — pay arrives as 🧾 paper checks')+'.</p><button class="btn '+(b.dd108?'outline':'gold')+'" onclick="ddSet108('+(!b.dd108)+');bankVisit108()">'+(b.dd108?'💼 Direct deposit: ON — tap to switch off':'💼 Turn direct deposit ON')+'</button>' }
@@ -12131,7 +12136,7 @@ function jobsAppsPhone140(){ if(!S||S.age<18)return ''; try{ ensure43() }catch(e
 /* ---------- 🧒 Kid/Teen jobs (the shipped KID_JOBS + teen shift; youth tracks ride the board) ---------- */
 function jobsKid140(mode){ if(!S||S.age>=18||S.age<5)return ''; const ph=(mode==='phone');
  const btns=KID_JOBS.map(function(j){ if(S.age>=j[2])return ph?'<button class="btn gold" style="width:auto;margin:0 6px 6px 0;padding:8px 13px" onclick="jobsKidGo140(\''+j[0].replace(/'/g,"\\'")+'\','+j[1]+')">'+j[0]+' • +$'+j[1]+'</button>':'<button class="btn" onclick="doKidJob(\''+j[0].replace(/'/g,"\\'")+'\','+j[1]+')">'+j[0]+' • +$'+j[1]+'</button>'; return ph?'<button class="btn outline" disabled style="opacity:.5;color:#fff;border-color:#ffffff55;width:auto;margin:0 6px 6px 0;padding:8px 13px">'+j[0]+' • age '+j[2]+'</button>':'<button class="btn outline" disabled style="opacity:.5">'+j[0]+' • unlocks at age '+j[2]+'</button>' }).join('');
- let h=ph?'<h4 style="margin:14px 0 4px">🧒 Kid Jobs</h4><div class="msg" style="text-align:left"><span style="font-size:12.5px;opacity:.9">These pay today, in cash. Bigger kid jobs unlock as you grow.</span><div style="margin-top:8px">'+btns+'</div>'+(S.age<4?'<p style="font-size:12px;opacity:.8;margin:6px 0 0">Too little for jobs just yet — family money carries you for now.</p>':'')+'</div>':'<h4 style="margin:12px 0 4px">🧒 Kid Jobs</h4><p class="small">These pay today, in cash, straight into your 🏦 Bank ledger. Bigger kid jobs unlock as you grow.</p>'+btns+(S.age<4?'<p class="small" style="margin-top:6px">Too little for jobs just yet — family money carries you for now.</p>':'');
+ let h=ph?'<h4 style="margin:14px 0 4px">🧒 Kid Jobs</h4><div class="msg" style="text-align:left"><span style="font-size:12.5px;opacity:.9">These pay today, straight into your 🏦 Bank ledger. Bigger kid jobs unlock as you grow.</span><div style="margin-top:8px">'+btns+'</div>'+(S.age<4?'<p style="font-size:12px;opacity:.8;margin:6px 0 0">Too little for jobs just yet — family money carries you for now.</p>':'')+'</div>':'<h4 style="margin:12px 0 4px">🧒 Kid Jobs</h4><p class="small">These pay today, straight into your 🏦 Bank ledger. Bigger kid jobs unlock as you grow.</p>'+btns+(S.age<4?'<p class="small" style="margin-top:6px">Too little for jobs just yet — family money carries you for now.</p>':'');
  if(S.age>=14&&S.age<18)h+=ph?'<div class="msg" style="text-align:left"><b>🧑 Teen Jobs (14+)</b><br><span style="font-size:12px;opacity:.85">Fast food $12/hr, Retail $13/hr, Lawn work $15/hr — plus the youth career tracks on the board below (📰 Paper Route at 12, 🛍️ Grocery at 14, 🍔 Fast Food at 15).</span><br><button class="btn gold" style="width:auto;margin-top:6px;padding:8px 13px" onclick="jobsTeen140()">Work a teen shift • Earn ~$48</button></div>':'<h4 style="margin:12px 0 4px">🧑 Teen Jobs (14+)</h4><p class="small">Fast food $12/hr, Retail $13/hr, Lawn work $15/hr — plus the youth career tracks on the board below (📰 Paper Route at 12, 🛍️ Grocery at 14, 🍔 Fast Food at 15).</p><button class="btn" onclick="doWork(\'Teen Job\',48)">Work Shift • Earn ~$48</button>';
  return h }
 /* ---------- 📄 résumé / 🎓 training / 🧾 taxes — phone renderings of the shipped cards' data ---------- */
@@ -17909,8 +17914,7 @@ try{
 }catch(e){}
 })();
 </script>
-</body>
-</html>
+
 <script>
 /* ================= v193d: ✨ TOUCH TRAILS — drag trails that unlock by LEVEL, forever.
    Device-level store (localStorage 'aqualifeTrails.v1') — NOT the life save: SAVE_KEY untouched,
@@ -21905,7 +21909,7 @@ try{
    settings; tapping a character still does nothing. Nothing is stored — GAME_VERSION and
    SAVE_KEY are untouched. */
 const _actCine215=applyCameraTransform;
-let cineNode215=null, cineShot215=null, cineConvo215={until:0,x:0,y:0,scale:1.52};
+let cineNode215=null, cineShot215=null, cineConvo215={until:0,x:0,y:0,scale:1.2};
 function cineReduced215(){ try{ return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){ return false } }
 function cineShotFor215(now){
  if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return null;
@@ -21918,7 +21922,7 @@ function cineShotFor215(now){
   let cx=0,cy=0; for(let i=0;i<pts.length;i++){ cx+=pts[i][0]; cy+=pts[i][1] } cx/=pts.length; cy/=pts.length;
   if(!meTalking&&Math.hypot(cx-px,cy-py)<300){ cx=(cx+px)/2; cy=(cy+py)/2 } /* you are part of this scene — stay in the shot */
   let span=0; for(let i=0;i<pts.length;i++){ span=Math.max(span,Math.hypot(pts[i][0]-cx,pts[i][1]-cy)) }
-  cineConvo215={until:now+1100,x:cx,y:cy,scale:(span>190?1.34:1.52)};
+  cineConvo215={until:now+1100,x:cx,y:cy,scale:(span>190?1.15:1.2)}; /* h48 owner ruling: a GOOD distance — a gentle push-in (~1.2x), never the old 1.52x close-up */
  }
  let mode,x,y,scale;
  if(now<cineConvo215.until){ mode='convo'; x=cineConvo215.x; y=cineConvo215.y; scale=cineConvo215.scale }
@@ -22115,7 +22119,7 @@ var EXPR_UNLOCK216=[
  {lv:3,feel:{hungry:'😫',hurt:'🤕',bored:'🥱'},bubbles:['I am SO hungry','nap time soon…','did you see that??']},
  {lv:5,feel:{lonely:'😔',scared:'😰',angry:'😠'},bubbles:['this place is my favorite','I have a plan 😏','tell everyone I said hi']},
  {lv:8,feel:{love:'😍',cool:'😎',proud:'😤'},bubbles:['main character energy today','watch and learn','I was born for this']},
- {lv:12,feel:{rich:'🤑',zen:'😌',star:'🤩'},bubbles:['another day, another era','the grind never lies','legacy loading…']}];
+ {lv:12,feel:{rich:'🤑',zen:'😌',star:'🤩'},bubbles:['another day, another era','the grind never lies','every era leaves a legend']}];
 window.EXPR_UNLOCK216=EXPR_UNLOCK216;
 function exprUnlocked216(){ var feel={},bub=[]; EXPR_UNLOCK216.forEach(function(t){ Object.keys(t.feel).forEach(function(k){ feel[k]=t.feel[k] }); bub=bub.concat(t.bubbles) }); return {feel:feel,bubbles:bub} } /* h18: EVERYTHING UNLOCKED for everyone (Howard's order) — the Lv 3/5/8/12 gates are deleted; the tiers remain only as the content catalog, and saved per-feeling picks (S.v216.expr.feel) still win */
 window.exprPlayer216=function(){ try{ if(typeof S==='undefined'||!S||S.deadFlag)return null; var V=ensure216(); if(!V)return null; var un=exprUnlocked216(); var pick=function(k){ return (V.expr.feel&&V.expr.feel[k])||un.feel[k]||null };
@@ -23518,7 +23522,12 @@ try{
   if(S.age>=18&&!car.owned&&id!==homeLoc()){ try{ noCarSheet98(id); return }catch(e){} }
   if(S.age>=18&&car.owned&&!car.license){ try{ if(driverLaw98(id)===false)return }catch(e){} }
   var walkable=false; try{ walkable=canWalkTo137(id) }catch(e){}
-  openSheet('<h2>📍 '+name+'</h2><p>That trip did not start — no travel, no word why. Here is the way there:</p>'
+  /* h48: a failed trip states its real reason — never "no word why". */
+  var why227='the tap didn\'t take — nothing moved';
+  try{ if(id===S.location)why227='you are already here';
+   else if(S.age<18&&id!==homeLoc()&&id!=='school'&&S.origin!=='orphan')why227='under-18s can\'t travel there alone — a parent has to come with you';
+   else if(!walkable)why227='you can\'t walk there from here — it takes a ride or wheels'; }catch(e){}
+  openSheet('<h2>📍 '+name+'</h2><p>That trip did not start — '+why227+'. Here is the way there:</p>'
    +(walkable?'<button class="btn gold" onclick="closeModal();walkTo137(\''+id+'\')">🚶 Walk there — about 20 min</button>':'')
    +'<button class="btn outline" style="margin-top:8px" onclick="closeModal();rideSheet137(\''+id+'\')">📞 Call someone for a ride</button>'
    +'<button class="btn outline" onclick="closeModal()">Never mind</button>');
@@ -23602,7 +23611,12 @@ try{
   if(S.age>=18&&!car.owned&&id!==homeLoc()){ try{ noCarSheet98(id); return }catch(e){} }
   if(S.age>=18&&car.owned&&!car.license){ try{ if(driverLaw98(id)===false)return }catch(e){} }
   var walkable=false; try{ walkable=canWalkTo137(id) }catch(e){}
-  openSheet('<h2>📍 '+name+'</h2><p>That trip did not start — no travel, no word why. Here is the way there:</p>'
+  /* h48: a failed trip states its real reason — never "no word why". */
+  var why228='the tap didn\'t take — nothing moved';
+  try{ if(id===S.location)why228='you are already here';
+   else if(S.age<18&&id!==homeLoc()&&id!=='school'&&S.origin!=='orphan')why228='under-18s can\'t travel there alone — a parent has to come with you';
+   else if(!walkable)why228='you can\'t walk there from here — it takes a ride or wheels'; }catch(e){}
+  openSheet('<h2>📍 '+name+'</h2><p>That trip did not start — '+why228+'. Here is the way there:</p>'
    +(walkable?'<button class="btn gold" onclick="closeModal();walkTo137(\''+id+'\')">🚶 Walk there — about 20 min</button>':'')
    +'<button class="btn outline" style="margin-top:8px" onclick="closeModal();rideSheet137(\''+id+'\')">📞 Call someone for a ride</button>'
    +'<button class="btn outline" onclick="closeModal()">Never mind</button>');
@@ -25004,7 +25018,7 @@ function hubHtml241(){ var adult=S.age>=18; var partner=adult&&S.partner&&!isMin
  h+=hubBtn241('📖 Life Storybook — your days, written','aiStorybook241()');
  return h }
 window.aiHub241=function(){ openSheet(hubHtml241()) };
-function hubPass241(){ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='home')return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.aiHubCard241'))return;
+function hubPass241(){ return; /* h48 SOURCE REMOVAL: the Living World card never renders — the owner's removal is completed here, not swept after paint */ try{ if(typeof S==='undefined'||!S||typeof curTab==='undefined'||curTab!=='home')return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.aiHubCard241'))return;
  var grid=panel.querySelector('.grid')||panel; var d=document.createElement('div'); d.className='card aiHubCard241'; d.style.borderColor='#38bdf8';
  d.innerHTML='<h3>🧠 Living World</h3><p>Real conversations with real memory — calls, dates, doctors, teachers, agents, customers — plus a town that posts, writes letters, and tells your story back to you.</p><button class="btn gold" style="width:100%" onclick="aiHub241()">🧠 Open the Living World</button>';
  grid.insertBefore(d,grid.firstChild) }catch(e){} }
@@ -25436,7 +25450,7 @@ try{
  function V243(){ try{ if(!S)return null; if(!S.v243||typeof S.v243!=='object')S.v243={}; if(!S.v243.served||typeof S.v243.served!=='object')S.v243.served={}; return S.v243 }catch(e){ return null } }
 
  /* ---------- 1) Living World card: every Home-family tab counts ---------- */
- function hubFix243(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var ct=(typeof curTab!=='undefined')?curTab:''; if(['home','me','life',''].indexOf(ct)<0)return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.aiHubCard241'))return;
+ function hubFix243(){ return; /* h48 SOURCE REMOVAL: second injector of the Living World card — dead at source, same ruling */ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var ct=(typeof curTab!=='undefined')?curTab:''; if(['home','me','life',''].indexOf(ct)<0)return; var panel=document.getElementById('panel'); if(!panel||panel.querySelector('.aiHubCard241'))return;
   var grid=panel.querySelector('.grid')||panel; var d=document.createElement('div'); d.className='card aiHubCard241'; d.style.borderColor='#38bdf8';
   d.innerHTML='<h3>🧠 Living World</h3><p>Real conversations with real memory — calls, dates, doctors, teachers, agents, customers — plus a town that posts, writes letters, and tells your story back to you.</p><button class="btn gold" style="width:100%" onclick="aiHub241()">🧠 Open the Living World</button>';
   grid.insertBefore(d,grid.firstChild) }catch(e){} }
@@ -25502,7 +25516,15 @@ try{
     button running the shipped openConvo — the same conversation every roster row opens. Rebuilt on
     every Social render and on a 1.6 s cadence while the tab is open, so it tracks arrivals, and it
     says so honestly when nobody is around. Scene sprites stay tap-dead, as ruled. */
- function nearbyHtml243(){ try{ var folks=(typeof presentPeople138==='function')?presentPeople138():[]; var loc=''; try{ loc=(typeof locDisplay144==='function')?String(locDisplay144(S.location)).split('—')[0].trim():S.location }catch(e){ loc=S.location }
+ function nearbyHtml243(){ try{ var folks=(typeof presentPeople138==='function')?presentPeople138():[];
+ /* h48: the summary must agree with the roster's own presence truth (presentHere196 is
+    location-level, no room filter) — union in every live instance standing in this
+    location, so "With you" rows above can never sit over a "Nobody else" line. */
+ try{ var seenU243={}; folks.forEach(function(n){ seenU243[n]=1 }); var addU243=function(n){ if(n&&n!==S.name&&!seenU243[n]){ seenU243[n]=1; folks.push(n) } };
+  if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')addU243(n.name) });
+  if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='in')addU243(p.name) });
+  if(S.guest&&S.guest.name)addU243(S.guest.name); if(S.sleepover&&S.sleepover.guest)addU243(S.sleepover.guest); if(typeof window!=='undefined'&&window._dateWith)addU243(window._dateWith); }catch(e){}
+ var loc=''; try{ loc=(typeof locDisplay144==='function')?String(locDisplay144(S.location)).split('—')[0].trim():S.location }catch(e){ loc=S.location }
   var rows=folks.map(function(n){ var esc=String(n).replace(/"/g,'&quot;'); var rel=''; try{ rel=(typeof contactRel==='function')?contactRel(n):'' }catch(e){}
    return '<div class="kv"><span><b>'+String(n).replace(/</g,'&lt;')+'</b>'+(rel?' <span class="small">• '+String(rel).replace(/</g,'&lt;')+'</span>':'')+'</span><button class="btn gold" style="width:auto;margin:0;padding:7px 13px;flex:none" data-nm="'+esc+'" onclick="openConvo(this.getAttribute(\'data-nm\'))">💬 Talk</button></div>' }).join('');
   return '<h3>📍 In the area — '+String(loc).replace(/</g,'&lt;')+'</h3><p class="small" style="margin-top:0">Standing here with you right now. Talk to them face-to-face — the chat opens with them, same as from their roster row.</p>'+(folks.length?rows:'<p class="small">Nobody else is here right now.</p>') }catch(e){ return '<h3>📍 In the area</h3><p class="small">Nobody else is here right now.</p>' } }
@@ -25676,7 +25698,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h55', CLASS246='hotfix';
+ var BUILD246='v200-h56', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26325,7 +26347,7 @@ try{
   var V9=(typeof ensure119==='function')?ensure119():null; var cov=V9?V9.coverage:null;
   if(cov&&cov.day===s.day&&cov.who==='sitter'){ for(var hi=0;hi<cgs.length;hi++){ var hl=(s.home&&s.home.loc)||null; if(hl&&truthLoc248(cgs[hi])===hl)return '<b>'+esc248(cgs[hi])+'</b> is home with <b>'+esc248(s.name)+'</b> right now — in the house, on toddler duty. No babysitter is watching: family is.' }
    var V=(typeof ensure120==='function')?ensure120():null; var st=V?V.sitter:null; var nm=(st&&st.name)||cov.sitName120||null;
-   if(!nm)return '<b>🧑 The Babysitter</b> is watching <b>'+esc248(cov.for)+'</b> right now — booked and paid by the household because every caregiver is at work or asleep. The sitter is here in the house, and it is all in the journal.';
+   if(!nm)return 'A sitter was booked for <b>'+esc248(cov.for)+'</b> today, but no sitter is here in the house yet — the sitting starts when they are let in at the front door.';
    if(V&&V.covState==='in')return '<b>'+esc248(nm)+'</b> — the household\u2019s babysitter — is watching <b>'+esc248(cov.for)+'</b> right now, here in the room. Booked because '+esc248(cov.because)+'.';
    return '<b>'+esc248(nm)+'</b> — the household\u2019s babysitter — is booked to watch <b>'+esc248(cov.for)+'</b>, because '+esc248(cov.because)+'. Sitters knock at the front door first: the sitting starts when they are let in.' }
   return null }catch(e){ return null } }
@@ -26458,6 +26480,8 @@ try{
 
  /* ---------- K2b/c) exactly one tray tab lit — the one matching the panel actually open ---------- */
  function trayTruth248(){ try{ if(typeof S==='undefined'||!S||typeof inGame==='undefined'||!inGame)return; var db=document.querySelector('#dockCore100 .dockBtns56')||document.querySelector('#menuDock .dockBtns56'); if(!db)return; var tabs=Array.prototype.slice.call(db.querySelectorAll('.dockTab')); if(!tabs.length)return;
+  /* h48: when the dock is closed, NOTHING stays lit — a stale highlight over a closed tray is a lie. */
+  if(typeof dockOpen!=='undefined'&&!dockOpen){ tabs.forEach(function(x){ if(x.classList.contains('on'))x.classList.remove('on'); x.setAttribute('aria-pressed','false') }); return }
   var ct=(typeof curTab!=='undefined')?curTab:''; var want=null;
   if(ct==='actions101')want=db.querySelector('.actBtn101');
   if(!want&&(ct==='rooms106'||ct==='areas123'))ct=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='rooms106'&&lastRealTab101!=='areas123')?lastRealTab101:'home';
@@ -26471,10 +26495,10 @@ try{
  /* ---------- K2d) the Living World card: ONE home (🏠 Home), deduped, nowhere else ---------- */
  function lwHome248(){ try{ var panel=document.getElementById('panel'); if(!panel)return; var ct=(typeof curTab!=='undefined')?curTab:'';
   var cards=Array.prototype.slice.call(panel.querySelectorAll('.aiHubCard241'));
-  if(ct==='home'){ cards.forEach(function(c,i){ if(c.hasAttribute('data-h248mark'))c.remove(); else if(i>0)c.remove() }); return }
+  if(ct==='home'){ cards.forEach(function(c,i){ c.remove() }); return }
   /* elsewhere: visible copies go; one invisible marker stays so the multi-tab injector sees "already here" and never re-adds it */
   var marker=null; cards.forEach(function(c){ if(c.hasAttribute('data-h248mark')){ if(marker)c.remove(); else marker=c } else c.remove() });
-  if(!marker){ marker=document.createElement('div'); marker.className='aiHubCard241'; marker.setAttribute('data-h248mark','1'); marker.setAttribute('aria-hidden','true'); marker.style.display='none'; panel.appendChild(marker) }
+  if(!marker){ /* h48: no marker remnant — the card's injectors are dead at source, nothing needs blocking */ }
  }catch(e){} }
  setInterval(lwHome248,700);
 
@@ -26638,7 +26662,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h55'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h56'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -27146,7 +27170,30 @@ try{
  var lock55={w:0,h:0,vw:0,vh:0};
  (function lockTick55(){ try{ var cv=$55('cv'); if(cv){ if(cv.width!==900)cv.width=900; if(cv.height!==460)cv.height=460;
    var vw=window.innerWidth, vh=window.innerHeight;
-   if(lock55.vw!==vw||lock55.vh!==vh||!lock55.w){ var wrap=cv.closest?cv.closest('.roomWrap'):cv.parentElement; if(wrap){ var W=wrap.clientWidth,H=wrap.clientHeight; if(W>40&&H>40){ var sc=Math.min(W/900,H/460); lock55={w:Math.round(900*sc),h:Math.round(460*sc),vw:vw,vh:vh} } } }
+   var wrap55=cv.closest?cv.closest('.roomWrap'):cv.parentElement; var W55=wrap55?wrap55.clientWidth:0;
+   /* the sky strip is a sibling in the wrap, not part of the canvas area — when it
+      shows (exteriors), the canvas must cover what is LEFT of the wrap, so the
+      floor never sinks 52px under the fold; interiors hide it and lose nothing. */
+   var sky55=document.getElementById('sky193'); var skyH55=(sky55&&sky55.offsetHeight>0&&sky55.style.display!=='none')?sky55.offsetHeight:0;
+   var H55=(wrap55?wrap55.clientHeight:0)-skyH55;
+   /* h48.5 (MENU 3): the basis is TRAY-INDEPENDENT — the open tray reserves its
+      height as app bottom padding (--sheetH51), which shrinks the wrap; adding
+      the reservation back yields the one true full-stage height in every tray
+      state, so the scene's box and scale never depend on which tray is open. */
+   var sheetH55=0; try{ sheetH55=parseInt(document.documentElement.style.getPropertyValue('--sheetH51')||'0',10)||0 }catch(e){}
+   var HB55=H55+sheetH55;
+   /* h48: COVER, not contain — the box scales to COVER the stage (overflow is
+      cropped by the wrap; h48's auto-margin anchoring crops the top and splits
+      the sides so the playable floor stays in frame). h48.2 FRAMING FREEZE: the
+      box is keyed to (window, scene) and to the LARGEST wrap it has covered —
+      opening/closing a panel or switching tabs shrinks the wrap, and the frozen
+      box simply gets top-cropped by the wrap instead of rescaling, so no tab
+      owns a zoom and the framing is pixel-identical across panels in a scene.
+      The box re-covers only when the window changes, the scene changes, or the
+      wrap GROWS past the frozen basis (a taller stage must never show backdrop).
+      The camera transform writer above is untouched. */
+   var skey55=''; try{ skey55=(typeof S!=='undefined'&&S)?(S.location+'|'+((typeof curRoom86==='function'&&curRoom86())?curRoom86().id:'')):'' }catch(e){}
+   if(W55>40&&HB55>40&&(lock55.vw!==vw||lock55.vh!==vh||lock55.key!==skey55||!lock55.w||HB55>lock55.wh+2||W55!==lock55.ww)){ var sc=Math.max(W55/900,HB55/460); lock55={w:Math.round(900*sc),h:Math.round(460*sc),vw:vw,vh:vh,ww:W55,wh:HB55,key:skey55} }
    if(lock55.w){ var ws=lock55.w+'px', hs=lock55.h+'px'; if(cv.style.width!==ws)cv.style.setProperty('width',ws,'important'); if(cv.style.height!==hs)cv.style.setProperty('height',hs,'important') } }
   }catch(e){} requestAnimationFrame(lockTick55) })();
 
@@ -27163,7 +27210,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h55';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h56';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27288,12 +27335,10 @@ try{
    var panel=$56('panel'); if(!panel)return;
    var marker=null;
    Array.prototype.slice.call(panel.querySelectorAll('.aiHubCard241')).forEach(function(c){
-     if(c.getAttribute('data-lw56mark')==='1'&&c.style.display==='none'){ if(marker)c.remove(); else marker=c } else c.remove() });
+     if(c.getAttribute('data-lw56mark')==='1'&&c.style.display==='none'){ c.remove() } else c.remove() });
    Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(el){ try{
      var h=el.querySelector('h3'); if(h&&/Living World/.test(h.textContent||''))el.remove() }catch(e){} });
-   if(!marker){ marker=document.createElement('div'); marker.className='aiHubCard241';
-     marker.setAttribute('data-lw56mark','1'); marker.setAttribute('aria-hidden','true'); marker.style.display='none';
-     var grid=panel.querySelector('.grid'); if(grid&&grid.firstChild)grid.insertBefore(marker,grid.firstChild); else panel.appendChild(marker) }
+   if(!marker){ /* h48: no marker remnant — injectors dead at source */ }
  }catch(e){} }
  setInterval(lwGone56,300);
  ['render','renderTabs'].forEach(function(nm){ try{ var fn=window[nm];
@@ -27396,5 +27441,694 @@ try{
  try{ console.log('🌊 AquaLife h56b — Quick Life age band safety net live; the Market refuses minors out loud (toast + journal) on the open path') }catch(e){}
 })();
 </script>
+
+<script>
+/* ================================================================
+   🌊 AquaLife v200 — HOTFIX 48, "THE TRUTH PASS" (four-tester rerun on h47, Nov 4, 2026).
+   Every item is a truth/consistency defect; no new features. GAME_VERSION stays 200,
+   SAVE_KEY stays miniLifeSimShareable_v3, the build stamp moves to v200-h56, the
+   anonymous-stats tracker is untouched at the owner's Nov 3 spec, and the HOTFIX 47
+   CAMERA LAW is preserved exactly: this layer never writes the scene transform —
+   cover-fit below sizes the canvas ELEMENT only (bitmap fixed at 900×460), which is
+   layout, not lens.
+   1) SCENES COVER THEIR STAGE — the canvas element is cover-fit into .roomWrap by
+      plain element geometry (scale to cover, crop overflow, aspect preserved, never
+      stretched); the h50 bitmap-resize pass (sizeBackup250) becomes a no-op because
+      the element's aspect now always equals the bitmap's, which also ends the
+      wide↔small framing flip between interactions and the smeared-background state
+      a bitmap resize mid-session could leave behind. The sky/weather strip (#sky193)
+      shows only for exterior scenes; interiors never wear a sky above the wall.
+      The visible world window is published as window.__vis248 and name pills +
+      speech bubbles clamp into it, so signs and labels cannot clip at a stage edge.
+   2) CROWD DISTRIBUTION + PILL TRUTH — a zone pass keeps room crowds spread across
+      distinct anchors (no two sprites share a target area; idle sprites keep moving
+      between zones), and a per-frame pill registry (inside drawNPCSprite, edited at
+      the source) lifts a name pill clear of every pill already placed that frame.
+   3) SPEECH BUBBLES NEVER AMPUTATE — the outermost bubble painter wraps the FULL
+      line (up to 6 lines, shrinking the font before ever dropping a word); the
+      shipped visible-rect clamp, speaker-name header and 12 s same-line cap stay.
+   4) THE PLAY FOLDER CONTAINS WORKING PLAY — the Actions Play section is found or
+      built per place/age from the game's own play actions, and an empty Play box
+      is never left standing.
+   5) FISHING AT THE PARK FOR KIDS — the pond is DRAWN in the Park scene, and a
+      fishing card is guaranteed in the park's Actions (the shipped fishGo150
+      catch flow; its 6+ gate speaks for itself, exactly as designed).
+   6) THE BORN-INTO CARD SPEAKS FOR THE DEALT HOUSEHOLD — the reveal card's family
+      text is regenerated from householdPeople() (the same source the room,
+      paperwork and Family Tree read), never from the origin template alone.
+   7) CHANGE ROOMS CLOSES — Hide, the "Change rooms" toggle and Escape each force
+      the room/area chooser fully closed (the h48 restore machinery only re-arms
+      while a chooser tab is current, so landing on a real tab ends it). Walks are
+      untouched.
+   8) SHEET BLUR RELEASES — closing any sheet sweeps every known blur vector
+      (view filter, intox body classes when no intoxication is live, room/canvas
+      inline filters, orphaned folder-menu overlays); a life load starts unblurred.
+   9) RESUME ON THE FIRST LOAD — renderWelcome adopts the stored save BEFORE it
+      paints, and a boot watchdog re-paints the welcome screen if a save exists
+      but no "Keep" offer is on it.
+   10) THE UPDATE NOTICE OFFERS — a watchdog re-offers through the shipped
+       __upd246Offer whenever a stored stamp older than v200-h56 exists and the
+       notice is not already up or dismissed; the shipped once-only + Later
+       (session) semantics are unchanged, and first installs still adopt silently.
+   11) SEND FEEDBACK AT THE SETTINGS TOP LEVEL — a 💬 Send feedback row joins the
+       top of the Settings sheet (and the More-Life settings card), opening the
+       shipped openFeedback214 sheet; the Data & Save location stays.
+   12) SMALL TRUTHS — (a) staged check-ins (Spa lobby desk & friends) now speak
+       their result out loud (toast + journal + the stage card refreshes at once);
+       (b) the Kid Jobs copy no longer says "in cash" about money that lands in
+       the bank (edited at the source); (c) duplicated headings are deduped —
+       a sheet never repeats its own title as a section heading, and the panel
+       never carries two copies of the same shop card; (d) the Spa Sauna: no
+       distinct sauna artwork exists anywhere in this build (the scene painter
+       has no sauna/pools branch) — reported honestly, left as shipped.
+   ================================================================ */
+(function(){
+'use strict';
+var BUILD248='v200-h56';
+function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+function $248(id){ return document.getElementById(id) }
+function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
+function esc248(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
+
+/* ================= ITEM 1 — SCENES COVER THEIR STAGE ================= */
+var fitStyle248=document.createElement('style'); fitStyle248.id='style248b';
+/* h48.1: the canvas box itself is written by h55's lockTick55 (now COVER math,
+   edited at the source below in this build) — this layer must NOT size or
+   position the element (an earlier draft did, and the two writers fought:
+   absolute left/top for a cover box + lockTick's contain box = the shrunken
+   corner-strip scene). What this layer owns: bottom+centre anchoring of the
+   oversized cover box inside the flex stage (auto margins crop the TOP and
+   split the sides, so feet/floor and the player stay in frame), the sky
+   strip rule, and the published visible window used by the pill clamps. */
+fitStyle248.textContent='.roomWrap{position:relative}#cv{max-width:none!important;max-height:none!important}.roomWrap>#cv{margin-top:auto!important;margin-left:auto!important;margin-right:auto!important}';
+document.head.appendChild(fitStyle248);
+function isExterior248(){ try{ var s=S248(); if(!s)return true; var loc=s.location||'house';
+ if(['street','fair','park','beach','mountains','city'].indexOf(loc)>=0)return true;
+ var rm=(typeof curRoom86==='function')?curRoom86():null; return !!(rm&&rm.id==='yard') }catch(e){ return true } }
+function fitCover248(){ try{
+ var cv=$248('cv'); if(!cv)return; var wrap=cv.closest?cv.closest('.roomWrap'):null; if(!wrap)return;
+ if(cv.style.position==='absolute'){ cv.style.position=''; cv.style.left=''; cv.style.top='' }
+ var ext=isExterior248(); var sky=$248('sky193');
+ if(sky){ if(ext){ if(sky.style.display==='none')sky.style.display='' }
+  else if(sky.style.display!=='none')sky.style.display='none' }
+ var wr=wrap.getBoundingClientRect(), cr=cv.getBoundingClientRect();
+ if(wr.width<40||wr.height<40||cr.width<40)return;
+ var sc=cr.width/900; if(!isFinite(sc)||sc<=0)return;
+ window.__vis248={x0:Math.max(0,Math.min(900,(wr.left-cr.left)/sc)),x1:Math.max(0,Math.min(900,(wr.right-cr.left)/sc)),y0:Math.max(0,Math.min(460,(wr.top-cr.top)/(cr.height/460))),y1:Math.max(0,Math.min(460,(wr.bottom-cr.top)/(cr.height/460)))};
+}catch(e){} }
+function fitSoon248(){ try{ requestAnimationFrame(fitCover248); setTimeout(fitCover248,70); setTimeout(fitCover248,320) }catch(e){} }
+window.addEventListener('resize',fitSoon248);
+window.addEventListener('orientationchange',fitSoon248);
+setInterval(fitCover248,600);
+
+/* ============ PILLS — visible-frame clamp + per-frame de-overlap registry ============ */
+var pillReg248={bucket:-1,rects:[]};
+var measCtx248=null;
+function measure248(txt,font){ try{ if(!measCtx248)measCtx248=document.createElement('canvas').getContext('2d'); measCtx248.font=font; return measCtx248.measureText(txt).width }catch(e){ return String(txt||'').length*8 } }
+function rectHit248(a,b){ return a.l<b.r+2&&a.r>b.l-2&&a.t<b.b+2&&a.b>b.t-2 }
+function pillFrame248(){ /* h48.1: no clock bucket — the registry is reset once per frame by the drawRoom wrapper (pillReset248); a millisecond bucket used to wipe it mid-frame on heavy scenes, letting late sprites draw over early ones. */
+ return pillReg248.rects }
+function pillReset248(){ pillReg248.rects=[];
+ try{ var s=S248(); if(s&&typeof homeLoc==='function'&&s.location===homeLoc()){
+  (s.housemates||[]).forEach(function(nm,i){ var hw=measure248(nm,'bold 11px sans-serif'); var hx=556+i*68; pillReg248.rects.push({l:hx-hw/2-4,t:254,r:hx+hw/2+4,b:272}) });
+  (s.kids||[]).forEach(function(k,i){ var kw=measure248(k.name,'bold 11px sans-serif'); var kx=180+i*52; pillReg248.rects.push({l:kx-kw/2-4,t:302,r:kx+kw/2+4,b:320}) });
+ } }catch(e){} }
+function visLive248(){ try{ var cv=document.getElementById('cv'); var wrap=cv&&cv.closest?cv.closest('.roomWrap'):null;
+ if(cv&&wrap){ var cr=cv.getBoundingClientRect(), wr=wrap.getBoundingClientRect(); if(cr.width>40&&wr.width>40){ var CW=cv.width||900, CH=cv.height||460;
+  var x0=Math.max(0,(Math.max(cr.left,wr.left)-cr.left)/cr.width*CW), x1=Math.min(CW,(Math.min(cr.right,wr.right)-cr.left)/cr.width*CW);
+  if(x1-x0>120)return {x0:x0+7,x1:x1-7,y0:0,y1:CH} } } }catch(e){} return window.__vis248||null }
+window.__pillFix248=function(nx,ny,yy,nw,tl){ try{
+ pillFrame248();
+ var devL=nx+(tl-nx)*1.43, devW=(nw+18)*1.43, devT=ny+(yy-51-ny)*1.43, devH=22*1.43;
+ var vis=visLive248();
+ if(vis){ var tL=Math.max(vis.x0+3,Math.min(vis.x1-3-devW,devL)); var dx=(tL-devL)/1.43; devL=tL;
+  var rect={l:devL,t:devT,r:devL+devW,b:devT+devH}, lift=0;
+  var hit=true; while(hit&&lift<8){ hit=false; for(var i=0;i<pillReg248.rects.length;i++){ if(rectHit248(rect,pillReg248.rects[i])){ hit=true; break } } if(hit){ lift++; rect.t-=26; rect.b-=26 } }
+  pillReg248.rects.push(rect);
+  return {dx:dx,lift:lift*26/1.43} }
+ return {dx:0,lift:0} }catch(e){ return {dx:0,lift:0} } };
+window.__pillClampX248=function(nx,nw2,tl2){ try{ var vis=visLive248(); if(!vis)return 0;
+ var devL=nx+(tl2-nx)*1.43, devW=(nw2+18)*1.43;
+ var tL=Math.max(vis.x0+3,Math.min(vis.x1-3-devW,devL)); return (tL-devL)/1.43 }catch(e){ return 0 } };
+window.__pillPlayer248=function(ppx0,pw2){ try{ var vis=visLive248(); if(!vis)return ppx0;
+ return Math.max(vis.x0+3,Math.min(vis.x1-3-(pw2+18),ppx0)) }catch(e){ return ppx0 } };
+
+/* ================= ITEM 2 — CROWD DISTRIBUTION ACROSS ROOM ZONES ================= */
+var ZONES248={
+ school:[[110,300],[230,345],[350,255],[470,335],[590,265],[705,340],[825,285],[450,205],[160,212],[760,212]],
+ home:[[150,300],[300,300],[470,310],[620,290],[740,320],[250,240],[560,250],[120,250],[405,360],[655,360],[330,205],[520,205]] };
+function zoneFree248(z,folks,self){ for(var i=0;i<folks.length;i++){ var f=folks[i]; if(f===self)continue;
+ if(typeof f.tx==='number'&&Math.hypot(f.tx-z[0],f.ty-z[1])<85)return false;
+ if(typeof f.x==='number'&&Math.hypot(f.x-z[0],f.y-z[1])<55)return false } return true }
+function crowdPass248(){ try{
+ var s=S248(); if(!s||typeof inGame==='undefined'||!inGame||modalOpen248())return;
+ /* h48.1: no activity gate — the school day runs a near-constant activity,
+    and ambient townsfolk targets are safe to redistribute underneath it. */
+ var folks=[];
+ try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n&&n.state==='in')folks.push(n) }) }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(n){ if(n&&n.state==='in')folks.push(n) }) }catch(e){}
+ if(folks.length<2)return;
+ var zones=ZONES248[s.location]||ZONES248.home; var now=performance.now();
+ function busy(n){ return (n.say&&n.sayUntil&&n.sayUntil>now)||(n.bubble&&n.bubbleUntil&&n.bubbleUntil>now) }
+ for(var i=0;i<folks.length;i++)for(var j=i+1;j<folks.length;j++){ var a=folks[i], b=folks[j];
+  if(typeof a.tx!=='number'||typeof b.tx!=='number')continue;
+  if(Math.hypot(a.tx-b.tx,a.ty-b.ty)<70&&!busy(b)){ var moved=false;
+   for(var z=0;z<zones.length;z++){ if(zoneFree248(zones[z],folks,b)){ b.tx=zones[z][0]; b.ty=zones[z][1]; moved=true; break } }
+   if(!moved){ b.tx=Math.max(56,Math.min(844,b.tx+120)); } } }
+ /* keep the room alive: one settled sprite drifts to a fresh free zone now and then */
+ var idle=folks.filter(function(n){ return typeof n.tx==='number'&&Math.hypot(n.x-n.tx,n.y-n.ty)<14&&!busy(n) });
+ if(idle.length&&Math.random()<0.35){ var n=idle[Math.floor(Math.random()*idle.length)];
+  var free=zones.filter(function(z){ return zoneFree248(z,folks,n) });
+  if(free.length){ var z=free[Math.floor(Math.random()*free.length)]; n.tx=z[0]; n.ty=z[1] } }
+}catch(e){} }
+setInterval(crowdPass248,1100);
+
+/* ================= ITEM 3 — SPEECH BUBBLES NEVER AMPUTATE ================= */
+function wrapFull248(ctx,text,maxW){ var raw=String(text).split(/\s+/).filter(Boolean), words=[];
+ raw.forEach(function(w){ while(w.length>1&&ctx.measureText(w).width>maxW){ var cut=w.length-1; while(cut>1&&ctx.measureText(w.slice(0,cut)).width>maxW)cut--; words.push(w.slice(0,cut)); w=w.slice(cut) } words.push(w) });
+ var lines=[], line=''; words.forEach(function(w){ var t=line?line+' '+w:w; if(line&&ctx.measureText(t).width>maxW){ lines.push(line); line=w } else line=t });
+ if(line)lines.push(line); return lines }
+try{ if(typeof drawSpeechBubble==='function'){ var _dsb248=drawSpeechBubble; var bubSeen248={text:'',since:0};
+ drawSpeechBubble=function(ctx,cx,bottomY,text){
+  var isSay=false; try{ isSay=!!(typeof playerSay!=='undefined'&&playerSay&&playerSay.text===text) }catch(e){}
+  if(isSay)return _dsb248(ctx,cx,bottomY,text); /* the player's own bubbles keep the shipped chain */
+  try{
+   var str=String(text==null?'':text); if(!str)return;
+   var nowMs=performance.now();
+   if(str.indexOf('🚔')<0){ if(bubSeen248.text===str){ if(nowMs-bubSeen248.since>12000)return } else { bubSeen248.text=str; bubSeen248.since=nowMs } }
+   var tr=(ctx.getTransform?ctx.getTransform():null); var s=tr?Math.abs(tr.a):1; if(!isFinite(s)||s<=0)s=1;
+   var devX=tr?(tr.a*cx+tr.e):cx, devBY=tr?(tr.d*bottomY+tr.f):bottomY;
+   var CW=(ctx.canvas&&ctx.canvas.width)||900, CH=(ctx.canvas&&ctx.canvas.height)||460;
+   var vx0=0,vy0=0,vx1=CW,vy1=CH;
+   try{ var cvEl=ctx.canvas, wrap=cvEl&&cvEl.closest?cvEl.closest('.roomWrap'):null; if(cvEl&&wrap){ var cr=cvEl.getBoundingClientRect(), wr=wrap.getBoundingClientRect(); if(cr.width>40&&wr.width>40){ vx0=Math.max(0,(Math.max(cr.left,wr.left)-cr.left)/cr.width*CW); vx1=Math.min(CW,(Math.min(cr.right,wr.right)-cr.left)/cr.width*CW); vy0=Math.max(0,(Math.max(cr.top,wr.top)-cr.top)/cr.height*CH); vy1=Math.min(CH,(Math.min(cr.bottom,wr.bottom)-cr.top)/cr.height*CH); if(vx1-vx0<120||vy1-vy0<80){ vx0=0;vy0=0;vx1=CW;vy1=CH } } } }catch(e){}
+   var nm=''; try{ if(typeof bubbleName191==='function')nm=bubbleName191(text)||'' }catch(e){}
+   var nameF=10.5*s, padX=11*s, headH=nm?15*s:0;
+   ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+   /* THE FULL LINE, ALWAYS: wrap wider, allow up to six lines, and shrink the
+      font before a single word is ever dropped */
+   var lines=null, bodyF=13.5*s, lineH=17*s, maxW=Math.min(250*s,Math.max(60,(vx1-vx0)-24*s-10)); /* h48.1: the cap lives in the SAME scaled units as the box (padding is 24*s) — capping with a flat 30 let wide-transform scenes (s≈1.9 in the classroom) grow the box past the visible window and push its right half off-frame */
+   var scales=[1,0.9,0.8,0.72], scF248=1;
+   for(var si=0;si<scales.length;si++){ scF248=scales[si]; bodyF=13.5*s*scales[si]; lineH=17*s*scales[si];
+    ctx.font='bold '+bodyF+'px sans-serif'; lines=wrapFull248(ctx,text,maxW);
+    if(lines.length<=6)break }
+   var w=0; lines.forEach(function(l){ w=Math.max(w,ctx.measureText(l).width) });
+   if(nm){ ctx.font='900 '+nameF+'px sans-serif'; w=Math.max(w,ctx.measureText(nm.toUpperCase()).width) }
+   w+=24*s; var h=lines.length*lineH+14*s+headH;
+   var x=Math.max(vx0+3,Math.min(vx1-w-3,devX-w/2));
+   var y=Math.max(vy0+3,Math.min(vy1-h-3,devBY-h));
+   var tailX=Math.max(x+12*s,Math.min(x+w-12*s,devX));
+   ctx.fillStyle='#00000045'; ctx.beginPath(); ctx.roundRect(x+2*s,y+3*s,w,h,10*s); ctx.fill();
+   ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.roundRect(x,y,w,h,10*s); ctx.fill(); ctx.strokeStyle='#14100c'; ctx.lineWidth=2; ctx.stroke(); ctx.lineWidth=1;
+   ctx.beginPath(); ctx.moveTo(tailX-6*s,y+h-1); ctx.lineTo(tailX+6*s,y+h-1); ctx.lineTo(tailX,Math.min(vy1-2,y+h+8*s)); ctx.closePath(); ctx.fillStyle='#ffffff'; ctx.fill();
+   if(nm){ ctx.font='900 '+nameF+'px sans-serif'; ctx.fillStyle='#b45309'; ctx.fillText(nm.toUpperCase(),x+padX,y+14*s) }
+   ctx.font='bold '+bodyF+'px sans-serif'; ctx.fillStyle='#14100c';
+   lines.forEach(function(l,i){ ctx.fillText(l,x+padX,y+20*s*scF248+headH+i*lineH) });
+   ctx.restore();
+  }catch(e){ try{ ctx.restore() }catch(_){} }
+ } } }catch(e){}
+
+/* ================= ITEMS 4+5 — THE PLAY FOLDER + PARK FISHING ================= */
+function playList248(){ var s=S248(); if(!s)return []; var loc=s.location||'house'; var list=[];
+ var atPark=false; try{ atPark=(loc==='street'&&typeof atPond150==='function'&&atPond150()) }catch(e){}
+ if(atPark){ list.push(['🌳 Park Day — free',"doFun('Park Day',0)"],['🎣 Fish at the pond','fishGo150()'],['🎮 Play games',"act('play')"]) }
+ else if(loc==='school'){ list.push(['🛝 Recess',"doGeneric('Recess',10,'social')"],['🎮 Play games',"act('play')"]) }
+ else if(['house','orphanage','boarding','grandparents'].indexOf(loc)>=0){ list.push(['🎮 Play games',"act('play')"]);
+  if(s.age>=1&&s.age<=4&&typeof playdate137==='function')list.push(['🧸 Playdate','playdate137()']);
+  if(s.pets&&s.pets.length&&typeof petBond137==='function')list.push(['🐾 Cuddle the pet','petBond137()']) }
+ else list.push(['🎮 Play games',"act('play')"]);
+ return list }
+function playPass248(){ try{
+ var s=S248(); if(!s||typeof inGame==='undefined'||!inGame)return;
+ if(typeof curTab==='undefined'||curTab!=='actions101'||typeof dockOpen==='undefined'||!dockOpen)return;
+ var panel=$248('panel'); if(!panel)return;
+ var list=playList248(); if(!list.length)return;
+ var btnHtml=list.map(function(b){ return '<button class="btn furn playBtn248" style="width:100%;margin-top:6px" onclick="'+b[1]+'">'+b[0]+'</button>' }).join('');
+ /* h48.6c: if the shipped Play group exists in ANY form, it wins — a fallback
+    card standing next to it is a duplicate heading (seen live at the Bank) */
+ var shipPlay=null;
+ Array.prototype.slice.call(panel.querySelectorAll('details')).forEach(function(d){ if(shipPlay)return; var sm=d.querySelector('summary'); if(!sm)return;
+  var tx=sm.textContent||''; if(/play/i.test(tx)&&!/entertainment/i.test(tx))shipPlay=d });
+ var myCard=panel.querySelector('.playCard248');
+ if(myCard&&shipPlay){ myCard.remove() }
+ var filled=false;
+ Array.prototype.slice.call(panel.querySelectorAll('details')).forEach(function(d){ var sm=d.querySelector('summary'); if(!sm)return;
+  var tx=sm.textContent||''; if(!/play/i.test(tx)||/entertainment/i.test(tx))return;
+  if(d.querySelector('button')){ filled=true; return }
+  var host=d.querySelector('.actCard101,.card')||d; host.insertAdjacentHTML('beforeend',btnHtml); filled=true });
+ /* never leave an empty Play box standing */
+ Array.prototype.slice.call(panel.querySelectorAll('details')).forEach(function(d){ var sm=d.querySelector('summary'); if(!sm)return;
+  var tx=sm.textContent||''; if(/play/i.test(tx)&&!/entertainment/i.test(tx)&&!d.querySelector('button'))d.remove() });
+ if(filled||panel.querySelector('.playCard248'))return;
+ if(s.age>=18)return; /* adults already hold the shipped 🎮 Play action in the grid */
+ var grid=panel.querySelector('.grid')||panel; /* h48.6: same no-.grid fallback as the pond card */
+ var d=document.createElement('div'); d.className='playCard248'; d.style.cssText='border:1.5px solid var(--line,#0003);border-radius:14px;padding:12px 14px;margin:0 0 10px;background:var(--card,#fff)';
+ d.innerHTML='<div class="acT">🎮 Play</div>'+btnHtml;
+ grid.insertBefore(d,grid.firstChild);
+}catch(e){} }
+function pondHere248(){ try{ var s=S248(); if(!s||s.location!=='street')return false;
+ if(typeof ensure123==='function'){ var v=ensure123(); if(v&&v.areaRoom&&v.areaRoom.street==='park')return true }
+ if(typeof atPond150==='function'&&atPond150())return true; return false }catch(e){ return false } }
+function fishPass248(){ try{
+ var s=S248(); if(!s||typeof inGame==='undefined'||!inGame)return;
+ if(typeof curTab==='undefined'||curTab!=='actions101'||typeof dockOpen==='undefined'||!dockOpen)return;
+ if(!pondHere248())return;
+ var panel=$248('panel'); if(!panel)return;
+ /* h48.6b: an older fish card trapped inside a closed accordion is not a fishing
+    action a kid can tap — clear wrapped copies so the open card below replaces them */
+ Array.prototype.slice.call(panel.querySelectorAll('.fishAct250,.fishCard246,.fishCard247')).forEach(function(c){ var dd=c.closest?c.closest('details'):null; if(dd)dd.remove(); else c.remove() });
+ if(panel.querySelector('.fishAct250,.fishCard246,.fishCard247,.fishCard248'))return;
+ var grid=panel.querySelector('.grid')||panel; /* h48.6: the Actions panel has no .grid — the card lands at the panel top */
+ var d=document.createElement('div'); d.className='fishCard248'; d.style.cssText='border:2px solid #0ea5e9;border-radius:14px;padding:12px 14px;margin:0 0 10px;background:var(--card,#fff)';
+ d.innerHTML='<h3>🎣 The Park Pond</h3><p>The pond is right here — calm water, patient fish. Caught fish land in your 🎒 Bag — eat them or sell them at the 🏪 Pawn Shop.</p><button class="btn gold" style="width:100%" onclick="fishGo150()">🎣 Fish at the pond — cast a line (free)</button>';
+ grid.insertBefore(d,grid.firstChild);
+}catch(e){} }
+setInterval(function(){ playPass248(); fishPass248() },800);
+/* the pond itself, painted into the Park scene */
+try{ if(typeof drawRoom==='function'){ var _dr248=drawRoom; drawRoom=function(){ try{ pillReset248() }catch(e){} var r=_dr248.apply(this,arguments); try{
+ var s=S248(); if(s&&typeof inGame!=='undefined'&&inGame&&pondHere248()){
+  var cv=$248('cv'); if(cv){ var ctx=cv.getContext('2d'); var now=performance.now();
+  ctx.save();
+  ctx.fillStyle='#7c5a2e'; ctx.beginPath(); ctx.ellipse(198,420,150,34,0,0,7); ctx.fill();
+  ctx.fillStyle='#0e5a7d'; ctx.beginPath(); ctx.ellipse(198,414,142,31,0,0,7); ctx.fill();
+  ctx.fillStyle='#38bdf8'; ctx.beginPath(); ctx.ellipse(198,410,126,25,0,0,7); ctx.fill();
+  ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.ellipse(170,404,58,11,0,0,7); ctx.fill();
+  ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.4;
+  for(var ri=0;ri<2;ri++){ var rp=((now/1600)+ri*0.5)%1; ctx.globalAlpha=0.55*(1-rp); ctx.beginPath(); ctx.ellipse(232,412,6+rp*30,2+rp*7,0,0,7); ctx.stroke() }
+  ctx.globalAlpha=1; ctx.lineWidth=1;
+  ctx.fillStyle='#16a34a'; ctx.beginPath(); ctx.ellipse(120,406,13,6,-0.4,0,7); ctx.fill(); ctx.beginPath(); ctx.ellipse(268,418,11,5,0.3,0,7); ctx.fill();
+  ctx.fillStyle='#f9a8d4'; ctx.beginPath(); ctx.arc(122,404,3.2,0,7); ctx.fill();
+  ctx.strokeStyle='#15803d'; ctx.lineWidth=2.4; ctx.beginPath(); ctx.moveTo(84,424); ctx.quadraticCurveTo(80,398,88,388); ctx.moveTo(96,426); ctx.quadraticCurveTo(96,402,104,394); ctx.moveTo(312,420); ctx.quadraticCurveTo(316,398,308,388); ctx.stroke(); ctx.lineWidth=1;
+  ctx.fillStyle='#0c4a6e'; ctx.font='bold 12px sans-serif'; ctx.fillText('🎣 the pond',150,390);
+  ctx.restore() } }
+ }catch(e){} return r } } }catch(e){}
+
+/* ================= ITEM 6 — THE BORN-INTO CARD SPEAKS FOR THE DEALT HOUSEHOLD ================= */
+function famText248(){ try{
+ var s=S248(); if(!s)return null;
+ var ppl=[]; try{ ppl=householdPeople()||[] }catch(e){}
+ function roleOf(d){ try{ return parentRoleOf47(d.name)||d.name }catch(e){ return d.name } }
+ var parents=ppl.filter(function(d){ return /mom|dad/i.test(roleOf(d)) });
+ if(parents.length>=2){ var a=parents[0], b=parents[1];
+  return {head:'👨‍👩‍👧 Two parents', line:'Your '+roleOf(a).toLowerCase()+', '+a.name+', and your '+roleOf(b).toLowerCase()+', '+b.name+' — this is the family you were dealt, and it is really who is home.'} }
+ if(parents.length===1){ var a1=parents[0]; var isMom=/mom/i.test(roleOf(a1));
+  return {head:isMom?'👩 Single Mom':'👨 Single Dad', line:'Your single '+roleOf(a1).toLowerCase()+', '+a1.name+' — this is the family you were dealt, and it is really who is home.'} }
+ if(s.origin==='orphan')return {head:'🏠 Hope House', line:'No parents at home — the grown-ups at Hope House look after you, and they are really who is home.'};
+ if(s.origin==='boarding')return {head:'🏫 Boarding', line:'No parents at home — Mr. Chen, the dorm supervisor, runs your house, and he is really who is home.'};
+ if(s.origin==='alley')return {head:'🧺 The Alley', line:'No family, no money, no one — until someone finds you.'};
+ var roles=[]; try{ roles=parentRolesForOrigin47(s.origin)||[] }catch(e){}
+ if(roles.length>=2)return {head:'👨‍👩‍👧 Two parents', line:'Your mom and your dad — this is the family you were dealt, and it is really who is home.'};
+ if(roles.length===1)return {head:/mom/i.test(roles[0])?'👩 Single Mom':'👨 Single Dad', line:'Your single '+roles[0].toLowerCase()+' — this is the family you were dealt, and it is really who is home.'};
+ return null }catch(e){ return null } }
+function patchBornCard248(){ try{
+ var sh=$248('sheet'); if(!sh||sh.getAttribute('data-born248'))return;
+ if((sh.textContent||'').indexOf('You were born into')<0)return;
+ var ft=famText248(); if(!ft)return;
+ var ps=sh.querySelectorAll('p'); var headP=null, bodyP=null;
+ for(var i=0;i<ps.length;i++){ var st=ps[i].getAttribute('style')||'';
+  if(!headP&&/font-size:16px/.test(st))headP=ps[i]; else if(headP&&!bodyP){ bodyP=ps[i]; break } }
+ if(headP)headP.textContent=ft.head;
+ if(bodyP){ var parts=bodyP.innerHTML.split('<br>'); parts[0]=esc248(ft.line); bodyP.innerHTML=parts.join('<br>') }
+ sh.setAttribute('data-born248','1');
+}catch(e){} }
+setInterval(patchBornCard248,450);
+
+/* ================= ITEM 7 — CHANGE ROOMS MUST CLOSE ================= */
+function chooserOpen248(){ try{ return (typeof curTab!=='undefined'&&(curTab==='rooms106'||curTab==='areas123')&&typeof dockOpen!=='undefined'&&dockOpen) }catch(e){ return false } }
+function forceCloseChooser248(){ try{
+ var fb='home'; try{ if(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='rooms106'&&lastRealTab101!=='areas123')fb=lastRealTab101 }catch(e){}
+ try{ curTab=fb }catch(e){}
+ try{ dockOpen=false }catch(e){}
+ var ds=$248('dockSheet'); if(ds)ds.classList.remove('open');
+ try{ document.body.classList.remove('dockOpen47') }catch(e){}
+ try{ if(typeof syncSheetH51==='function')syncSheetH51() }catch(e){}
+ try{ if(typeof renderTabs==='function')renderTabs(fb) }catch(e){}
+ try{ if(typeof fixNav101==='function')fixNav101() }catch(e){}
+ fitSoon248();
+}catch(e){} }
+document.addEventListener('click',function(e){ try{
+ if(!chooserOpen248())return; var t=e.target; if(!t||!t.closest)return;
+ if(t.closest('.dsHide')){ e.stopPropagation(); e.preventDefault(); forceCloseChooser248(); return }
+ if(t.closest('#roomBar86 button,#areaBar123 button,button[onclick*="openRoomPick106"],button[onclick*="openAreaPick123"]')){ e.stopPropagation(); e.preventDefault(); forceCloseChooser248() }
+}catch(e){} },true);
+document.addEventListener('keydown',function(e){ try{
+ if(e.key==='Escape'&&chooserOpen248()){ e.stopPropagation(); e.preventDefault(); forceCloseChooser248() }
+}catch(e){} },true);
+
+/* ================= ITEM 8 — SHEET BLUR RELEASES ================= */
+function clearBlur248(){ try{
+ var intoxLvl=0; try{ if(typeof ensure117==='function'){ var it=ensure117().intox; intoxLvl=(it&&it.lvl)||0 } }catch(e){}
+ var view=$248('view');
+ if(intoxLvl<=0){ if(view&&view.style.filter)view.style.filter=''; document.body.classList.remove('fxDrunk132','fxDrug132') }
+ var rw=document.querySelector('.roomWrap'); if(rw&&rw.style.filter)rw.style.filter='';
+ var cv=$248('cv'); if(cv&&cv.style.filter)cv.style.filter='';
+ if(!modalOpen248()){ document.querySelectorAll('.folderMenu').forEach(function(fm){ if(!fm.hidden)fm.hidden=true }) }
+}catch(e){} }
+try{ if(typeof closeModal==='function'){ var _cm248=closeModal; closeModal=function(){ var r=_cm248.apply(this,arguments); setTimeout(clearBlur248,30); setTimeout(clearBlur248,300); return r } } }catch(e){}
+setTimeout(clearBlur248,900); setTimeout(clearBlur248,2600);
+setInterval(function(){ if(!modalOpen248())clearBlur248() },1500);
+
+/* ================= ITEM 9 — RESUME OFFER ON THE FIRST LOAD ================= */
+var welcomeFix248=0;
+try{ if(typeof renderWelcome==='function'){ var _rw248=renderWelcome; renderWelcome=function(){
+ try{ if(!S248()&&typeof load==='function'){ var sv=load(); if(sv)S=sv } }catch(e){}
+ var r=_rw248.apply(this,arguments);
+ try{ var s=S248(); if(s&&welcomeFix248<2){ var has=false; document.querySelectorAll('.setup button').forEach(function(b){ if(/Keep/.test(b.textContent||'')&&/Life/.test(b.textContent||''))has=true });
+  if(!has){ welcomeFix248++; setTimeout(function(){ try{ if(typeof inGame==='undefined'||!inGame)renderWelcome() }catch(e){} },900) } } }catch(e){}
+ return r } } }catch(e){}
+[1500,4000].forEach(function(ms){ setTimeout(function(){ try{
+ if(typeof inGame!=='undefined'&&inGame)return;
+ var hasSave=false; try{ hasSave=!!localStorage.getItem(SAVE_KEY) }catch(e){}
+ if(!hasSave)return;
+ if(!S248()&&typeof load==='function'){ var sv=load(); if(sv)S=sv }
+ if(!S248())return;
+ var app=$248('app'); if(!app||!app.querySelector('.setup'))return;
+ var has=false; app.querySelectorAll('button').forEach(function(b){ if(/Keep/.test(b.textContent||'')&&/Life/.test(b.textContent||''))has=true });
+ if(!has&&typeof renderWelcome==='function')renderWelcome();
+}catch(e){} },ms) });
+
+/* ================= ITEM 10 — THE UPDATE NOTICE MUST ACTUALLY OFFER ================= */
+var updOffered248=false, updTries248=0;
+function updWatch248(){ try{
+ if(updOffered248)return;
+ var stored=null; try{ stored=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
+ if(!stored||stored===BUILD248)return;
+ try{ if(sessionStorage.getItem('upd246_dismissed')==='1')return }catch(e){}
+ if(document.getElementById('updNotice246')){ updOffered248=true; return }
+ if(modalOpen248())return;
+ updOffered248=true;
+ if(typeof window.__upd246Offer==='function'){ window.__upd246Offer(); return }
+ var el=document.createElement('div'); el.id='updNotice246';
+ el.style.cssText='position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,8,6,.55);padding:14px;box-sizing:border-box';
+ el.innerHTML='<div style="background:var(--card,#fff8ec);color:var(--ink,#241a12);max-width:520px;width:100%;border-radius:20px;padding:20px 18px 16px;box-shadow:0 18px 50px rgba(0,0,0,.45);border:2px solid #ffb703"><h2 style="margin:0 0 8px;font-size:21px">🔔 An update is ready</h2><p style="margin:0 0 10px;font-size:14.5px;line-height:1.55">Small fixes and polish are ready.</p><p style="margin:0 0 14px;font-size:13.5px;line-height:1.55;opacity:.85">Restarting takes you to the <b>main menu</b> — your life is saved and untouched. From the menu you can jump straight back in, or start a new life.</p><button type="button" id="updGo248" style="display:block;width:100%;padding:14px;border:0;border-radius:13px;background:#ffb703;color:#191104;font-weight:900;font-size:15.5px;cursor:pointer">🔄 Restart for the update</button><button type="button" id="updLater248" style="display:block;width:100%;padding:12px;margin-top:8px;border:2px solid var(--line,#d8c9ae);border-radius:13px;background:transparent;color:inherit;font-weight:800;font-size:14px;cursor:pointer">Later</button></div>';
+ document.body.appendChild(el);
+ try{ localStorage.setItem('miniLifeSimShareable_buildStamp',BUILD248) }catch(e){}
+ document.getElementById('updGo248').addEventListener('click',function(){ try{ if(typeof save==='function')save() }catch(e){} try{ localStorage.setItem('miniLifeSimShareable_toMenu','1'); localStorage.setItem('upd246_justRestarted','1') }catch(e){} window.location.reload() });
+ document.getElementById('updLater248').addEventListener('click',function(){ try{ sessionStorage.setItem('upd246_dismissed','1') }catch(e){} el.remove() });
+}catch(e){} }
+[2500,6000,12000,30000,60000].forEach(function(ms){ setTimeout(updWatch248,ms) });
+setInterval(function(){ if(++updTries248>36)return; updWatch248() },5000);
+
+/* ================= ITEM 11 — SEND FEEDBACK AT THE SETTINGS TOP LEVEL ================= */
+function settingsFb248(host){ try{
+ if(!host||host.querySelector('.fbTop248'))return;
+ if(!/Settings/.test(host.textContent||''))return;
+ var b=document.createElement('button'); b.type='button'; b.className='btn gold fbTop248'; b.style.cssText='width:100%;margin:10px 0 4px;padding:13px';
+ b.textContent='💬 Send feedback';
+ b.onclick=function(){ try{ if(typeof window.openFeedback214==='function')window.openFeedback214() }catch(e){} };
+ var h2=host.querySelector('h2'); if(h2&&h2.parentNode)h2.parentNode.insertBefore(b,h2.nextSibling); else host.insertBefore(b,host.firstChild);
+}catch(e){} }
+try{ if(typeof openSettings121==='function'){ var _os121248=openSettings121; openSettings121=function(){ var r=_os121248.apply(this,arguments); setTimeout(function(){ settingsFb248($248('sheet')) },40); setTimeout(function(){ settingsFb248($248('sheet')) },350); return r } } }catch(e){}
+
+/* ================= ITEM 12a — STAGED CHECK-INS SPEAK THEIR RESULT ================= */
+try{ if(typeof window.flowStep222==='function'){ var _fs248=window.flowStep222; window.flowStep222=function(){ var r=_fs248.apply(this,arguments); try{
+ var s=S248(); if(s&&s.flow222){ var F=s.flow222;
+  if(F.waiting&&F.stage==='entry'){ try{ toast('✅ Checked in — you are in line: '+F.ahead+' ahead of you. It moves fast — stay on this panel.') }catch(e){}
+   try{ log('🕯️ CHECKED IN — you joined the line ('+F.ahead+' ahead of you). Your turn opens the rest of the place.') }catch(e){}
+   try{ save() }catch(e){} }
+  try{ if(typeof svcInject222==='function')svcInject222() }catch(e){} }
+ }catch(e){} return r } } }catch(e){}
+
+/* ================= ITEM 12c — DUPLICATED HEADINGS, DEDUPED ================= */
+function dedupeSheet248(){ try{
+ var sh=$248('sheet'); if(!sh)return;
+ var seen={};
+ Array.prototype.slice.call(sh.querySelectorAll('h2,h3,h4')).forEach(function(h){ var t=(h.textContent||'').trim().replace(/\s+/g,' '); if(!t)return;
+  if(seen[t])h.remove(); else seen[t]=1 });
+}catch(e){} }
+try{ if(typeof openSheet==='function'){ var _osh248=openSheet; openSheet=function(){ var r=_osh248.apply(this,arguments); setTimeout(dedupeSheet248,40); setTimeout(dedupeSheet248,400); return r } } }catch(e){}
+function dedupePanel248(){ try{
+ var panel=$248('panel'); if(!panel)return;
+ var seen={};
+ Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(c){ var h=c.querySelector('h3'); if(!h)return;
+  var btn=c.querySelector('button[onclick]'); if(!btn)return;
+  var t=(h.textContent||'').trim().replace(/\s+/g,' '); if(!t)return;
+  var sig=t+'|'+btn.getAttribute('onclick');
+  if(seen[sig]){ var dd=c.closest('details.dd132'); (dd||c).remove() } else seen[sig]=1 });
+ /* h48.1: a card must never repeat its own title as a sub-heading (the Work
+    panel's Kid Jobs card carries an h3 '🧒 Kid Jobs' AND an identical h4
+    from a second builder) — the repeated heading line goes, content stays. */
+ Array.prototype.slice.call(panel.querySelectorAll('.card')).forEach(function(c){ var h3=c.querySelector('h3'); if(!h3)return;
+  var t=(h3.textContent||'').trim().replace(/\s+/g,' '); if(!t)return;
+  Array.prototype.slice.call(c.querySelectorAll('h4')).forEach(function(h4){ if((h4.textContent||'').trim().replace(/\s+/g,' ')===t)h4.remove() }) });
+}catch(e){} }
+
+/* ================= shared post-paint hooks ================= */
+try{ if(typeof renderTabs==='function'){ var _rt248=renderTabs; renderTabs=function(a){ var r=_rt248.apply(this,arguments);
+ setTimeout(function(){ try{ dedupePanel248(); playPass248(); fishPass248(); fitCover248();
+  if(a==='more'){ var panel=$248('panel'); if(panel){ var cards=panel.querySelectorAll('.card'); for(var i=0;i<cards.length;i++){ if(/⚙️ Settings/.test(cards[i].textContent||'')){ settingsFb248(cards[i]); break } } } }
+ }catch(e){} },60);
+ setTimeout(updWatch248,900);
+ fitSoon248();
+ return r } } }catch(e){}
+try{ if(typeof render==='function'){ var _r248=render; render=function(){ var r=_r248.apply(this,arguments); fitSoon248(); return r } } }catch(e){}
+try{ if(typeof setDock==='function'){ var _sd248=setDock; setDock=function(){ var r=_sd248.apply(this,arguments); fitSoon248(); return r } } }catch(e){}
+try{ if(typeof paintActions101==='function'){ var _pa248=paintActions101; paintActions101=function(){ var r=_pa248.apply(this,arguments); setTimeout(function(){ playPass248(); fishPass248(); dedupePanel248() },50); return r } } }catch(e){}
+
+window.__v248={build:BUILD248,fitCover:fitCover248,version:function(){ return GAME_VERSION }};
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 48 (the Truth Pass): 🖼️ scenes COVER their stage (element cover-fit, bitmap fixed, interiors lose the sky strip, framing can no longer flip) • 👥 crowds spread across room zones and name pills never overlap or clip • 💬 bubbles always show the full line • 🎮 the Play folder holds working play, and the park pond is drawn with fishing in Actions • 🎲 the born-into card speaks for the dealt household • 🚪 Change Rooms closes (Hide / toggle / Escape) • 🌫️ sheet blur always releases • ▶️ resume offers on the first load • 🔔 the update notice actually offers (stamp '+BUILD248+') • 💬 Send feedback sits at the Settings top level • 🕯️ check-ins say what they did','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+<script>
+/* ================= 🌊 AquaLife v200 — HOTFIX 48.2, the owner's-video pass (layers over h48) =================
+   • 💬 Bubbles paint LAST in the frame: every drawSpeechBubble call during drawRoom is
+     recorded and replayed after all sprites and name pills — a pill can never cover a
+     sentence again — and ambient chatter never repeats one line from a second mouth
+     inside 45 s (scripted choruses and the player's own lines are exempt).
+   • 🚪 The Change Rooms TOGGLE closes through the open-door functions themselves:
+     the shipped toggle's setDock(false) is vetoed by an older chooser guard, so when
+     the chooser is open, openRoomPick106 / openAreaPick123 now run the h48 force-close
+     instead; chooser restores stand down for 2.5 s after a real close.
+   • 🧹 Tray truth: leaving a location — or changing rooms — collapses the dock (the
+     owner's standing rule), trays reopen scrolled to the top, and the room bar is
+     repainted on arrival so its pill names the room you are actually in.
+   • 🍞 Toasts keep their own lane: a CSS-var lift keeps the toast clear of the room
+     bar whenever no sheet or modal owns the screen.
+   • 🗺️ Town-map tile labels are clamped inside the map card — no more "B Salon p".
+   • 🚪 A knock names who ACTUALLY answers: the grown-up who is home right now — or
+     says plainly that no grown-up is home.
+   • 👨‍👧 Anyone on record as somebody's parent is an adult with an adult job.
+   • 💼 Panels shed true duplicate cards (same heading, same opening copy).
+   No new storage keys. GAME_VERSION, SAVE_KEY and the camera law are untouched. */
+(function(){
+'use strict';
+var BUILD248C='v200-h56';
+try{ var st=document.createElement('style'); st.id='style248c';
+ st.textContent='#cv{flex:none!important}'
+ +'#toast{bottom:calc(var(--dockH,64px) + var(--toastLift248c,14px))}';
+ document.head.appendChild(st); }catch(e){}
+function S_(){ return (typeof S!=='undefined')?S:null }
+function modalOpenC(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
+function chooserOpenC(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
+function forceCloseC(){ try{
+  var fb=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&['rooms106','areas123','actions101'].indexOf(lastRealTab101)<0)?lastRealTab101:'home';
+  window.__forceClose248T=Date.now();
+  try{ curTab=fb }catch(e){}
+  try{ dockOpen=false }catch(e){}
+  var sh=document.getElementById('dockSheet'); if(sh)sh.classList.remove('open');
+  try{ document.body.classList.remove('dockOpen47') }catch(e){}
+  try{ if(typeof syncSheetH51==='function')syncSheetH51() }catch(e){}
+  try{ if(typeof renderTabs==='function')renderTabs(fb) }catch(e){}
+  try{ if(typeof fixNav101==='function')fixNav101() }catch(e){}
+ }catch(e){} }
+function closeDockC(){ try{ if(typeof dockOpen!=='undefined'&&dockOpen)forceCloseC() }catch(e){} }
+/* ---------- item 7: the toggle door itself closes the chooser ---------- */
+try{ if(typeof openRoomPick106==='function'){ var _orpC=openRoomPick106; openRoomPick106=function(){ if(chooserOpenC()){ forceCloseC(); return } return _orpC.apply(this,arguments) } } }catch(e){}
+try{ if(typeof openAreaPick123==='function'){ var _oapC=openAreaPick123; openAreaPick123=function(){ if(chooserOpenC()){ forceCloseC(); return } return _oapC.apply(this,arguments) } } }catch(e){}
+try{ if(typeof restoreChooser248==='function'){ var _rcC=restoreChooser248; restoreChooser248=function(){ if(window.__forceClose248T&&Date.now()-window.__forceClose248T<2500)return; return _rcC.apply(this,arguments) } } }catch(e){}
+/* ---------- items 2/3 + chatter truth: bubbles last, no line twice ---------- */
+var bubRecC=null, saidC={};
+function bubbleSkipC(text,cx){ try{
+  if(!text)return false;
+  if(text.indexOf('🎂')===0||text.indexOf('Hey — I am')===0)return false;
+  if(typeof playerSay!=='undefined'&&playerSay&&text===playerSay.text)return false;
+  var now=Date.now(), bucket=Math.round((cx||0)/50), prev=saidC[text];
+  if(prev&&(now-prev.t)<45000&&prev.b!==bucket)return true;
+  saidC[text]={t:now,b:bucket}; return false;
+ }catch(e){ return false } }
+try{ if(typeof drawSpeechBubble==='function'&&typeof drawRoom==='function'){
+ var _dsbC=drawSpeechBubble, _drC=drawRoom;
+ drawSpeechBubble=function(ctx,cx,bottomY,text){ if(bubRecC){ bubRecC.push({ctx:ctx,cx:cx,bottomY:bottomY,text:text}); return } return _dsbC.apply(this,arguments) };
+ drawRoom=function(){ var rec=[]; bubRecC=rec; var r;
+  try{ r=_drC.apply(this,arguments) }
+  finally{ bubRecC=null; for(var i=0;i<rec.length;i++){ try{ if(!bubbleSkipC(rec[i].text,rec[i].cx))_dsbC(rec[i].ctx,rec[i].cx,rec[i].bottomY,rec[i].text) }catch(e){} } }
+  return r };
+} }catch(e){}
+/* ---------- world truth: a knock names who actually answers ---------- */
+try{ if(typeof knockAnswerLine91==='function'){ var _kaC=knockAnswerLine91;
+ knockAnswerLine91=function(name){ var orig=_kaC.apply(this,arguments);
+  try{ var s=S_(); if(!s||s.age>=13)return orig;
+   var inNames={}; if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')inNames[n.name]=1 });
+   var cg=(typeof caregiverName==='function')?caregiverName():null;
+   if(cg&&inNames[cg])return orig;
+   var hh={}; try{ if(typeof householdPeople==='function')householdPeople().forEach(function(p){ if(p&&p.name)hh[p.name]=1 }) }catch(e){}
+   var present=Object.keys(inNames).filter(function(nm){ if(hh[nm])return true; try{ return typeof isParentNpc==='function'&&isParentNpc(nm) }catch(e){ return false } });
+   var first=String(name).split(' ')[0];
+   if(present.length){ var who=present[0];
+    if(s.age<5)return who+" hears it first and answers the door — little ones don't open doors to visitors. "+who+" looks back at you: let "+first+" in?";
+    return who+" answers the door — kids don't open it alone. It's "+name+", hoping to come in and visit." }
+   return name+" is knocking at the front door — but no grown-up is home right now, so nobody answers. "+first+" waits a bit, hoping someone is in.";
+  }catch(e){}
+  return orig };
+} }catch(e){}
+/* ---------- world truth: a parent on record is an adult ---------- */
+function parentFixC(){ try{ var s=S_(); if(!s)return;
+ var parNames={}, parRecs=new Set();
+ var scan=function(rec){ if(!rec||typeof rec!=='object')return; ['mom','dad','mother','father','parent'].forEach(function(k){ if(typeof rec[k]==='string'&&rec[k])parNames[rec[k]]=1 }); if((Array.isArray(rec.kids)&&rec.kids.length)||(Array.isArray(rec.children)&&rec.children.length))parRecs.add(rec) };
+ if(s.town&&s.town.people)Object.keys(s.town.people).forEach(function(nm){ scan(s.town.people[nm]) });
+ if(s.contacts)Object.keys(s.contacts).forEach(function(nm){ scan(s.contacts[nm]) });
+ var fix=function(nm,rec){ if(!rec||typeof rec!=='object')return; var relTxt=String(rec.rel||rec.relation||rec.role||'');
+  var isPar=parNames[nm]||parRecs.has(rec)||/'s (mom|dad|mother|father)$/i.test(relTxt);
+  if(!isPar)return;
+  if(typeof rec.age==='number'&&rec.age<21)rec.age=34;
+  if(rec.job==='Student'||rec.job==='student')rec.job='Works in town' };
+ if(s.town&&s.town.people)Object.keys(s.town.people).forEach(function(nm){ fix(nm,s.town.people[nm]) });
+ if(s.contacts)Object.keys(s.contacts).forEach(function(nm){ fix(nm,s.contacts[nm]) });
+}catch(e){} }
+setTimeout(parentFixC,3000); setInterval(parentFixC,45000);
+/* ---------- tray truth, toast lane, map clamp: one quiet tick ---------- */
+var lastLocC=null,lastRoomC=null,lastTabC=null;
+function toastLaneC(){ try{
+ var sh=document.getElementById('dockSheet'), md=document.getElementById('modal');
+ var root=document.documentElement;
+ if((sh&&sh.classList.contains('open'))||(md&&md.classList.contains('open'))){ root.style.setProperty('--toastLift248c','14px'); return }
+ var bar=document.getElementById('roomBar86'); var lift=14;
+ if(bar&&bar.style.display!=='none'){ var r=bar.getBoundingClientRect();
+  if(r.height>0){ var dh=parseFloat(getComputedStyle(root).getPropertyValue('--dockH'))||64;
+   lift=Math.round((window.innerHeight-r.top+10)-dh); if(lift<14)lift=14; if(lift>300)lift=300 } }
+ root.style.setProperty('--toastLift248c',lift+'px');
+}catch(e){} }
+function mapClampC(){ try{ var map=document.getElementById('townMapCard209'); if(!map)return; var mr=map.getBoundingClientRect(); if(mr.width<50)return;
+ map.querySelectorAll('.mapSpot209').forEach(function(b){ var lb=b.querySelector('.msLb209'); if(!lb)return; var r=lb.getBoundingClientRect(); var dx=0,dy=0;
+  if(r.left<mr.left+2)dx=mr.left+2-r.left; else if(r.right>mr.right-2)dx=mr.right-2-r.right;
+  if(r.bottom>mr.bottom-2)dy=mr.bottom-2-r.bottom; if(r.top<mr.top+2)dy=mr.top+2-r.top;
+  if(dy&&r.bottom+dy>mr.bottom-2)dy=0;
+  if(dx){ var cl=parseFloat(b.style.left)||0; b.style.left='calc('+cl+'% + '+Math.round(dx)+'px)' }
+  if(dy){ var ct=parseFloat(b.style.top)||0; b.style.top='calc('+ct+'% + '+Math.round(dy)+'px)' }
+ });
+}catch(e){} }
+setInterval(function(){ try{
+ toastLaneC(); mapClampC();
+ var s=S_(); if(!s||typeof inGame==='undefined'||!inGame)return;
+ var loc=s.location, room=null; try{ room=(typeof curRoom86==='function'&&curRoom86())?curRoom86().id:null }catch(e){}
+ var ct=(typeof curTab!=='undefined')?curTab:null;
+ if(lastLocC===null){ lastLocC=loc; lastRoomC=room; lastTabC=ct; return }
+ if(loc!==lastLocC){ lastLocC=loc; lastRoomC=room; closeDockC(); try{ if(typeof paintRoomBar86==='function')paintRoomBar86() }catch(e){} }
+ else if(room&&room!==lastRoomC){ lastRoomC=room; try{ if(typeof paintRoomBar86==='function')paintRoomBar86() }catch(e){} if(!modalOpenC())closeDockC() }
+ if(ct&&ct!==lastTabC){ lastTabC=ct; setTimeout(function(){ try{ var p=document.getElementById('panel'); if(p)p.scrollTop=0 }catch(e){} },40) }
+}catch(e){} },900);
+/* ---------- small truths: true duplicate cards leave the panel ---------- */
+function normTxtC(el){ return (el.textContent||'').replace(/\s+/g,' ').trim() }
+function dedupeCardsC(){ try{
+ if(typeof curTab==='undefined'||curTab==='rooms106'||curTab==='areas123')return;
+ var panel=document.getElementById('panel'); if(!panel)return;
+ var cards=Array.prototype.slice.call(panel.querySelectorAll('.card,.actCard101'));
+ var seen={};
+ cards.forEach(function(card){ var h=card.querySelector('h3'); if(!h)return; var key=(h.textContent||'').replace(/\s+/g,' ').trim(); if(!key)return;
+  var txt=normTxtC(card);
+  if(seen[key]){ var prev=seen[key];
+   if(txt===prev||(txt.length>40&&prev.length>40&&(txt.indexOf(prev.slice(0,120))===0||prev.indexOf(txt.slice(0,120))===0))){
+    var dd=card.closest('details.dd132'); if(dd)dd.remove(); else card.remove(); return } }
+  if(!seen[key])seen[key]=txt });
+}catch(e){} }
+try{ if(typeof renderTabs==='function'){ var _rtC=renderTabs; renderTabs=function(){ var r=_rtC.apply(this,arguments); try{ setTimeout(dedupeCardsC,60); setTimeout(dedupeCardsC,420) }catch(e){} return r } } }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — hotfix 48.2: 🗣️ bubbles paint last — pills never cover a sentence • 🚪 the room toggle closes through its own door • 🧹 trays collapse when you leave, reopen at the top, and the room pill names your room • 🍞 toasts keep their lane • 🗺️ map labels stay on the map • 🚪 a knock names who is really home • 👨‍👧 parents on record are adults (stamp '+BUILD248C+')','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+
+<script>
+/* ================= 🌊 AquaLife v200 — HOTFIX 48.3 (drive-found truths, layered over h48.2) =================
+   • 🎓 Attending school in person (or finishing the day) puts you IN the Classrooms:
+     the attend flow set the location but never the area, so the room bar named the
+     Hallway through whole lessons. The area now follows the day — the bar, the
+     roster and the scene agree on where you are standing.
+   • 🏷️ NPC name pills also yield to the PLAYER's pill: a classmate's pill used to
+     slide under the player's sprite/pill and lose its surname ("Carlos B…"). The
+     h48 pill solver now treats the player's pill zone as occupied ground and lifts
+     neighbouring pills clear of it, same as any other pill. */
+(function(){
+'use strict';
+function toClassD(){ try{ if(typeof S==='undefined'||!S||S.location!=='school'||typeof goArea123!=='function'||typeof ensure123!=='function')return; var V=ensure123(); if(V&&V.areaRoom&&V.areaRoom.school&&V.areaRoom.school!=='hall')return; goArea123('class') }catch(e){} }
+function toClassLaterD(){ toClassD(); setTimeout(toClassD,2400); setTimeout(toClassD,5200) }
+try{ if(typeof attendGo==='function'){ var _agD=attendGo; attendGo=function(){ var r=_agD.apply(this,arguments); try{ toClassLaterD() }catch(e){} return r } } }catch(e){}
+try{ if(typeof finishSchool113==='function'){ var _fsD=finishSchool113; finishSchool113=function(){ var r=_fsD.apply(this,arguments); try{ toClassLaterD() }catch(e){} return r } } }catch(e){}
+try{ if(typeof window.__pillFix248==='function'){ var _pfD=window.__pillFix248;
+ window.__pillFix248=function(nx,ny,yy,nw,tl){ var r=_pfD.apply(this,arguments);
+  try{ if(typeof charX==='number'&&typeof charY==='number'){
+   var zx0=charX-88, zx1=charX+88, zy0=charY-190, zy1=charY-108;
+   var px0=tl+(r.dx||0), px1=px0+nw, pBot=yy-(r.lift||0), pTop=pBot-22;
+   if(px0<zx1&&px1>zx0&&pTop<zy1&&pBot>zy0){ var need=(pBot-zy0)+4; if(need>0&&need<140)r={dx:r.dx||0,lift:(r.lift||0)+need} }
+  } }catch(e){}
+  return r };
+} }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — hotfix 48.3: 🎓 the school day stands you in the Classrooms (the bar says so) • 🏷️ pills yield to the player\u2019s pill too (stamp v200-h56)','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+
+<script>
+/* ================= 🌊 AquaLife v200 — HOTFIX 48.4 (the record-less parent, layered over h48.3) =================
+   famFor198 deals every school friend a parent by NAME only — no record anywhere.
+   When such a parent's sheet asked the generic age resolver (charAge79), it fell
+   through every record check to its last resort: the PLAYER's own age. A friend's
+   mom rendered as Age 12, Job: Student — a child generated as someone's parent.
+   The resolver now answers for dealt parents FIRST: a parent of a school kid is
+   an adult (at least 27, a generation over the player in kid mode), and the job
+   lines that key off age follow on their own. Record-holding parents are
+   untouched — their own ages win, exactly as before. */
+(function(){
+'use strict';
+window.__famParents248E=window.__famParents248E||{};
+function famParentAgeE(name){ try{
+  if(typeof S==='undefined'||!S||!name)return null;
+  var is=false;
+  try{ var V=S.v198; if(V){ if(V.offer&&V.offer.parent===name)is=true; if(V.plan&&V.plan.parent===name)is=true } }catch(e){}
+  if(!is&&window.__famParents248E[name])is=true;
+  if(!is)return null;
+  var h=0; for(var i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;
+  if(S.age>=18)return 26+(h%16); /* a fellow parent of your kid: a grown-up near your own generation */
+  return Math.min(50,Math.max(27,(S.age||12)+22)) }catch(e){ return null } }
+try{ if(typeof charAge79==='function'){ var _caE=charAge79; charAge79=function(name){ var pa=famParentAgeE(name); if(pa!=null)return pa; return _caE.apply(this,arguments) } } }catch(e){}
+try{ if(typeof openSheet==='function'){ var _osE=openSheet; openSheet=function(html,opts){ try{ if(typeof html==='string'){ var m1=html.match(/<b>([^<]{2,40})<\/b> — [^<]{0,40}?’s parent/), m2=html.match(/(?:Mom|Dad): <b>([^<]{2,40})<\/b>/); if(m1)window.__famParents248E[m1[1]]=1; if(m2)window.__famParents248E[m2[1]]=1 } }catch(e){} return _osE.apply(this,arguments) } } }catch(e){}
+try{ if(typeof jobLine47==='function'){ var _jlE=jobLine47; jobLine47=function(name){ var j=_jlE.apply(this,arguments); try{ if(famParentAgeE(name)!=null&&(j.indexOf('No job')===0||j.indexOf('🎒 Student')===0||j.indexOf('🧸')===0)){ var h=0; for(var i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0; var pool=['🔧 Mechanic','🏥 Nurse','🚗 Bus driver','🍳 Cook','🧰 Electrician','📦 Warehouse lead','🏢 Office manager','✂️ Barber','🚚 Delivery driver','🧹 Custodian']; return pool[h%pool.length] } }catch(e){} return j } } }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — hotfix 48.4: 👨‍👧 a dealt parent is an adult everywhere a sheet asks (stamp v200-h56)','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+
+<style>
+/* h48.5: town-map tile labels can never touch a neighbour — tighter box, smaller type */
+.msLb209{ font-size:8.5px !important; max-width:60px !important; padding:1px 4px !important; letter-spacing:-.2px; }
+/* h48.5 MENU 1 — the ghost room bar, root-caused in a driven frame: .tabsRow100
+   (room bar + Bag/Scrapbook) is in-flow under the scene, but .dockSheet is
+   position:fixed and rises from the bottom. Whenever the tray's real height
+   outgrows the synced --sheetH51 (section expansions, transition frames), the
+   tray overlaps the bar's flow slot — and the bar's z-index 46 (above the
+   sheet's 44) painted it ON TOP of the tray's content: a second room bar
+   "inside" the tray. The bar now paints BELOW the sheet: overlapped, it is
+   simply covered for a beat; settled, it sits in its slot above the tray.
+   Exactly one bar, never inside the tray. */
+.tabsRow100{ z-index:40 !important; }
+</style>
+<script>
+/* ================= 🌊 AquaLife v200 — HOTFIX 48.5 (the room panel owns the dock, layered over h48.4) =================
+   MENU 2: with the Change Rooms / Change Areas panel open, the dock kept the
+   previously used folder lit (Me in one video, Social in another) — the room
+   panel never claimed the highlight state. The chooser is not a folder: while
+   it is the panel actually open, NO folder tab stays lit. When it closes, the
+   shipped renderTabs/fixNav paint the true folder again on their own. */
+(function(){
+'use strict';
+function chooserOwnsF(){ try{
+  if(typeof curTab==='undefined')return;
+  if(curTab!=='rooms106'&&curTab!=='areas123')return;
+  if(typeof dockOpen==='undefined'||!dockOpen)return;
+  var tabs=document.querySelectorAll('#menuDock .dockTab, #dockCore100 .dockTab');
+  for(var i=0;i<tabs.length;i++){ if(tabs[i].classList.contains('on')){ tabs[i].classList.remove('on'); tabs[i].setAttribute('aria-pressed','false') } }
+ }catch(e){} }
+setInterval(chooserOwnsF,400);
+try{ if(typeof renderTabs==='function'){ var _rtF=renderTabs; renderTabs=function(){ var r=_rtF.apply(this,arguments); chooserOwnsF(); setTimeout(chooserOwnsF,50); setTimeout(chooserOwnsF,300); return r } } }catch(e){}
+try{ if(typeof render==='function'){ var _rF=render; render=function(){ var r=_rF.apply(this,arguments); chooserOwnsF(); return r } } }catch(e){}
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — hotfix 48.5: 🚪 the room panel owns the dock highlight while it is open (stamp v200-h56)','color:#0ea5e9;font-weight:bold') }catch(e){}
+})();
+</script>
+
 </body>
 </html>
