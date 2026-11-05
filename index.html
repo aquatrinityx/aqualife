@@ -1229,7 +1229,7 @@ let interactUntil=0,ambientNext=0;
 function startActivity(icon,dur,x,y,needsDelta,onDone,opts){
  interactUntil=performance.now()+dur+3000; ambientNext=interactUntil+3500;
  camHoldUntil=performance.now()+dur+1100; // the zoom locks on for the WHOLE performance and only releases when it is done
- walkTo(x,y); focusCamera(x,y,{dur:dur+1100,scale:1.55,own:true});
+ walkTo(x,y); focusCamera(x,y,{dur:dur+1100,scale:1.2,own:true});
  const fwA66=fwNoFast66||!!(opts&&opts.fw); // v66: a free-will act runs at the base clock rate — it never flips time into fast-flow…
  const my={icon:icon,start:performance.now(),dur:dur,seated:!!(opts&&opts.seated),fw:fwA66}; activity=my; if(!fwA66&&opts&&opts.sleep91)setFast54(2,dur+700); // v91: FAST-FLOW IS SLEEP ONLY — actions/activities NEVER speed the clock any more; only sleep (opts.sleep91) fast-flows, at ×2
  if(needsDelta){const steps=3; const _acc174={}; for(let i=1;i<=steps;i++){(function(i){setTimeout(function(){ if(!S)return; for(const k in needsDelta){ const _tgt174=needsDelta[k]*i/steps; const _d174=Math.round(_tgt174)-Math.round(_acc174[k]||0); _acc174[k]=_tgt174; if(_d174)adj(k,_d174) } save(); render() },dur*i/steps)})(i)}}
@@ -1743,9 +1743,9 @@ function personalCheckin(snd){ if(S.partner&&snd===S.partner)return pickArr(COUP
  if(snd==='Jordan')return '{n} — still owe you a listen. send that song 🎧';
  return 'thinking of you, {n}! how are you?' }
 function firstTextFor(name){ if(name==='Maya')return S.age>=18?'ok {n} — first text test 📱 you passed. coffee this week?':'first text!! 📱 okay {n}, important: sit with me at lunch tomorrow?'; if(name==='Sam')return 'saved your number as \u201ccoach\u201d btw 😂 rematch tonight, {n}??'; if(name==='Jordan')return 'texting so I don\'t lose it — {n}, send me a song you love 🎧'; if(name==='School')return 'And a reminder, {n}: permission slips are due this week 📋'; return 'first text energy ✨ hi {n}!' }
-function meetFriend(name){ if(!S||hasContact(name))return; if(!S.hasPhone){ focusCamera(charX,charY,{dur:3400,scale:1.5}); playerSay={text:name+': '+(MEET_LINES[name]||('Hey, I\'m '+name+'!')),until:performance.now()+3600}; log('Met '+name+' in person — no phone yet, so no number exchanged. That waits until you have one.'); return } playerSay={text:name+': '+(MEET_LINES[name]||('Hey, I\'m '+name+'!')),until:performance.now()+3600}; focusCamera(charX,charY,{dur:3400,scale:1.5}); log('🤝 Met '+name+' in person. The number ask never happens at hello — it takes a real conversation first, and even then it is theirs to ask and yours to answer.'); queueNumAsk(name); save(); if(inGame)render() }
+function meetFriend(name){ if(!S||hasContact(name))return; if(!S.hasPhone){ focusCamera(charX,charY,{dur:3400,scale:1.2}); playerSay={text:name+': '+(MEET_LINES[name]||('Hey, I\'m '+name+'!')),until:performance.now()+3600}; log('Met '+name+' in person — no phone yet, so no number exchanged. That waits until you have one.'); return } playerSay={text:name+': '+(MEET_LINES[name]||('Hey, I\'m '+name+'!')),until:performance.now()+3600}; focusCamera(charX,charY,{dur:3400,scale:1.2}); log('🤝 Met '+name+' in person. The number ask never happens at hello — it takes a real conversation first, and even then it is theirs to ask and yours to answer.'); queueNumAsk(name); save(); if(inGame)render() }
 function meetAtSchool(){ if(!S||S.age<5||S.age>=18||!S.hasPhone)return; if(!hasContact('School')){ addContact('School'); S.phoneMsgs.unshift({id:Date.now()+Math.floor(Math.random()*9999)+600003,from:'School',text:introFor('School'),read:false,replied:true}); if(S.phoneMsgs.length>50)S.phoneMsgs.length=50 } if(!hasContact('Maya'))meetFriend('Maya'); else if(!hasContact('Sam'))meetFriend('Sam') }
-function meetNPC(n){ const cmap={Mom:'Family',Dad:'Family','Step-Mom':'Family','Step-Dad':'Family'}; const cname=cmap[n.name]||n.name; n.say=MEET_LINES[n.name]||('Hey — I\'m '+n.name+'!'); n.sayUntil=performance.now()+3600; focusCamera(n.x,n.y,{dur:3400,scale:1.5}); if(!S.hasPhone)return; if(cname==='Family'){ if(addContact('Family','family')){ S.phoneMsgs.unshift({id:Date.now()+Math.floor(Math.random()*9999)+700000,from:'Family',text:introFor('Family'),read:false,replied:true}); if(S.phoneMsgs.length>50)S.phoneMsgs.length=50 } } else if(!hasContact(cname)){ log('🤝 Met '+cname+' in person — the number ask comes next; no swap, no texts.'); queueNumAsk(cname) } }
+function meetNPC(n){ const cmap={Mom:'Family',Dad:'Family','Step-Mom':'Family','Step-Dad':'Family'}; const cname=cmap[n.name]||n.name; n.say=MEET_LINES[n.name]||('Hey — I\'m '+n.name+'!'); n.sayUntil=performance.now()+3600; focusCamera(n.x,n.y,{dur:3400,scale:1.2}); if(!S.hasPhone)return; if(cname==='Family'){ if(addContact('Family','family')){ S.phoneMsgs.unshift({id:Date.now()+Math.floor(Math.random()*9999)+700000,from:'Family',text:introFor('Family'),read:false,replied:true}); if(S.phoneMsgs.length>50)S.phoneMsgs.length=50 } } else if(!hasContact(cname)){ log('🤝 Met '+cname+' in person — the number ask comes next; no swap, no texts.'); queueNumAsk(cname) } }
 // ---- TEXTS: on-screen notifications, conversations, choice replies with real effects ----
 let pendingNotif=null;
 let openThread42=null; // v42: which thread the phone is open ON right now ({type:'msg',who} / {type:'dm',id}) — a text from the thread you are already reading never raises a heads-up
@@ -1933,11 +1933,11 @@ function updateLiving(now){ if(rtPaused)return; if(S&&inGame){ if(lastLoc50!==nu
  if(!npcs||npcKey!==householdKey())initNPCs(); if(!npcs)return;
  npcs.forEach(n=>{
   if(S&&isParentNpc(n.name)&&S.location!==homeLoc()){ if(n.state!=='out'){ n.state='out'; n.bubble='' } n.next=now+25000; return } // v82: parents exist in the scene ONLY at home — away from home, the single accompanying parent is the escort sprite, never a second roaming copy
-  if(isParentNpc(n.name)&&n.state!=='in'){ const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; n.state='in'; n.x=s[0]; n.y=s[1]; n.tx=s[0]; n.ty=s[1]; n.until=now+12000+Math.random()*10000 }
-  if(n.state==='out'){ if(now>n.next){ n.state='in'; n.x=884; n.y=250+Math.random()*70; const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; n.tx=s[0]; n.ty=s[1]; n.until=now+12000+Math.random()*14000; n.bonused=false; n.bubble='👋'; if(S){ if(!S.met)S.met={}; const nk='npc:'+n.name; if(!S.met[nk]){ S.met[nk]=1; const lines={Mom:'Mom\'s home ❤️ — she runs this house',Dad:'Dad\'s home 👋 — if it has wheels or wires, he can fix it','Step-Mom':'Your step-mom is home 👋 — she\'s still finding her place here','Step-Dad':'Your step-dad is home 👋 — grill master, dad-joke dealer','Ms. Rivera':'I\'m Ms. Rivera — I run Hope House 🏠 Come to me for anything',Leo:'I\'m Leo! I live at Hope House too 🧒 — professional snack trader',Priya:'I\'m Priya! I live at Hope House 👧 — I know every hiding spot','Mr. Chen':'I\'m Mr. Chen — I supervise this dorm 🧑‍🏫 Fair, but strict',Riley:'I\'m Riley, your dorm neighbor 🧑 — always up for a game',June:'I\'m June, your dorm neighbor 👧 — quiz-night champion'}; const ln=lines[n.name]||(n.name+' is here 👋'); setTimeout(()=>toast('👋 '+ln),500); log('Met '+n.name+' — '+ln); meetNPC(n) } } } }
-  else if(n.state==='in'){ const dx=n.tx-n.x,dy=n.ty-n.y; if(Math.abs(dx)>3||Math.abs(dy)>3){ n.x+=dx*.05; n.y+=dy*.05 } else { if(Math.random()<.004){ const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; n.tx=s[0]; n.ty=s[1] } n.bubble=['💬','😊','❤️','☕','📱'][Math.floor(now/2600)%5] }
+  if(isParentNpc(n.name)&&n.state!=='in'){ const s=(typeof claimSpot251==='function'&&claimSpot251(n))||[884,270]; n.state='in'; n.x=s[0]; n.y=s[1]; n.tx=s[0]; n.ty=s[1]; n.until=now+12000+Math.random()*10000 }
+  if(n.state==='out'){ if(now>n.next){ n.state='in'; n.x=884; n.y=250+Math.random()*70; const s=(typeof claimSpot251==='function')?claimSpot251(n):null; if(s){ n.tx=s[0]; n.ty=s[1] } else { n.tx=884; n.ty=n.y } n.until=now+12000+Math.random()*14000; n.bonused=false; n.bubble='👋'; if(S){ if(!S.met)S.met={}; const nk='npc:'+n.name; if(!S.met[nk]){ S.met[nk]=1; const lines={Mom:'Mom\'s home ❤️ — she runs this house',Dad:'Dad\'s home 👋 — if it has wheels or wires, he can fix it','Step-Mom':'Your step-mom is home 👋 — she\'s still finding her place here','Step-Dad':'Your step-dad is home 👋 — grill master, dad-joke dealer','Ms. Rivera':'I\'m Ms. Rivera — I run Hope House 🏠 Come to me for anything',Leo:'I\'m Leo! I live at Hope House too 🧒 — professional snack trader',Priya:'I\'m Priya! I live at Hope House 👧 — I know every hiding spot','Mr. Chen':'I\'m Mr. Chen — I supervise this dorm 🧑‍🏫 Fair, but strict',Riley:'I\'m Riley, your dorm neighbor 🧑 — always up for a game',June:'I\'m June, your dorm neighbor 👧 — quiz-night champion'}; const ln=lines[n.name]||(n.name+' is here 👋'); setTimeout(()=>toast('👋 '+ln),500); log('Met '+n.name+' — '+ln); meetNPC(n) } } } }
+  else if(n.state==='in'){ const dx=n.tx-n.x,dy=n.ty-n.y; if(Math.abs(dx)>3||Math.abs(dy)>3){ n.x+=dx*.05; n.y+=dy*.05 } else { if(Math.random()<.004){ const s=(typeof claimSpot251==='function')?claimSpot251(n):null; if(s){ n.tx=s[0]; n.ty=s[1] } } n.bubble=['💬','😊','❤️','☕','📱'][Math.floor(now/2600)%5] }
    if(!n.bonused&&Math.abs(n.tx-n.x)<24){ n.bonused=true; adj('social',2); if(S.origin==='two'||S.origin==='mom'||S.origin==='dad'||S.origin==='step')S.bond=clamp(S.bond+1) }
-   if(now>n.until){ if(isParentNpc(n.name)){ const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; n.tx=s[0]; n.ty=s[1]; n.until=now+12000+Math.random()*14000; n.bonused=false } else { n.state='leaving'; n.tx=884; n.ty=n.y; n.bubble='👋' } } }
+   if(now>n.until){ if(isParentNpc(n.name)){ const s=(typeof claimSpot251==='function')?claimSpot251(n):null; if(s){ n.tx=s[0]; n.ty=s[1] } n.until=now+12000+Math.random()*14000; n.bonused=false } else { n.state='leaving'; n.tx=884; n.ty=n.y; n.bubble='👋' } } }
   else if(n.state==='leaving'){ const dx=n.tx-n.x; n.x+=dx*.06; if(Math.abs(dx)<14){ n.state='out'; n.next=now+9000+Math.random()*13000; n.bubble='' } }
  }); runConversations(now) }
 // ---- v26: TOWNSFOLK — a bigger, living, RANDOMIZED population. Procedurally generated people (random names, looks rolled from the style palettes — skin/hair/clothes/hats/glasses/shoes — and personalities) who appear at school, the park/street, work, campus, events and around town. Regulars recur at their haunt, new faces keep arriving, they talk in bubbles with lines that fit who they are, and meeting one face-to-face earns their number per the standing rules. ----
@@ -1979,14 +1979,14 @@ function initTownsfolk(){ townKey=S.location; townsfolk=[]; const loc=S.location
 function updateTownsfolk(now){ if(!S)return; const loc=S.location; if(['jail','beach','city','mountains','park'].indexOf(loc)>=0){ if(townKey!==loc){ townKey=loc; townsfolk=[] } return }
  if(!townsfolk||townKey!==loc)initTownsfolk(); if(!townsfolk||!townsfolk.length)return;
  townsfolk.forEach(p=>{ const rec=S.town.people[p.name];
-  if(p.state==='out'){ if(now>p.next){ p.state='in'; p.x=884; p.y=246+Math.random()*70; const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; p.tx=s[0]; p.ty=s[1]; p.until=now+16000+Math.random()*18000; p.bubble='👋'; if(rec&&!p.metDone)setTimeout(function(){ if(S&&townsfolk&&townsfolk.indexOf(p)>=0&&p.state!=='out')meetTownsperson(p) },2600) } }
-  else if(p.state==='in'){ const dx=p.tx-p.x, dy=p.ty-p.y; if(Math.abs(dx)>3||Math.abs(dy)>3){ p.x+=dx*.05; p.y+=dy*.05 } else { if(Math.random()<.004){ const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; p.tx=s[0]; p.ty=s[1] } p.bubble=['💬','😊','📱','👀','✨'][Math.floor(now/2800)%5];
+  if(p.state==='out'){ if(now>p.next){ p.state='in'; p.x=884; p.y=246+Math.random()*70; const s=(typeof claimSpot251==='function')?claimSpot251(p):null; if(s){ p.tx=s[0]; p.ty=s[1] } else { p.tx=884; p.ty=p.y } p.until=now+16000+Math.random()*18000; p.bubble='👋'; if(rec&&!p.metDone)setTimeout(function(){ if(S&&townsfolk&&townsfolk.indexOf(p)>=0&&p.state!=='out')meetTownsperson(p) },2600) } }
+  else if(p.state==='in'){ const dx=p.tx-p.x, dy=p.ty-p.y; if(Math.abs(dx)>3||Math.abs(dy)>3){ p.x+=dx*.05; p.y+=dy*.05 } else { if(Math.random()<.004){ const s=(typeof claimSpot251==='function')?claimSpot251(p):null; if(s){ p.tx=s[0]; p.ty=s[1] } } p.bubble=['💬','😊','📱','👀','✨'][Math.floor(now/2800)%5];
     if(Math.random()<.0016&&rec&&!(typeof window._talkBusy191==='function'&&window._talkBusy191())){ const td=TOWN_TRAITS[rec.trait]; if(td){ p.say=pickArr(td.lines); p.sayUntil=now+3200; if(Math.random()<.4)setTimeout(function(){ if(!S)return; playerSay={text:pickArr(CONVO_REPLIES),until:performance.now()+2400}; adj('social',1); if(typeof convoDone93==='function')convoDone93(p.name) },3000) } } }
    if(now>p.until){ p.state='leaving'; p.tx=884; p.ty=p.y; p.bubble='👋' } }
   else if(p.state==='leaving'){ const dx=p.tx-p.x; p.x+=dx*.06; if(Math.abs(dx)<14){ p.state='out'; p.next=now+10000+Math.random()*14000; p.bubble='' } } }) }
 function townFirstText(p){ const rec=S.town.people[p.name]; const t=rec?rec.trait:''; const map={chill:'no-stress texting zone over here 😌 what is good, {n}',funny:'first text!! I lead with jokes, it is a whole brand 😂',shy:'hi 🙈 took me ten minutes to send this lol',bold:'saved your number in ALL CAPS. that is respect 😤',kind:'hi!! just wanted you to have a friendly first text 💛',nerdy:'first text fun fact: this friendship is now statistically inevitable 🤓',sporty:'first text 🏃 if I ever say "quick run" I am lying about the quick',artsy:'hi 🎨 sending you the sketch I did of the street later',gossipy:'first text 👀 I already know two things about you. kidding. …unless?',dreamy:'hi 🌙 I nearly texted you a dream I had instead of hello'}; return map[t]||'first text energy ✨ hi {n}!' }
 function meetTownsperson(p){ if(!S||p.metDone)return; p.metDone=true; if(!S.met)S.met={}; S.met['town:'+p.name]=1; const rec=S.town.people[p.name]; if(rec)rec.metDay=S.day; const td=rec?TOWN_TRAITS[rec.trait]:null; showTip('new-faces');
- p.say='Hey — I am '+p.name.split(' ')[0]+'! 👋'; p.sayUntil=performance.now()+3600; focusCamera(p.x,p.y,{dur:3000,scale:1.35});
+ p.say='Hey — I am '+p.name.split(' ')[0]+'! 👋'; p.sayUntil=performance.now()+3600; focusCamera(p.x,p.y,{dur:3000,scale:1.2});
  if(S.hasPhone){ log('👥 Met '+p.name+' — '+(td?td.meet:'a new face in town')+'. House rules of the whole town: meet in person first, then THE ASK — only a swapped number opens a texting thread.'); queueNumAsk(p.name) }
  else { log('👥 Met '+p.name+' in person — '+(td?td.meet:'a new face in town')+'. No phone yet, so no number exchanged — that waits until you have one.') }
  save(); if(inGame)render() }
@@ -4803,7 +4803,7 @@ const _bv80=bookVacation; bookVacation=function(i){ if(S&&S.age<=4){ toast('🔒
 if(typeof bookLuxe63==='function'){ const _bl80=bookLuxe63; bookLuxe63=function(i){ if(S&&S.age<=4){ toast('🔒 Travel is locked at '+S.age+' — grown-ups plan the big trips, and they ask first'); return } _bl80(i) } }
 /* ---- 🧳 A GROWN-UP CAN TAKE A TODDLER — at random, and ALWAYS by asking first ---- */
 const PARENT_TRIPS80=[['street','🌳 Maple Street & the park'],['grandparents','👵 Grandma & Grandpa\'s house'],['mall','🛍️ the mall'],['fair','🎡 the amusement park'],['cinema','🎬 the cinema'],['beach','🏖️ the beach']];
-function maybeParentTrip80(){ if(!S||!inGame||S.deadFlag)return false; ensure80(); if(S.age<1||S.age>4)return false; if(S.jail&&S.jail.in)return false; if(S.vac&&S.vac.active)return false; const mel=document.getElementById('modal'); if(mel&&mel.classList.contains('open'))return false; if(FAMILY_ORIGINS80.indexOf(S.origin)<0&&S.origin!=='orphan'&&S.origin!=='boarding')return false; if(S.location!==homeLoc())return false; if(S.day-(S.broke80.tripDay||-9)<2)return false; if(Math.random()>0.45)return false; const cg=caregiverName()||giverName(); if(!cg)return false; const dest=pickArr(PARENT_TRIPS80); if(dest[0]===S.location)return false; S.broke80.tripDay=S.day; window._trip80={dest:dest[0],label:dest[1],cg:cg}; log('🧳 '+cg+' is heading out — and asked if you want to come along.'); openSheet('<h2>🧳 '+cg+' is going out — want to come?</h2><p>'+cg+' is heading to <b>'+dest[1]+'</b> and can take you along. Trips for little ones only ever happen like this: a grown-up is going anyway, it comes up at random, and <b>they always ask first</b>. Your call, small one.</p><button class="btn gold" onclick="parentTripGo80()">🧒 Yes — go with '+cg+'!</button><button class="btn outline" style="margin-top:8px" onclick="parentTripStay80()">🏠 No thanks — stay home</button>',{person:cg,buzz:[70,40,70]}); showTip('parent-trip80'); return true }
+function maybeParentTrip80(){ if(!S||!inGame||S.deadFlag)return false; ensure80(); if(S.age<1||S.age>4)return false; if(S.jail&&S.jail.in)return false; if(S.vac&&S.vac.active)return false; const mel=document.getElementById('modal'); if(mel&&mel.classList.contains('open'))return false; if(FAMILY_ORIGINS80.indexOf(S.origin)<0&&S.origin!=='orphan'&&S.origin!=='boarding')return false; if(S.location!==homeLoc())return false; if(S.day-(S.broke80.tripDay||-9)<2)return false; if(Math.random()>0.45)return false; const cg=caregiverName()||giverName(); if(!cg)return false; try{ if(typeof presenceOf251==='function'){ const pr80=presenceOf251(cg); if(!pr80||(pr80.state!=='here'&&pr80.state!=='house'))return false } }catch(e){} const dest=pickArr(PARENT_TRIPS80); if(dest[0]===S.location)return false; S.broke80.tripDay=S.day; window._trip80={dest:dest[0],label:dest[1],cg:cg}; log('🧳 '+cg+' is heading out — and asked if you want to come along.'); openSheet('<h2>🧳 '+cg+' is going out — want to come?</h2><p>'+cg+' is heading to <b>'+dest[1]+'</b> and can take you along. Trips for little ones only ever happen like this: a grown-up is going anyway, it comes up at random, and <b>they always ask first</b>. Your call, small one.</p><button class="btn gold" onclick="parentTripGo80()">🧒 Yes — go with '+cg+'!</button><button class="btn outline" style="margin-top:8px" onclick="parentTripStay80()">🏠 No thanks — stay home</button>',{person:cg,buzz:[70,40,70]}); showTip('parent-trip80'); return true }
 function parentTripGo80(){ const t=window._trip80; if(!t){ closeModal(); return } closeModal(); S.escort=t.cg; S.location=t.dest; escortX=884; escortY=270; adj('fun',8); adj('social',4); log('🧳 You went with '+t.cg+' to '+t.label+' — carried, hand-held and watched the whole way, the way little ones travel.'); toast('🧳 Out with '+t.cg+'!'); save(); render() }
 function parentTripStay80(){ const t=window._trip80; closeModal(); if(t)log('🧸 '+t.cg+' headed to '+t.label+' without you — you stayed home with your toys, and that was your choice to make.'); save(); render() }
 const _mhe80=maybeHouseholdEvent; maybeHouseholdEvent=function(){ if(maybeParentTrip80())return; _mhe80() };
@@ -5271,7 +5271,7 @@ function mateHere86(name){ if(!S||S.location!==homeLoc())return true; const rm=c
 function kidHere86(k){ if(!S||S.location!==homeLoc())return true; const rm=curRoom86(); if(!rm)return true; return kidRoom86(k)===rm.id }
 function roomWander86(now){ if(!S||!inGame)return; const rooms=homeRooms86(); if(!rooms||!npcs||!npcs.length)return;
  npcs.forEach(function(n){ if(n.state!=='in'){ n.roomGo86=null; return } if(!n.room86)n.room86=roomPick86(rooms); if(!n.roomNext86)n.roomNext86=now+20000+Math.random()*30000;
-  if(n.roomGo86){ n.tx=884; n.ty=n.y; if(Math.abs(n.x-884)<26){ n.room86=n.roomGo86; n.roomGo86=null; n.x=884; const s=NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; n.tx=s[0]; n.ty=s[1]; n.roomNext86=now+28000+Math.random()*36000 } return }
+  if(n.roomGo86){ n.tx=884; n.ty=n.y; if(Math.abs(n.x-884)<26){ n.room86=n.roomGo86; n.roomGo86=null; n.x=884; const s=((typeof claimSpot251==='function')&&claimSpot251(n))||NPC_SPOTS[Math.floor(Math.random()*NPC_SPOTS.length)]; n.tx=s[0]; n.ty=s[1]; n.roomNext86=now+28000+Math.random()*36000 } return }
   if(now>n.roomNext86){ const pick=roomPick86(rooms); if(pick!==n.room86)n.roomGo86=pick; else n.roomNext86=now+16000+Math.random()*22000 } }) }
 function roomTickFolks86(now){ if(!S||!inGame)return; const rooms=homeRooms86(); if(!rooms)return;
  (S.housemates||[]).forEach(function(name){ mateRoom86(name); if(!RT86.mateNext[name])RT86.mateNext[name]=now+22000+Math.random()*30000; if(now>RT86.mateNext[name]){ RT86.mate[name]=roomPick86(rooms); RT86.mateNext[name]=now+32000+Math.random()*42000 } });
@@ -5392,9 +5392,9 @@ function knockLetIn91(){ const v=doorVisitor91; doorVisitor91=null; closeModal()
 function knockSendAway91(){ const v=doorVisitor91; doorVisitor91=null; closeModal(); if(!v||!S)return; log('🚪 SENT AWAY — '+v.name+' knocked, and the answer was a polite no: "Sorry — not today!" They waved, understood completely, and headed off. The house stays the house\'s.'); toast('👋 Maybe another day'); save(); render() }
 setInterval(function(){ try{ if(!S||!inGame||S.deadFlag)return; ensure91(); const now=performance.now();
  if(doorVisitor91){ if(!doorVisitor91.capUntil)doorVisitor91.capUntil=now+240000; const mdv=document.getElementById('modal'); const mOpen=!!(mdv&&mdv.classList.contains('open')); const cardUp=mOpen&&!!document.getElementById('knockCard91'); const cap=doorVisitor91.capUntil;
-  if(S.location!==homeLoc()||S.day!==doorVisitor91.day){ const wasSit=!!doorVisitor91.sitter120; doorVisitor91=null; if(wasSit){ try{ const Vw=ensure120(); if(Vw&&Vw.covState==='knocking'){ Vw.covState=''; Vw.knockPending=false } }catch(e){} } }
+  if(S.location!==homeLoc()||S.day!==doorVisitor91.day){ const wasSit=!!doorVisitor91.sitter120; if(wasSit)setTimeout(function(){ try{ log('👶 SITTER BOOKING LAPSED — the knock at the door was missed as the day moved on, so the booking ended at the doorstep. Nobody is booked now.') }catch(e){} },50); doorVisitor91=null; if(wasSit){ try{ const Vw=ensure120(); if(Vw&&Vw.covState==='knocking'){ Vw.covState=''; Vw.knockPending=false } }catch(e){} } }
   else if(cardUp){ if(now>doorVisitor91.until&&now<cap)doorVisitor91.until=Math.min(now+45000,cap) }
-  else if(now>doorVisitor91.until||now>=cap){ const nm=doorVisitor91.name; const wasSit=!!doorVisitor91.sitter120; doorVisitor91=null; try{ sheetQ84=sheetQ84.filter(function(q){ return !q.html||q.html.indexOf('knockCard91')<0 }) }catch(e){} if(wasSit){ try{ const Vw=ensure120(); if(Vw&&Vw.covState==='knocking'){ Vw.covState=''; Vw.knockPending=false } }catch(e){} } log('🚪 '+nm+' waited at the door a good while, knocked once more, then smiled, waved at the window and headed off. Maybe another day.'); render() }
+  else if(now>doorVisitor91.until||now>=cap){ const nm=doorVisitor91.name; const wasSit=!!doorVisitor91.sitter120; doorVisitor91=null; try{ sheetQ84=sheetQ84.filter(function(q){ return !q.html||q.html.indexOf('knockCard91')<0 }) }catch(e){} if(wasSit){ try{ const Vw=ensure120(); if(Vw&&Vw.covState==='knocking'){ Vw.covState=''; Vw.knockPending=false } }catch(e){} } log('🚪 '+nm+' waited at the door a good while, knocked once more, then smiled, waved at the window and headed off. Maybe another day.'); if(wasSit){ log('👶 SITTER BOOKING LAPSED — '+nm+' waited at the door and was never let in, so the booking ended at the doorstep. Nobody is booked now — the coverage card shows who is actually here.'); try{ toast('🚪 The sitter gave up waiting — the booking lapsed') }catch(e){} } render() }
   else if(!mOpen&&!activity&&!doorVisitor91.reShown){ doorVisitor91.reShown=true; try{ if(doorVisitor91.sitter120){ if(typeof sitterKnockSheet120==='function')sitterKnockSheet120() } else if(doorVisitor91.html)openSheet(doorVisitor91.html,{ev84:true}) }catch(e){} }
   return }
  if(S.location!==homeLoc()||homeLoc()==='street')return; if(S.homeless80&&!S.movedOut)return; if(S.jail&&S.jail.in)return; if(S.hour<8||S.hour>=22)return; if(S.guest||S.sleepover||window._dateWith||activity)return; if(typeof copVisitArmed!=='undefined'&&copVisitArmed)return; if(now<partyUntilPerf)return; if(S.v91.knockDay===S.day)return; if(S.age<5&&!currentRoommates().length)return; if(document.getElementById('modal')&&document.getElementById('modal').classList.contains('open'))return; if(now<knockTryAt91)return; knockTryAt91=now+45000+Math.random()*30000; if(Math.random()<0.30)knockArrive91();
@@ -8442,7 +8442,7 @@ function coverageEval119(){ if(!S||(S.jail&&S.jail.in))return; const V=ensure119
   if(avail.length){ if(V.coverage&&V.coverage.day===S.day){ V.coverage=null; save() } return }
   if(!V.coverage||V.coverage.day!==S.day){ const p=cgs[0]; const sleeping=asleep119(p); const job=cgJob119(p);
    V.coverage={day:S.day,who:'sitter',label:'🧑 The Babysitter ($20 — the household books & pays)',for:S.name,because:(sleeping?(p+' is asleep (sleep '+fmtH119(sleepSched119(p).bed)+'–'+fmtH119(sleepSched119(p).wake)+')'):(p+' is at work — '+(job?job.title:'work')+', '+fmtH119(job?job.start:9)+'–'+fmtH119(job?job.end:17)+')'))};
-   log('👶 COVERAGE — '+V.coverage.because+', so the household booked the 🧑 Babysitter ($20, household-paid) to watch '+S.name+'. A toddler is never left unwatched: the sitter is here in the house, and it is all in the journal.'); save() }
+   log('👶 COVERAGE — '+V.coverage.because+', so the household booked the 🧑 Babysitter ($20, household-paid) to watch '+S.name+'. A toddler is never left unwatched: the sitter is here in the house, and it is all in the journal.'); try{ const V120b=ensure120(); if(V120b&&!V120b.covState)V120b.covState='booked' }catch(e){} save() }
   return }
  const tots=(S.kids||[]).filter(function(k){ return k&&k.age>=1&&k.age<=4 });
  if(!tots.length){ if(V.coverage&&V.coverage.day===S.day){ V.coverage=null; save() } return }
@@ -8453,7 +8453,7 @@ function coverageEval119(){ if(!S||(S.jail&&S.jail.in))return; const V=ensure119
  if(!busyWhy){ if(V.coverage&&V.coverage.day===S.day){ V.coverage=null; save() } return }
  if(otherAvail)return; // the other parent has them — covered at home, nothing to arrange
  if(!V.coverage||V.coverage.day!==S.day){ const names=tots.map(function(k){ return k.name }).join(' & ');
-  if(S.money>=20){ money(-20,'👶 Babysitter — toddler coverage'); V.coverage={day:S.day,who:'sitter',label:'🧑 The Babysitter ($20)',for:names,because:busyWhy}; log('👶 COVERAGE — '+busyWhy+', so a 🧑 Babysitter ($20) is watching '+names+'. Arranged automatically, the moment it was needed — the toddler is never left unwatched.') }
+  if(S.money>=20){ money(-20,'👶 Babysitter — toddler coverage'); V.coverage={day:S.day,who:'sitter',label:'🧑 The Babysitter ($20)',for:names,because:busyWhy}; try{ const V120c=ensure120(); if(V120c&&!V120c.covState)V120c.covState='booked' }catch(e){} log('👶 COVERAGE — '+busyWhy+', so a 🧑 Babysitter ($20) is watching '+names+'. Arranged automatically, the moment it was needed — the toddler is never left unwatched.') }
   else { V.coverage={day:S.day,who:'daycare',label:'🏫 Daycare',for:names,because:busyWhy}; log('👶 COVERAGE — '+busyWhy+', and the sitter money is not there, so '+names+' went to 🏫 Daycare for the stretch. Arranged automatically — never unwatched.') }
   save() } }
 const _nd119=nextDay;
@@ -8637,7 +8637,7 @@ setInterval(function(){ try{ if(!S||!inGame)return; ensure119();
  }catch(e){} },1200);
 /* ---------- 📖 the ask-path: a teacher offers, once a day at most ---------- */
 setInterval(function(){ try{ if(!S||!inGame)return; const V=ensure119(); if(S.age<1||S.age>4)return; if(V.teachAskDay===S.day)return; const md=document.getElementById('modal'); if(md&&md.classList.contains('open'))return; if(typeof activity!=='undefined'&&activity)return; const h=(S.hour||0); if(h<8||h>19)return; if(Math.random()>0.30)return;
- const pool=teacherPool119().filter(function(n){ return !asleep119(n)&&!cgAtWork119(n) }); if(!pool.length)return;
+ const pool=teacherPool119().filter(function(n){ if(asleep119(n)||cgAtWork119(n))return false; try{ if(typeof presenceOf251==='function'){ if(n==='Daycare teacher')return S.location==='daycare'; const pr119=presenceOf251(n); return !!(pr119&&(pr119.state==='here'||pr119.state==='house')) } }catch(e){} return true }); if(!pool.length)return;
  const teacher=pool[Math.floor(Math.random()*pool.length)];
  const skills=[['comm','🗣️ first words & talking'],['motor','👣 standing & first steps'],['potty','🚽 potty training']]; const sk=skills[Math.floor(Math.random()*skills.length)];
  V.teachAskDay=S.day; save();
@@ -13653,7 +13653,7 @@ try{ const _dr149=drawRoom; drawRoom=function(){ const r=_dr149(); try{ if(!scen
 let restoring149=false;
 function menuKey149(d){ const sm=d.querySelector(':scope > summary'); const t=sm?(sm.textContent||'').trim().replace(/\s+/g,' ').slice(0,70):''; return t||null }
 document.addEventListener('toggle',function(e){ try{ if(restoring149)return; const d=e.target; if(!d||d.tagName!=='DETAILS')return; if(!S)return; const V=ensure149(); const k=menuKey149(d); if(!k)return; if(d.open)V.menus[k]=1; else delete V.menus[k]; }catch(err){} },true);
-function restoreMenus149(){ try{ if(!S)return; const V=ensure149(); if(!V.menus)return; let changed=false; document.querySelectorAll('details').forEach(function(d){ const k=menuKey149(d); if(k&&V.menus[k]&&!d.open){ d.open=true; changed=true } }); if(changed){ restoring149=true; setTimeout(function(){ restoring149=false },60) } }catch(e){} }
+function restoreMenus149(){ try{ if(!S)return; const V=ensure149(); if(!V.menus)return; let changed=false; document.querySelectorAll('details').forEach(function(d){ const p149=document.getElementById('panel'); if(p149&&p149.contains(d))return; const k=menuKey149(d); if(k&&V.menus[k]&&!d.open){ d.open=true; changed=true } }); if(changed){ restoring149=true; setTimeout(function(){ restoring149=false },60) } }catch(e){} }
 setInterval(restoreMenus149,600);
 /* ---------- 7) TODDLER DROPS + INJURY ---------- */
 function booboo149(src){ if(!S)return; const V=ensure149(); V.booboo={untilDay:S.day+2,src:src}; adj('health',-4); log('🩹 BOOBOO — a real bruise and a lot of tears. It is the minor kind: it heals on its own in about 2 days, no doctor, no bill. (Item 7 minor tier.)'); save() }
@@ -13868,7 +13868,7 @@ const FISH_TABLE150=[
 function rollFish150(){ let r=Math.random(),acc=0; for(let i=0;i<FISH_TABLE150.length;i++){ acc+=FISH_TABLE150[i].p; if(r<acc)return FISH_TABLE150[i] } return FISH_TABLE150[0] }
 function fishValue150(nm){ const f=FISH_TABLE150.find(function(x){ return x.name===nm }); return f?f.v:0 }
 function atPond150(){ if(!S||S.location!=='street')return false; try{ const rm=curRoom86(); if(rm)return rm.id==='park' }catch(e){} try{ const V=ensure123(); return ((V.areaRoom&&V.areaRoom.street)||'sidewalk')==='park' }catch(e){ return false } }
-function fishGo150(){ if(!S||!inGame)return; const V=ensure150();
+function fishGo150(){ if(!S||!inGame)return; try{ window.__actCtx251={label:'🎣 Fishing',t:Date.now()} }catch(e){} const V=ensure150();
  if(typeof activity!=='undefined'&&activity){ toast('🎣 One thing at a time — let this moment finish first'); return }
  if(S.location!=='street'){ toast('🎣 The pond is at 🌳 Maple Street & Park'); return }
  if(S.age<6){ toast('🎣 Too young to cast a line — fishing at the Maple Street pond starts at age 6'); log('🎣 From the bank, you watched the bobbers drift. Casting a line at the Maple Street pond is a 6-and-up thing — the fish are safe from you. For now.'); save(); return }
@@ -13878,12 +13878,12 @@ function fishGo150(){ if(!S||!inGame)return; const V=ensure150();
  fishScene150={t0:performance.now(),dur:3100,x:300,y:302,res:res};
  setTimeout(function(){ try{ if(S)log('🎣 …the bobber sits on the water. A ripple spreads. Patience is the whole technique.') }catch(e){} },1500);
  startActivity('🎣',3000,300,302,{energy:-6,fun:8},function(){ fishScene150=null; if(!S)return;
-  if(res.kind==='none'){ addXp(3,'fitness'); if(Math.random()<0.45)log('🎣 IT GOT AWAY — the bobber plunged, you struck, and the line came back waving a wet nothing. The pond wins this round.'); else log('🎣 Nothing bit — a stretch of perfect quiet by the water. Some days the calm IS the catch.'); save(); render(); return }
+  if(res.kind==='none'){ addXp(3,'fitness'); try{ toast('🎣 It got away — the line came back empty this cast') }catch(e){} if(Math.random()<0.45)log('🎣 IT GOT AWAY — the bobber plunged, you struck, and the line came back waving a wet nothing. The pond wins this round.'); else log('🎣 Nothing bit — a stretch of perfect quiet by the water. Some days the calm IS the catch.'); save(); render(); return }
   const it=addItem(res.name,res.kind==='fish'?'food':'loot',res.v,false,res.d,(res.kind==='fish'&&!res.sellOnly)?'snack':null);
-  if(res.sellOnly){ if(it){ V.caught++; V.best=res.name; log('🎣🌟 GOLDEN KOI — the pond\'s legend just bit YOUR line! It is in your 🎒 Bag, worth real money at the pawn counter. Some people would keep it forever. The counter guy would not.'); try{ sfx('win') }catch(e){} } else log('🎣🌟 A GOLDEN KOI flashed on your line — but your 🎒 Bag is FULL and it slipped away into legend. The pond remembers. So will you.') }
-  else if(res.kind==='fish'){ if(it){ V.caught++; if(res.v>fishValue150(V.best))V.best=res.name; log('🎣🐟 CAUGHT — '+res.name+'! It is in your 🎒 Bag: eat it from the bag, or sell it in the Bag / at the 🏪 Pawn Shop. ('+V.caught+' caught, all told.)'); try{ sfx('win') }catch(e){} } else log('🎣🐟 CAUGHT — but your 🎒 Bag is FULL, so it slipped the hook and went home to the pond. Pawn something and come back for it.') }
-  else if(res.name.indexOf('👢')>=0){ log('🎣👢 You caught… a boot. One boot. The pond has been sitting on that joke for years. It is in your Bag — the pawn shop will give you a whole dollar for the legend.') }
-  else { log('🎣🧰 Snagged something heavy off the pond floor: a lost tackle box, kit and all. In your Bag — pawn it or keep it as a trophy of the deep.') }
+  if(res.sellOnly){ if(it){ V.caught++; V.best=res.name; try{ toast('🎣 Caught — 🌟 Golden Koi! +7 XP') }catch(e){} log('🎣🌟 GOLDEN KOI — the pond\'s legend just bit YOUR line! It is in your 🎒 Bag, worth real money at the pawn counter. Some people would keep it forever. The counter guy would not.'); try{ sfx('win') }catch(e){} } else log('🎣🌟 A GOLDEN KOI flashed on your line — but your 🎒 Bag is FULL and it slipped away into legend. The pond remembers. So will you.') }
+  else if(res.kind==='fish'){ if(it){ try{ toast('🎣 Caught — 🐟 '+res.name+'! +7 XP') }catch(e){} V.caught++; if(res.v>fishValue150(V.best))V.best=res.name; log('🎣🐟 CAUGHT — '+res.name+'! It is in your 🎒 Bag: eat it from the bag, or sell it in the Bag / at the 🏪 Pawn Shop. ('+V.caught+' caught, all told.)'); try{ sfx('win') }catch(e){} } else log('🎣🐟 CAUGHT — but your 🎒 Bag is FULL, so it slipped the hook and went home to the pond. Pawn something and come back for it.') }
+  else if(res.name.indexOf('👢')>=0){ try{ toast('🎣 Caught — 👢 an old boot! +7 XP') }catch(e){} log('🎣👢 You caught… a boot. One boot. The pond has been sitting on that joke for years. It is in your Bag — the pawn shop will give you a whole dollar for the legend.') }
+  else { try{ toast('🎣 Caught — 🧰 a lost tackle box! +7 XP') }catch(e){} log('🎣🧰 Snagged something heavy off the pond floor: a lost tackle box, kit and all. In your Bag — pawn it or keep it as a trophy of the deep.') }
   addXp(7,'fitness'); save(); render() });
 }
 window.fishGo150=fishGo150;
@@ -14955,7 +14955,7 @@ try{ const _kh162=kidsHtml; kidsHtml=function(){ let h=_kh162(); try{ if(S&&(S.k
    return '<div class="kv"><span>🧒 <b>'+k.name+'</b> — '+(k.kidPhone162?'kid phone ✓':'no kid phone')+'</span><span style="flex:none">'+(k.kidPhone162?'':'<button class="btn" style="width:auto;margin:0;padding:6px 10px" onclick="kidGiftDev162('+i+',\'phone\')">📱 Phone $15</button>')+'</span></div>' }).join(''); if(rows)h+='<div style="margin-top:8px;border-top:1px dashed #80808040;padding-top:8px"><b>🧒 Kid devices</b><p class="small" style="margin:2px 0 6px">Kid phone = no service, kid apps &amp; games only. Service can be added at 5.</p>'+rows+'</div>' } }catch(e){} return h } }catch(e){}
 /* ---------------- Parts 3+4: the menu guard ---------------- */
 window._menu162={tab:null,open:{},gen:0,holdUntil:0,playerDockAt:0};
-function sig162(d){ try{ var parts=[]; var btns=d.querySelectorAll('button'); for(var i=0;i<btns.length&&parts.length<4;i++){ var oc=btns[i].getAttribute('onclick')||''; if(oc)parts.push(oc) } var base=parts.join('|'); if(!base){ var t=''; var kids=d.children; for(var j=0;j<kids.length;j++){ if(kids[j].tagName!=='SUMMARY')t+=(kids[j].textContent||'') } base=t.replace(/[0-9]/g,'').replace(/\s+/g,' ').slice(0,90) } var h=0; for(var k=0;k<base.length;k++){ h=((h*31)+base.charCodeAt(k))|0 } return 'm'+h }catch(e){ return null } }
+function sig162(d){ try{ /* h51 ITEM 1: the signature is the section's TITLE + its ordinal among same-titled sections in the same container — stable across innerHTML repaints and unique per section, so two sections can never share a key (the old first-buttons content hash collided: Eat/Sleep/Shower-class sections shared opening buttons, so one tap opened or closed its signature twins). */ var sm=d.querySelector(':scope > summary')||d.querySelector('summary'); var t=sm?(sm.textContent||'').replace(/\s+/g,' ').trim():''; if(!t)return null; var scope=(d.closest&&d.closest('#panel,#sheet'))||document; var all=Array.prototype.slice.call(scope.querySelectorAll('details')); var idx=0; for(var i=0;i<all.length;i++){ if(all[i]===d)break; var s2=all[i].querySelector('summary'); if(s2&&(s2.textContent||'').replace(/\s+/g,' ').trim()===t)idx++ } var h=0; var base=t+'#'+idx; for(var k=0;k<base.length;k++){ h=((h*31)+base.charCodeAt(k))|0 } return 'm'+h+'x'+idx }catch(e){ return null } }
 function panelDetails162(){ var p=document.getElementById('panel'); return p?Array.prototype.slice.call(p.querySelectorAll('details')):[] }
 function applyMenus162(){ try{ panelDetails162().forEach(function(d){ var sg=sig162(d); if(sg&&window._menu162.open[sg]&&!d.open)d.setAttribute('open','') }) }catch(e){} }
 function arrivalMenus162(){ try{ window._menu162.open={}; try{ window._open135={} }catch(e){} try{ window._closed134={} }catch(e){} try{ if(S&&S.v149)S.v149.menus={} }catch(e){} panelDetails162().forEach(function(d){ if(d.open)d.removeAttribute('open') }) }catch(e){} }
@@ -17621,7 +17621,7 @@ function showCu193(kind){
 function hideCu193(){ try{ var chip=document.getElementById('cu193'); if(chip)chip.classList.remove('show'); ST193.cu=null }catch(e){} }
 try{ var _sa193=startActivity; startActivity=function(icon,dur,x,y,nd,od,opts){
  var kind=cuKind193(icon);
- if(kind){ try{ focusCamera(x,y,{dur:(dur||2400)+1300,scale:1.95,own:true,force:true}) }catch(e){} }
+ if(kind){ try{ focusCamera(x,y,{dur:(dur||2400)+1300,scale:1.2,own:true,force:true}) }catch(e){} }
  var r=_sa193.apply(this,arguments);
  if(kind){ ST193.cu={kind:kind,icon:icon}; try{ showCu193(kind) }catch(e){} }
  return r } }catch(e){}
@@ -21920,6 +21920,15 @@ function cineShotFor215(now){
  let pts=null, talking=false, meTalking=false;
  try{ if(typeof speakers191==='function'){ const sps=speakers191(); for(let i=0;i<sps.length;i++){ const sp=sps[i]; if(sp.until()>now){ talking=true; if(!pts)pts=[]; if(sp.spr&&typeof sp.spr.x==='number')pts.push([sp.spr.x,sp.spr.y]); else pts.push([px+(px>470?-70:70),py+13]) } } } }catch(e){}
  try{ if(typeof playerSay!=='undefined'&&playerSay&&now<playerSay.until){ meTalking=true; talking=true; if(!pts)pts=[]; pts.push([px,py]) } }catch(e){}
+ /* h51 ITEM 3: a bubble counts as a conversation ONLY when it is the PLAYER'S own live
+    conversation — the player's own line, an open phone thread, an active face-to-face
+    sheet, or a live date. Ambient NPC-to-NPC chatter NEVER moves the camera. */
+ if(talking){ var playerIn215=!!meTalking;
+  try{ if(typeof openThread42!=='undefined'&&openThread42)playerIn215=true }catch(e){}
+  try{ if(window.__playerConvo55Until&&window.__playerConvo55Until>now)playerIn215=true }catch(e){}
+  try{ if(document.getElementById('faceLog58'))playerIn215=true }catch(e){}
+  try{ if(window._dateWith&&window._dateSay&&window._dateSay.until>now)playerIn215=true }catch(e){}
+  if(!playerIn215){ talking=false; pts=null } }
  if(talking&&pts&&pts.length){
   let cx=0,cy=0; for(let i=0;i<pts.length;i++){ cx+=pts[i][0]; cy+=pts[i][1] } cx/=pts.length; cy/=pts.length;
   if(!meTalking&&Math.hypot(cx-px,cy-py)<300){ cx=(cx+px)/2; cy=(cy+py)/2 } /* you are part of this scene — stay in the shot */
@@ -22823,9 +22832,14 @@ try{
    if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')present[n.name]=1 });
    var out=[], seen={};
    var push=function(nm){ if(!nm||nm===S.name||present[nm]||seen[nm])return; seen[nm]=1; try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)out.push({name:nm,model:v.equipped,col:carColor202(v.equipped,nm)}) }catch(e){} };
-   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='out')push(p.name) });
-   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='out')push(n.name) });
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ push(p.name) });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ push(n.name) });
    if(S.town&&S.town.people)Object.keys(S.town.people).forEach(push);
+   if(!out.length){ /* h51 ITEM 8: the pool may never sit empty while any vehicle owner exists in town — fall back to every vehicle owner regardless of presence state (it is their CAR driving past, not their body) */ var fb=[], seenFb={}; var pushFb=function(nm){ if(!nm||nm===S.name||seenFb[nm])return; seenFb[nm]=1; try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)fb.push({name:nm,model:v.equipped,col:carColor202(v.equipped,nm)}) }catch(e){} };
+    if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ pushFb(p.name) });
+    if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ pushFb(n.name) });
+    if(S.town&&S.town.people)Object.keys(S.town.people).forEach(pushFb);
+    if(fb.length)return fb[Math.floor(Math.random()*fb.length)] }
    if(!out.length)return null; return out[Math.floor(Math.random()*out.length)] }catch(e){ return null } }
  function trafTick221(ctx,now,atHome,night){ try{ var OUT=['street','city','park','beach','fair','mountains'];
    if(!atHome&&OUT.indexOf(S.location)<0){ if(window._traf221)window._traf221.list=[]; return }
@@ -23843,9 +23857,14 @@ try{
    if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='in')present[n.name]=1 });
    var out=[], seen={};
    var push=function(nm){ if(!nm||nm===S.name||present[nm]||seen[nm])return; seen[nm]=1; try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)out.push({name:nm,model:v.equipped,col:carColor202(v.equipped,nm)}) }catch(e){} };
-   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ if(p.state==='out')push(p.name) });
-   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ if(n.state==='out')push(n.name) });
+   if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ push(p.name) });
+   if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ push(n.name) });
    if(S.town&&S.town.people)Object.keys(S.town.people).forEach(push);
+   if(!out.length){ /* h51 ITEM 8: the pool may never sit empty while any vehicle owner exists in town — fall back to every vehicle owner regardless of presence state (it is their CAR driving past, not their body) */ var fb=[], seenFb={}; var pushFb=function(nm){ if(!nm||nm===S.name||seenFb[nm])return; seenFb[nm]=1; try{ var v=(typeof vehOf119==='function')?vehOf119(nm):null; if(v&&v.equipped)fb.push({name:nm,model:v.equipped,col:carColor202(v.equipped,nm)}) }catch(e){} };
+    if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(function(p){ pushFb(p.name) });
+    if(typeof npcs!=='undefined'&&npcs)npcs.forEach(function(n){ pushFb(n.name) });
+    if(S.town&&S.town.people)Object.keys(S.town.people).forEach(pushFb);
+    if(fb.length)return fb[Math.floor(Math.random()*fb.length)] }
    if(!out.length)return null; return out[Math.floor(Math.random()*out.length)] }catch(e){ return null } }
  function trafTick231(ctx,now,atHome,night){ try{ var OUT=['street','city','park','beach','fair','mountains'];
    if(!atHome&&OUT.indexOf(S.location)<0){ if(window._traf221)window._traf221.list=[]; return }
@@ -25700,7 +25719,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h58', CLASS246='hotfix';
+ var BUILD246='v200-h59', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26343,7 +26362,7 @@ try{
     if(present){ try{ var V=(typeof ensure119==='function')?ensure119():null; if(V&&V.coverage&&V.coverage.day===s.day){ V.coverage=null; save() } }catch(e){} return } }
   }catch(e){} return _ce248.apply(this,arguments) } } }catch(e){}
  try{ if(typeof cgJob119==='function'){ var _cj248=cgJob119; cgJob119=function(name){ var j=_cj248.apply(this,arguments); try{ if(j&&name){ var jl=(typeof jobLine47==='function')?jobLine47(name):''; if(jl&&jl.indexOf('No job')!==0){ var t=jl.split(' at ')[0]; if(t&&t!==j.title){ j.title=t; try{ var V=(typeof ensure119==='function')?ensure119():null; if(V&&V.jobs&&V.jobs[name])V.jobs[name].title=t }catch(e){} } } } }catch(e){} return j } } }catch(e){}
- function covTruthHtml248(){ try{ var s=S248(); if(!s||s.age<1||s.age>4)return null;
+ function covTruthHtml248(){ return null; /* h51: RETIRED — covText251 (presenceOf251) is the single coverage derivation */ try{ var s=S248(); if(!s||s.age<1||s.age>4)return null;
   var cgs=(typeof caregiverNames119==='function')?caregiverNames119():[];
   for(var i=0;i<cgs.length;i++){ var cg=cgs[i]; if(s.escort===cg||withYou248(cg)){ var job=''; try{ job=T248.canonJob?T248.canonJob(cg):'' }catch(e){} return '<b>'+esc248(cg)+'</b> is with <b>'+esc248(s.name)+'</b> right now — right here, in person'+(job?(' ('+esc248(job)+' — but here with '+esc248(s.name)+' now, not at work)'):'')+'. No babysitter is booked, because none is needed: a parent who is physically here IS the coverage.' } }
   var V9=(typeof ensure119==='function')?ensure119():null; var cov=V9?V9.coverage:null;
@@ -26397,7 +26416,7 @@ try{
  /* ================= I) XP always shows its cause ================= */
  var xpStamp248=0, lastAct248={t:0,label:''};
  var ACTLBL248={'🚿':'bath time','🛁':'bath time','🍽️':'a good meal','🍪':'a snack','🥤':'a drink','💤':'a good rest','📚':'studying','🎮':'play time','📺':'TV time','🏋️':'a workout','🎣':'fishing','🎤':'performing','🏊':'swimming','🚗':'the trip','✈️':'the trip','🏖️':'time at the beach','🧸':'play time','🤗':'time with family','💬':'talking together','🎒':'school','💼':'work'};
- function xpCause248(skill){ try{ if(skill)return String(skill).charAt(0).toUpperCase()+String(skill).slice(1)+' practice';
+ function xpCause248(skill){ try{ var _c251=window.__actCtx251; if(_c251&&Date.now()-_c251.t<20000)return _c251.label; if(skill)return String(skill).charAt(0).toUpperCase()+String(skill).slice(1)+' practice';
   try{ if(typeof activity!=='undefined'&&activity&&activity.icon&&ACTLBL248[activity.icon])return ACTLBL248[activity.icon] }catch(e){}
   if(lastAct248.label&&Date.now()-lastAct248.t<25000)return lastAct248.label;
   var s=S248(); if(s){ var L={beach:'time at the beach with family',street:'time out on Maple Street',park:'time at the park',school:'school',work:'work',city:'time in the city',fair:'time at the fair',mountains:'time in the mountains'}[s.location]; if(L)return L }
@@ -26664,13 +26683,13 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h58'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h59'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
    var hl=null; try{ hl=(typeof homeLoc==='function')?homeLoc():null }catch(e){}
    if(hl&&s.location===hl&&typeof roomHas141==='function')return !!roomHas141(nm); return false }catch(e){ return false } }
- function covTruth250(){ try{ var s=S250(); if(!s||s.age<1||s.age>4)return null;
+ function covTruth250(){ return null; /* h51: RETIRED — covText251 (presenceOf251) is the single coverage derivation */ try{ var s=S250(); if(!s||s.age<1||s.age>4)return null;
    var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
    for(var i=0;i<cgs.length;i++){ if(cgPresent250(cgs[i]))return '<b>'+esc250(cgs[i])+'</b> is with <b>'+esc250(s.name)+'</b> right now — right here, in person. No babysitter is watching: family is.' }
    var V120=null; try{ V120=(typeof ensure120==='function')?ensure120():null }catch(e){}
@@ -27212,7 +27231,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h58';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h59';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27506,7 +27525,7 @@ try{
    ================================================================ */
 (function(){
 'use strict';
-var BUILD248='v200-h58';
+var BUILD248='v200-h59';
 function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $248(id){ return document.getElementById(id) }
 function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
@@ -27565,7 +27584,7 @@ window.__pillFix248=function(nx,ny,yy,nw,tl){ try{
  var vis=visLive248();
  if(vis){ var tL=Math.max(vis.x0+3,Math.min(vis.x1-3-devW,devL)); var dx=(tL-devL)/1.43; devL=tL;
   var rect={l:devL,t:devT,r:devL+devW,b:devT+devH}, lift=0;
-  var hit=true; while(hit&&lift<8){ hit=false; for(var i=0;i<pillReg248.rects.length;i++){ if(rectHit248(rect,pillReg248.rects[i])){ hit=true; break } } if(hit){ lift++; rect.t-=26; rect.b-=26 } }
+  var hit=true; while(hit&&lift<8){ hit=false; for(var i=0;i<pillReg248.rects.length;i++){ if(rectHit248(rect,pillReg248.rects[i])){ hit=true; break } } if(hit){ if(rect.t-26<3)break; lift++; rect.t-=26; rect.b-=26 } }
   pillReg248.rects.push(rect);
   return {dx:dx,lift:lift*26/1.43} }
  return {dx:0,lift:0} }catch(e){ return {dx:0,lift:0} } };
@@ -28205,7 +28224,7 @@ body.dockOpen47 #sheet49 .dockSheet{display:flex}
      player is offered the update exactly once. ================= */
 (function(){
 'use strict';
-var BUILD249='v200-h58';
+var BUILD249='v200-h59';
 function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function chooser49(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
 function toggle49(){ try{
@@ -28243,6 +28262,7 @@ function layout49(){ try{
    sheet.querySelector('.grab49').addEventListener('click',function(){ toggle49() });
   }
   var md=document.getElementById('modal'); var modalUp=!!(md&&md.classList.contains('open'));
+  var dc251=document.getElementById('dayCard'); if(dc251&&dc251.classList.contains('show'))modalUp=true; /* h51: a morning briefing owns the screen exactly like a modal — the menu sheet steps aside for it too, so Start Day is never covered */
   sheet.style.display=modalUp?'none':''; /* a modal sheet owns the screen alone — the menu sheet steps aside and returns when it closes (the slim bar stays, as the dock always did) */
   var head=sheet.querySelector('.sheetHead49'), tabs=sheet.querySelector('.sheetTabs49'), body49=sheet.querySelector('.sheetBody49');
   var tr=document.querySelector('.tabsRow100');
@@ -28387,7 +28407,7 @@ body.inGame51.dockOpen47 .topPin .socStrip{display:block}
        car-owners and keep the tag, and departures keep theirs through pull-out. */
 (function(){
 'use strict';
-try{ var BUILD250H='v200-h58';
+try{ var BUILD250H='v200-h59';
 function S58(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc58(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function modalOpen58(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28445,16 +28465,17 @@ try{ syncSheetH51() }catch(e){}
 /* ================= ITEM 3 — section state survives repaints; one tap = one toggle ================= */
 function openSecs58(){ var out={}; try{ var p=document.getElementById('panel'); if(!p)return out; p.querySelectorAll('details').forEach(function(d){ if(!d.open)return; var sm=d.querySelector('summary'); if(sm)out[(sm.textContent||'').replace(/\s+/g,' ').trim()]=1 }) }catch(e){} return out }
 function restoreSecs58(snap){ try{ if(!snap)return; var p=document.getElementById('panel'); if(!p)return; p.querySelectorAll('details').forEach(function(d){ var sm=d.querySelector('summary'); if(!sm)return; var k=(sm.textContent||'').replace(/\s+/g,' ').trim(); if(snap[k]&&!d.open)d.open=true }) }catch(e){} }
-['renderTabs','paintActions101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__sec58){ var w=function(){ var snap=openSecs58(); var r=fn.apply(this,arguments); setTimeout(function(){ restoreSecs58(snap) },30); setTimeout(function(){ restoreSecs58(snap) },320); return r }; w.__sec58=true; window[nm]=w } }catch(e){} });
-var sumDown58={el:null,t:0}, sumTog58={el:null,t:0};
-document.addEventListener('pointerdown',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#sheet49 summary'):null; if(sm)sumDown58={el:sm,t:Date.now()} }catch(err){} },true);
-document.addEventListener('click',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#sheet49 summary'):null; if(!sm)return; var now=Date.now();
- if(sumTog58.el===sm&&now-sumTog58.t<600&&!(sumDown58.el===sm&&sumDown58.t>sumTog58.t)){ e.preventDefault(); e.stopPropagation(); return }
- sumTog58={el:sm,t:now};
-}catch(err){} },true);
+/* h51 ITEM 1: h50's summary-text snapshot/restore wrappers are RETIRED — window.__fold251 is the single open-state authority; openSecs58/restoreSecs58 stay defined but are never called. */
+/* h51 ITEM 1: the 600ms summary click-swallow guard is DELETED — a header tap always toggles its own section, first tap, every tap. */
 
 /* ================= ITEM 4 — face-to-face talk needs no phone ================= */
 function present58(name){ try{ var s=S58(); if(!s||!name)return false; if(s.escort===name)return true;
+ /* h51 ITEM 2/4: presence is read from the SAME sources the scene renders from — the
+    room-gated npcHere86 for household figures, the live townsfolk array, and the sitter
+    flag — so a person you can see is always talkable, phone or no phone. */
+ try{ if(typeof npcs!=='undefined'&&npcs){ for(var q58=0;q58<npcs.length;q58++){ if(npcs[q58].name===name&&npcs[q58].state==='in'){ try{ if(typeof npcHere86==='function'&&npcHere86(npcs[q58]))return true }catch(e){} } } } }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk){ for(var q59=0;q59<townsfolk.length;q59++){ if(townsfolk[q59].name===name&&townsfolk[q59].state==='in')return true } } }catch(e){}
+ try{ var V120p=(typeof ensure120==='function')?ensure120():null; if(V120p&&V120p.sitter&&V120p.sitter.name===name&&V120p.covState==='in')return true }catch(e){}
  if(typeof presentPeople138==='function'){ var pp=presentPeople138(); if(pp&&pp.indexOf(name)>=0)return true }
  if(typeof npcs!=='undefined'&&npcs){ for(var i=0;i<npcs.length;i++){ if(npcs[i].name===name&&npcs[i].state==='in'){ try{ if(typeof npcHere86==='function'&&npcHere86(npcs[i]))return true }catch(e){ return true } } } }
  var hl=null; try{ hl=(typeof homeLoc==='function')?homeLoc():null }catch(e){}
@@ -28488,7 +28509,7 @@ window.talkAct58=function(name,kind){ try{ var s=S58(); if(!s)return; var pool=F
  try{ if(typeof log==='function'&&faceCount58[name]===1)log('🗣️ FACE-TO-FACE — you and '+name+' talked in person. No phone, no thread — just two people in the same place, talking.') }catch(e){}
  try{ if(typeof save==='function')save() }catch(e){}
 }catch(e){} };
-try{ if(typeof openConvo==='function'){ var _oc58=openConvo; openConvo=function(from){ try{ var s=S58(); if(s&&!s.hasPhone&&present58(from)){ window.talkFace58(from); return } }catch(e){} return _oc58.apply(this,arguments) } } }catch(e){}
+try{ if(typeof openConvo==='function'){ var _oc58=openConvo; openConvo=function(from){ try{ var s=S58(); if(s&&present58(from)){ window.talkFace58(from); return } }catch(e){} return _oc58.apply(this,arguments) } } }catch(e){}
 
 /* ================= ITEM 5 — the camera law: 1.2× is the only zoom ================= */
 try{ if(typeof focusCamera==='function'){ var _fc58=focusCamera; focusCamera=function(x,y,opts){ try{ opts=opts||{}; var o={}; for(var k in opts)o[k]=opts[k]; o.scale=1.2; if(o.dur&&o.dur>6000)o.dur=6000; return _fc58.call(this,x,y,o) }catch(e){ return _fc58.apply(this,arguments) } } } }catch(e){}
@@ -28513,6 +28534,7 @@ try{ if(typeof window.__pillFix248==='function'){ var _pf58=window.__pillFix248;
    lift+=25;
    if(guard===6)pillReg58.push({x0:tl+dx,x1:tl+dx+w,y0:yy-29-lift-22,y1:yy-29-lift});
   }
+  var maxLift251=Math.max(0,yy-29-22-6); if(lift>maxLift251)lift=maxLift251; /* h51 ITEM 5: lift stacking never pushes a pill off the scene top */
   return {dx:dx,lift:lift};
  }catch(e){ return r } } } }catch(e){}
 var pillCtx58=null;
@@ -28537,7 +28559,7 @@ function inHouse58(name){ try{ var s=S58(); if(!s)return null; var hl=null; try{
  if(typeof npcs!=='undefined'&&npcs){ var n=npcs.find(function(x){ return x.name===name }); if(n&&n.state==='in'&&!hereRoom58(name)){ var rooms=null; try{ rooms=(typeof homeRooms86==='function')?homeRooms86():null }catch(e){} var rd=rooms?rooms.find(function(r){ return r.id===n.room86 }):null; return (rd&&(rd.name||rd.label))||'another room' } }
  if((s.housemates||[]).indexOf(name)>=0&&!hereRoom58(name))return 'another room';
  return null }catch(e){ return null } }
-function covTruth58(){ try{ var s=S58(); if(!s||s.age<1||s.age>4)return null;
+function covTruth58(){ try{ if(typeof covText251==='function'){ var t251=covText251(); if(t251)return t251 } var s=S58(); if(!s||s.age<1||s.age>4)return null;
  var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
  for(var i=0;i<cgs.length;i++){ if(hereRoom58(cgs[i]))return '<b>'+esc58(cgs[i])+'</b> is with <b>'+esc58(s.name)+'</b> right now — right here, in person. No babysitter is watching: family is.' }
  var V120=null; try{ V120=(typeof ensure120==='function')?ensure120():null }catch(e){}
@@ -28605,17 +28627,7 @@ function lockWx58(){ try{ var s=S58(); if(!s)return; if(dayWx58.day!==s.day){ da
 setInterval(lockWx58,800);
 try{ if(typeof nextDay==='function'){ var _nd58=nextDay; nextDay=function(){ var r=_nd58.apply(this,arguments); try{ var s=S58(); if(s)dayWx58={day:s.day,wx:s.weather||'sunny'} }catch(e){} return r } } }catch(e){}
 try{ if(typeof nextHour==='function'){ var _nh58=nextHour; nextHour=function(){ var r=_nh58.apply(this,arguments); try{ lockWx58() }catch(e){} return r } } }catch(e){}
-try{ if(typeof fishGo150==='function'){ var _fg58=fishGo150; fishGo150=function(){ var s0=S58(); var caught0=0, invSig0=''; try{ caught0=(typeof ensure150==='function')?ensure150().caught:0 }catch(e){} try{ invSig0=(s0.inv||[]).map(function(it){ return it&&it.name }).join('|') }catch(e){}
-  var r=_fg58.apply(this,arguments);
-  var tries=0; var iv=setInterval(function(){ tries++; try{ var s=S58(); if(!s||tries>22){ clearInterval(iv); return }
-   var caught1=caught0; try{ caught1=(typeof ensure150==='function')?ensure150().caught:caught0 }catch(e){}
-   var invSig1=''; try{ invSig1=(s.inv||[]).map(function(it){ return it&&it.name }).join('|') }catch(e){}
-   if(caught1>caught0||invSig1!==invSig0){ clearInterval(iv); var nm=''; (s.inv||[]).forEach(function(it){ if(it&&it.name&&invSig0.indexOf(it.name)<0)nm=it.name });
-    if(!nm&&typeof FISH_TABLE150!=='undefined'){ for(var i=0;i<FISH_TABLE150.length;i++){ if(invSig1.indexOf(FISH_TABLE150[i].name)>=0&&invSig0.indexOf(FISH_TABLE150[i].name)<0){ nm=FISH_TABLE150[i].name; break } } }
-    if(nm&&typeof toast==='function')toast('🎣 Caught — '+nm+'! +7 XP');
-   }
-  }catch(e){} },450);
-  return r } } }catch(e){}
+/* h51 ITEM 6: h50's 450ms fishing polling wrapper is RETIRED — fishGo150 announces the catch (and the got-away) at the source now. */
 
 /* ================= ITEM 12 — the Market refuses minors out loud ================= */
 var mktLogDay58=-1;
@@ -28630,10 +28642,7 @@ var lastAct58={label:'',oc:'',t:0};
 document.addEventListener('pointerdown',function(e){ try{ var b=e.target&&e.target.closest?e.target.closest('#panel button, #sheet49 button'):null; if(!b)return; lastAct58={label:(b.textContent||'').replace(/\s+/g,' ').trim(),oc:b.getAttribute('onclick')||'',t:Date.now()} }catch(err){} },true);
 function actLabel58(){ try{ if(Date.now()-lastAct58.t>20000)return ''; if(lastAct58.oc.indexOf("act('play')")>=0||/play/i.test(lastAct58.label))return 'Play'; if(/practice$/i.test(lastAct58.label))return ''; var l=lastAct58.label.replace(/^[^\w]+/,'').split('—')[0].trim(); if(l.length>=2&&l.length<=42&&!/hide|close|back/i.test(l))return l; return '' }catch(e){ return '' } }
 try{ if(typeof toast==='function'){ var _t58=toast; toast=function(msg){ try{ var m=String(msg==null?'':msg); var mm=m.match(/^(.+?\+\d+\s*XP\s*—\s*)(.+)$/); if(mm&&/practice$/i.test(mm[2])){ var lbl=actLabel58(); if(lbl&&mm[2]!==lbl)msg=mm[1]+lbl } }catch(e){} return _t58.apply(this,arguments) } } }catch(e){}
-try{ if(typeof act==='function'){ var _act58=act; act=function(t){ var tx0=0; try{ var s=S58(); tx0=s?(s.totalXp||0):0; if(t==='play')lastAct58={label:'🎮 Play games',oc:"act('play')",t:Date.now()} }catch(e){}
- var r=_act58.apply(this,arguments);
- try{ if(t==='play'){ var tx1=tx0; setTimeout(function(){ try{ var s2=S58(); if(s2&&inGame58()&&(s2.totalXp||0)===tx1&&typeof addXp==='function'){ lastAct58={label:'🎮 Play games',oc:"act('play')",t:Date.now()}; addXp(8,'social') } }catch(e){} },3600) } }catch(e){}
- return r } } }catch(e){}
+/* h51 ITEM 7: h50's 3.6s act() XP watchdog is REMOVED — one tap = one XP grant, from the real handler only. */
 
 /* ================= ITEM 14 — world cars keep their owner's name tag ================= */
 function trafOwnerPool58(){ try{ var out=[]; var seen={};
@@ -28656,6 +28665,195 @@ try{ if(typeof drawCars202==='function'){ var _dc58=drawCars202; drawCars202=fun
 
 window.__h58={build:BUILD250H,covTruth58:covTruth58,roomName58:roomName58,present58:present58,lockWx58:lockWx58};
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50 (stamp '+BUILD250H+'): ▶️ the start screen assembles in order — save adopted, Welcome-back offered, update notice exactly once at a menu-safe stage • 🖼️ the stage box is identical peeking/open/expanded (HUD compaction stood down, sheet overlays) • 🔤 sheet labels take the game ink; sections toggle once and keep their state • 🗣️ face-to-face talk needs no phone • 🎥 every zoom is the 1.2× conversation zoom, and it always comes back • 👥 classroom pills are width-aware — no overlaps, no clipped names • 👶 coverage reads physical presence + the one sitter flag • 🎲 born-into text is composed from the dealt life • 🌆 scenes span full width at 1920px • 🚪 the header names every room, in the same beat • 🎣 one weather for the day, and a catch announces itself • 🛒 the Market refuses minors out loud • 🎮 Play XP names Play, at every place • 🚗 world cars keep their owner name tags','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){}
+})();
+</script>
+<script>
+/* ================= v200 HOTFIX 51 (build stamp v200-h59) — THE CONSOLIDATION PASS.
+   One authority per system, fixed at the source where the map said the rot was:
+   📂 Actions sections: ONE open-state store (title+ordinal keys, player gestures only),
+      every legacy store mirrored FROM it or stood down; the h50 click-swallow guard and
+      snapshot restores are deleted. sig162 itself is re-keyed at the source.
+   🗣️ Talk: present58 reads the scene's own sources; the openConvo detour to face-to-face
+      no longer depends on owning a phone. The phone gate remains for remote contact only.
+   🎥 Camera: zoom clamped at 1.2 at the source callers; the cine Director counts a bubble
+      as a conversation only when it is the player's own; every conversation exit releases
+      to wide; a tap on the scene canvas is inert by construction.
+   👶 Presence: presenceOf251 is the ONE derivation (room86 / RT86 / kidRoom86 + schedule
+      flags + the sitter flag); the coverage card, teach-ask and parent trips all read it;
+      the competing coverage rewrites are retired; bookings write covState 'booked' and a
+      lapsed booking resolves out loud.
+   👥 Crowds: spawn/wander picks CLAIM a free spot (claimSpot251) — no shared spots; pill
+      lift stacking respects the scene top.
+   🎣 Fishing announces at the source; 🚗 the traffic owner pool can never sit empty;
+   🎮 Play is wired at every place and its XP names the action; 🖱️ first mouse clicks land;
+   🌅 morning briefings own the screen (sheet at peek, never above the briefing);
+   🎲 born-into prose is composed from the dealt home.
+   GAME_VERSION stays 200, SAVE_KEY stays miniLifeSimShareable_v3, the anonymous stats
+   tracker is untouched. The h50 start-screen sequencer is untouched. */
+(function(){ 'use strict';
+try{
+var BUILD251='v200-h59';
+function S251(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
+function esc251(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function inGame251(){ try{ return !!(typeof inGame!=='undefined'&&inGame&&S251()) }catch(e){ return false } }
+
+/* ================= ITEM 5 — exclusive spot claims ================= */
+window.claimSpot251=function(fig){ try{ if(typeof NPC_SPOTS==='undefined')return null;
+ var claimed=[];
+ var addFig=function(f){ if(f&&f!==lig&&f.state==='in'&&typeof f.tx==='number')claimed.push([f.tx,f.ty]) };
+ try{ if(typeof npcs!=='undefined'&&npcs)npcs.forEach(addFig) }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk)townsfolk.forEach(addFig) }catch(e){}
+ var px=(typeof charX==='number')?charX:null, py=(typeof charY==='number')?charY:null;
+ var free=NPC_SPOTS.filter(function(sp){ for(var i=0;i<claimed.length;i++){ if(Math.hypot(claimed[i][0]-sp[0],claimed[i][1]-sp[1])<64)return false } if(px!==null&&Math.hypot(px-sp[0],py-sp[1])<58)return false; return true });
+ if(!free.length)return null;
+ return free[Math.floor(Math.random()*free.length)];
+}catch(e){ return null } };
+
+/* ================= ITEM 4 — ONE presence derivation ================= */
+function roomName251(rid){ try{ var rooms=(typeof homeRooms86==='function')?homeRooms86():null; if(rooms){ for(var i=0;i<rooms.length;i++){ if(rooms[i].id===rid)return rooms[i].name||rooms[i].label||rid } } }catch(e){} return rid||'another room' }
+window.presenceOf251=function(name){ try{ var s=S251(); if(!s||!name)return {state:'out'};
+ if(s.escort===name)return {state:'here'};
+ var atHomeLoc=false; try{ atHomeLoc=(typeof homeLoc==='function')&&(s.location===homeLoc()) }catch(e){}
+ var isCg=false; try{ isCg=(typeof caregiverNames119==='function')&&caregiverNames119().indexOf(name)>=0 }catch(e){}
+ try{ var V120=(typeof ensure120==='function')?ensure120():null; if(V120&&V120.sitter&&V120.sitter.name===name){ if(V120.covState==='in')return {state:atHomeLoc?'here':'house'}; if(V120.covState==='knocking'||V120.covState==='booked')return {state:'booked'}; return {state:'out'} } }catch(e){}
+ if(isCg){ try{ if(typeof cgAtWork119==='function'&&cgAtWork119(name))return {state:'work'} }catch(e){} try{ if(typeof asleep119==='function'&&asleep119(name))return {state:'asleep',room:'the bedroom'} }catch(e){} }
+ try{ if(typeof npcs!=='undefined'&&npcs){ var n=null; for(var i=0;i<npcs.length;i++){ if(npcs[i].name===name){ n=npcs[i]; break } }
+  if(n){ if(n.state==='in'){ if(!atHomeLoc)return {state:'here'}; try{ if(typeof npcHere86==='function'&&npcHere86(n))return {state:'here'} }catch(e){ return {state:'here'} } return {state:'house',room:roomName251(n.room86||'living')} } return {state:'out'} } } }catch(e){}
+ try{ if(typeof townsfolk!=='undefined'&&townsfolk){ for(var j=0;j<townsfolk.length;j++){ if(townsfolk[j].name===name&&townsfolk[j].state==='in')return {state:'here'} } } }catch(e){}
+ try{ if((s.housemates||[]).indexOf(name)>=0){ if(!atHomeLoc)return {state:'out'}; try{ if(typeof mateHere86==='function'&&mateHere86(name))return {state:'here'} }catch(e){} var mr=null; try{ mr=(typeof mateRoom86==='function')?mateRoom86(name):null }catch(e){} return {state:'house',room:roomName251(mr||'living')} } }catch(e){}
+ try{ var kids=s.kids||[]; for(var q=0;q<kids.length;q++){ if(kids[q]&&kids[q].name===name){ if(!atHomeLoc)return {state:'out'}; var kr=null; try{ kr=(typeof kidRoom86==='function')?kidRoom86(kids[q]):null }catch(e){} var cr=null; try{ var r86=(typeof curRoom86==='function')?curRoom86():null; cr=r86?r86.id:null }catch(e){} if(kr&&cr&&kr===cr)return {state:'here'}; return {state:'house',room:roomName251(kr||'bedroom')} } } }catch(e){}
+ if(s.guest&&s.guest.day===s.day&&s.guest.name===name)return {state:'here'};
+ if(s.sleepover&&s.sleepover.at==='mine'&&s.sleepover.guest===name)return {state:'here'};
+ try{ if(window._dateWith===name)return {state:'here'} }catch(e){}
+ return {state:'out'} }catch(e){ return {state:'out'} } };
+
+/* ================= ITEM 4 — the coverage card: one derivation, always present ================= */
+window.covText251=function(){ try{ var s=S251(); if(!s||s.age<1||s.age>4)return null;
+ var cgs=[]; try{ cgs=(typeof caregiverNames119==='function')?caregiverNames119():[] }catch(e){}
+ var i,p;
+ for(i=0;i<cgs.length;i++){ p=presenceOf251(cgs[i]); if(p.state==='here')return '<b>'+esc251(cgs[i])+'</b> is with <b>'+esc251(s.name)+'</b> right now — right here, in person. No babysitter is watching: family is.' }
+ var V120=null,sitNm=null; try{ V120=(typeof ensure120==='function')?ensure120():null; sitNm=(V120&&V120.sitter&&V120.sitter.name)||null }catch(e){}
+ if(V120&&sitNm&&V120.covState==='in'){ var sp=presenceOf251(sitNm); if(sp.state==='here'||sp.state==='house')return '<b>'+esc251(sitNm)+'</b> — the household\'s babysitter — is watching <b>'+esc251(s.name)+'</b> right now, here in the house.' }
+ for(i=0;i<cgs.length;i++){ p=presenceOf251(cgs[i]); if(p.state==='house')return '<b>'+esc251(cgs[i])+'</b> is home — in <b>'+esc251(p.room||'another room')+'</b> right now, not in this room with <b>'+esc251(s.name)+'</b>.' }
+ for(i=0;i<cgs.length;i++){ p=presenceOf251(cgs[i]); if(p.state==='asleep')return '<b>'+esc251(cgs[i])+'</b> is asleep right now, and nobody else is in the room with <b>'+esc251(s.name)+'</b>.' }
+ if(s.location==='daycare')return '<b>'+esc251(s.name)+'</b> is at <b>🏫 Daycare</b> right now — the daycare staff are the coverage, in person.';
+ if(V120&&(V120.covState==='booked'||V120.covState==='knocking'||V120.knockPending))return sitNm?('<b>'+esc251(sitNm)+'</b> — the household\'s babysitter — is booked to watch <b>'+esc251(s.name)+'</b> today, but no sitter is here yet: the sitting starts when they are let in at the front door.'):'A sitter is booked for <b>'+esc251(s.name)+'</b> today, but no sitter is here yet — the sitting starts when they are let in at the front door.';
+ var V119=null,cov=null; try{ V119=(typeof ensure119==='function')?ensure119():null; cov=V119?V119.coverage:null }catch(e){}
+ if(cov&&cov.day===s.day&&cov.who==='sitter')return sitNm?('<b>'+esc251(sitNm)+'</b> — the household\'s babysitter — is booked to watch <b>'+esc251(s.name)+'</b> today, but no sitter is here yet: the sitting starts when they are let in at the front door.'):'A sitter is booked for <b>'+esc251(s.name)+'</b> today, but no sitter is here yet.';
+ for(i=0;i<cgs.length;i++){ p=presenceOf251(cgs[i]); if(p.state==='work')return '<b>'+esc251(cgs[i])+'</b> is at work right now, and nobody is in the room with <b>'+esc251(s.name)+'</b> — no sitter is booked or has arrived.' }
+ var visitors=[]; try{ if(typeof presentPeople138==='function')visitors=presentPeople138().filter(function(n){ return cgs.indexOf(n)<0&&n!==s.name&&n!==sitNm }) }catch(e){}
+ if(visitors.length)return '<b>'+esc251(s.name)+'</b> is with <b>'+esc251(visitors.join(', '))+'</b> right now — they are who is actually here. No caregiver is home, and no babysitter is booked.';
+ return '<b>'+esc251(s.name)+'</b> is on their own right now — no caregiver is here, and no babysitter is booked or has arrived.';
+}catch(e){ return null } };
+function covCardPass251(){ try{ var s=S251(); if(!s||!inGame251()||s.age<1||s.age>4)return; var panel=document.getElementById('panel'); if(!panel)return;
+ var ct=(typeof curTab!=='undefined')?curTab:''; if(ct!=='me'&&ct!=='home')return;
+ var html=panel.innerHTML; if(ct==='home'&&html.indexOf('Toddler Years')<0&&html.indexOf('Marriage & Family')<0)return;
+ var card=panel.querySelector('.covCard119');
+ if(!card){ var d=document.createElement('div'); d.className='covCard119'; d.innerHTML='<div class="card" style="border-color:#38bdf8"><h3>👶 Who\'s with the toddler</h3><p></p></div>'; panel.insertBefore(d,panel.firstChild); card=d }
+ var t=covText251(); if(!t)return; var p=card.querySelector('p'); if(p&&p.innerHTML!==t)p.innerHTML=t;
+ var h3=card.querySelector('h3'); if(h3&&h3.textContent.indexOf("Who's with the toddler")<0)h3.textContent="👶 Who's with the toddler";
+}catch(e){} }
+setInterval(covCardPass251,450);
+try{ if(typeof renderTabs==='function'){ var _rt251=renderTabs; renderTabs=function(){ var r=_rt251.apply(this,arguments); try{ covCardPass251(); setTimeout(covCardPass251,80) }catch(e){} return r } } }catch(e){}
+try{ if(typeof coverageEval119==='function'){ var _ce251=coverageEval119; coverageEval119=function(){ var r=_ce251.apply(this,arguments); try{ var s=S251(); var V119=(typeof ensure119==='function')?ensure119():null; var cov=V119?V119.coverage:null; if(s&&cov&&cov.day===s.day&&cov.who==='sitter'){ var V120=(typeof ensure120==='function')?ensure120():null; if(V120&&!V120.covState)V120.covState='booked' } }catch(e){} return r } } }catch(e){}
+
+/* ================= ITEM 1 — ONE open-state authority for panel sections ================= */
+var F251={open:{},lastTab:null,lastDock:false,entryT:0};
+window.__fold251=F251;
+function secKey251(d){ try{ var sm=d.querySelector('summary'); var t=sm?(sm.textContent||'').replace(/\s+/g,' ').trim():''; var panel=document.getElementById('panel'); var all=panel?Array.prototype.slice.call(panel.querySelectorAll('details.dd132')):[d]; var idx=0; for(var i=0;i<all.length;i++){ if(all[i]===d)break; var s2=all[i].querySelector('summary'); if(((s2?s2.textContent:'')||'').replace(/\s+/g,' ').trim()===t)idx++ } return t+'#'+idx }catch(e){ return null } }
+function mirror251(ds){ try{ var fOpen={}, mOpen={};
+ ds.forEach(function(d){ var k=secKey251(d); if(!k)return; var want=F251.open[k]; if(want===undefined)return;
+  try{ var sg=(typeof sig162==='function')?sig162(d):null; if(sg){ if(want)fOpen['a'+sg]=1; if(want)mOpen[sg]=1 } }catch(e){}
+  try{ var tk=(typeof menuKey149==='function')?menuKey149(d):null; var V149=(typeof ensure149==='function')?ensure149():null; if(tk&&V149&&V149.menus){ if(want)V149.menus[tk]=1; else delete V149.menus[tk] } }catch(e){}
+  try{ var k135=(typeof menuKey135==='function')?menuKey135(d):null; if(k135&&window._open135){ if(want)window._open135[k135]=1; else delete window._open135[k135] } }catch(e){}
+ });
+ if(window.__fold241)window.__fold241.open=fOpen;
+ if(window._menu162)window._menu162.open=mOpen;
+}catch(e){} }
+function foldPass251(){ try{ if(!inGame251())return; var panel=document.getElementById('panel'); if(!panel)return;
+ var ct=(typeof curTab!=='undefined')?curTab:''; var dk=false; try{ dk=!!dockOpen }catch(e){}
+ if(ct!==F251.lastTab||(dk&&!F251.lastDock)){ F251.open={}; F251.entryT=Date.now(); F251.lastTab=ct }
+ F251.lastDock=dk;
+ var ds=Array.prototype.slice.call(panel.querySelectorAll('details.dd132'));
+ ds.forEach(function(d){ var k=secKey251(d); if(!k)return; var want=F251.open[k];
+  if(want===undefined){ if(Date.now()-F251.entryT<900)F251.open[k]=d.open?1:0; return }
+  var w=!!want; if(d.open!==w){ if(w)d.setAttribute('open',''); else d.removeAttribute('open') }
+ });
+ mirror251(ds);
+}catch(e){} }
+var pendToggle251=null;
+document.addEventListener('pointerdown',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#panel summary'):null; if(sm&&sm.parentElement&&sm.parentElement.tagName==='DETAILS')pendToggle251={d:sm.parentElement,t:Date.now()} }catch(err){} },true);
+document.addEventListener('keydown',function(e){ try{ if(e.key!=='Enter'&&e.key!==' ')return; var sm=e.target&&e.target.closest?e.target.closest('#panel summary'):null; if(sm&&sm.parentElement&&sm.parentElement.tagName==='DETAILS')pendToggle251={d:sm.parentElement,t:Date.now()} }catch(err){} },true);
+document.addEventListener('toggle',function(e){ try{ var d=e.target; if(!d||d.tagName!=='DETAILS')return; var panel=document.getElementById('panel'); if(!panel||!panel.contains(d)||!d.classList.contains('dd132'))return;
+ var k=secKey251(d); if(!k)return;
+ if(pendToggle251&&pendToggle251.d===d&&Date.now()-pendToggle251.t<1200){ F251.open[k]=d.open?1:0; pendToggle251=null }
+ else if(Date.now()-F251.entryT<900){ F251.open[k]=d.open?1:0 }
+}catch(err){} },true);
+setInterval(foldPass251,130);
+try{ var _fpObs251=new MutationObserver(function(){ try{ if(!foldPass251._raf)foldPass251._raf=requestAnimationFrame(function(){ foldPass251._raf=0; foldPass251() }) }catch(e){} }); var _fpP251=document.getElementById('panel'); if(_fpP251)_fpObs251.observe(_fpP251,{childList:true,subtree:true}) }catch(e){}
+['render','paintActions101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__fold251w){ var w=function(){ var r=fn.apply(this,arguments); try{ foldPass251() }catch(e){} return r }; w.__fold251w=true; window[nm]=w } }catch(e){} });
+
+/* h51b: summary taps complete — if a repaint replaced the details between pointerdown
+   and pointerup, the native toggle never fires and the tap reads as dead (the testers'
+   "one tap does nothing / opens the wrong section" class). The rescue re-fires the
+   toggle on the LIVE details (found by the same title+ordinal key the store uses),
+   armed as a player gesture so the toggle recorder owns it. */
+var pdSum251=null;
+document.addEventListener('pointerdown',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#panel summary'):null; if(sm&&sm.parentElement&&sm.parentElement.tagName==='DETAILS'){ var d=sm.parentElement; pdSum251={key:secKey251(d),wasOpen:!!d.open,t:Date.now()} } }catch(err){} },true);
+document.addEventListener('pointerup',function(e){ try{ var pd=pdSum251; pdSum251=null; if(!pd||!pd.key)return;
+ setTimeout(function(){ try{ var panel=document.getElementById('panel'); if(!panel)return; var ds=Array.prototype.slice.call(panel.querySelectorAll('details.dd132')); for(var i=0;i<ds.length;i++){ if(secKey251(ds[i])===pd.key){ var d=ds[i]; if(!!d.open===pd.wasOpen){ var sm=d.querySelector('summary'); if(sm){ pendToggle251={d:d,t:Date.now()}; sm.click() } } break } } }catch(err){} },170);
+}catch(err){} },true);
+
+/* ================= ITEM 3 — scene taps are inert; conversations release to wide ================= */
+window.addEventListener('click',function(e){ try{ if(e.target&&e.target.id==='cv'){ e.stopPropagation(); e.preventDefault() } }catch(err){} },true);
+function releaseCam251(){ try{ if(typeof activity!=='undefined'&&activity)return; if(typeof releaseCamera==='function')releaseCamera(true) }catch(e){} }
+try{ if(typeof closeModal==='function'){ var _cm251=closeModal; closeModal=function(){ var r=_cm251.apply(this,arguments); releaseCam251(); try{ if(typeof drainQueue115==='function')drainQueue115(60) }catch(e){} return r } } }catch(e){}
+['renderPhoneHome','phoneDMs','phoneMessages'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__rel251){ var w=function(){ var r=fn.apply(this,arguments); releaseCam251(); return r }; w.__rel251=true; window[nm]=w } }catch(e){} });
+
+/* ================= ITEMS 6+7 — Play wiring + deterministic XP causes ================= */
+window.__actCtx251=window.__actCtx251||null;
+try{ if(typeof act==='function'){ var _act251=act; act=function(t){ try{ if(t==='play'){ var s=S251(); window.__actCtx251={label:(s&&s.location==='school')?'🎮 Play':'🎮 Play games',t:Date.now()} } }catch(e){} return _act251.apply(this,arguments) } } }catch(e){}
+function playWire251(){ try{ var s=S251(); if(!s||typeof curTab==='undefined'||curTab!=='actions101')return; var panel=document.getElementById('panel'); if(!panel)return;
+ Array.prototype.slice.call(panel.querySelectorAll('details')).forEach(function(d){ var sm=d.querySelector('summary'); if(!sm)return; var tx=sm.textContent||''; if(!/play|entertainment/i.test(tx))return;
+  var wired=false;
+  d.querySelectorAll('button').forEach(function(b){ var oc=b.getAttribute('onclick')||''; if(oc.indexOf("act('play')")>=0){ wired=true; return } if(/play/i.test(b.textContent||'')){ b.setAttribute('onclick',"act('play')"); wired=true } });
+  if(!wired){ var host=d.querySelector('.actCard101,.card')||d; var b=document.createElement('button'); b.type='button'; b.className='furn playBtn251'; b.setAttribute('onclick',"act('play')"); b.textContent=(s.location==='school')?'🎮 Play':'🎮 Play games'; host.appendChild(b) }
+ });
+}catch(e){} }
+setInterval(playWire251,700);
+
+/* ================= ITEM 9 — the first mouse click lands ================= */
+var pd251=null;
+document.addEventListener('pointerdown',function(e){ try{ window.__gesture251=Date.now(); if(e.button!==undefined&&e.button>0)return; var b=e.target&&e.target.closest?e.target.closest('button'):null; pd251={btn:b,x:e.clientX,y:e.clientY,t:Date.now(),fired:false} }catch(err){} },true);
+document.addEventListener('click',function(e){ try{ window.__gesture251=Date.now(); if(pd251&&pd251.btn&&e.target&&(e.target===pd251.btn||(pd251.btn.contains&&pd251.btn.contains(e.target))))pd251.fired=true }catch(err){} },true);
+document.addEventListener('pointerup',function(e){ try{ var pd=pd251; if(!pd||!pd.btn||pd.btn.disabled)return; if(Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>14)return;
+ setTimeout(function(){ try{ if(pd.fired)return; var btn=pd.btn; if(btn.disabled)return; var cand=null;
+  if(btn.isConnected)cand=btn;
+  else { var el=document.elementFromPoint(pd.x,pd.y); var c2=el&&el.closest?el.closest('button'):null; if(c2&&(c2.textContent||'').replace(/\s+/g,' ').trim()===(btn.textContent||'').replace(/\s+/g,' ').trim())cand=c2 }
+  if(cand&&!cand.disabled)cand.click();
+ }catch(err){} },90);
+}catch(err){} },true);
+try{ if(typeof openSheet==='function'){ var _os251=openSheet; openSheet=function(html,opts){ try{ var recent=window.__gesture251&&(Date.now()-window.__gesture251<700);
+  if(recent&&typeof modalReallyOpen115==='function'&&modalReallyOpen115()&&!(typeof dayCardShown115==='function'&&dayCardShown115())){ try{ closeModal() }catch(e){} }
+ }catch(e){} return _os251.apply(this,arguments) } } }catch(e){}
+
+/* ================= ITEM 10 — briefings own the screen; the sheet stays at peek ================= */
+try{ var st251=document.createElement('style'); st251.id='style251'; st251.textContent='body.dayCardUp251 #sheet49{visibility:hidden!important;pointer-events:none!important}'; document.head.appendChild(st251) }catch(e){}
+try{ if(typeof showDayCard==='function'){ var _sdc251=showDayCard; showDayCard=function(){ try{ if(typeof dockOpen!=='undefined'&&dockOpen&&typeof setDock==='function')setDock(false) }catch(e){} var r=_sdc251.apply(this,arguments); try{ document.body.classList.add('dayCardUp251') }catch(e){} return r } } }catch(e){}
+setInterval(function(){ try{ var up=(typeof dayCardShown115==='function')&&dayCardShown115(); document.body.classList.toggle('dayCardUp251',!!up); if(up&&typeof dockOpen!=='undefined'&&dockOpen&&typeof setDock==='function')setDock(false) }catch(e){} },350);
+
+/* ================= ITEM 11 — born-into prose from the dealt home ================= */
+function richPhrase251(){ try{ var s=S251(); if(!s||s.origin!=='rich'||!s.startHome80)return null; return {house:['a big house','A big family house'],condo:['a family condo','A family condo'],townhouse:['a family townhouse','A family townhouse']}[s.startHome80.type]||null }catch(e){ return null } }
+try{ if(typeof startGame==='function'){ var _sg251=startGame; startGame=function(){ var r=_sg251.apply(this,arguments); try{ var s=S251(); var ph=richPhrase251(); if(s&&ph&&Array.isArray(s.journal)){ var changed=false; s.journal=s.journal.map(function(en){ if(typeof en!=='string')return en; if(en.indexOf('a big house, fancy things')>=0){ changed=true; return en.split('a big house, fancy things').join(ph[0]+', fancy things') } return en }); if(changed&&typeof save==='function')save() } }catch(e){} return r } } }catch(e){}
+function bornProse251(){ try{ var s=S251(); if(!s||!s.startHome80||s.startHome80.type==='house')return; var ph=richPhrase251(); if(!ph)return;
+ var hosts=[]; var sh=document.getElementById('sheet'); if(sh)hosts.push(sh); document.querySelectorAll('.dealtCard159').forEach(function(d){ hosts.push(d) });
+ hosts.forEach(function(h){ try{ if(h.innerHTML&&h.innerHTML.indexOf('A big family house')>=0)h.innerHTML=h.innerHTML.split('A big family house').join(ph[1]) }catch(e){} });
+}catch(e){} }
+setInterval(bornProse251,800);
+
+window.__h59={build:BUILD251,presenceOf:presenceOf251,covText:covText251,claimSpot:claimSpot251,fold:F251};
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 51 (stamp '+BUILD251+'): 📂 ONE open-state authority for sections (title+ordinal keys, gestures only, legacy stores mirrored or stood down, click-swallow guard deleted) • 🗣️ in-person talk never meets the phone gate • 🎥 zooms clamped at the callers, ambient chatter never moves the lens, exits release to wide, scene taps inert • 👶 ONE presence model under the scene, the room list, the coverage card, teach-ask and parent trips — bookings write \'booked\', lapses resolve out loud • 👥 spots are claimed, never shared; pills stay inside the scene • 🎣 the catch announces itself at the source • 🎮 Play works everywhere and names itself • 🚗 every traffic car has an owner • 🖱️ first clicks land • 🌅 briefings own the screen • 🎲 born-into prose reads the dealt home','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
 </script>
