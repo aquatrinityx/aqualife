@@ -3005,7 +3005,7 @@ function drawRoom(){
   if(actIcon==='🍽️'){ ctx.fillStyle='#ffffff90'; for(let i=0;i<3;i++){ const ph=(nowMs/1000+i/3)%1; ctx.beginPath(); ctx.ellipse(x-10+i*11,y-46-ph*20,6+ph*4,4+ph*3,0,0,7); ctx.fill() } }
   if(actIcon==='📱'){ ctx.fillStyle='#111'; ctx.fillRect(x+15,y+16,11,19); ctx.fillStyle='#7dd3fc'; ctx.fillRect(x+17,y+19,7,12) }
  }
- if(!drawRoom._loop){ drawRoom._loop=true; requestAnimationFrame(function loop(){ if(document.getElementById('cv')){ drawRoom(); requestAnimationFrame(loop) } else drawRoom._loop=false }) }
+ if(!drawRoom._loop){ drawRoom._loop=true; drawRoom._gen54=(drawRoom._gen54||0)+1; var gen54=drawRoom._gen54; requestAnimationFrame(function loop(){ if(gen54!==drawRoom._gen54)return; if(document.getElementById('cv')){ drawRoom._hb54=performance.now(); try{ drawRoom() }catch(e){ try{ var errs54=(window.__errLoop54=window.__errLoop54||[]); if(errs54.length<20)errs54.push({t:Date.now(),msg:String((e&&e.message)||e)}) }catch(_e){} } requestAnimationFrame(loop) } else drawRoom._loop=false }) }
 }
 
 // ---- THE EVERYTHING UPDATE (v16): marriage, kids & generations, college, house & furniture, cars, vacations, holidays & seasons, health depth, bands & gigs, investing, real jail ----
@@ -18556,7 +18556,7 @@ function paintLive197(){ try{
  document.querySelectorAll('canvas.evPortrait, canvas.avatarCv').forEach(function(cv){ var name=cv.getAttribute('data-person'); if(!name)return; var look=null; try{ look=personLook(name) }catch(e){} if(!look)return; var ctx=cv.getContext('2d'); if(!ctx)return; var g=ctx.createLinearGradient(0,0,0,92); g.addColorStop(0,'#fbd9a0'); g.addColorStop(1,'#d08a45'); ctx.fillStyle=g; ctx.fillRect(0,0,72,92); ctx.save(); ctx.scale(0.75,0.75); try{ drawFigure(ctx,48,58+bobY,look,phase,null,now,(typeof personExpr==='function')?personExpr(name):'neutral') }catch(e){} ctx.restore() });
 }catch(e){} }
 var RM197=false; try{ RM197=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){}
-if(!RM197)setInterval(function(){ try{ if(document.hidden)return; if(!document.querySelector('canvas.evPortrait, canvas.avatarCv'))return; paintLive197() }catch(e){} },110);
+/* h54: the 110 ms live portrait painter is STOPPED — portraits repaint on state change via the paintPortraits wrapper below; a perpetual repaint under an open sheet doubled/ghosted rows mid-scroll on the owner's phone. */
 try{ var _pp197=paintPortraits; paintPortraits=function(){ var r=_pp197.apply(this,arguments); try{ paintLive197() }catch(e){} return r } }catch(e){}
 
 /* ---------- item 9: above-name relationship labels — one size step up, everywhere ---------- */
@@ -25625,7 +25625,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h61', CLASS246='hotfix';
+ var BUILD246='v200-h62', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26581,7 +26581,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h61'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h62'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -27129,7 +27129,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h61';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h62';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27423,7 +27423,7 @@ try{
    ================================================================ */
 (function(){
 'use strict';
-var BUILD248='v200-h61';
+var BUILD248='v200-h62';
 function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $248(id){ return document.getElementById(id) }
 function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28122,7 +28122,7 @@ body.dockOpen47 #sheet49 .dockSheet{display:flex}
      player is offered the update exactly once. ================= */
 (function(){
 'use strict';
-var BUILD249='v200-h61';
+var BUILD249='v200-h62';
 function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function chooser49(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
 function toggle49(){ try{
@@ -28305,7 +28305,7 @@ body.inGame51.dockOpen47 .topPin .socStrip{display:block}
        car-owners and keep the tag, and departures keep theirs through pull-out. */
 (function(){
 'use strict';
-try{ var BUILD250H='v200-h61';
+try{ var BUILD250H='v200-h62';
 function S58(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc58(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function modalOpen58(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28591,7 +28591,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50 (stamp '+BUILD
    tracker is untouched. The h50 start-screen sequencer is untouched. */
 (function(){ 'use strict';
 try{
-var BUILD251='v200-h61';
+var BUILD251='v200-h62';
 function S251(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc251(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function inGame251(){ try{ return !!(typeof inGame!=='undefined'&&inGame&&S251()) }catch(e){ return false } }
@@ -28773,7 +28773,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 51 (stamp '+BUILD
    tracker is untouched and default-ON, the h50 start-screen sequencer is untouched. */
 (function(){ 'use strict';
 try{
-var BUILD252='v200-h61';
+var BUILD252='v200-h62';
 function S252(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 
 /* ================= ITEM 5 — the game always needs to be seen ================= */
@@ -28885,7 +28885,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 52 (stamp '+BUILD
    rescue (gesture-only), scroll snapshot/restore around discrete repaints (h52's pattern,
    extended), and body-class toggles on openSheet/closeModal only. Nothing paints on a timer. */
 (function(){ 'use strict'; try{
-const BUILD253='v200-h61';
+const BUILD253='v200-h62';
 try{ const k253='miniLifeSimShareable_buildStamp'; const pv253=localStorage.getItem(k253); if(pv253&&pv253!==BUILD253)localStorage.setItem(k253,BUILD253) }catch(e){}
 function S253(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $(i){ return document.getElementById(i) }
@@ -29158,6 +29158,30 @@ try{ const _t253=toast; toast=function(m){ try{
 syncModal253();
 window.__h61={build:BUILD253,cam:window.__cam252,presenceOf:(typeof presenceOf251!=='undefined')?presenceOf251:null,makePresent:makePresent253,settleSit:settleSit253};
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 53 (stamp '+BUILD253+'): 🎥 every conversation exit routes through the one camera release + a release-only guard that reads the OPEN modal, not stale DOM • 📋 accordion removed at the source, whole-row taps, scroll memory, sheet budget 40dvh — the game always needs to be seen — modal sheets above the dock • 🏠 scene, room list, roster and narration all read the one presence record; meeting someone makes them present • 👶 the sitter is a state machine: booked → knock → let-in → present → leaves, dead bookings resolve out loud and the money agrees • 🍼 the crawling baby redrawn as a seated character, pill on the head with the mood inside • 🚨 Crime tab restored','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){} })();
+</script>
+<script>
+/* ================= v200 HOTFIX 54 — camera pinned wide, scene loop armored, 110 ms portrait painter stopped (build stamp v200-h62) ================= */
+(function(){ 'use strict'; try{
+function pinWide54(){ try{
+ if(window.__cam252&&typeof window.__cam252.state==='function'&&typeof window.__cam252.release==='function'){ try{ if(window.__cam252.state()!=='WIDE')window.__cam252.release('h54-pin') }catch(e){} }
+ try{ if(typeof camState!=='undefined'&&camState){ if(camState.active)camState.active=false; if(camState.until)camState.until=0 } }catch(e){}
+ try{ if(typeof zoom128!=='undefined'&&zoom128){ if(zoom128.active)zoom128.active=false; if(zoom128.until)zoom128.until=0 } }catch(e){}
+ try{ var cv54=document.getElementById('cv'); if(cv54){ if(cv54.style.transform)cv54.style.transform=''; if(cv54.style.transformOrigin)cv54.style.transformOrigin='' } }catch(e){}
+ try{ var sky54=document.getElementById('sky193'); if(sky54&&sky54.style.transform)sky54.style.transform='' }catch(e){}
+ try{ var curb54=document.getElementById('curb193'); if(curb54&&curb54.style.transform)curb54.style.transform='' }catch(e){}
+}catch(e){} }
+try{ var _act54=window.applyCameraTransform; if(typeof _act54==='function'){ window.applyCameraTransform=function(){ var r; try{ r=_act54.apply(this,arguments) }catch(e){} pinWide54(); return r } } }catch(e){}
+pinWide54();
+setInterval(pinWide54,200);
+setInterval(function(){ try{
+ if(document.hidden)return;
+ if(!document.getElementById('cv'))return;
+ if(typeof drawRoom!=='function')return;
+ if(drawRoom._loop&&performance.now()-(drawRoom._hb54||0)>3000){ drawRoom._loop=false; try{ drawRoom() }catch(e){} }
+}catch(e){} },1000);
+window.__h54={build:'v200-h62',loopErrors:function(){ return window.__errLoop54||[] },pinWide:pinWide54};
+try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 54 (stamp v200-h62): 📷 camera pinned WIDE — every zoom state is released and the scene transform is cleared, at boot and on a 200 ms pin, so this engine simply never sits zoomed • 🛡️ the scene loop is ARMORED — a generation token and a heartbeat guard it, drawing exceptions are recorded on window.__errLoop54 instead of killing the loop, the next frame is always re-requested, and a 1 s watchdog re-arms a dead loop • 🖼️ the 110 ms live portrait painter is STOPPED — portraits repaint on state change only, so an open sheet no longer doubles/ghosts its rows mid-scroll','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){} })();
 </script>
 
