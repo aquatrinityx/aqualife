@@ -25625,7 +25625,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h62', CLASS246='hotfix';
+ var BUILD246='v200-h63', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26581,7 +26581,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h62'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h63'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -27129,7 +27129,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h62';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h63';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27423,7 +27423,7 @@ try{
    ================================================================ */
 (function(){
 'use strict';
-var BUILD248='v200-h62';
+var BUILD248='v200-h63';
 function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $248(id){ return document.getElementById(id) }
 function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28122,7 +28122,7 @@ body.dockOpen47 #sheet49 .dockSheet{display:flex}
      player is offered the update exactly once. ================= */
 (function(){
 'use strict';
-var BUILD249='v200-h62';
+var BUILD249='v200-h63';
 function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function chooser49(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
 function toggle49(){ try{
@@ -28305,7 +28305,7 @@ body.inGame51.dockOpen47 .topPin .socStrip{display:block}
        car-owners and keep the tag, and departures keep theirs through pull-out. */
 (function(){
 'use strict';
-try{ var BUILD250H='v200-h62';
+try{ var BUILD250H='v200-h63';
 function S58(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc58(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function modalOpen58(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28591,7 +28591,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50 (stamp '+BUILD
    tracker is untouched. The h50 start-screen sequencer is untouched. */
 (function(){ 'use strict';
 try{
-var BUILD251='v200-h62';
+var BUILD251='v200-h63';
 function S251(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc251(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function inGame251(){ try{ return !!(typeof inGame!=='undefined'&&inGame&&S251()) }catch(e){ return false } }
@@ -28773,7 +28773,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 51 (stamp '+BUILD
    tracker is untouched and default-ON, the h50 start-screen sequencer is untouched. */
 (function(){ 'use strict';
 try{
-var BUILD252='v200-h62';
+var BUILD252='v200-h63';
 function S252(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 
 /* ================= ITEM 5 — the game always needs to be seen ================= */
@@ -28885,7 +28885,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 52 (stamp '+BUILD
    rescue (gesture-only), scroll snapshot/restore around discrete repaints (h52's pattern,
    extended), and body-class toggles on openSheet/closeModal only. Nothing paints on a timer. */
 (function(){ 'use strict'; try{
-const BUILD253='v200-h62';
+const BUILD253='v200-h63';
 try{ const k253='miniLifeSimShareable_buildStamp'; const pv253=localStorage.getItem(k253); if(pv253&&pv253!==BUILD253)localStorage.setItem(k253,BUILD253) }catch(e){}
 function S253(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $(i){ return document.getElementById(i) }
@@ -29182,6 +29182,58 @@ setInterval(function(){ try{
 }catch(e){} },1000);
 window.__h54={build:'v200-h62',loopErrors:function(){ return window.__errLoop54||[] },pinWide:pinWide54};
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 54 (stamp v200-h62): 📷 camera pinned WIDE — every zoom state is released and the scene transform is cleared, at boot and on a 200 ms pin, so this engine simply never sits zoomed • 🛡️ the scene loop is ARMORED — a generation token and a heartbeat guard it, drawing exceptions are recorded on window.__errLoop54 instead of killing the loop, the next frame is always re-requested, and a 1 s watchdog re-arms a dead loop • 🖼️ the 110 ms live portrait painter is STOPPED — portraits repaint on state change only, so an open sheet no longer doubles/ghosts its rows mid-scroll','color:#0ea5e9;font-weight:bold') }catch(e){}
+}catch(e){} })();
+</script>
+
+<script>
+/* ================= v200-h63 — CAMERA OUT FOR GOOD (owner-ordered Hotfix 55, Nov 5 2026: "Just zoom all the way out or remove all camera angles and keep zoom out. For old engine. Lets see if that fixes it.")
+   THE DIAGNOSIS, from the shipped source: Hotfix 54 pinned the camera TRANSFORM flat, but the base stage fit was
+   still owned by lockTick55's CANVAS LOCK — sc=Math.max(W/900, HB/460), a COVER fit: on a tall portrait phone the
+   height term wins, the canvas box grows WIDER than its wrap, and .roomWrap's overflow:hidden crops the sides of
+   the room (the owner's name tag ran off his screen's right edge). On a wide desktop stage the width term wins and
+   nothing crops — which is why the test view looked perfect and his phone did not.
+   THE FIX: one more end-of-file pin, composed with h54's (its transform pin and loop armor are untouched). The
+   canvas box is pinned to a FIT-INSIDE (contain) fit of the space the sky/curb bands leave: sc=Math.min(W/900,
+   availH/460), aspect exactly 900:460, centred — the WHOLE authored scene is inside the frame at every size, in
+   every tray state, on boot, on resize/orientation change, and whenever any older writer recomputes the box (this
+   pin's rAF loop is registered last, so its write is the one that reaches the paint; a style observer answers
+   interval writers between frames). The sky/curb bands take the same width so the street stack stays aligned.
+   TAP SAFETY (checked in source before building): the only scene-tap handler maps a tap through the canvas's
+   LIVE bounding rect ((clientX-rect.left)/rect.width*900) — it derives its scale from the same box the bitmap is
+   painted across, so painting and tapping can never disagree under any fit; its dispatch is inert anyway (the
+   owner's standing ruling: tapping a character does nothing). No other input path reads the stage fit.
+   The bitmap stays its authored 900x460 (object-fit:contain, so even a transient off-aspect box letterboxes
+   instead of cropping). GAME_VERSION stays 200; SAVE_KEY byte-identical; tracker untouched; no changelog. */
+(function(){ 'use strict'; try{
+ var writes63=0;
+ function setImp63(el,prop,val){ try{ if(el&&el.style[prop]!==val){ el.style.setProperty(prop,val,'important'); writes63++ } }catch(e){} }
+ function setMar63(el,side){ try{ if(el&&el.style[side]!=='auto'){ el.style.setProperty(side==='marginLeft'?'margin-left':'margin-right','auto','important'); writes63++ } }catch(e){} }
+ function pinFit63(){ try{
+  if(!document.body||!document.body.classList.contains('inGame51'))return;
+  var cv=document.getElementById('cv'); if(!cv)return;
+  var wrap=cv.closest?cv.closest('.roomWrap'):cv.parentElement; if(!wrap)return;
+  var W=wrap.clientWidth, H=wrap.clientHeight; if(W<40||H<60)return;
+  var sky=document.getElementById('sky193'), curb=document.getElementById('curb193');
+  var bands=0;
+  if(sky&&wrap.contains(sky)&&sky.offsetHeight>0)bands+=sky.offsetHeight;
+  if(curb&&wrap.contains(curb)&&curb.offsetHeight>0)bands+=curb.offsetHeight;
+  var availH=H-bands; if(availH<100)availH=H; if(availH<60)return;
+  var sc=Math.min(W/900,availH/460); if(!(sc>0))return;
+  var w=Math.max(60,Math.floor(900*sc)), h=Math.max(40,Math.floor(460*sc));
+  if(cv.width!==900)cv.width=900;
+  if(cv.height!==460)cv.height=460;
+  setImp63(cv,'width',w+'px'); setImp63(cv,'height',h+'px');
+  setImp63(cv,'flex','0 0 auto'); setImp63(cv,'objectFit','contain');
+  setMar63(cv,'marginLeft'); setMar63(cv,'marginRight');
+  if(sky&&wrap.contains(sky)){ setImp63(sky,'width',w+'px'); setMar63(sky,'marginLeft'); setMar63(sky,'marginRight') }
+  if(curb&&wrap.contains(curb)){ setImp63(curb,'width',w+'px'); setMar63(curb,'marginLeft'); setMar63(curb,'marginRight') }
+ }catch(e){} }
+ pinFit63();
+ (function rafFit63(){ try{ pinFit63() }catch(e){} requestAnimationFrame(rafFit63) })();
+ window.addEventListener('resize',function(){ try{ pinFit63() }catch(e){} });
+ try{ var cv63=document.getElementById('cv'); if(cv63)new MutationObserver(function(){ pinFit63() }).observe(cv63,{attributes:true,attributeFilter:['style']}) }catch(e){}
+ window.__h55={build:'v200-h63',pinFit:pinFit63,writes:function(){ return writes63 }};
+ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 55 (stamp v200-h63): 📷 CAMERA OUT FOR GOOD — the base stage fit is pinned to fit-inside (contain): the whole 900×460 scene sits inside the frame at every size, portrait phones above all, so no room edge or name tag can ever crop off-screen again • h54\'s transform pin and armored loop ride unchanged underneath','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){} })();
 </script>
 
