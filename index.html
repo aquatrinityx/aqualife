@@ -5415,7 +5415,7 @@ document.addEventListener('pointercancel',function(){ _tapZoom91=null },true);
 document.addEventListener('pointerup',function(e){ try{ const z=_tapZoom91; _tapZoom91=null; if(!z||!S||!inGame)return; if(Math.abs((e.clientX||0)-z.x)>14||Math.abs((e.clientY||0)-z.y)>14)return; if(!document.contains(z.btn))return; const md=document.getElementById('modal'); if((md&&md.classList.contains('open'))||activity)return; setTimeout(function(){ try{ focusCamera(charX,charY,{dur:1500,scale:1.42,own:true}) }catch(e2){} },40) }catch(e){} },true);
 document.addEventListener('scroll',function(e){ try{ if(menuCtx91&&e.target&&e.target.id==='panel')menuCtx91.scroll=e.target.scrollTop }catch(e){} },true);
 const _renderTabs91=renderTabs;
-renderTabs=function(active){ if(!navIntent91&&menuCtx91&&dockOpen&&inGame&&S&&active&&active!==menuCtx91.tab&&performance.now()-menuCtx91.at<20000)active=menuCtx91.tab; const r=_renderTabs91(active); try{ if(menuCtx91&&active===menuCtx91.tab&&!navIntent91){ const p=document.getElementById('panel'); if(p&&menuCtx91.scroll)p.scrollTop=menuCtx91.scroll } }catch(e){} return r };
+renderTabs=function(active){ return _renderTabs91(active) }; /* Hotfix 57 MENU SURGERY: pass-through — the v91 20-second tab-rewrite (it silently retargeted tab switches after any panel touch) and its scroll re-assert are retired. A tab request now means the tab requested. */
 const _dockGo91=dockGo;
 dockGo=function(id){ navIntent91=true; try{ _dockGo91(id) }finally{ navIntent91=false; noteMenuCtx91() } };
 const _openFolder91=openFolder;
@@ -14640,7 +14640,7 @@ var PSEUDO159={actions101:1,rooms106:1,areas123:1};
 function realTab159(a){ if(!a)return null; if(PSEUDO159[a])return null; if(a==='trouble')return 'home'; return a }
 function menuId159(d,all){ var sm=d.querySelector('summary'); var title=sm?sm.textContent.trim():''; var idx=0; for(var i=0;i<all.length;i++){ if(all[i]===d)break; var s2=all[i].querySelector('summary'); if((s2?s2.textContent.trim():'')===title)idx++ } return title+'#'+idx }
 function snapMenus159(){ var panel=document.getElementById('panel'); var out=[]; if(!panel)return out; var all=Array.prototype.slice.call(panel.querySelectorAll('details')); all.forEach(function(d){ out.push({id:menuId159(d,all),open:!!d.open}) }); return out }
-function restoreMenus159(snap){ try{ if(!snap||!snap.length)return; var panel=document.getElementById('panel'); if(!panel)return; var all=Array.prototype.slice.call(panel.querySelectorAll('details')); var byId={}; snap.forEach(function(s){ byId[s.id]=s.open }); all.forEach(function(d,i){ var want=byId[menuId159(d,all)]; if(want===undefined&&snap.length===all.length&&snap[i])want=snap[i].open; if(want&&!d.open)d.setAttribute('open','') }) }catch(e){} }
+function restoreMenus159(snap){ return; /* Hotfix 57 MENU SURGERY: retired — F251 (window.__fold251 / foldPass251) is the ONE open-state authority for panel sections; the v159 snapshot restorer (0/+90 ms, title+ordinal keys) no longer races it. */ try{ if(!snap||!snap.length)return; var panel=document.getElementById('panel'); if(!panel)return; var all=Array.prototype.slice.call(panel.querySelectorAll('details')); var byId={}; snap.forEach(function(s){ byId[s.id]=s.open }); all.forEach(function(d,i){ var want=byId[menuId159(d,all)]; if(want===undefined&&snap.length===all.length&&snap[i])want=snap[i].open; if(want&&!d.open)d.setAttribute('open','') }) }catch(e){} }
 document.addEventListener('toggle',function(){ try{ window._menu159.seq++ }catch(e){} },true);
 function wrapMenu159(name){ var orig=window[name]; if(typeof orig!=='function')return; window[name]=function(){ var leaving=false; if(name==='renderTabs'){ var rt=realTab159(arguments[0]); if(rt){ if(window._menu159.lastReal&&rt!==window._menu159.lastReal)leaving=true; window._menu159.lastReal=rt } } var snap=leaving?[]:snapMenus159(); var seq0=window._menu159.seq; var gen0=++window._menu159.gen; var r=orig.apply(this,arguments); if(!leaving){ restoreMenus159(snap); setTimeout(function(){ if(window._menu159.gen===gen0&&window._menu159.seq===seq0)restoreMenus159(snap) },90) } return r } }
 try{ wrapMenu159('renderTabs') }catch(e){}
@@ -14921,7 +14921,7 @@ try{ const _kh162=kidsHtml; kidsHtml=function(){ let h=_kh162(); try{ if(S&&(S.k
 window._menu162={tab:null,open:{},gen:0,holdUntil:0,playerDockAt:0};
 function sig162(d){ try{ /* h51 ITEM 1: the signature is the section's TITLE + its ordinal among same-titled sections in the same container — stable across innerHTML repaints and unique per section, so two sections can never share a key (the old first-buttons content hash collided: Eat/Sleep/Shower-class sections shared opening buttons, so one tap opened or closed its signature twins). */ var sm=d.querySelector(':scope > summary')||d.querySelector('summary'); var t=sm?(sm.textContent||'').replace(/\s+/g,' ').trim():''; if(!t)return null; var scope=(d.closest&&d.closest('#panel,#sheet'))||document; var all=Array.prototype.slice.call(scope.querySelectorAll('details')); var idx=0; for(var i=0;i<all.length;i++){ if(all[i]===d)break; var s2=all[i].querySelector('summary'); if(s2&&(s2.textContent||'').replace(/\s+/g,' ').trim()===t)idx++ } var h=0; var base=t+'#'+idx; for(var k=0;k<base.length;k++){ h=((h*31)+base.charCodeAt(k))|0 } return 'm'+h+'x'+idx }catch(e){ return null } }
 function panelDetails162(){ var p=document.getElementById('panel'); return p?Array.prototype.slice.call(p.querySelectorAll('details')):[] }
-function applyMenus162(){ try{ panelDetails162().forEach(function(d){ var sg=sig162(d); if(sg&&window._menu162.open[sg]&&!d.open)d.setAttribute('open','') }) }catch(e){} }
+function applyMenus162(){ return; /* Hotfix 57 MENU SURGERY: retired — the v162 restorer re-applied its signature map at 0/+150/+600 ms after every render; F251 is the one authority now. The v162 arrival wipe (arrivalMenus162) is untouched and still owns collapse-on-arrival. */ try{ panelDetails162().forEach(function(d){ var sg=sig162(d); if(sg&&window._menu162.open[sg]&&!d.open)d.setAttribute('open','') }) }catch(e){} }
 function arrivalMenus162(){ try{ window._menu162.open={}; try{ window._open135={} }catch(e){} try{ window._closed134={} }catch(e){} try{ if(S&&S.v149)S.v149.menus={} }catch(e){} panelDetails162().forEach(function(d){ if(d.open)d.removeAttribute('open') }) }catch(e){} }
 /* v149's persisted restore (setInterval 600 ms, keys stored in the SAVE) takes its marching
    orders from S.v149.menus — wiped above on every arrival. The other poison source is
@@ -24448,7 +24448,7 @@ try{
    Array.prototype.slice.call(p.querySelectorAll('details')).forEach(function(d){ try{ var sm=d.querySelector(':scope > summary'); var t=sm?sm.textContent:''; if(/you are here/i.test(t))return; if(d.open)d.removeAttribute('open') }catch(e){} });
   }catch(e){} }
  var lastTab237=null;
- try{ var _rt237=renderTabs; renderTabs=function(a){ var r=_rt237.apply(this,arguments); try{ var nowT=(typeof curTab!=='undefined')?curTab:null; var entering=!!(nowT==='actions101'&&lastTab237!=='actions101'); if(nowT)lastTab237=nowT; if(entering)[60,250,600].forEach(function(ms){ setTimeout(closeActionsSections237,ms) }) }catch(e){} return r } }catch(e){}
+ try{ var _rt237=renderTabs; renderTabs=function(a){ var r=_rt237.apply(this,arguments); try{ var nowT=(typeof curTab!=='undefined')?curTab:null; var entering=!!(nowT==='actions101'&&lastTab237!=='actions101'); if(nowT)lastTab237=nowT; if(entering){ /* Hotfix 57 MENU SURGERY: the +60/+250/+600 ms timed entry-closers are retired — they could close a section the player had just opened (the "won't stay open" fight with F251). Entry state is owned by the arrival wipe + F251. */ } }catch(e){} return r } }catch(e){}
 
  window.__v237={version:function(){ return GAME_VERSION },pinExplicit:pinExplicit237,purgePinQueues:purgePinQueues237};
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 37: ⚡ Actions words stop glitching (folder title printed once, sheet slide-transition off, infinite border/pulse animations off behind panel & sheet text, tap FX hidden while a folder is open, queue repaint signature bucketed to whole game-hours, Actions repaints preserve scroll and defer while reading, Actions sections start collapsed on entry like every folder) • 🔢 the PIN sheet is gated to deliberate PIN taps only (card-issue/bank-visit auto-prompts swallowed + remembered, never queue-served again), its keypad paints every digit immediately (modalNav stamped, queued copies purged, pad exempt from the 360ms choice-pulse delay), and Skip/✕/Escape always dismiss it for good (dismissal recorded, both sheet queues purged, resurrection sweeps)','color:#0ea5e9;font-weight:bold') }catch(e){}
@@ -25592,7 +25592,7 @@ try{
 (function(){
 'use strict';
 try{
- var BUILD246='v200-h64', CLASS246='hotfix';
+ var BUILD246='v200-h65', CLASS246='hotfix';
  var STAMP_KEY246='miniLifeSimShareable_buildStamp', MENU_KEY246='miniLifeSimShareable_toMenu', JUST_KEY246='upd246_justRestarted';
  function S246(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
  function esc246(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;') }
@@ -26276,7 +26276,7 @@ try{
  try{ if(typeof buildActionDropdowns132==='function'){ var _bad248=buildActionDropdowns132; buildActionDropdowns132=function(panel){ var r=_bad248.apply(this,arguments); try{ babyPanelPass248() }catch(e){} return r } } }catch(e){}
  /* h52: babyPanelPass248 1500 ms interval REMOVED (post-paint writer purge) */
  /* seal the panel against re-render leaks: any mutation inside #panel while a toddler's Actions are open re-runs the pass (debounced, re-entry safe), so an age-inappropriate base button can never sit in the tree between cadence ticks */
- try{ var _bpT248=0,_bpBusy248=false; var _bpObs248=new MutationObserver(function(muts){ if(_bpBusy248)return; var hot=false; try{ for(var i=0;i<muts.length&&!hot;i++){ var an=muts[i].addedNodes||[]; for(var j=0;j<an.length;j++){ var tx=(an[j].textContent||''); if(tx.indexOf('Cook from groceries')>=0||tx.indexOf('Bad Actions')>=0||tx.indexOf('Bubble bath')>=0){ hot=true; break } } } }catch(e){} var now=Date.now(); if(!hot&&now-_bpT248<150)return; _bpT248=now; _bpBusy248=true; try{ babyPanelPass248() }catch(e){} setTimeout(function(){ _bpBusy248=false },60) }); var _bpP248=document.getElementById('panel'); if(_bpP248)_bpObs248.observe(_bpP248,{childList:true,subtree:true}) }catch(e){}
+ /* Hotfix 57 MENU SURGERY: the babyPanelPass248 #panel MutationObserver is retired — babyPanelPass248 still runs synchronously from its buildActionDropdowns132 wrapper at build time; no standing observer re-fires it against later mutations. */
 
  /* ================= I) XP always shows its cause ================= */
  var xpStamp248=0, lastAct248={t:0,label:''};
@@ -26353,7 +26353,7 @@ try{
 
  /* ---------- K1b) the game may not close or repaint away a chooser the player is using ---------- */
  try{ if(typeof setDock==='function'){ var _sd248=setDock; setDock=function(open){ try{ if(open===false&&chooserOpen248()&&!playerDrove248())return }catch(e){} return _sd248.apply(this,arguments) } } }catch(e){}
- try{ if(typeof renderTabs==='function'){ var _rt248b=renderTabs; renderTabs=function(active){ var wasTab=(typeof curTab!=='undefined')?curTab:''; var wasChooser=chooserOpen248(); var drove248=playerDrove248(); var r=_rt248b.apply(this,arguments); try{ if(wasChooser&&(wasTab==='rooms106'||wasTab==='areas123')&&typeof curTab!=='undefined'&&curTab!=='rooms106'&&curTab!=='areas123'&&typeof dockOpen!=='undefined'&&dockOpen&&!drove248){ _rt248b(wasTab); if(wasTab==='rooms106'&&typeof paintRoomPick106==='function')paintRoomPick106(); if(wasTab==='areas123'&&typeof paintAreaPick123==='function')paintAreaPick123() } }catch(e){} return r } } }catch(e){}
+ /* Hotfix 57 MENU SURGERY: the h248b chooser tab-restorer wrapper is retired — it re-called renderTabs(wasTab) after any render that left the chooser, visibly switching the panel back by itself. The chooser keeps only preventive protection (the h244 renderTabs drop-guard and the setDock swallow while the player is using it). Nothing restores a tab after the fact. */
 
  /* ---------- K2a) the toast lane: above the open sheet, top lane under a modal, never on rows ---------- */
  function toastLane248(){ try{ var t=document.querySelector('.toast'); if(!t)return;
@@ -26386,7 +26386,7 @@ try{
   var marker=null; cards.forEach(function(c){ if(c.hasAttribute('data-h248mark')){ if(marker)c.remove(); else marker=c } else c.remove() });
   if(!marker){ /* h48: no marker remnant — the card's injectors are dead at source, nothing needs blocking */ }
  }catch(e){} }
- setInterval(lwHome248,700);
+ /* Hotfix 57 MENU SURGERY: the lwHome248 700 ms sweeper interval is retired — both Living World card injectors are dead at source (h48), so the sweeper had nothing left to sweep. */
 
  /* ---------- K2e) while the chooser is open, its current-room chip stays truthful ---------- */
  setInterval(function(){ try{ if(!chooserOpen248()||modalOpen248())return; if(typeof curTab!=='undefined'&&curTab==='rooms106'&&typeof curRoom86==='function'&&typeof paintRoomPick106==='function'){ var rm=curRoom86(); if(!rm)return; var on=document.querySelector('#panel .roomRow106.on'); var oc=on?(on.getAttribute('onclick')||''):''; if(!on||oc.indexOf("'"+rm.id+"'")<0)paintRoomPick106() } }catch(e){} },2000);
@@ -26456,7 +26456,7 @@ try{
  function actionsOpen249(){ try{ return typeof curTab!=='undefined'&&curTab==='actions101'&&typeof dockOpen!=='undefined'&&dockOpen }catch(e){ return false } }
  var armActions249=false;
  var _rt249=(typeof renderTabs==='function')?renderTabs:null;
- function restoreActions249(){ try{ if(_rt249)_rt249('actions101') }catch(e){} }
+ function restoreActions249(){ return; /* Hotfix 57 MENU SURGERY: retired at the door — every caller (the leash, the renderTabs wrapper, the focusCamera wrapper, the applyCameraTransform wrapper) now hits this no-op. Nothing may switch the open panel back by itself; tab truth is owned by the player's tap and the base paint. */ try{ if(_rt249)_rt249('actions101') }catch(e){} }
  if(_rt249){
   renderTabs=function(active){
    var drove=playerDrove249();
@@ -26484,7 +26484,7 @@ try{
    if(!want&&(ct==='rooms106'||ct==='areas123'))ct=(typeof lastRealTab101!=='undefined'&&lastRealTab101&&lastRealTab101!=='actions101'&&lastRealTab101!=='rooms106'&&lastRealTab101!=='areas123')?lastRealTab101:'home';
    if(!want){ for(var i=0;i<tabs.length;i++){ var oc=tabs[i].getAttribute('onclick')||''; if(oc.indexOf("dockGo('"+ct+"')")>=0){ want=tabs[i]; break } } } }
   tabs.forEach(function(x){ var on=(want!==null&&x===want); if(x.classList.contains('on')!==on)x.classList.toggle('on',on); x.setAttribute('aria-pressed',on?'true':'false') }) }catch(e){} }
- setInterval(function(){ try{ tray249(); if(!armActions249||modalOpen249()||playerDrove249())return; if(typeof dockOpen!=='undefined'&&dockOpen&&typeof curTab!=='undefined'&&curTab!=='actions101')restoreActions249() }catch(e){} },900);
+ /* Hotfix 57 MENU SURGERY: the 900 ms tray leash is retired — tray249's light-sync is owned by the render-time paint (base renderTabs + trayTruth248 + fixNav49), and its restoreActions249 half was a self-switcher. No interval writes tray truth anymore. */
  try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 49: ⚡ ACTIONS STAYS THE PLAYER\u2019S — game-driven repaints can no longer switch the open ⚡ Actions panel back to 👽 Me, game-driven dock closes are swallowed while it is open, and the camera (action zooms, conversation push-ins, cinematic idle drift) can never change the active panel — only your own tap moves it','color:#0ea5e9;font-weight:bold') }catch(e){}
 }catch(e){}
 })();
@@ -26548,7 +26548,7 @@ try{
  [2600,6500].forEach(function(ms){ setTimeout(function(){ try{ if(!S250()&&storedSave250()&&adoptSave250()){ var app=document.getElementById('app'); if(app&&app.querySelector('.setup')&&typeof renderWelcome==='function')renderWelcome() } }catch(e){} },ms) });
  /* the update notice watchdog: stamp exists, differs from this build, no sheet shown, not dismissed */
  setTimeout(function(){ try{ var st=null; try{ st=localStorage.getItem('miniLifeSimShareable_buildStamp') }catch(e){}
-   if(st&&st!=='v200-h64'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
+   if(st&&st!=='v200-h65'&&!document.getElementById('updNotice246')&&sessionStorage.getItem('upd246_dismissed')!=='1'&&typeof window.__upd246Offer==='function')window.__upd246Offer() }catch(e){} },4200);
 
  /* ================= L) coverage: presence + real bookings only ================= */
  function cgPresent250(nm){ try{ var s=S250(); if(!s||!nm)return false; if(s.escort===nm)return true;
@@ -26958,10 +26958,9 @@ try{
 
   /* ================= 7+8) panel purity + no tab switches under a modal ================= */
   function purgeWork54(){ try{ if(typeof curTab==='undefined'||curTab!=='work')return; var panel=$54('panel'); if(!panel)return; Array.prototype.slice.call(panel.querySelectorAll('.card,.actCard101,details.dd132')).forEach(function(c){ try{ if(c.id==='svcSec222'||c.classList.contains('storeCard233')||c.querySelector('button[onclick*="openStore199("],button[onclick*="shopBuy128("],.storeCard233')){ var dd=c.closest?c.closest('details.dd132'):null; (dd&&dd!==c?dd:c).remove() } }catch(e){} }) }catch(e){} }
-  try{ var p54=$54('panel'); if(p54){ var pw54=false; new MutationObserver(function(){ if(pw54)return; pw54=true; setTimeout(function(){ pw54=false; purgeWork54() },120) }).observe(p54,{childList:true,subtree:true}) } }catch(e){}
+  /* Hotfix 57 MENU SURGERY: the purgeWork54 #panel MutationObserver is retired — purgeWork54 still runs on the renderTabs wrapper's discrete pass; no standing observer re-fires it 120 ms after every panel mutation. */
   if(typeof renderTabs==='function'){ var _rt54=renderTabs; renderTabs=function(active){ try{ if(active&&typeof curTab!=='undefined'&&active!==curTab&&modalOpen54()&&!navIntent54(900)){ return _rt54.call(null,curTab) } }catch(e){} var r=_rt54.apply(null,arguments); try{ setTimeout(purgeWork54,60); setTimeout(fillScene54,60) }catch(e){} return r } }
-  /* while a store checkout sheet is open, the lit dock tab is the tab that owns the panel — full stop */
-  setInterval(function(){ try{ var sh=sheetEl54(); if(!sh||!sh.querySelector||!sh.querySelector('#storeSheet199'))return; if(typeof curTab==='undefined')return; var db=document.querySelector('#dockCore100 .dockBtns56')||document.querySelector('#menuDock .dockBtns56'); if(!db)return; db.querySelectorAll('.dockTab').forEach(function(b){ var oc=b.getAttribute('onclick')||''; var m=oc.match(/dockGo\('([^']+)'\)/)||oc.match(/renderTabs\('([^']+)'\)/); var tab=m?m[1]:(b.classList.contains('actBtn101')?'actions101':''); if(tab)b.classList.toggle('on',tab===curTab) }) }catch(e){} },400);
+  /* Hotfix 57 MENU SURGERY: the 400 ms store-sheet tray sync interval is retired — while a store sheet is open the lit tab is set by the render-time paint like every other state; no standing interval re-toggles tab lights. */
 
   /* ================= 10d) tips only speak to the lives they describe ================= */
   function tipGate54(title,body){ try{ if(typeof S==='undefined'||!S)return false; var tx=String(title||'')+' '+String(body||''); if(/toddlers? don.t do actions/i.test(tx)&&S.age>4)return true; var m=tx.match(/ages?\s+(\d+)\s*[–-]\s*(\d+)/i); if(m){ var lo=+m[1],hi=+m[2]; if(S.age<lo||S.age>hi)return true } return false }catch(e){ return false } }
@@ -27096,7 +27095,7 @@ try{
  try{ if(typeof drawSpeechBubble==='function'){ var _dsb55=drawSpeechBubble; drawSpeechBubble=function(ctx,cx,bottomY,text){ return _dsb55.call(this,ctx,Math.max(105,Math.min(795,cx)),Math.max(64,Math.min(446,bottomY)),text) } } }catch(e){}
 
  /* ================= 1) UPDATE NOTICE: ONCE MEANS ONCE ================= */
- var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h64';
+ var STAMP55='miniLifeSimShareable_buildStamp', BUILD55='v200-h65';
  var prevStamp55=null; try{ prevStamp55=localStorage.getItem(STAMP55) }catch(e){}
  function updStage55(){ if(modalOpen55()||overlayUp55())return false; if($55('updNotice246'))return false;
   var fm=document.querySelector('.folderMenu'); if(fm&&!fm.hidden)return false;
@@ -27390,7 +27389,7 @@ try{
    ================================================================ */
 (function(){
 'use strict';
-var BUILD248='v200-h64';
+var BUILD248='v200-h65';
 function S248(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $248(id){ return document.getElementById(id) }
 function modalOpen248(){ var m=$248('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28009,7 +28008,7 @@ function chooserOwnsF(){ try{
   var tabs=document.querySelectorAll('#menuDock .dockTab, #dockCore100 .dockTab');
   for(var i=0;i<tabs.length;i++){ if(tabs[i].classList.contains('on')){ tabs[i].classList.remove('on'); tabs[i].setAttribute('aria-pressed','false') } }
  }catch(e){} }
-setInterval(chooserOwnsF,400);
+/* Hotfix 57 MENU SURGERY: the chooserOwnsF 400 ms interval is retired — its render/renderTabs event calls remain and own the chooser highlight at paint time. No standing interval strips tab lights. */
 try{ if(typeof renderTabs==='function'){ var _rtF=renderTabs; renderTabs=function(){ var r=_rtF.apply(this,arguments); chooserOwnsF(); setTimeout(chooserOwnsF,50); setTimeout(chooserOwnsF,300); return r } } }catch(e){}
 try{ if(typeof render==='function'){ var _rF=render; render=function(){ var r=_rF.apply(this,arguments); chooserOwnsF(); return r } } }catch(e){}
 try{ console.log('%cAquaLife v'+GAME_VERSION+' — hotfix 48.5: 🚪 the room panel owns the dock highlight while it is open (stamp v200-h56)','color:#0ea5e9;font-weight:bold') }catch(e){}
@@ -28089,7 +28088,7 @@ body.dockOpen47 #sheet49 .dockSheet{display:flex}
      player is offered the update exactly once. ================= */
 (function(){
 'use strict';
-var BUILD249='v200-h64';
+var BUILD249='v200-h65';
 function S_(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function chooser49(){ try{ return (typeof curTab!=='undefined')&&(curTab==='rooms106'||curTab==='areas123')&&(typeof dockOpen!=='undefined')&&!!dockOpen }catch(e){ return false } }
 function toggle49(){ try{
@@ -28272,7 +28271,7 @@ body.inGame51.dockOpen47 .topPin .socStrip{display:block}
        car-owners and keep the tag, and departures keep theirs through pull-out. */
 (function(){
 'use strict';
-try{ var BUILD250H='v200-h64';
+try{ var BUILD250H='v200-h65';
 function S58(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc58(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function modalOpen58(){ var m=document.getElementById('modal'); return !!(m&&m.classList.contains('open')) }
@@ -28558,7 +28557,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 50 (stamp '+BUILD
    tracker is untouched. The h50 start-screen sequencer is untouched. */
 (function(){ 'use strict';
 try{
-var BUILD251='v200-h64';
+var BUILD251='v200-h65';
 function S251(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function esc251(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function inGame251(){ try{ return !!(typeof inGame!=='undefined'&&inGame&&S251()) }catch(e){ return false } }
@@ -28650,16 +28649,7 @@ document.addEventListener('toggle',function(e){ try{ var d=e.target; if(!d||d.ta
 /* h52: #panel MutationObserver REMOVED */
 ['render','paintActions101'].forEach(function(nm){ try{ var fn=window[nm]; if(typeof fn==='function'&&!fn.__fold251w){ var w=function(){ var r=fn.apply(this,arguments); try{ foldPass251() }catch(e){} return r }; w.__fold251w=true; window[nm]=w } }catch(e){} });
 
-/* h51b: summary taps complete — if a repaint replaced the details between pointerdown
-   and pointerup, the native toggle never fires and the tap reads as dead (the testers'
-   "one tap does nothing / opens the wrong section" class). The rescue re-fires the
-   toggle on the LIVE details (found by the same title+ordinal key the store uses),
-   armed as a player gesture so the toggle recorder owns it. */
-var pdSum251=null;
-document.addEventListener('pointerdown',function(e){ try{ var sm=e.target&&e.target.closest?e.target.closest('#panel summary'):null; if(sm&&sm.parentElement&&sm.parentElement.tagName==='DETAILS'){ var d=sm.parentElement; pdSum251={key:secKey251(d),wasOpen:!!d.open,t:Date.now()} } }catch(err){} },true);
-document.addEventListener('pointerup',function(e){ try{ var pd=pdSum251; pdSum251=null; if(!pd||!pd.key)return;
- setTimeout(function(){ try{ var panel=document.getElementById('panel'); if(!panel)return; var ds=Array.prototype.slice.call(panel.querySelectorAll('details.dd132')); for(var i=0;i<ds.length;i++){ if(secKey251(ds[i])===pd.key){ var d=ds[i]; if(!!d.open===pd.wasOpen){ var sm=d.querySelector('summary'); if(sm){ pendToggle251={d:d,t:Date.now()}; sm.click() } } break } } }catch(err){} },170);
-}catch(err){} },true);
+/* Hotfix 57 MENU SURGERY (Group E): the h51b/F251 summary tap rescue is RETIRED. Its +170 ms synthetic sm.click() was proven by driven diagnostic to double-toggle panel sections at ordinary tap speeds (untrusted isTrusted:false clicks landing after the native toggle had registered, 6 flips for 3 taps) — the owner's jump/double-open menu glitch at its source. Native summary clicks are now the ONLY toggle path for panel sections, and the rescue's arming state (pdSum251) is removed with it. The F251 fold store, its toggle recorder and foldPass251 render enforcement are untouched and remain the single open-state authority. One system per job. */
 
 /* ================= ITEM 3 — scene taps are inert; conversations release to wide ================= */
 window.addEventListener('click',function(e){ try{ if(e.target&&e.target.id==='cv'){ e.stopPropagation(); e.preventDefault() } }catch(err){} },true);
@@ -28684,13 +28674,9 @@ try{ if(typeof renderTabs==='function'){ var _rtpw251=renderTabs; renderTabs=fun
 var pd251=null;
 document.addEventListener('pointerdown',function(e){ try{ window.__gesture251=Date.now(); if(e.button!==undefined&&e.button>0)return; var b=e.target&&e.target.closest?e.target.closest('button'):null; pd251={btn:b,x:e.clientX,y:e.clientY,t:Date.now(),fired:false} }catch(err){} },true);
 document.addEventListener('click',function(e){ try{ window.__gesture251=Date.now(); if(pd251&&pd251.btn&&e.target&&(e.target===pd251.btn||(pd251.btn.contains&&pd251.btn.contains(e.target))))pd251.fired=true }catch(err){} },true);
-document.addEventListener('pointerup',function(e){ try{ var pd=pd251; if(!pd||!pd.btn||pd.btn.disabled)return; if(Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>14)return;
- setTimeout(function(){ try{ if(pd.fired)return; var btn=pd.btn; if(btn.disabled)return; var cand=null;
-  if(btn.isConnected)cand=btn;
-  else { var el=document.elementFromPoint(pd.x,pd.y); var c2=el&&el.closest?el.closest('button'):null; if(c2&&(c2.textContent||'').replace(/\s+/g,' ').trim()===(btn.textContent||'').replace(/\s+/g,' ').trim())cand=c2 }
-  if(cand&&!cand.disabled)cand.click();
- }catch(err){} },90);
-}catch(err){} },true);
+/* Hotfix 57 MENU SURGERY: the h51 generic tap rescue (ITEM 9's +90 ms re-click of ANY button whose
+   click had not fired) is retired. It could re-fire dock tabs and action buttons replaced mid-tap — a
+   manufactured second tap. Exactly one rescue remains: the section-scoped F251 summary rescue. */
 try{ if(typeof openSheet==='function'){ var _os251=openSheet; openSheet=function(html,opts){ try{ var recent=window.__gesture251&&(Date.now()-window.__gesture251<700);
   if(recent&&typeof modalReallyOpen115==='function'&&modalReallyOpen115()&&!(typeof dayCardShown115==='function'&&dayCardShown115())){ try{ closeModal() }catch(e){} }
  }catch(e){} return _os251.apply(this,arguments) } } }catch(e){}
@@ -28740,7 +28726,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 51 (stamp '+BUILD
    tracker is untouched and default-ON, the h50 start-screen sequencer is untouched. */
 (function(){ 'use strict';
 try{
-var BUILD252='v200-h64';
+var BUILD252='v200-h65';
 function S252(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 
 /* ================= ITEM 5 — the game always needs to be seen ================= */
@@ -28851,7 +28837,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 52 (stamp '+BUILD
    rescue (gesture-only), scroll snapshot/restore around discrete repaints (h52's pattern,
    extended), and body-class toggles on openSheet/closeModal only. Nothing paints on a timer. */
 (function(){ 'use strict'; try{
-const BUILD253='v200-h64';
+const BUILD253='v200-h65';
 try{ const k253='miniLifeSimShareable_buildStamp'; const pv253=localStorage.getItem(k253); if(pv253&&pv253!==BUILD253)localStorage.setItem(k253,BUILD253) }catch(e){}
 function S253(){ try{ return (typeof S!=='undefined')?S:null }catch(e){ return null } }
 function $(i){ return document.getElementById(i) }
@@ -28916,10 +28902,9 @@ let lastGesture253=0;
 ['pointerdown','wheel','touchstart'].forEach(function(ev){ document.addEventListener(ev,function(){ lastGesture253=Date.now() },true) });
 let pdSum253=null;
 document.addEventListener('pointerdown',function(e){ try{ const sm=e.target&&e.target.closest?e.target.closest('#panel details.dd132>summary, #sheet details.dd132>summary'):null; if(!sm){ pdSum253=null; return } const d=sm.parentElement; let key=null; try{ key=(typeof sig162==='function')?sig162(d):null }catch(e2){} pdSum253={d:d,key:key,open:!!d.open} }catch(e){} },true);
-document.addEventListener('pointerup',function(){ if(!pdSum253)return; const pd=pdSum253; pdSum253=null; setTimeout(function(){ try{
- let d=pd.d; if(!d||!d.isConnected){ d=null; if(pd.key){ const all=document.querySelectorAll('#panel details.dd132, #sheet details.dd132'); for(let i=0;i<all.length;i++){ let k=null; try{ k=(typeof sig162==='function')?sig162(all[i]):null }catch(e){} if(k===pd.key){ d=all[i]; break } } } }
- if(!d)return; if(!!d.open===pd.open){ const sm=d.querySelector(':scope>summary'); if(sm)sm.click() }
-}catch(e){} },180) },true);
+/* Hotfix 57 MENU SURGERY: the h53 summary tap rescue (+180 ms, sig162-keyed) is retired — it duplicated
+   the F251 rescue (+170 ms, secKey251-keyed) on the same sections, and the pair could each fire a click
+   on the live summary: open, then instantly closed. One rescue remains (F251). */
 function snap253(){ const o={}; try{ const p=$('panel'); if(p)o.panel=p.scrollTop; const ds=document.querySelector('#sheet49 .dockSheet'); if(ds)o.ds=ds.scrollTop; const sh=$('sheet'); if(sh)o.sheet=sh.scrollTop }catch(e){} return o }
 function rest253(o){ try{ const p=$('panel'); if(p&&o.panel!=null&&p.scrollTop!==o.panel)p.scrollTop=o.panel; const ds=document.querySelector('#sheet49 .dockSheet'); if(ds&&o.ds!=null&&ds.scrollTop!==o.ds)ds.scrollTop=o.ds; const sh=$('sheet'); if(sh&&o.sheet!=null&&sh.scrollTop!==o.sheet)sh.scrollTop=o.sheet }catch(e){} }
 function wrapScroll253(name){ try{ const f=window[name]; if(typeof f!=='function')return; window[name]=function(){ const sc=snap253(); const r=f.apply(this,arguments); rest253(sc); const g=lastGesture253; setTimeout(function(){ if(lastGesture253===g)rest253(sc) },140); return r } }catch(e){} }
@@ -29142,7 +29127,7 @@ try{ console.log('%cAquaLife v'+GAME_VERSION+' — v200 hotfix 54 (stamp v200-h6
 </script>
 
 <script>
-/* ================= v200-h64 — ONE CAMERA (Plan B): the old engine's camera & fit systems, consolidated to a single keeper =================
+/* ================= v200-h65 — ONE CAMERA (Plan B): the old engine's camera & fit systems, consolidated to a single keeper =================
    Owner's ruling (Nov 5, 2026): "find all the 4 cameras and get rid of them and keep the one that works" + the ONE MOVING PART RULE — one system per job, no stacked implementations.
    This keeper is now the ONLY writer of the scene canvas box, its bitmap, and the sky/curb band widths. It fits the whole 900x460 scene INSIDE the stage (contain — nothing is ever cropped) and CENTERS it: the canvas takes auto margins on all four sides, so in the column-flex wrap the free space splits evenly above and below it.
    Retired by the Plan B surgery (all formerly competing writers): lockTick55 (cover fit), fillScene54 (fill fit), fitStage227 (contain fit + band sync), bandFrame233 / bandFrame236 / frame238 (band transforms, three loops), sizeCanvas248 (bitmap reshape on the paint path), pinFit63 (the h55 contain pin this block replaces), pinWide54 (the h54 transform pin), CAM252's zoom writer (removed at its source; the state writers are inert), style248b's bottom-anchoring margins, and the --sheetH51 sheet-reserve writer (the variable stays pinned at 0 by its owner).
@@ -29177,8 +29162,8 @@ function oneCam64(){ try{
 (function loop56(){ try{ oneCam64() }catch(e){} try{ requestAnimationFrame(loop56) }catch(e){} })();
 try{ window.addEventListener('resize',function(){ try{ oneCam64() }catch(e){} }) }catch(e){}
 oneCam64();
-window.__h56={build:'v200-h64',oneCam:oneCam64,writes:function(){ return writes56 }};
-try{ console.log('%c📷 AquaLife v200-h64 — ONE CAMERA: contain + centered keeper live (Plan B surgery complete)','color:#7dd3fc;font-weight:bold') }catch(e){}
+window.__h56={build:'v200-h65',oneCam:oneCam64,writes:function(){ return writes56 }};
+try{ console.log('%c📷 AquaLife v200-h65 — ONE CAMERA: contain + centered keeper live (Plan B surgery complete)','color:#7dd3fc;font-weight:bold') }catch(e){}
 }catch(e){} })();
 </script>
 
